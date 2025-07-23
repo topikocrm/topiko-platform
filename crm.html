@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topiko CRM - Lead Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+            color: #334155;
+        }
+
+        .crm-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 🎯 CRM SIDEBAR */
+        .crm-sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 2rem 0;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .crm-logo {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 0 2rem;
+        }
+
+        .crm-logo h1 {
+            color: #f8fafc;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .crm-logo p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .crm-nav {
+            list-style: none;
+        }
+
+        .crm-nav-item {
+            margin: 0.3rem 0;
+            padding: 0 1.5rem;
+        }
+
+        .crm-nav-link {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .crm-nav-link:hover,
+        .crm-nav-link.active {
+            color: #f8fafc;
+            background: rgba(59, 130, 246, 0.15);
+            transform: translateX(4px);
+        }
+
+        .crm-nav-icon {
+            margin-right: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        /* 📊 MAIN CONTENT */
+        .crm-main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .crm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .crm-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .crm-user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* 📈 DASHBOARD STATS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-title {
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-positive { color: #059669; }
+        .stat-negative { color: #dc2626; }
+
+        /* 🎯 LEADS TABLE */
+        .leads-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            color: #64748b;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .leads-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .leads-table th {
+            text-align: left;
+            padding: 1rem;
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .leads-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        .leads-table tr:hover {
+            background: #f8fafc;
+        }
+
+        /* 🎯 LEAD CARDS */
+        .lead-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.3rem;
+        }
+
+        .lead-business {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .lead-contact {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .goals-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            margin-top: 0.5rem;
+        }
+
+        .goal-tag {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1d4ed8;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .lead-score-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .score-hot { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); }
+        .score-warm { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .score-cold { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); }
+
+        .lead-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-new { background: #dbeafe; color: #1d4ed8; }
+        .status-contacted { background: #fef3c7; color: #b45309; }
+        .status-qualified { background: #d1fae5; color: #065f46; }
+        .status-demo { background: #e0e7ff; color: #3730a3; }
+        .status-proposal { background: #f3e8ff; color: #6b21a8; }
+        .status-closed { background: #dcfce7; color: #14532d; }
+        .status-assigned { background: #e0f2fe; color: #0369a1; }
+
+        .assign-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .assign-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .assign-btn:disabled {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        /* 📱 RESPONSIVE */
+        @media (max-width: 768px) {
+            .crm-sidebar {
+                width: 70px;
+            }
+
+            .crm-logo h1,
+            .crm-logo p {
+                display: none;
+            }
+
+            .crm-nav-link span:not(.crm-nav-icon) {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .crm-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .leads-table {
+                font-size: 0.85rem;
+            }
+
+            .leads-table th,
+            .leads-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        /* 🎨 ANIMATIONS */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* 🎯 LEAD INTELLIGENCE PANEL FOR SDRs */
+        .sdr-intelligence {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            width: 350px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border: 2px solid #e2e8f0;
+            z-index: 1000;
+            font-size: 0.9rem;
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .sdr-intelligence.show {
+            display: block;
+            animation: slideInRight 0.4s ease;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .intelligence-header-crm {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            font-weight: 700;
+            margin: -20px -20px 20px -20px;
+            padding: 15px 20px;
+            border-radius: 14px 14px 0 0;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .intelligence-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .intelligence-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .intelligence-item-crm {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .intelligence-label-crm {
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .intelligence-value-crm {
+            color: #1e293b;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .lead-score-crm {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 15px 0;
+            font-weight: bold;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .score-crm-hot { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); }
+        .score-crm-warm { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .score-crm-cold { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); }
+
+        .behavioral-indicators-crm {
+            margin: 15px 0;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .indicator-crm {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .indicator-icon-crm {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            width: 25px;
+        }
+
+        .goals-preview-crm {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            padding: 12px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .goals-list-crm {
+            font-size: 0.8rem;
+            color: #1e40af;
+            margin-top: 8px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .call-action-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .call-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+        }
+
+        /* View Intelligence Button */
+        .view-intelligence-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 0.5rem;
+        }
+
+        .view-intelligence-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        /* 🔔 NOTIFICATION STYLES */
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(5, 150, 105, 0.3);
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 1001;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        /* 🎯 New Lead Indicator */
+        .new-lead-indicator {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc2626;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* 🚨 Safari Compatibility Indicator */
+        .safari-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="crm-container">
+        <!-- 🎯 CRM SIDEBAR -->
+        <nav class="crm-sidebar">
+            <div class="crm-logo">
+                <h1>Topiko CRM</h1>
+                <p>Lead Management</p>
+            </div>
+            
+            <ul class="crm-nav">
+                <li class="crm-nav-item">
+                    <div class="crm-nav-link active" onclick="showCRMSection('dashboard')">
+                        <span class="crm-nav-icon">📊</span>
+                        <span>Dashboard</span>
+                    </div>
+                </li>
+                <li class="crm-nav-item">
+                    <div class="crm-nav-link" onclick="showCRMSection('leads')">
+                        <span class="crm-nav-icon">👥</span>
+                        <span>All Leads</span>
+                    </div>
+                </li>
+                <li class="crm-nav-item">
+                    <div class="crm-nav-link" onclick="showCRMSection('hot-leads')" style="position: relative;">
+                        <span class="crm-nav-icon">🔥</span>
+                        <span>Hot Leads</span>
+                        <div class="new-lead-indicator" id="hotLeadCounter" style="display: none;">0</div>
+                    </div>
+                </li>
+                <li class="crm-nav-item">
+                    <div class="crm-nav-link" onclick="showCRMSection('my-leads')">
+                        <span class="crm-nav-icon">🎯</span>
+                        <span>My Leads</span>
+                    </div>
+                </li>
+                <li class="crm-nav-item">
+                    <div class="crm-nav-link" onclick="showCRMSection('pipeline')">
+                        <span class="crm-nav-icon">📈</span>
+                        <span>Pipeline</span>
+                    </div>
+                </li>
+                <li class="crm-nav-item">
+                    <div class="crm-nav-link" onclick="showCRMSection('analytics')">
+                        <span class="crm-nav-icon">📋</span>
+                        <span>Analytics</span>
+                    </div>
+                </li>
+                <li class="crm-nav-item">
+                    <div class="crm-nav-link" onclick="showCRMSection('team')">
+                        <span class="crm-nav-icon">👨‍💼</span>
+                        <span>Team</span>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 📊 MAIN CONTENT -->
+        <main class="crm-main">
+            <!-- DASHBOARD SECTION -->
+            <section id="dashboard" class="crm-section active">
+                <div class="crm-header">
+                    <h1 class="crm-title">Lead Management Dashboard</h1>
+                    <div class="crm-user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <div>
+                            <div style="font-weight: 600;">Admin</div>
+                            <div style="font-size: 0.85rem; color: #64748b;">Sales Manager</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 📈 STATS GRID -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-title">Total Leads</div>
+                        <div class="stat-value" id="totalLeads">0</div>
+                        <div class="stat-change stat-positive">↑ 12% from last week</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-title">Hot Leads</div>
+                        <div class="stat-value" id="hotLeads">0</div>
+                        <div class="stat-change stat-positive">↑ New leads coming in</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">📞</div>
+                        <div class="stat-title">Conversion Rate</div>
+                        <div class="stat-value">18%</div>
+                        <div class="stat-change stat-positive">↑ 3% this month</div>
+                    </div>
+
+                    <div class="stat-card" style="position: relative;">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-title">Pipeline Value</div>
+                        <div class="stat-value">₹24L</div>
+                        <div class="stat-change stat-positive">↑ 15% this month</div>
+                        
+                        <!-- Debug Panel -->
+                        <div style="position: absolute; top: 10px; right: 10px;">
+                            <button onclick="showDebugInfo()" style="background: #3b82f6; color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 0.7rem; cursor: pointer;">
+                                🔧 Debug
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Debug Info Panel -->
+                <div id="debugPanel" style="display: none; background: #1f2937; color: #f9fafb; padding: 1rem; border-radius: 12px; margin-bottom: 2rem; font-family: monospace; font-size: 0.8rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="color: #60a5fa; margin: 0;">🔧 CRM Debug Panel (Safari Compatible)</h3>
+                        <button onclick="closeDebugPanel()" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Close</button>
+                    </div>
+                    <div id="debugContent"></div>
+                    <div style="margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button onclick="manualRefresh()" style="background: #10b981; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">🔄 Manual Refresh</button>
+                        <button onclick="clearProcessedLeads()" style="background: #f59e0b; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">🗑️ Clear Processed</button>
+                        <button onclick="viewLocalStorage()" style="background: #8b5cf6; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">💾 View Storage</button>
+                        <button onclick="createTestLead()" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">🧪 Test Lead</button>
+                        <button onclick="testSupabaseFetch()" style="background: #059669; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">🔍 Test Supabase</button>
+                    </div>
+                </div>
+
+                <!-- 🎯 RECENT HOT LEADS -->
+                <div class="leads-section">
+                    <div class="section-header">
+                        <h2 class="section-title">🔥 Recent Hot Leads (Score 40+)</h2>
+                        <div class="filter-tabs">
+                            <button class="filter-tab active" onclick="filterLeads('all')">All</button>
+                            <button class="filter-tab" onclick="filterLeads('unassigned')">Unassigned</button>
+                            <button class="filter-tab" onclick="filterLeads('assigned')">Assigned</button>
+                        </div>
+                    </div>
+
+                    <table class="leads-table" id="hotLeadsTable">
+                        <thead>
+                            <tr>
+                                <th>Lead Info</th>
+                                <th>🎯 Goals</th>
+                                <th>Score</th>
+                                <th>Source</th>
+                                <th>Status</th>
+                                <th>SDR</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hotLeadsBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 2rem; color: #64748b;">
+                                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">📊 Monitoring for new leads...</div>
+                                    <div style="font-size: 0.9rem;">Hot leads will appear here automatically when they register</div>
+                                    <div style="font-size: 0.8rem; margin-top: 0.5rem; color: #10b981;">✅ Safari compatible - checks both localStorage and Supabase</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ALL LEADS SECTION -->
+            <section id="leads" class="crm-section" style="display: none;">
+                <div class="crm-header">
+                    <h1 class="crm-title">All Leads</h1>
+                </div>
+                <div class="leads-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Lead Database</h2>
+                        <div class="filter-tabs">
+                            <button class="filter-tab active">All Leads</button>
+                            <button class="filter-tab">Today</button>
+                            <button class="filter-tab">This Week</button>
+                            <button class="filter-tab">This Month</button>
+                        </div>
+                    </div>
+                    <div style="padding: 2rem; text-align: center; color: #64748b;">
+                        <h3>All Leads View</h3>
+                        <p>Complete lead database with filtering and search capabilities</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PLACEHOLDER SECTIONS -->
+            <section id="hot-leads" class="crm-section" style="display: none;">
+                <div class="crm-header">
+                    <h1 class="crm-title">🔥 Hot Leads</h1>
+                </div>
+                <div style="padding: 2rem; text-align: center; color: #64748b;">
+                    <h3>Hot Leads Section</h3>
+                    <p>Leads with score 70+ requiring immediate attention</p>
+                </div>
+            </section>
+
+            <section id="my-leads" class="crm-section" style="display: none;">
+                <div class="crm-header">
+                    <h1 class="crm-title">🎯 My Leads</h1>
+                </div>
+                <div style="padding: 2rem; text-align: center; color: #64748b;">
+                    <h3>My Assigned Leads</h3>
+                    <p>Leads assigned to you for follow-up</p>
+                </div>
+            </section>
+
+            <section id="pipeline" class="crm-section" style="display: none;">
+                <div class="crm-header">
+                    <h1 class="crm-title">📈 Pipeline</h1>
+                </div>
+                <div style="padding: 2rem; text-align: center; color: #64748b;">
+                    <h3>Sales Pipeline</h3>
+                    <p>Kanban-style pipeline management</p>
+                </div>
+            </section>
+
+            <section id="analytics" class="crm-section" style="display: none;">
+                <div class="crm-header">
+                    <h1 class="crm-title">📋 Analytics</h1>
+                </div>
+                <div style="padding: 2rem; text-align: center; color: #64748b;">
+                    <h3>Performance Analytics</h3>
+                    <p>Team performance and conversion metrics</p>
+                </div>
+            </section>
+
+            <section id="team" class="crm-section" style="display: none;">
+                <div class="crm-header">
+                    <h1 class="crm-title">👨‍💼 Team Management</h1>
+                </div>
+                <div style="padding: 2rem; text-align: center; color: #64748b;">
+                    <h3>Sales Team</h3>
+                    <p>SDR management and performance tracking</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 🚨 Safari Compatibility Indicator -->
+    <div class="safari-indicator" id="safariIndicator">
+        🦄 Safari Compatible
+    </div>
+
+    <!-- 🎯 LEAD INTELLIGENCE PANEL FOR SDRs -->
+    <div class="sdr-intelligence" id="sdrIntelligence">
+        <div class="intelligence-header-crm">
+            📊 Lead Intelligence
+            <button class="intelligence-close" onclick="closeLeadIntelligence()">×</button>
+        </div>
+        
+        <div class="lead-score-crm" id="leadScoreCRM">
+            <div>Lead Score: <span id="scoreValueCRM">0</span>/100</div>
+            <div style="font-size: 0.85rem; margin-top: 5px;" id="scoreLabelCRM">Cold Lead</div>
+        </div>
+        
+        <div class="intelligence-item-crm">
+            <span class="intelligence-label-crm">👤 Lead Name:</span>
+            <span class="intelligence-value-crm" id="leadNameCRM">-</span>
+        </div>
+        
+        <div class="intelligence-item-crm">
+            <span class="intelligence-label-crm">📞 Phone:</span>
+            <span class="intelligence-value-crm" id="leadPhoneCRM">-</span>
+        </div>
+        
+        <div class="intelligence-item-crm">
+            <span class="intelligence-label-crm">⏱️ Session Time:</span>
+            <span class="intelligence-value-crm" id="sessionTimeCRM">0 min</span>
+        </div>
+        
+        <div class="intelligence-item-crm">
+            <span class="intelligence-label-crm">📱 Device:</span>
+            <span class="intelligence-value-crm" id="deviceTypeCRM">Unknown</span>
+        </div>
+        
+        <div class="intelligence-item-crm">
+            <span class="intelligence-label-crm">🎯 Engagement:</span>
+            <span class="intelligence-value-crm" id="engagementLevelCRM">Low</span>
+        </div>
+        
+        <div class="intelligence-item-crm">
+            <span class="intelligence-label-crm">🌐 Source:</span>
+            <span class="intelligence-value-crm" id="utmSourceCRM">Direct</span>
+        </div>
+        
+        <div class="goals-preview-crm">
+            <div style="font-weight: 700; color: #1e40af; margin-bottom: 8px;">🎯 Customer Goals:</div>
+            <div class="goals-list-crm" id="goalsListCRM">
+                No goals data available
+            </div>
+        </div>
+        
+        <div class="behavioral-indicators-crm">
+            <div style="font-weight: 600; color: #475569; margin-bottom: 10px;">📈 Behavioral Intelligence</div>
+            
+            <div class="indicator-crm">
+                <span class="indicator-icon-crm">🌐</span>
+                <span id="languageIndicatorCRM">Language: English</span>
+            </div>
+            
+            <div class="indicator-crm">
+                <span class="indicator-icon-crm">⏰</span>
+                <span id="timeIndicatorCRM">Visited at 10:30 AM</span>
+            </div>
+            
+            <div class="indicator-crm">
+                <span class="indicator-icon-crm">📊</span>
+                <span id="engagementIndicatorCRM">High engagement session</span>
+            </div>
+            
+            <div class="indicator-crm">
+                <span class="indicator-icon-crm">💼</span>
+                <span id="businessIndicatorCRM">Business: Startup</span>
+            </div>
+        </div>
+        
+        <button class="call-action-btn" onclick="initiateCall()" id="callActionBtn">
+            📞 Call Lead Now
+        </button>
+        
+        <div style="margin-top: 12px; font-size: 0.8rem; color: #64748b; text-align: center;">
+            🚀 Campaign: <span id="campaignInfoCRM">Direct Traffic</span><br>
+            📍 Location: <span id="locationInfoCRM">Unknown</span>
+        </div>
+    </div>
+
+    <script>
+        // 🎯 CRM SYSTEM VARIABLES
+        let currentUser = {
+            id: 'admin_001',
+            name: 'Admin',
+            role: 'Sales Manager',
+            avatar: 'A'
+        };
+
+        let sdrTeam = [
+            { id: 'sdr_001', name: 'Rahul Sharma', leads: 12, active: true },
+            { id: 'sdr_002', name: 'Priya Patel', leads: 8, active: true },
+            { id: 'sdr_003', name: 'Vikram Singh', leads: 15, active: true },
+            { id: 'sdr_004', name: 'Anita Kumar', leads: 6, active: true }
+        ];
+
+        // 🔥 LEADS DATA (will be populated from localStorage and eventually from Supabase)
+        let allLeads = [];
+        let hotLeads = [];
+
+        // 🎯 CRM NAVIGATION
+        function showCRMSection(sectionId) {
+            console.log('🔄 Showing CRM section:', sectionId);
+            
+            // Hide all sections
+            document.querySelectorAll('.crm-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Update navigation
+            document.querySelectorAll('.crm-nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.closest('.crm-nav-link').classList.add('active');
+            
+            // Load section-specific data
+            if (sectionId === 'dashboard') {
+                loadDashboardData();
+            }
+        }
+
+        // 📊 LOAD DASHBOARD DATA
+        function loadDashboardData() {
+            console.log('📊 Loading dashboard data...');
+            console.log('Current leads:', { allLeads: allLeads.length, hotLeads: hotLeads.length });
+            
+            // Update stats
+            document.getElementById('totalLeads').textContent = allLeads.length;
+            document.getElementById('hotLeads').textContent = hotLeads.length;
+            
+            // Update hot leads counter in navigation
+            const hotLeadCounter = document.getElementById('hotLeadCounter');
+            if (hotLeads.length > 0) {
+                hotLeadCounter.textContent = hotLeads.length;
+                hotLeadCounter.style.display = 'flex';
+            } else {
+                hotLeadCounter.style.display = 'none';
+            }
+            
+            // Load hot leads table
+            loadHotLeadsTable();
+        }
+
+        // 🔥 LOAD HOT LEADS TABLE
+        function loadHotLeadsTable() {
+            const tableBody = document.getElementById('hotLeadsBody');
+            
+            if (hotLeads.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: #64748b;">
+                            <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">📊 Monitoring for new leads...</div>
+                            <div style="font-size: 0.9rem;">Hot leads will appear here automatically when they register</div>
+                            <div style="font-size: 0.8rem; margin-top: 0.5rem; color: #10b981;">✅ Safari compatible - checks both localStorage and Supabase</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tableBody.innerHTML = '';
+            
+            hotLeads.forEach(lead => {
+                const row = document.createElement('tr');
+                row.className = 'fade-in';
+                
+                // Format goals for display
+                const goalsHTML = (lead.goals_display || []).map(goal => 
+                    `<span class="goal-tag">${goal}</span>`
+                ).join('');
+                
+                // Get SDR name
+                const assignedSDR = lead.assigned_sdr ? 
+                    sdrTeam.find(sdr => sdr.id === lead.assigned_sdr)?.name || 'Unknown' : 
+                    'Unassigned';
+                
+                // Format time
+                const timeAgo = getTimeAgo(lead.created_at);
+                
+                // Show source
+                const sourceDisplay = lead.source === 'supabase' ? '📊 Supabase' : '💾 localStorage';
+                
+                row.innerHTML = `
+                    <td>
+                        <div class="lead-name">${lead.name}</div>
+                        <div class="lead-business">${lead.business_name}</div>
+                        <div class="lead-contact">${lead.phone}</div>
+                        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.3rem;">
+                            ${timeAgo} • ${lead.device_type} • ${lead.session_duration_minutes || 0}min • ${sourceDisplay}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="goals-tags">
+                            ${goalsHTML}
+                        </div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
+                            ${lead.utm_campaign || 'Direct'}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="lead-score-badge score-${lead.lead_quality ? lead.lead_quality.toLowerCase() : 'cold'}">
+                            ${lead.lead_score || 0}
+                        </div>
+                    </td>
+                    <td>
+                        <div style="font-weight: 500;">${lead.utm_source || 'Direct'}</div>
+                        <div style="font-size: 0.85rem; color: #64748b;">${lead.utm_campaign || 'None'}</div>
+                    </td>
+                    <td>
+                        <span class="lead-status status-${(lead.lead_status || 'new').toLowerCase().replace(' ', '-')}">
+                            ${lead.lead_status || 'New'}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="font-weight: 500; color: ${lead.assigned_sdr ? '#059669' : '#dc2626'};">
+                            ${assignedSDR}
+                        </div>
+                        ${lead.last_contacted ? 
+                            `<div style="font-size: 0.8rem; color: #64748b;">Last: ${getTimeAgo(lead.last_contacted)}</div>` : 
+                            ''
+                        }
+                    </td>
+                    <td>
+                        <button class="assign-btn" onclick="assignLead('${lead.user_id || lead.id}')" ${lead.assigned_sdr ? 'disabled' : ''}>
+                            ${lead.assigned_sdr ? 'Assigned' : 'Assign'}
+                        </button>
+                        <button class="view-intelligence-btn" onclick="showLeadIntelligence('${lead.user_id || lead.id}')">
+                            📊 Intel
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            console.log('✅ Hot leads table loaded with', hotLeads.length, 'leads');
+        }
+
+        // 👨‍💼 ASSIGN LEAD TO SDR
+        function assignLead(leadId) {
+            console.log('🎯 Assigning lead:', leadId);
+            
+            // Find available SDR with least leads
+            const availableSDRs = sdrTeam.filter(sdr => sdr.active);
+            const selectedSDR = availableSDRs.reduce((prev, current) => 
+                (prev.leads < current.leads) ? prev : current
+            );
+            
+            // Update lead
+            const lead = hotLeads.find(l => (l.user_id || l.id) === leadId);
+            if (lead) {
+                lead.assigned_sdr = selectedSDR.id;
+                lead.lead_status = 'Assigned';
+                selectedSDR.leads++;
+                
+                showNotification(`Lead assigned to ${selectedSDR.name}`, 'success');
+                loadHotLeadsTable(); // Refresh table
+                
+                console.log('📤 Lead assignment completed:', {
+                    leadId: leadId,
+                    sdrId: selectedSDR.id,
+                    assignedAt: new Date().toISOString()
+                });
+            }
+        }
+
+        // 🕒 TIME AGO HELPER
+        function getTimeAgo(dateString) {
+            if (!dateString) return 'Unknown';
+            
+            const now = new Date();
+            const past = new Date(dateString);
+            const diffMs = now - past;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            return `${diffDays}d ago`;
+        }
+
+        // 🔔 NOTIFICATIONS
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type} show`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 400);
+            }, 3000);
+        }
+
+        // 🔍 FILTER LEADS
+        function filterLeads(filter) {
+            console.log('🔍 Filtering leads:', filter);
+            
+            // Update active tab
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter logic (for now just reload - later implement actual filtering)
+            loadHotLeadsTable();
+        }
+
+        // 🔧 ENHANCED LEAD CHECKING - SAFARI COMPATIBLE
+        async function checkForLocalLeads() {
+            try {
+                console.log('🔍 Checking for leads (Safari-compatible mode)...');
+                
+                // Method 1: Check localStorage (works in Chrome)
+                const localLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
+                const completeSetup = JSON.parse(localStorage.getItem('topiko_complete_setup') || 'null');
+                
+                // Method 2: Check Supabase directly (works in all browsers)
+                let supabaseLeads = [];
+                try {
+                    supabaseLeads = await fetchFromSupabase();
+                } catch (error) {
+                    console.log('⚠️ Supabase fetch failed, using localStorage only:', error.message);
+                }
+                
+                const processedLeads = JSON.parse(localStorage.getItem('topiko_processed_leads') || '[]');
+                
+                console.log('📊 Lead sources:', {
+                    localStorage: localLeads.length,
+                    supabase: supabaseLeads.length,
+                    completeSetup: completeSetup ? 'Found' : 'None',
+                    processed: processedLeads.length
+                });
+                
+                // Combine all lead sources
+                let allLocalLeads = [...localLeads];
+                
+                // Add Supabase leads that aren't in localStorage
+                supabaseLeads.forEach(supabaseLead => {
+                    const existsInLocal = allLocalLeads.find(localLead => 
+                        localLead.user_id === supabaseLead.user_id || 
+                        localLead.phone === supabaseLead.phone
+                    );
+                    
+                    if (!existsInLocal) {
+                        console.log('🎯 Found Supabase-only lead:', supabaseLead.name);
+                        allLocalLeads.push(supabaseLead);
+                    }
+                });
+                
+                // Add complete setup if not found
+                if (completeSetup && !allLocalLeads.find(lead => lead.user_id === completeSetup.user_id)) {
+                    allLocalLeads.push(completeSetup);
+                }
+                
+                // Find new leads that haven't been processed
+                const newLeads = allLocalLeads.filter(lead => {
+                    const leadId = lead.user_id || lead.id || ('temp_' + lead.name);
+                    return !processedLeads.includes(leadId);
+                });
+                
+                if (newLeads.length > 0) {
+                    console.log('🎯 Found', newLeads.length, 'new leads!', newLeads);
+                    
+                    newLeads.forEach(leadData => {
+                        console.log('📋 Processing lead:', leadData);
+                        
+                        // Convert lead form data to CRM format
+                        const crmLead = {
+                            id: leadData.user_id || leadData.id || 'lead_' + Date.now(),
+                            user_id: leadData.user_id || leadData.id || 'lead_' + Date.now(),
+                            name: leadData.name || 'Unknown',
+                            business_name: leadData.business_name || 'Unknown Business',
+                            phone: leadData.phone || 'Not provided',
+                            address: leadData.address || 'Not provided',
+                            business_type: leadData.business_type || 'Not specified',
+                            business_category: leadData.business_category || 'Not specified',
+                            selected_goals: leadData.selected_goals || [],
+                            goals_display: leadData.goals_display || [],
+                            lead_score: leadData.lead_score || 0,
+                            engagement_level: leadData.engagement_level || 'Low',
+                            session_duration_minutes: leadData.session_duration_minutes || 0,
+                            utm_source: leadData.utm_source || 'Direct',
+                            utm_campaign: leadData.utm_campaign || 'None',
+                            device_type: leadData.device_type || 'Unknown',
+                            selected_language: leadData.selected_language || 'en',
+                            lead_status: 'New',
+                            lead_quality: leadData.lead_quality || (leadData.lead_score >= 70 ? 'Hot' : leadData.lead_score >= 40 ? 'Warm' : 'Cold'),
+                            created_at: leadData.created_at || leadData.registration_completed_time || leadData.completed_at || new Date().toISOString(),
+                            assigned_sdr: null,
+                            last_contacted: null,
+                            received_from_form: true,
+                            source: leadData.received_from_form === false ? 'supabase' : 'localStorage',
+                            
+                            // Additional data
+                            selected_subcategories: leadData.selected_subcategories || [],
+                            products_count: leadData.products_count || 0,
+                            products: leadData.products || [],
+                            selected_theme: leadData.selected_theme || 'Not selected',
+                            setup_completed: leadData.setup_completed || false
+                        };
+                        
+                        console.log('✅ Converted lead:', crmLead);
+                        
+                        // Add to all leads
+                        allLeads.unshift(crmLead);
+                        
+                        // Add to hot leads if qualified
+                        const isHotLead = crmLead.lead_score >= 40 || crmLead.setup_completed;
+                        
+                        if (isHotLead) {
+                            hotLeads.unshift(crmLead);
+                            
+                            // Show notification based on score
+                            if (crmLead.lead_score >= 70) {
+                                showNotification(
+                                    `🔥 NEW HOT LEAD: ${crmLead.name} (Score: ${crmLead.lead_score})`, 
+                                    'success'
+                                );
+                            } else {
+                                showNotification(
+                                    `🌡️ New Qualified Lead: ${crmLead.name} (Score: ${crmLead.lead_score})`, 
+                                    'info'
+                                );
+                            }
+                        } else {
+                            showNotification(
+                                `📋 New Lead: ${crmLead.name} (Score: ${crmLead.lead_score})`, 
+                                'info'
+                            );
+                        }
+                        
+                        // Mark as processed
+                        const leadId = crmLead.user_id || crmLead.id;
+                        processedLeads.push(leadId);
+                        
+                        console.log('✅ Lead processed:', crmLead.name, 'ID:', leadId, 'Source:', crmLead.source);
+                    });
+                    
+                    // Save processed IDs
+                    localStorage.setItem('topiko_processed_leads', JSON.stringify(processedLeads));
+                    
+                    // Refresh dashboard
+                    loadDashboardData();
+                } else {
+                    console.log('ℹ️ No new leads found');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error checking leads:', error);
+            }
+        }
+
+        // 🔧 SUPABASE DIRECT FETCH FUNCTION
+        async function fetchFromSupabase() {
+            const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k';
+            
+            try {
+                console.log('🔍 Fetching leads directly from Supabase...');
+                
+                // Fetch from users table (basic info)
+                const usersResponse = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*&order=created_at.desc&limit=50`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!usersResponse.ok) {
+                    throw new Error(`Users fetch failed: ${usersResponse.status}`);
+                }
+                
+                const users = await usersResponse.json();
+                console.log('📊 Found', users.length, 'users in Supabase');
+                
+                // Fetch from lead_intelligence table (behavioral data)
+                const intelligenceResponse = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence?select=*&order=created_at.desc&limit=50`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                let intelligence = [];
+                if (intelligenceResponse.ok) {
+                    intelligence = await intelligenceResponse.json();
+                    console.log('📊 Found', intelligence.length, 'intelligence records in Supabase');
+                }
+                
+                // Combine user + intelligence data
+                const combinedLeads = users.map(user => {
+                    const userIntel = intelligence.find(intel => intel.user_id === user.id);
+                    
+                    return {
+                        user_id: user.id,
+                        name: user.name,
+                        phone: user.phone,
+                        business_name: user.business_name,
+                        address: user.address,
+                        business_type: user.business_type,
+                        business_category: user.business_category,
+                        created_at: user.created_at,
+                        
+                        // Intelligence data
+                        lead_score: userIntel?.lead_score || 0,
+                        lead_quality: userIntel?.lead_quality || 'Cold',
+                        lead_status: userIntel?.lead_status || 'New',
+                        selected_goals: userIntel?.selected_goals || [],
+                        goals_display: userIntel?.goals_display || [],
+                        session_duration_minutes: userIntel?.session_duration_minutes || 0,
+                        utm_source: userIntel?.utm_source || 'Direct',
+                        utm_campaign: userIntel?.utm_campaign || 'None',
+                        device_type: userIntel?.device_type || 'Unknown',
+                        selected_language: userIntel?.selected_language || 'en',
+                        engagement_level: userIntel?.engagement_level || 'Low',
+                        products_count: userIntel?.products_count || 0,
+                        selected_theme: userIntel?.selected_theme || 'None',
+                        
+                        // Mark as Supabase source
+                        received_from_form: false,
+                        source: 'supabase'
+                    };
+                });
+                
+                console.log('✅ Successfully fetched', combinedLeads.length, 'leads from Supabase');
+                return combinedLeads;
+                
+            } catch (error) {
+                console.error('❌ Supabase fetch error:', error);
+                throw error;
+            }
+        }
+
+        // 🎯 LEAD INTELLIGENCE PANEL FUNCTIONS FOR SDRs
+        let currentSelectedLead = null;
+
+        function showLeadIntelligence(leadId) {
+            console.log('📊 Showing lead intelligence for:', leadId);
+            
+            // Find the lead
+            const lead = allLeads.find(l => (l.user_id || l.id) === leadId) || 
+                         hotLeads.find(l => (l.user_id || l.id) === leadId);
+            
+            if (!lead) {
+                showNotification('Lead not found', 'error');
+                return;
+            }
+            
+            currentSelectedLead = lead;
+            populateIntelligencePanel(lead);
+            
+            // Show the intelligence panel
+            const panel = document.getElementById('sdrIntelligence');
+            panel.classList.add('show');
+            
+            console.log('📊 Intelligence panel opened for lead:', lead.name);
+        }
+
+        function closeLeadIntelligence() {
+            const panel = document.getElementById('sdrIntelligence');
+            panel.classList.remove('show');
+            currentSelectedLead = null;
+            console.log('📊 Intelligence panel closed');
+        }
+
+        function populateIntelligencePanel(lead) {
+            console.log('📊 Populating intelligence panel with:', lead);
+            
+            // Basic lead info
+            document.getElementById('leadNameCRM').textContent = lead.name;
+            document.getElementById('leadPhoneCRM').textContent = lead.phone;
+            
+            // Session intelligence
+            document.getElementById('sessionTimeCRM').textContent = `${lead.session_duration_minutes || 0} min`;
+            document.getElementById('deviceTypeCRM').textContent = lead.device_type || 'Unknown';
+            document.getElementById('engagementLevelCRM').textContent = lead.engagement_level || 'Low';
+            document.getElementById('utmSourceCRM').textContent = lead.utm_source || 'Direct';
+            
+            // Lead score
+            const scoreElement = document.getElementById('scoreValueCRM');
+            const labelElement = document.getElementById('scoreLabelCRM');
+            const scoreContainer = document.getElementById('leadScoreCRM');
+            
+            scoreElement.textContent = lead.lead_score || 0;
+            
+            if ((lead.lead_score || 0) >= 70) {
+                labelElement.textContent = 'Hot Lead 🔥';
+                scoreContainer.className = 'lead-score-crm score-crm-hot';
+            } else if ((lead.lead_score || 0) >= 40) {
+                labelElement.textContent = 'Warm Lead 🌡️';
+                scoreContainer.className = 'lead-score-crm score-crm-warm';
+            } else {
+                labelElement.textContent = 'Cold Lead ❄️';
+                scoreContainer.className = 'lead-score-crm score-crm-cold';
+            }
+            
+            // 🎯 CRITICAL: Goals data for SDR conversation
+            const goalsList = document.getElementById('goalsListCRM');
+            if (lead.goals_display && lead.goals_display.length > 0) {
+                goalsList.innerHTML = lead.goals_display.map(goal => 
+                    `• ${goal}`
+                ).join('<br>');
+            } else {
+                goalsList.textContent = 'No specific goals selected';
+            }
+            
+            // Behavioral indicators
+            document.getElementById('languageIndicatorCRM').textContent = 
+                `Language: ${lead.selected_language || 'English'}`;
+            
+            document.getElementById('timeIndicatorCRM').textContent = 
+                `Visited: ${getTimeAgo(lead.created_at)}`;
+                
+            document.getElementById('engagementIndicatorCRM').textContent = 
+                `${lead.engagement_level || 'Low'} engagement (${lead.session_duration_minutes || 0}min session)`;
+                
+            document.getElementById('businessIndicatorCRM').textContent = 
+                `Business: ${lead.business_type} - ${lead.business_category}`;
+            
+            // Campaign and location info
+            document.getElementById('campaignInfoCRM').textContent = 
+                lead.utm_campaign || 'Direct Traffic';
+            document.getElementById('locationInfoCRM').textContent = 
+                lead.address ? lead.address.split(',').pop().trim() : 'Unknown';
+                
+            // Update call button with phone number
+            const callBtn = document.getElementById('callActionBtn');
+            callBtn.textContent = `📞 Call ${lead.name.split(' ')[0]}`;
+        }
+
+        // 📞 INITIATE CALL FUNCTION
+        function initiateCall() {
+            if (!currentSelectedLead) {
+                showNotification('No lead selected', 'error');
+                return;
+            }
+            
+            const lead = currentSelectedLead;
+            console.log('📞 Initiating call to:', lead.name, lead.phone);
+            
+            // Create call link (this would integrate with your phone system)
+            const phoneNumber = lead.phone.replace(/[^0-9]/g, '');
+            const callUrl = `tel:${phoneNumber}`;
+            
+            // Open call interface
+            window.open(callUrl);
+            
+            // Update lead status
+            lead.lead_status = 'Contacted';
+            lead.last_contacted = new Date().toISOString();
+            
+            // Show call context
+            showNotification(`📞 Calling ${lead.name}...`, 'info');
+            
+            // Show conversation starters
+            setTimeout(() => {
+                showCallContext(lead);
+            }, 1000);
+            
+            // Refresh table to show updated status
+            loadHotLeadsTable();
+        }
+
+        // 💬 SHOW CALL CONTEXT FOR SDR
+        function showCallContext(lead) {
+            const goalsText = lead.goals_display && lead.goals_display.length > 0 ? 
+                lead.goals_display.join(', ') : 
+                'general business growth';
+                
+            const context = `
+🎯 CONVERSATION STARTER:
+
+"Hi ${lead.name.split(' ')[0]}, this is [Your Name] from Topiko. 
+
+I see you recently explored our platform and are interested in ${goalsText.toLowerCase()}. 
+
+You spent ${lead.session_duration_minutes || 0} minutes exploring our ${lead.business_category} solutions - that shows genuine interest!
+
+Based on your ${lead.business_name} in ${lead.address ? lead.address.split(',').pop().trim() : 'your location'}, I'd love to show you how we can help you achieve your goals.
+
+Do you have 5 minutes to chat about your digital journey?"
+
+📊 Lead Score: ${lead.lead_score || 0}/100 (${lead.lead_quality || 'Cold'})
+⏱️ Best to mention: They spent quality time exploring the platform
+🎯 Focus on: ${goalsText}
+📡 Source: ${lead.source} (${lead.source === 'supabase' ? 'Cross-browser compatible' : 'localStorage'})
+            `.trim();
+            
+            console.log('💬 Call Context for SDR:');
+            console.log(context);
+            
+            showNotification('📋 Call context logged to console', 'info');
+        }
+
+        // 📊 UPDATE LEAD STATS
+        function updateLeadStats() {
+            document.getElementById('totalLeads').textContent = allLeads.length;
+            document.getElementById('hotLeads').textContent = hotLeads.length;
+        }
+
+        function createTestLead() {
+            const testLead = {
+                user_id: 'test_' + Date.now(),
+                name: 'Test User ' + Math.floor(Math.random() * 100),
+                business_name: 'Test Business',
+                phone: '+91 99999 99999',
+                address: 'Test Address, Mumbai',
+                business_type: 'startup',
+                business_category: 'boutique',
+                selected_goals: ['ecommerce', 'customers'],
+                goals_display: ['Sell Online (E-commerce)', 'Reach More Customers'],
+                lead_score: Math.floor(Math.random() * 100) + 1,
+                engagement_level: 'High',
+                session_duration_minutes: Math.floor(Math.random() * 10) + 1,
+                utm_source: 'meta',
+                utm_campaign: 'test_campaign',
+                device_type: 'Desktop',
+                selected_language: 'en',
+                lead_quality: 'Hot',
+                created_at: new Date().toISOString(),
+                setup_completed: true
+            };
+            
+            // Add to localStorage
+            const existingLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
+            existingLeads.push(testLead);
+            localStorage.setItem('topiko_local_leads', JSON.stringify(existingLeads));
+            
+            showNotification(`Created test lead: ${testLead.name} (Score: ${testLead.lead_score})`, 'success');
+            console.log('🧪 Test lead created:', testLead);
+            
+            // Force refresh
+            setTimeout(() => {
+                manualRefresh();
+            }, 500);
+        }
+
+        // 🧪 Add manual Supabase test function
+        function testSupabaseFetch() {
+            console.log('🧪 Testing Supabase connection...');
+            showNotification('Testing Supabase connection...', 'info');
+            
+            fetchFromSupabase()
+                .then(leads => {
+                    console.log('✅ Supabase test successful:', leads);
+                    showNotification(`✅ Supabase test: Found ${leads.length} leads`, 'success');
+                })
+                .catch(error => {
+                    console.error('❌ Supabase test failed:', error);
+                    showNotification(`❌ Supabase test failed: ${error.message}`, 'error');
+                });
+        }
+
+        // 🔧 DEBUG AND TROUBLESHOOTING FUNCTIONS
+        
+        function showDebugInfo() {
+            const debugPanel = document.getElementById('debugPanel');
+            const debugContent = document.getElementById('debugContent');
+            
+            // Get localStorage data
+            const localLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
+            const processedLeads = JSON.parse(localStorage.getItem('topiko_processed_leads') || '[]');
+            const completeSetup = JSON.parse(localStorage.getItem('topiko_complete_setup') || 'null');
+            
+            // Browser detection
+            const browserInfo = {
+                name: getBrowserName(),
+                isSafari: /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
+                userAgent: navigator.userAgent
+            };
+            
+            debugContent.innerHTML = `
+                <div><strong style="color: #60a5fa;">📊 Current State:</strong></div>
+                <div>• All Leads in Memory: ${allLeads.length}</div>
+                <div>• Hot Leads in Memory: ${hotLeads.length}</div>
+                <div style="margin-top: 0.5rem;"><strong style="color: #10b981;">💾 localStorage Data:</strong></div>
+                <div>• topiko_local_leads: ${localLeads.length} records</div>
+                <div>• topiko_processed_leads: ${processedLeads.length} processed</div>
+                <div>• topiko_complete_setup: ${completeSetup ? 'Found' : 'Not found'}</div>
+                <div style="margin-top: 0.5rem;"><strong style="color: #f59e0b;">🦄 Browser Info:</strong></div>
+                <div>• Browser: ${browserInfo.name}</div>
+                <div>• Safari Mode: ${browserInfo.isSafari ? 'YES' : 'NO'}</div>
+                <div>• Cross-origin fix: Active</div>
+                <div style="margin-top: 0.5rem;"><strong style="color: #8b5cf6;">🔍 Latest Lead Data:</strong></div>
+                <div style="background: #374151; padding: 0.5rem; border-radius: 5px; margin-top: 0.5rem; max-height: 200px; overflow-y: auto;">
+                    ${localLeads.length > 0 ? 
+                        `<pre>${JSON.stringify(localLeads[localLeads.length - 1], null, 2)}</pre>` : 
+                        'No leads found in localStorage'
+                    }
+                </div>
+            `;
+            
+            debugPanel.style.display = 'block';
+            console.log('🔧 Debug info shown', {
+                allLeads: allLeads.length,
+                hotLeads: hotLeads.length,
+                localStorage: localLeads.length,
+                processed: processedLeads.length,
+                browser: browserInfo
+            });
+        }
+
+        function getBrowserName() {
+            const userAgent = navigator.userAgent;
+            if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) return 'Chrome';
+            if (userAgent.includes('Firefox')) return 'Firefox';
+            if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return 'Safari';
+            if (userAgent.includes('Edg')) return 'Edge';
+            return 'Unknown';
+        }
+
+        function closeDebugPanel() {
+            document.getElementById('debugPanel').style.display = 'none';
+        }
+
+        function manualRefresh() {
+            console.log('🔄 Manual refresh triggered (Safari compatible)');
+            showNotification('Manually checking for new leads...', 'info');
+            checkForLocalLeads();
+            setTimeout(() => {
+                showNotification(`Refresh complete. Found ${allLeads.length} total leads, ${hotLeads.length} hot leads.`, 'success');
+                showDebugInfo(); // Update debug info
+            }, 1000);
+        }
+
+        function clearProcessedLeads() {
+            if (confirm('This will clear the processed leads list and allow all leads to be re-processed. Continue?')) {
+                localStorage.removeItem('topiko_processed_leads');
+                showNotification('Processed leads cleared. Next check will re-process all leads.', 'info');
+                console.log('🗑️ Processed leads cleared');
+                showDebugInfo(); // Update debug info
+            }
+        }
+
+        function viewLocalStorage() {
+            console.log('💾 localStorage Contents:');
+            console.log('topiko_local_leads:', JSON.parse(localStorage.getItem('topiko_local_leads') || '[]'));
+            console.log('topiko_processed_leads:', JSON.parse(localStorage.getItem('topiko_processed_leads') || '[]'));
+            console.log('topiko_complete_setup:', JSON.parse(localStorage.getItem('topiko_complete_setup') || 'null'));
+            
+            showNotification('localStorage contents logged to console', 'info');
+        }
+
+        // 🚀 INITIALIZATION
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Topiko CRM System Initialized (Safari Compatible)');
+            
+            // Detect Safari and show indicator
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+            if (isSafari) {
+                console.log('🦄 Safari detected - using enhanced compatibility mode');
+                showNotification('Safari detected - using cross-browser compatibility mode', 'info');
+            }
+            
+            // 🏠 Force check for leads on startup
+            console.log('🔍 Initial check for leads from localStorage and Supabase...');
+            checkForLocalLeads();
+            
+            // Load initial data
+            loadDashboardData();
+            
+            // 🏠 Check for new leads every 5 seconds
+            setInterval(() => {
+                checkForLocalLeads();
+            }, 5000);
+            
+            // Show startup notification
+            setTimeout(() => {
+                showNotification('CRM system ready. Cross-browser monitoring active...', 'info');
+            }, 1000);
+            
+            console.log('✅ CRM system ready for lead management');
+            console.log('🏠 LOCAL TESTING MODE: Monitoring localStorage + Supabase');
+            console.log('🦄 SAFARI COMPATIBLE: Cross-origin localStorage + Supabase fallback');
+            console.log('🔧 Use the Debug button in the stats panel to troubleshoot');
+        });
+
+        // 🧪 TESTING FUNCTIONS
+        console.log('🧪 CRM Testing Functions Available:');
+        console.log('- showLeadIntelligence("test_id") - Show intelligence panel');
+        console.log('- checkForLocalLeads() - Check for new leads manually');
+        console.log('- assignLead("lead_id") - Assign lead to SDR');
+        console.log('- manualRefresh() - Force refresh from localStorage + Supabase');
+        console.log('- clearProcessedLeads() - Clear processed leads list');
+        console.log('- viewLocalStorage() - View all localStorage data');
+        console.log('- testSupabaseFetch() - Test Supabase connection directly');
+        console.log('🦄 SAFARI FIXES: Now checks both localStorage AND Supabase for maximum compatibility');
+    </script>
+</body>
+</html>

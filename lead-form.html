@@ -1,0 +1,2627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topiko - Complete Business Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8f6ff 0%, #f0ebff 50%, #e8e0ff 100%);
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(139, 111, 205, 0.1);
+            padding: 2rem 0;
+            position: relative;
+            box-shadow: 0 0 50px rgba(139, 111, 205, 0.05);
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 0 2rem;
+        }
+
+        .logo-section h1 {
+            color: #6b46c1;
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin: 0.3rem 0;
+            padding: 0 1rem;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.9rem 1.2rem;
+            color: #6b46c1;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #553c9a;
+            background: rgba(139, 111, 205, 0.1);
+            transform: translateX(2px);
+            box-shadow: 0 4px 20px rgba(139, 111, 205, 0.1);
+        }
+
+        .nav-icon {
+            margin-right: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            position: relative;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .screen {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Content Cards */
+        .content-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(139, 111, 205, 0.1);
+            border: 1px solid rgba(139, 111, 205, 0.1);
+        }
+
+        .content-card h2 {
+            color: #6b46c1;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .content-card p {
+            color: #553c9a;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #6b46c1;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 1.5px solid rgba(139, 111, 205, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            color: #553c9a;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #8b6fcd;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 3px rgba(139, 111, 205, 0.1);
+        }
+
+        .submit-button {
+            width: 100%;
+            background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(107, 70, 193, 0.3);
+            margin-top: 1rem;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(107, 70, 193, 0.4);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .try-free-button {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1e293b;
+            border: none;
+            padding: 1.5rem 4rem;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(251, 191, 36, 0.4);
+            transform: scale(1);
+            margin-bottom: 2rem;
+        }
+
+        .try-free-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 50px rgba(251, 191, 36, 0.5);
+        }
+
+        .try-free-button:active {
+            transform: translateY(-1px) scale(1.01);
+        }
+
+        /* Enhanced animations for landing page */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating-element {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Language Selection */
+        .language-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(139, 111, 205, 0.1);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .language-option:hover,
+        .language-option.selected {
+            background: rgba(139, 111, 205, 0.15);
+            border-color: #8b6fcd;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(139, 111, 205, 0.25);
+        }
+
+        .language-flag {
+            font-size: 3rem;
+            margin-right: 1.5rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .language-content h3 {
+            color: #6b46c1;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .language-content p {
+            color: #553c9a;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* Goals Selection */
+        .goals-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .goal-option {
+            position: relative;
+        }
+
+        .goal-checkbox {
+            display: none;
+        }
+
+        .goal-card {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid rgba(139, 111, 205, 0.1);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .goal-card:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(139, 111, 205, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(139, 111, 205, 0.15);
+        }
+
+        .goal-checkbox:checked + .goal-card {
+            background: rgba(139, 111, 205, 0.1);
+            border-color: #8b6fcd;
+            box-shadow: 0 8px 30px rgba(139, 111, 205, 0.2);
+        }
+
+        .goal-icon {
+            font-size: 2.5rem;
+            margin-right: 1.5rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .goal-content h3 {
+            color: #6b46c1;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .goal-content p {
+            color: #553c9a;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .goal-checkmark {
+            font-size: 1.5rem;
+            color: #8b6fcd;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s ease;
+            margin-left: 1rem;
+        }
+
+        .goal-checkbox:checked + .goal-card .goal-checkmark {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Subcategory Cards */
+        .subcategory-card:hover {
+            background: rgba(139, 111, 205, 0.1) !important;
+            border-color: #8b6fcd !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 111, 205, 0.15);
+        }
+
+        .subcategory-card.selected {
+            background: rgba(139, 111, 205, 0.15) !important;
+            border-color: #8b6fcd !important;
+            box-shadow: 0 6px 20px rgba(139, 111, 205, 0.2);
+        }
+
+        /* Product Cards */
+        .product-card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(139, 111, 205, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(139, 111, 205, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 111, 205, 0.15);
+        }
+
+        /* Theme Previews */
+        .theme-preview:hover {
+            border-color: #8b6fcd;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(139, 111, 205, 0.25);
+        }
+
+        .theme-preview.selected {
+            border-color: #6b46c1 !important;
+            box-shadow: 0 12px 35px rgba(107, 70, 193, 0.3) !important;
+            transform: translateY(-3px);
+        }
+
+        .theme-preview.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #6b46c1;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(107, 70, 193, 0.3);
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        /* Session Intelligence Display */
+        .session-intelligence {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: 0 8px 30px rgba(139, 111, 205, 0.2);
+            border: 1px solid rgba(139, 111, 205, 0.1);
+            font-size: 0.8rem;
+            color: #6b46c1;
+            z-index: 999;
+            min-width: 200px;
+        }
+
+        .intelligence-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        /* 🚨 CORS Status Indicator */
+        .cors-status {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background: rgba(34, 197, 94, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+            z-index: 1000;
+        }
+
+        .cors-status.error {
+            background: rgba(239, 68, 68, 0.9);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .cors-status.warning {
+            background: rgba(245, 158, 11, 0.9);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        /* Mobile responsive for landing page */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .logo-section h1 {
+                display: none;
+            }
+
+            .nav-link span:not(.nav-icon) {
+                display: none;
+            }
+
+            .language-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .language-option {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.5rem;
+            }
+
+            .language-flag {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+
+            .session-intelligence {
+                bottom: 1rem;
+                right: 1rem;
+                font-size: 0.7rem;
+            }
+
+            #subcategoriesContainer div[style*="grid-template-columns"] {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+            }
+
+            .welcome-screen h1 {
+                font-size: 2.5rem !important;
+            }
+            
+            .welcome-screen .value-props {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+            
+            .try-free-button {
+                padding: 1rem 2rem !important;
+                font-size: 1.1rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo-section">
+                <h1>Topiko</h1>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <div class="nav-link active" onclick="showScreen('welcome')">
+                        <span class="nav-icon">🏠</span>
+                        <span>Home</span>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('language')">
+                        <span class="nav-icon">🌐</span>
+                        <span>Language</span>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('goals')">
+                        <span class="nav-icon">🎯</span>
+                        <span>Goals</span>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('registration')">
+                        <span class="nav-icon">📝</span>
+                        <span>Sign Up</span>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('categories')">
+                        <span class="nav-icon">📂</span>
+                        <span>Categories</span>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('products')">
+                        <span class="nav-icon">📦</span>
+                        <span>Products</span>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('themes')">
+                        <span class="nav-icon">🎨</span>
+                        <span>Themes</span>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- World-Class Landing Page -->
+            <section class="screen active" id="welcome">
+                <div style="background: linear-gradient(135deg, #6b46c1 0%, #8b5cf6 50%, #d946ef 100%); border-radius: 20px; padding: 0; overflow: hidden; position: relative; min-height: 90vh;">
+                    <!-- Hero Section -->
+                    <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); padding: 4rem 3rem; text-align: center; position: relative;">
+                        <!-- Floating Elements -->
+                        <div style="position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; color: white;">
+                            🔥 <strong>10,000+</strong> Businesses Growing
+                        </div>
+                        
+                        <div style="position: absolute; top: 60px; left: 20px; background: rgba(255, 255, 255, 0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; color: white;">
+                            ⚡ <strong>5 Min</strong> Setup
+                        </div>
+                        
+                        <!-- Main Headline -->
+                        <h1 style="font-size: 3.5rem; font-weight: 700; color: white; letter-spacing: -2px; margin-bottom: 1.5rem; text-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                            Transform Your Business<br>
+                            <span style="background: linear-gradient(45deg, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Into Digital Success</span>
+                        </h1>
+                        
+                        <!-- Compelling Subheadline -->
+                        <p style="font-size: 1.4rem; color: rgba(255, 255, 255, 0.9); margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+                            The <strong>complete platform</strong> Indian SMBs need to go online, 
+                            reach customers, and <strong>grow revenue</strong> — all in one place.
+                        </p>
+                        
+                        <!-- Value Propositions -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                            <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); padding: 2rem 1.5rem; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🛒</div>
+                                <h3 style="color: white; font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">Sell Online</h3>
+                                <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">Complete e-commerce platform with payments, inventory, and order management</p>
+                            </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); padding: 2rem 1.5rem; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                <div style="font-size: 2.5rem; margin-bottom: 1rem;">📈</div>
+                                <h3 style="color: white; font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">Reach Customers</h3>
+                                <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">Smart marketing tools to find, attract, and convert your ideal customers</p>
+                            </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); padding: 2rem 1.5rem; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎯</div>
+                                <h3 style="color: white; font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;">Grow Revenue</h3>
+                                <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">Analytics and insights to optimize your business and increase profits</p>
+                            </div>
+                        </div>
+                        
+                        <!-- CTA Button -->
+                        <button class="try-free-button" onclick="showScreen('language')">
+                            🚀 Start Free — Setup in 5 Minutes
+                        </button>
+                        
+                        <!-- Trust Indicators -->
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 2rem; flex-wrap: wrap; margin-top: 2rem;">
+                            <div style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="color: #22c55e; font-size: 1.2rem;">✓</span>
+                                No Credit Card Required
+                            </div>
+                            <div style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="color: #22c55e; font-size: 1.2rem;">✓</span>
+                                14-Day Free Trial
+                            </div>
+                            <div style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="color: #22c55e; font-size: 1.2rem;">✓</span>
+                                24/7 Support in Hindi/English
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Features Section -->
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 3rem; text-align: center;">
+                        <h2 style="color: white; font-size: 2.5rem; font-weight: 600; margin-bottom: 1rem;">
+                            Everything You Need to Succeed Online
+                        </h2>
+                        <p style="color: rgba(255, 255, 255, 0.8); font-size: 1.1rem; margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                            From website creation to customer management — we've got you covered with tools designed specifically for Indian businesses.
+                        </p>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; max-width: 1000px; margin: 0 auto;">
+                            <div style="text-align: left; padding: 1.5rem; background: rgba(255, 255, 255, 0.1); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <div style="font-size: 2rem; margin-bottom: 1rem;">🌐</div>
+                                <h3 style="color: white; font-size: 1.1rem; margin-bottom: 0.5rem;">Professional Website</h3>
+                                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">Beautiful, mobile-ready websites that work perfectly in India</p>
+                            </div>
+                            
+                            <div style="text-align: left; padding: 1.5rem; background: rgba(255, 255, 255, 0.1); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <div style="font-size: 2rem; margin-bottom: 1rem;">💳</div>
+                                <h3 style="color: white; font-size: 1.1rem; margin-bottom: 0.5rem;">UPI & Payment Gateway</h3>
+                                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">Accept payments via UPI, cards, and digital wallets</p>
+                            </div>
+                            
+                            <div style="text-align: left; padding: 1.5rem; background: rgba(255, 255, 255, 0.1); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <div style="font-size: 2rem; margin-bottom: 1rem;">📱</div>
+                                <h3 style="color: white; font-size: 1.1rem; margin-bottom: 0.5rem;">WhatsApp Integration</h3>
+                                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">Connect with customers on their favorite platform</p>
+                            </div>
+                            
+                            <div style="text-align: left; padding: 1.5rem; background: rgba(255, 255, 255, 0.1); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <div style="font-size: 2rem; margin-bottom: 1rem;">📊</div>
+                                <h3 style="color: white; font-size: 1.1rem; margin-bottom: 0.5rem;">Business Analytics</h3>
+                                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">Understand your customers and grow your revenue</p>
+                            </div>
+                            
+                            <div style="text-align: left; padding: 1.5rem; background: rgba(255, 255, 255, 0.1); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <div style="font-size: 2rem; margin-bottom: 1rem;">🎨</div>
+                                <h3 style="color: white; font-size: 1.1rem; margin-bottom: 0.5rem;">Multiple Themes</h3>
+                                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">Choose from designs perfect for Indian businesses</p>
+                            </div>
+                            
+                            <div style="text-align: left; padding: 1.5rem; background: rgba(255, 255, 255, 0.1); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <div style="font-size: 2rem; margin-bottom: 1rem;">🔒</div>
+                                <h3 style="color: white; font-size: 1.1rem; margin-bottom: 0.5rem;">Secure & Reliable</h3>
+                                <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">Bank-grade security with 99.9% uptime guarantee</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Social Proof -->
+                        <div style="margin-top: 3rem; padding: 2rem; background: rgba(255, 255, 255, 0.1); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <h3 style="color: white; font-size: 1.3rem; margin-bottom: 1.5rem;">Trusted by Businesses Across India</h3>
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 3rem; flex-wrap: wrap;">
+                                <div style="text-align: center;">
+                                    <div style="font-size: 2rem; font-weight: 700; color: #fbbf24;">10,000+</div>
+                                    <div style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">Active Businesses</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 2rem; font-weight: 700; color: #fbbf24;">₹50 Cr+</div>
+                                    <div style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">Revenue Generated</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 2rem; font-weight: 700; color: #fbbf24;">4.8★</div>
+                                    <div style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">Customer Rating</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 2rem; font-weight: 700; color: #fbbf24;">24/7</div>
+                                    <div style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">Support Available</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Final CTA -->
+                        <div style="margin-top: 3rem;">
+                            <h3 style="color: white; font-size: 1.8rem; font-weight: 600; margin-bottom: 1rem;">
+                                Ready to Transform Your Business?
+                            </h3>
+                            <p style="color: rgba(255, 255, 255, 0.8); font-size: 1rem; margin-bottom: 2rem;">
+                                Join thousands of successful Indian businesses. Setup takes just 5 minutes.
+                            </p>
+                            <button class="try-free-button" onclick="showScreen('language')">
+                                🚀 Get Started Now — It's Free!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Language Selection Screen -->
+            <section class="screen" id="language">
+                <div class="content-card" style="max-width: 600px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Choose Your Language</h2>
+                    <p style="text-align: center; margin-bottom: 3rem;">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்</p>
+                    
+                    <div class="language-grid">
+                        <div class="language-option" onclick="selectLanguage('en', this)">
+                            <div class="language-flag">🇬🇧</div>
+                            <div class="language-content">
+                                <h3>English</h3>
+                                <p>Continue in English</p>
+                            </div>
+                        </div>
+
+                        <div class="language-option" onclick="selectLanguage('hi', this)">
+                            <div class="language-flag">🇮🇳</div>
+                            <div class="language-content">
+                                <h3>हिन्दी</h3>
+                                <p>हिन्दी में जारी रखें</p>
+                            </div>
+                        </div>
+
+                        <div class="language-option" onclick="selectLanguage('te', this)">
+                            <div class="language-flag">🇮🇳</div>
+                            <div class="language-content">
+                                <h3>తెలుగు</h3>
+                                <p>తెలుగులో కొనసాగించండి</p>
+                            </div>
+                        </div>
+
+                        <div class="language-option" onclick="selectLanguage('ta', this)">
+                            <div class="language-flag">🇮🇳</div>
+                            <div class="language-content">
+                                <h3>தமிழ்</h3>
+                                <p>தமிழில் தொடரவும்</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Goals Selection Screen -->
+            <section class="screen" id="goals">
+                <div class="content-card" style="max-width: 700px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Select Your Goals</h2>
+                    <p style="text-align: center; margin-bottom: 3rem;">Choose what you want to achieve with Topiko (select all that apply)</p>
+                    
+                    <div class="goals-grid">
+                        <div class="goal-option">
+                            <input type="checkbox" id="goal-ecommerce" value="ecommerce" class="goal-checkbox" onchange="updateGoalsTracking()">
+                            <label for="goal-ecommerce" class="goal-card">
+                                <div class="goal-icon">🛒</div>
+                                <div class="goal-content">
+                                    <h3>Sell Online (E-commerce)</h3>
+                                    <p>Start selling your products online with a complete e-commerce solution</p>
+                                </div>
+                                <div class="goal-checkmark">✓</div>
+                            </label>
+                        </div>
+
+                        <div class="goal-option">
+                            <input type="checkbox" id="goal-customers" value="customers" class="goal-checkbox" onchange="updateGoalsTracking()">
+                            <label for="goal-customers" class="goal-card">
+                                <div class="goal-icon">📈</div>
+                                <div class="goal-content">
+                                    <h3>Reach More Customers</h3>
+                                    <p>Expand your customer base and grow your market reach</p>
+                                </div>
+                                <div class="goal-checkmark">✓</div>
+                            </label>
+                        </div>
+
+                        <div class="goal-option">
+                            <input type="checkbox" id="goal-manage" value="manage" class="goal-checkbox" onchange="updateGoalsTracking()">
+                            <label for="goal-manage" class="goal-card">
+                                <div class="goal-icon">👥</div>
+                                <div class="goal-content">
+                                    <h3>Manage Customers</h3>
+                                    <p>Keep track of your customers and build lasting relationships</p>
+                                </div>
+                                <div class="goal-checkmark">✓</div>
+                            </label>
+                        </div>
+
+                        <div class="goal-option">
+                            <input type="checkbox" id="goal-search" value="search" class="goal-checkbox" onchange="updateGoalsTracking()">
+                            <label for="goal-search" class="goal-card">
+                                <div class="goal-icon">🔍</div>
+                                <div class="goal-content">
+                                    <h3>Appear in Search Results</h3>
+                                    <p>Improve your online visibility and get found by potential customers</p>
+                                </div>
+                                <div class="goal-checkmark">✓</div>
+                            </label>
+                        </div>
+
+                        <div class="goal-option">
+                            <input type="checkbox" id="goal-brand" value="brand" class="goal-checkbox" onchange="updateGoalsTracking()">
+                            <label for="goal-brand" class="goal-card">
+                                <div class="goal-icon">⭐</div>
+                                <div class="goal-content">
+                                    <h3>Establish my Brand</h3>
+                                    <p>Build a strong brand presence and professional image online</p>
+                                </div>
+                                <div class="goal-checkmark">✓</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="submit-button" onclick="submitGoals()">
+                        Next Step
+                    </button>
+                </div>
+            </section>
+
+            <!-- Registration Screen -->
+            <section class="screen" id="registration">
+                <div class="content-card" style="max-width: 600px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Get Started with Topiko</h2>
+                    <p style="text-align: center; margin-bottom: 2rem;">Tell us about your business to create your free account</p>
+                    
+                    <div class="form-group">
+                        <label for="fullName">Your Name</label>
+                        <input type="text" id="fullName" placeholder="Enter your full name" oninput="trackFormProgress()">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number</label>
+                        <input type="tel" id="phoneNumber" placeholder="Enter your phone number" oninput="trackFormProgress()">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="businessName">Business Name</label>
+                        <input type="text" id="businessName" placeholder="Enter your business name" oninput="trackFormProgress()">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <textarea id="address" rows="3" placeholder="Enter your business address" oninput="trackFormProgress()"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="businessType">Business Type</label>
+                        <select id="businessType" onchange="trackFormProgress()">
+                            <option value="">Select your business type</option>
+                            <option value="startup">Startup</option>
+                            <option value="small-business">Small Business</option>
+                            <option value="medium-enterprise">Medium Enterprise</option>
+                            <option value="large-enterprise">Large Enterprise</option>
+                            <option value="freelancer">Freelancer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Business Category</label>
+                        <select id="category" onchange="trackFormProgress()">
+                            <option value="">Select your business category</option>
+                            <option value="boutique">🏪 Boutique</option>
+                            <option value="home-foods">🍛 Home Foods</option>
+                            <option value="salons">💄 Salons & Beauty</option>
+                            <option value="grocery">🛒 Grocery & Provisions</option>
+                            <option value="furniture">🛋️ Furniture & Home Decor</option>
+                            <option value="fashion">👗 Fashion & Apparel</option>
+                            <option value="jewellery">💍 Jewellery & Accessories</option>
+                            <option value="electronics">📱 Electronics & Gadgets</option>
+                        </select>
+                    </div>
+
+                    <button class="submit-button" onclick="submitRegistration()">
+                        Create Free Account
+                    </button>
+                </div>
+            </section>
+
+            <!-- Enhanced Categories Screen with 2-Level Hierarchy -->
+            <section class="screen" id="categories">
+                <div class="content-card" style="max-width: 800px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Choose Your Categories & Subcategories</h2>
+                    <p style="text-align: center; margin-bottom: 1rem;">Based on your <strong id="selectedBusinessType">business</strong>, select the categories and subcategories that best describe your products/services</p>
+                    
+                    <div id="subcategoriesContainer" style="margin-bottom: 3rem;">
+                        <!-- Enhanced subcategories will be populated based on business category -->
+                    </div>
+
+                    <div class="selected-subcategories" id="selectedSubcategories" style="display: none; background: rgba(139, 111, 205, 0.1); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem;">
+                        <h3 style="color: #6b46c1; margin-bottom: 0.5rem;">✅ Selected Categories</h3>
+                        <div id="selectedSubcategoriesList" style="color: #553c9a;"></div>
+                    </div>
+
+                    <button class="submit-button" onclick="proceedToProducts()" id="categoryNextBtn" disabled>
+                        Continue to Add Products
+                    </button>
+                </div>
+            </section>
+
+            <!-- Products Screen -->
+            <section class="screen" id="products">
+                <div class="content-card" style="max-width: 1000px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Add Your Products</h2>
+                    <p style="text-align: center; margin-bottom: 3rem;">Build your catalog with products that represent your business</p>
+                    
+                    <!-- Product Form -->
+                    <div class="product-form" style="background: rgba(255, 255, 255, 0.7); padding: 2rem; border-radius: 16px; margin-bottom: 2rem;">
+                        <h3 style="color: #6b46c1; margin-bottom: 1.5rem;">Add New Product/Service</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label for="productName">Product/Service Name</label>
+                                <input type="text" id="productName" placeholder="e.g., Cotton Kurta, Masala Dosa, Haircut">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="productPrice">Price (₹)</label>
+                                <input type="number" id="productPrice" placeholder="e.g., 899">
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label for="productCategory">Category</label>
+                                <select id="productCategory">
+                                    <option value="">Select category</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="productSubcategory">Subcategory</label>
+                                <select id="productSubcategory">
+                                    <option value="">Select subcategory first</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="productDescription">Description</label>
+                            <textarea id="productDescription" rows="3" placeholder="Brief description of your product or service"></textarea>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label for="productImage">Product Image URL (optional)</label>
+                                <input type="url" id="productImage" placeholder="Leave blank for auto-generated image">
+                                <small style="color: #64748b; font-size: 0.8rem;">💡 Leave empty and we'll generate a perfect image for you!</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="productStock">Stock/Availability</label>
+                                <input type="number" id="productStock" placeholder="e.g., 50" value="10">
+                            </div>
+                        </div>
+                        
+                        <button type="button" onclick="addProduct()" style="background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%); color: white; border: none; padding: 0.8rem 2rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                            ➕ Add Product
+                        </button>
+                    </div>
+
+                    <!-- Products List -->
+                    <div class="products-list">
+                        <h3 style="color: #6b46c1; margin-bottom: 1.5rem;">Your Product Catalog (<span id="productCount">0</span>)</h3>
+                        
+                        <div id="productsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                            <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+                                <p>No products added yet. Add your first product above!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 3rem;">
+                        <button onclick="showScreen('categories')" style="flex: 1; background: rgba(139, 111, 205, 0.1); color: #6b46c1; border: 2px solid rgba(139, 111, 205, 0.2); padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                            ← Back to Categories
+                        </button>
+                        <button onclick="proceedToThemes()" style="flex: 1; background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                            Continue to Themes →
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Themes Screen -->
+            <section class="screen" id="themes">
+                <div class="content-card" style="max-width: 1200px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Choose Your Website Theme</h2>
+                    <p style="text-align: center; margin-bottom: 3rem;">See how your products will look in different themes</p>
+                    
+                    <div class="themes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                        <!-- Modern Theme -->
+                        <div class="theme-preview" onclick="selectTheme('modern')" style="border: 3px solid rgba(139, 111, 205, 0.1); border-radius: 20px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white; position: relative;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; color: white;">
+                                <h3 style="margin: 0; font-size: 1.2rem;">Modern Professional</h3>
+                                <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">Clean & Minimal</p>
+                            </div>
+                            <div style="padding: 15px; min-height: 200px;">
+                                <div class="theme-menu" style="background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem;">
+                                    <div style="font-weight: bold; color: #667eea;" id="modernMenuCategories">Your Categories</div>
+                                </div>
+                                <div class="theme-products" id="modernThemeProducts" style="display: grid; gap: 10px;">
+                                    <div style="text-align: center; color: #64748b; padding: 20px;">
+                                        <small>Your products will appear here</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Colorful Theme -->
+                        <div class="theme-preview" onclick="selectTheme('colorful')" style="border: 3px solid rgba(139, 111, 205, 0.1); border-radius: 20px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white; position: relative;">
+                            <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%); padding: 15px; color: white;">
+                                <h3 style="margin: 0; font-size: 1.2rem;">Colorful Creative</h3>
+                                <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">Vibrant & Fun</p>
+                            </div>
+                            <div style="padding: 15px; min-height: 200px;">
+                                <div class="theme-menu" style="background: #fef3c7; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem;">
+                                    <div style="font-weight: bold; color: #ff6b6b;" id="colorfulMenuCategories">Your Categories</div>
+                                </div>
+                                <div class="theme-products" id="colorfulThemeProducts" style="display: grid; gap: 10px;">
+                                    <div style="text-align: center; color: #64748b; padding: 20px;">
+                                        <small>Your products will appear here</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Elegant Theme -->
+                        <div class="theme-preview" onclick="selectTheme('elegant')" style="border: 3px solid rgba(139, 111, 205, 0.1); border-radius: 20px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white; position: relative;">
+                            <div style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); padding: 15px; color: white;">
+                                <h3 style="margin: 0; font-size: 1.2rem;">Elegant Luxury</h3>
+                                <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">Sophisticated</p>
+                            </div>
+                            <div style="padding: 15px; min-height: 200px;">
+                                <div class="theme-menu" style="background: #f3f4f6; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem;">
+                                    <div style="font-weight: bold; color: #2c3e50;" id="elegantMenuCategories">Your Categories</div>
+                                </div>
+                                <div class="theme-products" id="elegantThemeProducts" style="display: grid; gap: 10px;">
+                                    <div style="text-align: center; color: #64748b; padding: 20px;">
+                                        <small>Your products will appear here</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="selected-theme" id="selectedTheme" style="display: none; background: rgba(139, 111, 205, 0.1); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; text-align: center;">
+                        <h3 style="color: #6b46c1; margin-bottom: 0.5rem;">🎨 Theme Selected</h3>
+                        <p style="color: #553c9a; margin: 0;" id="selectedThemeText">You've selected your website theme</p>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem;">
+                        <button onclick="showScreen('products')" style="flex: 1; background: rgba(139, 111, 205, 0.1); color: #6b46c1; border: 2px solid rgba(139, 111, 205, 0.2); padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                            ← Back to Products
+                        </button>
+                        <button onclick="completeSetup()" id="themeNextBtn" style="flex: 1; background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;" disabled>
+                            Complete Setup 🚀
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 🚨 CORS Status Indicator -->
+    <div class="cors-status" id="corsStatus">
+        🔧 Checking database connection...
+    </div>
+
+    <!-- Session Intelligence Display -->
+    <div class="session-intelligence" id="sessionIntelligence">
+        <div style="font-weight: bold; margin-bottom: 0.5rem; color: #6b46c1;">📊 Session Intelligence</div>
+        <div class="intelligence-row">
+            <span>Session Time:</span>
+            <span id="sessionTime">0:00</span>
+        </div>
+        <div class="intelligence-row">
+            <span>Page Views:</span>
+            <span id="pageViewCount">1</span>
+        </div>
+        <div class="intelligence-row">
+            <span>Lead Score:</span>
+            <span id="leadScoreDisplay">0/100</span>
+        </div>
+        <div class="intelligence-row">
+            <span>Quality:</span>
+            <span id="leadQuality">Cold</span>
+        </div>
+    </div>
+
+    <script>
+        // 🎯 LEAD INTELLIGENCE SYSTEM - CORS-SAFE VERSION
+        
+        // ✅ CORE VARIABLES
+        let sessionStartTime = Date.now();
+        let selectedGoals = [];
+        let selectedLanguage = 'en';
+        let selectedSubcategories = []; 
+        let selectedTheme = '';
+        let userProducts = [];
+        let currentUserId = null;
+        let pageViews = 1;
+        let leadScore = 0;
+        let formProgress = 0;
+        let utmParams = {};
+        let deviceInfo = {};
+        let corsStatus = 'checking';
+        let supabaseWorking = false;
+        let behaviorData = {
+            timeOnPages: {},
+            clickEvents: [],
+            formInteractions: [],
+            scrollDepth: 0,
+            abandonmentPoints: [],
+            lastScreenTime: Date.now()
+        };
+
+        // 🇮🇳 ENHANCED INDIAN SMB BUSINESS CATEGORIES (2-Level Hierarchy)
+        const indianBusinessCategories = {
+            boutique: {
+                name: 'Boutique',
+                icon: '🏪',
+                categories: [
+                    {
+                        id: 'men',
+                        name: 'Men\'s Collection',
+                        icon: '👨',
+                        subcategories: [
+                            { id: 'men-ethnic-kurta', name: 'Kurtas & Shirts', icon: '👕' },
+                            { id: 'men-ethnic-dhoti', name: 'Dhotis & Pajamas', icon: '👖' },
+                            { id: 'men-western-casual', name: 'Casual Wear', icon: '👔' },
+                            { id: 'men-western-formal', name: 'Formal Wear', icon: '🤵' },
+                            { id: 'men-accessories', name: 'Accessories', icon: '👜' },
+                            { id: 'men-footwear', name: 'Footwear', icon: '👞' }
+                        ]
+                    },
+                    {
+                        id: 'women',
+                        name: 'Women\'s Collection',
+                        icon: '👩',
+                        subcategories: [
+                            { id: 'women-sarees', name: 'Sarees', icon: '🥻' },
+                            { id: 'women-lehenga', name: 'Lehengas', icon: '👗' },
+                            { id: 'women-suits', name: 'Suits & Salwars', icon: '👘' },
+                            { id: 'women-western-dress', name: 'Western Dresses', icon: '👗' },
+                            { id: 'women-western-tops', name: 'Tops & Jeans', icon: '👚' },
+                            { id: 'women-accessories', name: 'Accessories', icon: '👜' },
+                            { id: 'women-footwear', name: 'Footwear', icon: '👠' }
+                        ]
+                    },
+                    {
+                        id: 'kids',
+                        name: 'Kids Collection',
+                        icon: '👶',
+                        subcategories: [
+                            { id: 'kids-ethnic-boys', name: 'Boys Ethnic', icon: '🧒' },
+                            { id: 'kids-ethnic-girls', name: 'Girls Ethnic', icon: '👧' },
+                            { id: 'kids-western-boys', name: 'Boys Casual', icon: '👦' },
+                            { id: 'kids-western-girls', name: 'Girls Casual', icon: '👧' },
+                            { id: 'kids-footwear', name: 'Kids Footwear', icon: '👶' }
+                        ]
+                    },
+                    {
+                        id: 'accessories',
+                        name: 'Fashion Accessories',
+                        icon: '💎',
+                        subcategories: [
+                            { id: 'jewelry-artificial', name: 'Artificial Jewelry', icon: '💍' },
+                            { id: 'bags-purses', name: 'Bags & Purses', icon: '👜' },
+                            { id: 'scarves-stoles', name: 'Scarves & Stoles', icon: '🧣' },
+                            { id: 'belts-watches', name: 'Belts & Watches', icon: '⌚' }
+                        ]
+                    }
+                ]
+            },
+            'home-foods': {
+                name: 'Home Foods',
+                icon: '🍛',
+                categories: [
+                    {
+                        id: 'north-indian',
+                        name: 'North Indian Cuisine',
+                        icon: '🍛',
+                        subcategories: [
+                            { id: 'north-roti-bread', name: 'Rotis & Breads', icon: '🥖' },
+                            { id: 'north-curry-dal', name: 'Curries & Dal', icon: '🍛' },
+                            { id: 'north-snacks', name: 'Snacks & Chaat', icon: '🥨' },
+                            { id: 'north-sweets', name: 'Sweets & Mithai', icon: '🍬' },
+                            { id: 'north-beverages', name: 'Lassi & Beverages', icon: '🥛' }
+                        ]
+                    },
+                    {
+                        id: 'south-indian',
+                        name: 'South Indian Cuisine',
+                        icon: '🥞',
+                        subcategories: [
+                            { id: 'south-dosa-idli', name: 'Dosa & Idli', icon: '🥞' },
+                            { id: 'south-rice-dishes', name: 'Rice Dishes', icon: '🍚' },
+                            { id: 'south-curry-sambar', name: 'Curries & Sambar', icon: '🍛' },
+                            { id: 'south-snacks', name: 'Snacks & Vada', icon: '🥨' },
+                            { id: 'south-sweets', name: 'Traditional Sweets', icon: '🍬' },
+                            { id: 'south-beverages', name: 'Filter Coffee & More', icon: '☕' }
+                        ]
+                    },
+                    {
+                        id: 'street-food',
+                        name: 'Street Food',
+                        icon: '🥨',
+                        subcategories: [
+                            { id: 'street-chaat', name: 'Chaat Items', icon: '🥗' },
+                            { id: 'street-rolls', name: 'Rolls & Wraps', icon: '🌯' },
+                            { id: 'street-fried', name: 'Fried Snacks', icon: '🍟' },
+                            { id: 'street-fresh', name: 'Fresh Juices', icon: '🧃' }
+                        ]
+                    },
+                    {
+                        id: 'healthy-homemade',
+                        name: 'Healthy & Homemade',
+                        icon: '🥗',
+                        subcategories: [
+                            { id: 'healthy-salads', name: 'Fresh Salads', icon: '🥗' },
+                            { id: 'healthy-soups', name: 'Homemade Soups', icon: '🍲' },
+                            { id: 'healthy-smoothies', name: 'Smoothies & Juices', icon: '🥤' },
+                            { id: 'healthy-snacks', name: 'Healthy Snacks', icon: '🥜' }
+                        ]
+                    }
+                ]
+            },
+            salons: {
+                name: 'Salons & Beauty',
+                icon: '💄',
+                categories: [
+                    {
+                        id: 'hair-services',
+                        name: 'Hair Services',
+                        icon: '💇',
+                        subcategories: [
+                            { id: 'hair-cut-style', name: 'Haircut & Styling', icon: '✂️' },
+                            { id: 'hair-color', name: 'Hair Coloring', icon: '🎨' },
+                            { id: 'hair-treatment', name: 'Hair Treatments', icon: '💆' },
+                            { id: 'hair-extensions', name: 'Extensions & Wigs', icon: '💇‍♀️' }
+                        ]
+                    },
+                    {
+                        id: 'beauty-services',
+                        name: 'Beauty Services',
+                        icon: '💄',
+                        subcategories: [
+                            { id: 'beauty-facial', name: 'Facial & Skincare', icon: '🧴' },
+                            { id: 'beauty-makeup', name: 'Makeup Services', icon: '💄' },
+                            { id: 'beauty-eyebrow', name: 'Eyebrow & Threading', icon: '👁️' },
+                            { id: 'beauty-nail', name: 'Nail Art & Manicure', icon: '💅' }
+                        ]
+                    },
+                    {
+                        id: 'bridal-services',
+                        name: 'Bridal Services',
+                        icon: '👰',
+                        subcategories: [
+                            { id: 'bridal-makeup', name: 'Bridal Makeup', icon: '👰' },
+                            { id: 'bridal-hair', name: 'Bridal Hairstyling', icon: '💇‍♀️' },
+                            { id: 'bridal-mehendi', name: 'Mehendi Services', icon: '🤲' },
+                            { id: 'bridal-packages', name: 'Complete Packages', icon: '💐' }
+                        ]
+                    },
+                    {
+                        id: 'mens-grooming',
+                        name: 'Men\'s Grooming',
+                        icon: '🧔',
+                        subcategories: [
+                            { id: 'mens-haircut', name: 'Haircut & Beard', icon: '✂️' },
+                            { id: 'mens-shave', name: 'Shaving Services', icon: '🪒' },
+                            { id: 'mens-facial', name: 'Men\'s Facial', icon: '🧴' },
+                            { id: 'mens-massage', name: 'Head Massage', icon: '💆‍♂️' }
+                        ]
+                    }
+                ]
+            },
+            grocery: {
+                name: 'Grocery & Provisions',
+                icon: '🛒',
+                categories: [
+                    {
+                        id: 'fresh-produce',
+                        name: 'Fresh Produce',
+                        icon: '🥬',
+                        subcategories: [
+                            { id: 'vegetables-leafy', name: 'Leafy Vegetables', icon: '🥬' },
+                            { id: 'vegetables-root', name: 'Root Vegetables', icon: '🥕' },
+                            { id: 'fruits-seasonal', name: 'Seasonal Fruits', icon: '🍎' },
+                            { id: 'fruits-exotic', name: 'Exotic Fruits', icon: '🥭' }
+                        ]
+                    },
+                    {
+                        id: 'pantry-staples',
+                        name: 'Pantry Staples',
+                        icon: '🌾',
+                        subcategories: [
+                            { id: 'grains-rice', name: 'Rice & Grains', icon: '🌾' },
+                            { id: 'pulses-dal', name: 'Pulses & Dal', icon: '🫘' },
+                            { id: 'spices-masala', name: 'Spices & Masala', icon: '🌶️' },
+                            { id: 'oil-ghee', name: 'Oil & Ghee', icon: '🛢️' }
+                        ]
+                    },
+                    {
+                        id: 'dairy-products',
+                        name: 'Dairy Products',
+                        icon: '🥛',
+                        subcategories: [
+                            { id: 'milk-fresh', name: 'Fresh Milk', icon: '🥛' },
+                            { id: 'curd-yogurt', name: 'Curd & Yogurt', icon: '🥣' },
+                            { id: 'cheese-paneer', name: 'Cheese & Paneer', icon: '🧀' },
+                            { id: 'butter-cream', name: 'Butter & Cream', icon: '🧈' }
+                        ]
+                    },
+                    {
+                        id: 'packaged-foods',
+                        name: 'Packaged Foods',
+                        icon: '📦',
+                        subcategories: [
+                            { id: 'snacks-namkeen', name: 'Snacks & Namkeen', icon: '🥨' },
+                            { id: 'biscuits-cookies', name: 'Biscuits & Cookies', icon: '🍪' },
+                            { id: 'ready-meals', name: 'Ready Meals', icon: '🍱' },
+                            { id: 'beverages-drinks', name: 'Beverages & Drinks', icon: '🧃' }
+                        ]
+                    }
+                ]
+            },
+            furniture: {
+                name: 'Furniture & Home Decor',
+                icon: '🛋️',
+                categories: [
+                    {
+                        id: 'living-room',
+                        name: 'Living Room',
+                        icon: '🛋️',
+                        subcategories: [
+                            { id: 'sofa-seating', name: 'Sofas & Seating', icon: '🛋️' },
+                            { id: 'coffee-tables', name: 'Coffee Tables', icon: '☕' },
+                            { id: 'tv-entertainment', name: 'TV & Entertainment Units', icon: '📺' },
+                            { id: 'storage-cabinets', name: 'Storage Cabinets', icon: '🗄️' }
+                        ]
+                    },
+                    {
+                        id: 'bedroom',
+                        name: 'Bedroom',
+                        icon: '🛏️',
+                        subcategories: [
+                            { id: 'beds-mattress', name: 'Beds & Mattresses', icon: '🛏️' },
+                            { id: 'wardrobe-storage', name: 'Wardrobes & Storage', icon: '👔' },
+                            { id: 'dressing-tables', name: 'Dressing Tables', icon: '💄' },
+                            { id: 'bedside-tables', name: 'Bedside Tables', icon: '🛏️' }
+                        ]
+                    },
+                    {
+                        id: 'kitchen-dining',
+                        name: 'Kitchen & Dining',
+                        icon: '🍽️',
+                        subcategories: [
+                            { id: 'dining-tables', name: 'Dining Tables', icon: '🍽️' },
+                            { id: 'kitchen-cabinets', name: 'Kitchen Cabinets', icon: '🗄️' },
+                            { id: 'bar-stools', name: 'Bar Stools & Chairs', icon: '🪑' },
+                            { id: 'storage-racks', name: 'Storage Racks', icon: '📚' }
+                        ]
+                    },
+                    {
+                        id: 'home-decor',
+                        name: 'Home Decor',
+                        icon: '🖼️',
+                        subcategories: [
+                            { id: 'wall-art', name: 'Wall Art & Frames', icon: '🖼️' },
+                            { id: 'lighting-lamps', name: 'Lighting & Lamps', icon: '💡' },
+                            { id: 'plants-vases', name: 'Plants & Vases', icon: '🪴' },
+                            { id: 'curtains-blinds', name: 'Curtains & Blinds', icon: '🪟' }
+                        ]
+                    }
+                ]
+            },
+            fashion: {
+                name: 'Fashion & Apparel',
+                icon: '👗',
+                categories: [
+                    {
+                        id: 'mens-fashion',
+                        name: 'Men\'s Fashion',
+                        icon: '👔',
+                        subcategories: [
+                            { id: 'mens-casual', name: 'Casual Wear', icon: '👕' },
+                            { id: 'mens-formal', name: 'Formal Wear', icon: '👔' },
+                            { id: 'mens-sports', name: 'Sports Wear', icon: '👟' },
+                            { id: 'mens-accessories', name: 'Men\'s Accessories', icon: '👜' }
+                        ]
+                    },
+                    {
+                        id: 'womens-fashion',
+                        name: 'Women\'s Fashion',
+                        icon: '👗',
+                        subcategories: [
+                            { id: 'womens-casual', name: 'Casual Wear', icon: '👚' },
+                            { id: 'womens-formal', name: 'Formal Wear', icon: '👗' },
+                            { id: 'womens-party', name: 'Party Wear', icon: '🎉' },
+                            { id: 'womens-accessories', name: 'Women\'s Accessories', icon: '👜' }
+                        ]
+                    }
+                ]
+            },
+            jewellery: {
+                name: 'Jewellery & Accessories',
+                icon: '💍',
+                categories: [
+                    {
+                        id: 'gold-silver',
+                        name: 'Gold & Silver',
+                        icon: '🥇',
+                        subcategories: [
+                            { id: 'gold-necklace', name: 'Gold Necklaces', icon: '🥇' },
+                            { id: 'silver-earrings', name: 'Silver Earrings', icon: '🥈' },
+                            { id: 'gold-bangles', name: 'Gold Bangles', icon: '💍' },
+                            { id: 'silver-rings', name: 'Silver Rings', icon: '💍' }
+                        ]
+                    },
+                    {
+                        id: 'fashion-jewelry',
+                        name: 'Fashion Jewelry',
+                        icon: '💎',
+                        subcategories: [
+                            { id: 'artificial-sets', name: 'Artificial Sets', icon: '💎' },
+                            { id: 'costume-jewelry', name: 'Costume Jewelry', icon: '✨' },
+                            { id: 'watches-timepieces', name: 'Watches', icon: '⌚' }
+                        ]
+                    }
+                ]
+            },
+            electronics: {
+                name: 'Electronics & Gadgets',
+                icon: '📱',
+                categories: [
+                    {
+                        id: 'mobile-tech',
+                        name: 'Mobile & Tech',
+                        icon: '📱',
+                        subcategories: [
+                            { id: 'smartphones', name: 'Smartphones', icon: '📱' },
+                            { id: 'mobile-accessories', name: 'Mobile Accessories', icon: '🔌' },
+                            { id: 'laptops-tablets', name: 'Laptops & Tablets', icon: '💻' }
+                        ]
+                    },
+                    {
+                        id: 'home-appliances',
+                        name: 'Home Appliances',
+                        icon: '🔌',
+                        subcategories: [
+                            { id: 'kitchen-appliances', name: 'Kitchen Appliances', icon: '🍳' },
+                            { id: 'home-electronics', name: 'Home Electronics', icon: '📺' },
+                            { id: 'repair-services', name: 'Repair Services', icon: '🔧' }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // 🎯 UTM PARAMETER TRACKING
+        function captureUTMParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            utmParams = {
+                source: urlParams.get('utm_source') || 'Direct',
+                medium: urlParams.get('utm_medium') || 'None',
+                campaign: urlParams.get('utm_campaign') || 'None',
+                content: urlParams.get('utm_content') || 'None',
+                term: urlParams.get('utm_term') || 'None'
+            };
+            console.log('🎯 UTM Parameters captured:', utmParams);
+        }
+
+        // 📱 DEVICE DETECTION
+        function detectDevice() {
+            const userAgent = navigator.userAgent;
+            deviceInfo = {
+                type: /Mobile|Android|iPhone|iPad/.test(userAgent) ? 'Mobile' : 'Desktop',
+                browser: getBrowserName(userAgent),
+                os: getOperatingSystem(userAgent),
+                screen: `${screen.width}x${screen.height}`,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                language: navigator.language
+            };
+            console.log('📱 Device Info:', deviceInfo);
+        }
+
+        function getBrowserName(userAgent) {
+            if (userAgent.includes('Chrome')) return 'Chrome';
+            if (userAgent.includes('Firefox')) return 'Firefox';
+            if (userAgent.includes('Safari')) return 'Safari';
+            if (userAgent.includes('Edge')) return 'Edge';
+            return 'Unknown';
+        }
+
+        function getOperatingSystem(userAgent) {
+            if (userAgent.includes('Windows')) return 'Windows';
+            if (userAgent.includes('Mac')) return 'MacOS';
+            if (userAgent.includes('Linux')) return 'Linux';
+            if (userAgent.includes('Android')) return 'Android';
+            if (userAgent.includes('iOS')) return 'iOS';
+            return 'Unknown';
+        }
+
+        // 🔧 CORS-SAFE SUPABASE CONNECTION
+        async function testSupabaseConnection() {
+            const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k';
+            
+            try {
+                console.log('🔍 Testing Supabase connection...');
+                
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?limit=1`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    supabaseWorking = true;
+                    corsStatus = 'working';
+                    updateCORSStatus('✅ Database connected', 'success');
+                    console.log('✅ Supabase connection successful');
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+            } catch (error) {
+                supabaseWorking = false;
+                corsStatus = 'error';
+                console.error('❌ Supabase connection failed:', error);
+                
+                if (error.message.includes('CORS') || error.name === 'TypeError') {
+                    updateCORSStatus('🚨 CORS blocked - localStorage only', 'error');
+                } else {
+                    updateCORSStatus(`❌ Database error: ${error.message}`, 'error');
+                }
+                return false;
+            }
+        }
+
+        // 📊 UPDATE CORS STATUS INDICATOR
+        function updateCORSStatus(message, type) {
+            const corsIndicator = document.getElementById('corsStatus');
+            corsIndicator.textContent = message;
+            corsIndicator.className = `cors-status ${type}`;
+        }
+
+        // 💾 SAVE TO SUPABASE (CORS-SAFE VERSION)
+        async function saveToSupabase(userData, intelligenceData) {
+            if (!supabaseWorking) {
+                console.log('💾 Supabase not working, saving to localStorage only');
+                return { success: false, reason: 'CORS blocked or connection failed' };
+            }
+            
+            const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k';
+            
+            try {
+                console.log('💾 Attempting to save to Supabase...');
+                
+                // Save user data
+                const userResponse = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                if (!userResponse.ok) {
+                    throw new Error(`User save failed: ${userResponse.status}`);
+                }
+                
+                const userResult = await userResponse.json();
+                const userId = userResult[0]?.id;
+                
+                // Save intelligence data with user_id
+                intelligenceData.user_id = userId;
+                
+                const intelligenceResponse = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(intelligenceData)
+                });
+                
+                if (!intelligenceResponse.ok) {
+                    throw new Error(`Intelligence save failed: ${intelligenceResponse.status}`);
+                }
+                
+                console.log('✅ Successfully saved to Supabase');
+                updateCORSStatus('✅ Data saved to database', 'success');
+                return { success: true, userId: userId };
+                
+            } catch (error) {
+                console.error('❌ Supabase save failed:', error);
+                updateCORSStatus('⚠️ Database save failed, using local storage', 'warning');
+                return { success: false, reason: error.message };
+            }
+        }
+
+        // 📊 LEAD SCORING ALGORITHM
+        function calculateLeadScore() {
+            let score = 0;
+            
+            // Language Selection (5 points)
+            if (selectedLanguage) score += 5;
+            
+            // Goals Selected (5 points per goal, max 25)
+            score += Math.min(selectedGoals.length * 5, 25);
+            
+            // Form Progress (0-30 points based on completion)
+            score += Math.floor(formProgress * 0.3);
+            
+            // Time on Site (0-20 points)
+            const sessionMinutes = (Date.now() - sessionStartTime) / 60000;
+            if (sessionMinutes > 1) score += 5;
+            if (sessionMinutes > 3) score += 5;
+            if (sessionMinutes > 5) score += 10;
+            
+            // Page Views (2 points per page, max 10)
+            score += Math.min(pageViews * 2, 10);
+            
+            // Subcategories Selected (3 points per subcategory, max 15)
+            const totalSubcategories = selectedSubcategories.reduce((total, category) => 
+                total + category.subcategories.length, 0
+            );
+            score += Math.min(totalSubcategories * 3, 15);
+            
+            // Products Added (2 points per product, max 10)
+            score += Math.min(userProducts.length * 2, 10);
+            
+            // Theme Selected (10 points)
+            if (selectedTheme) score += 10;
+            
+            // Engagement Indicators
+            if (behaviorData.clickEvents.length > 5) score += 5;
+            if (behaviorData.formInteractions.length > 3) score += 5;
+            
+            leadScore = Math.min(score, 100);
+            
+            // Update UI
+            updateSessionIntelligence();
+            
+            // Save to localStorage for CRM immediately
+            saveToLocalStorage();
+            
+            console.log(`📊 Lead Score Updated: ${leadScore}/100`);
+            return leadScore;
+        }
+
+        // 📊 UPDATE SESSION INTELLIGENCE DISPLAY
+        function updateSessionIntelligence() {
+            const sessionMinutes = Math.floor((Date.now() - sessionStartTime) / 60000);
+            const sessionSeconds = Math.floor(((Date.now() - sessionStartTime) % 60000) / 1000);
+            
+            document.getElementById('sessionTime').textContent = `${sessionMinutes}:${sessionSeconds.toString().padStart(2, '0')}`;
+            document.getElementById('pageViewCount').textContent = pageViews;
+            document.getElementById('leadScoreDisplay').textContent = `${leadScore}/100`;
+            
+            let quality = 'Cold';
+            if (leadScore >= 70) quality = 'Hot 🔥';
+            else if (leadScore >= 40) quality = 'Warm 🌡️';
+            else quality = 'Cold ❄️';
+            
+            document.getElementById('leadQuality').textContent = quality;
+        }
+
+        // 💾 SAVE TO LOCAL STORAGE FOR CRM
+        function saveToLocalStorage() {
+            if (!currentUserId) return;
+            
+            const leadData = {
+                // Identity
+                user_id: currentUserId,
+                name: document.getElementById('fullName')?.value || '',
+                phone: document.getElementById('phoneNumber')?.value || '',
+                business_name: document.getElementById('businessName')?.value || '',
+                address: document.getElementById('address')?.value || '',
+                business_type: document.getElementById('businessType')?.value || '',
+                business_category: document.getElementById('category')?.value || '',
+                
+                // Lead Intelligence
+                selected_language: selectedLanguage,
+                selected_goals: selectedGoals,
+                goals_display: selectedGoals.map(goal => {
+                    const goalNames = {
+                        'ecommerce': 'Sell Online (E-commerce)',
+                        'customers': 'Reach More Customers',
+                        'manage': 'Manage Customers',
+                        'search': 'Appear in Search Results',
+                        'brand': 'Establish my Brand'
+                    };
+                    return goalNames[goal] || goal;
+                }),
+                selected_subcategories: selectedSubcategories.map(cat => cat.categoryId),
+                selected_subcategories_detailed: selectedSubcategories,
+                selected_theme: selectedTheme,
+                products_count: userProducts.length,
+                products: userProducts,
+                
+                // Scoring & Quality
+                lead_score: leadScore,
+                lead_quality: leadScore >= 70 ? 'Hot' : leadScore >= 40 ? 'Warm' : 'Cold',
+                engagement_level: leadScore >= 70 ? 'High' : leadScore >= 40 ? 'Medium' : 'Low',
+                
+                // Session Data
+                session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
+                page_views: pageViews,
+                form_completion_percentage: formProgress,
+                
+                // UTM & Attribution
+                utm_source: utmParams.source,
+                utm_medium: utmParams.medium,
+                utm_campaign: utmParams.campaign,
+                utm_content: utmParams.content,
+                utm_term: utmParams.term,
+                
+                // Device & Technical
+                device_type: deviceInfo.type,
+                browser: deviceInfo.browser,
+                operating_system: deviceInfo.os,
+                screen_resolution: deviceInfo.screen,
+                timezone: deviceInfo.timezone,
+                user_language: deviceInfo.language,
+                
+                // Behavioral Intelligence
+                total_click_events: behaviorData.clickEvents.length,
+                form_interactions_count: behaviorData.formInteractions.length,
+                time_on_pages: behaviorData.timeOnPages,
+                
+                // Status
+                lead_status: 'New',
+                assigned_sdr: null,
+                ready_for_sdr_assignment: true,
+                
+                // Timestamps
+                session_start_time: new Date(sessionStartTime).toISOString(),
+                created_at: new Date().toISOString(),
+                last_updated: new Date().toISOString(),
+                
+                // CORS Status
+                supabase_saved: supabaseWorking,
+                cors_status: corsStatus
+            };
+            
+            // Update existing leads array
+            const existingLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
+            const leadIndex = existingLeads.findIndex(lead => lead.user_id === currentUserId);
+            
+            if (leadIndex !== -1) {
+                // Update existing lead
+                existingLeads[leadIndex] = { ...existingLeads[leadIndex], ...leadData };
+            } else {
+                // Add new lead
+                existingLeads.push(leadData);
+            }
+            
+            localStorage.setItem('topiko_local_leads', JSON.stringify(existingLeads));
+            
+            console.log('💾 Lead data saved to localStorage for CRM', {
+                userId: currentUserId,
+                score: leadScore,
+                quality: leadData.lead_quality,
+                supabaseWorking: supabaseWorking
+            });
+        }
+
+        // 🌐 LANGUAGE SELECTION
+        function selectLanguage(lang, element) {
+            selectedLanguage = lang;
+            
+            // Update UI
+            document.querySelectorAll('.language-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            // Track behavior
+            behaviorData.formInteractions.push({
+                type: 'language_selected',
+                value: lang,
+                timestamp: Date.now()
+            });
+            
+            const languageNames = {
+                'en': 'English',
+                'hi': 'हिन्दी',
+                'te': 'తెలుగు',
+                'ta': 'தமிழ்'
+            };
+            
+            showNotification(`Language selected: ${languageNames[lang]}`, 'success');
+            calculateLeadScore();
+            
+            setTimeout(() => showScreen('goals'), 1500);
+        }
+
+        // 🎯 GOALS TRACKING
+        function updateGoalsTracking() {
+            const checkedGoals = document.querySelectorAll('.goal-checkbox:checked');
+            selectedGoals = Array.from(checkedGoals).map(checkbox => checkbox.value);
+            
+            behaviorData.formInteractions.push({
+                type: 'goals_updated',
+                values: selectedGoals,
+                timestamp: Date.now()
+            });
+            
+            calculateLeadScore();
+        }
+
+        // 🎯 GOALS SUBMISSION
+        function submitGoals() {
+            if (selectedGoals.length === 0) {
+                showNotification('Please select at least one goal to continue', 'error');
+                return;
+            }
+
+            behaviorData.formInteractions.push({
+                type: 'goals_submitted',
+                values: selectedGoals,
+                timestamp: Date.now()
+            });
+            
+            showNotification(`Great! You've selected ${selectedGoals.length} goal${selectedGoals.length > 1 ? 's' : ''}`, 'success');
+            calculateLeadScore();
+            
+            setTimeout(() => showScreen('registration'), 1500);
+        }
+
+        // 📝 FORM PROGRESS TRACKING
+        function trackFormProgress() {
+            const formFields = ['fullName', 'phoneNumber', 'businessName', 'address', 'businessType', 'category'];
+            let completedFields = 0;
+            
+            formFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field && field.value.trim() !== '') {
+                    completedFields++;
+                }
+            });
+            
+            formProgress = (completedFields / formFields.length) * 100;
+            calculateLeadScore();
+        }
+
+        // 📝 REGISTRATION SUBMISSION WITH CORS-SAFE SAVE
+        async function submitRegistration() {
+            const name = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phoneNumber').value.trim();
+            const business = document.getElementById('businessName').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const type = document.getElementById('businessType').value;
+            const category = document.getElementById('category').value;
+
+            if (!name || !phone || !business || !address || !type || !category) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+
+            // Generate unique user ID
+            currentUserId = 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            // Prepare data for Supabase
+            const userData = {
+                id: currentUserId,
+                name: name,
+                phone: phone,
+                business_name: business,
+                address: address,
+                business_type: type,
+                business_category: category,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
+            
+            const intelligenceData = {
+                lead_score: leadScore,
+                lead_quality: leadScore >= 70 ? 'Hot' : leadScore >= 40 ? 'Warm' : 'Cold',
+                lead_status: 'New',
+                selected_goals: selectedGoals,
+                session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
+                utm_source: utmParams.source,
+                utm_medium: utmParams.medium,
+                utm_campaign: utmParams.campaign,
+                device_type: deviceInfo.type,
+                browser: deviceInfo.browser,
+                operating_system: deviceInfo.os,
+                selected_language: selectedLanguage,
+                engagement_level: leadScore >= 70 ? 'High' : leadScore >= 40 ? 'Medium' : 'Low',
+                page_views: pageViews,
+                created_at: new Date().toISOString()
+            };
+            
+            // Try to save to Supabase
+            showNotification('Saving your information...', 'info');
+            const supabaseResult = await saveToSupabase(userData, intelligenceData);
+            
+            if (supabaseResult.success) {
+                showNotification('✅ Registration completed and saved to database!', 'success');
+            } else {
+                showNotification('⚠️ Registration completed, data saved locally', 'warning');
+            }
+            
+            behaviorData.formInteractions.push({
+                type: 'registration_completed',
+                supabase_success: supabaseResult.success,
+                timestamp: Date.now()
+            });
+
+            calculateLeadScore();
+            
+            setTimeout(() => showScreen('categories'), 2000);
+        }
+
+        // 📋 LOAD ENHANCED CATEGORIES WITH CHECKBOXES
+        function loadSubcategories() {
+            const businessCategory = document.getElementById('category').value;
+            const selectedBusinessTypeEl = document.getElementById('selectedBusinessType');
+            const subcategoriesContainer = document.getElementById('subcategoriesContainer');
+            
+            if (!businessCategory || !indianBusinessCategories[businessCategory]) {
+                subcategoriesContainer.innerHTML = '<p style="text-align: center; color: #64748b;">Please complete your registration first.</p>';
+                return;
+            }
+            
+            const categoryData = indianBusinessCategories[businessCategory];
+            selectedBusinessTypeEl.textContent = categoryData.name;
+            
+            subcategoriesContainer.innerHTML = `
+                <h3 style="color: #6b46c1; text-align: center; margin-bottom: 2rem;">
+                    ${categoryData.icon} ${categoryData.name} - Select Categories & Subcategories
+                </h3>
+                <div style="margin-bottom: 2rem; padding: 1rem; background: rgba(139, 111, 205, 0.05); border-radius: 12px;">
+                    <p style="color: #6b46c1; font-weight: 500; text-align: center; margin-bottom: 0.5rem;">
+                        📋 Select all categories and subcategories that apply to your business
+                    </p>
+                    <p style="color: #64748b; font-size: 0.9rem; text-align: center;">
+                        This will help us customize your product options and website themes
+                    </p>
+                </div>
+                
+                ${categoryData.categories.map(category => `
+                    <div style="background: rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; border: 2px solid rgba(139, 111, 205, 0.1);">
+                        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                            <input type="checkbox" id="cat_${category.id}" value="${category.id}" 
+                                   onchange="toggleCategory('${category.id}', this)" 
+                                   style="width: 20px; height: 20px; margin-right: 1rem; accent-color: #6b46c1;">
+                            <label for="cat_${category.id}" style="display: flex; align-items: center; cursor: pointer; font-weight: 600; color: #6b46c1; font-size: 1.1rem;">
+                                <span style="font-size: 1.5rem; margin-right: 0.5rem;">${category.icon}</span>
+                                ${category.name}
+                            </label>
+                        </div>
+                        
+                        <div class="subcategories-grid" id="subcat_${category.id}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.8rem; margin-left: 2rem; opacity: 0.6;">
+                            ${category.subcategories.map(subcat => `
+                                <div style="display: flex; align-items: center; padding: 0.8rem; background: rgba(139, 111, 205, 0.05); border-radius: 8px; border: 1px solid rgba(139, 111, 205, 0.1);">
+                                    <input type="checkbox" id="subcat_${subcat.id}" value="${subcat.id}" 
+                                           onchange="toggleSubcategory('${category.id}', '${subcat.id}', this)" 
+                                           style="width: 16px; height: 16px; margin-right: 0.8rem; accent-color: #6b46c1;" disabled>
+                                    <label for="subcat_${subcat.id}" style="display: flex; align-items: center; cursor: pointer; font-size: 0.9rem; color: #64748b;">
+                                        <span style="margin-right: 0.5rem;">${subcat.icon}</span>
+                                        ${subcat.name}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // 🏷️ ENHANCED CATEGORY TOGGLE
+        function toggleCategory(categoryId, checkbox) {
+            const subcategoriesGrid = document.getElementById(`subcat_${categoryId}`);
+            const subcatCheckboxes = subcategoriesGrid.querySelectorAll('input[type="checkbox"]');
+            
+            if (checkbox.checked) {
+                // Enable subcategories
+                subcategoriesGrid.style.opacity = '1';
+                subcatCheckboxes.forEach(cb => {
+                    cb.disabled = false;
+                });
+                
+                // Add to selected categories if not already present
+                if (!selectedSubcategories.find(item => item.categoryId === categoryId)) {
+                    selectedSubcategories.push({
+                        categoryId: categoryId,
+                        categoryName: checkbox.nextElementSibling.textContent.trim(),
+                        subcategories: []
+                    });
+                }
+            } else {
+                // Disable and uncheck subcategories
+                subcategoriesGrid.style.opacity = '0.6';
+                subcatCheckboxes.forEach(cb => {
+                    cb.disabled = true;
+                    cb.checked = false;
+                });
+                
+                // Remove from selected categories
+                selectedSubcategories = selectedSubcategories.filter(item => item.categoryId !== categoryId);
+            }
+            
+            updateSelectedSubcategories();
+            calculateLeadScore();
+        }
+
+        // 🏷️ ENHANCED SUBCATEGORY TOGGLE
+        function toggleSubcategory(categoryId, subcategoryId, checkbox) {
+            const categoryIndex = selectedSubcategories.findIndex(item => item.categoryId === categoryId);
+            
+            if (categoryIndex === -1) return; // Category not selected
+            
+            if (checkbox.checked) {
+                // Add subcategory
+                selectedSubcategories[categoryIndex].subcategories.push({
+                    id: subcategoryId,
+                    name: checkbox.nextElementSibling.textContent.trim()
+                });
+            } else {
+                // Remove subcategory
+                selectedSubcategories[categoryIndex].subcategories = 
+                    selectedSubcategories[categoryIndex].subcategories.filter(sub => sub.id !== subcategoryId);
+            }
+            
+            updateSelectedSubcategories();
+            calculateLeadScore();
+        }
+
+        // 📝 UPDATE SELECTED SUBCATEGORIES DISPLAY
+        function updateSelectedSubcategories() {
+            const selectedDiv = document.getElementById('selectedSubcategories');
+            const selectedList = document.getElementById('selectedSubcategoriesList');
+            const nextBtn = document.getElementById('categoryNextBtn');
+            
+            // Count total selections
+            const totalSelections = selectedSubcategories.reduce((total, category) => 
+                total + category.subcategories.length, 0
+            );
+            
+            if (totalSelections > 0) {
+                selectedDiv.style.display = 'block';
+                
+                // Format display
+                const displayText = selectedSubcategories.map(category => {
+                    if (category.subcategories.length === 0) return '';
+                    
+                    const subcatNames = category.subcategories.map(sub => sub.name).join(', ');
+                    return `<div style="margin-bottom: 0.8rem;">
+                        <strong style="color: #6b46c1;">${category.categoryName}:</strong>
+                        <span style="color: #64748b; margin-left: 0.5rem;">${subcatNames}</span>
+                    </div>`;
+                }).filter(text => text !== '').join('');
+                
+                selectedList.innerHTML = displayText || '<span style="color: #94a3b8;">No subcategories selected</span>';
+                
+                nextBtn.disabled = false;
+                nextBtn.style.opacity = '1';
+            } else {
+                selectedDiv.style.display = 'none';
+                nextBtn.disabled = true;
+                nextBtn.style.opacity = '0.5';
+            }
+        }
+
+        // ➡️ PROCEED TO PRODUCTS
+        function proceedToProducts() {
+            const totalSelections = selectedSubcategories.reduce((total, category) => 
+                total + category.subcategories.length, 0
+            );
+            
+            if (totalSelections === 0) {
+                showNotification('Please select at least one subcategory', 'error');
+                return;
+            }
+            
+            populateProductCategories();
+            showNotification('Moving to product setup...', 'info');
+            setTimeout(() => showScreen('products'), 1000);
+        }
+
+        // 📦 POPULATE PRODUCT CATEGORIES
+        function populateProductCategories() {
+            const businessCategory = document.getElementById('category').value;
+            const categoryData = indianBusinessCategories[businessCategory];
+            const productCategorySelect = document.getElementById('productCategory');
+            const productSubcategorySelect = document.getElementById('productSubcategory');
+            
+            // Clear previous options
+            productCategorySelect.innerHTML = '<option value="">Select category</option>';
+            productSubcategorySelect.innerHTML = '<option value="">Select subcategory first</option>';
+            
+            // Populate main categories
+            selectedSubcategories.forEach(selectedCategory => {
+                if (selectedCategory.subcategories.length > 0) {
+                    productCategorySelect.innerHTML += 
+                        `<option value="${selectedCategory.categoryId}">${selectedCategory.categoryName}</option>`;
+                }
+            });
+            
+            // Update subcategories when category is selected
+            productCategorySelect.addEventListener('change', function() {
+                const selectedCategoryId = this.value;
+                const subcategorySelect = document.getElementById('productSubcategory');
+                
+                subcategorySelect.innerHTML = '<option value="">Select subcategory</option>';
+                
+                if (selectedCategoryId) {
+                    const categoryData = selectedSubcategories.find(cat => cat.categoryId === selectedCategoryId);
+                    if (categoryData) {
+                        categoryData.subcategories.forEach(subcat => {
+                            subcategorySelect.innerHTML += 
+                                `<option value="${subcat.id}">${subcat.name}</option>`;
+                        });
+                    }
+                }
+            });
+        }
+
+        // 🖼️ CORS-SAFE PRODUCT IMAGE GENERATION
+        async function getDefaultProductImage(subcategory, productName = '') {
+            // Use static fallback images to avoid CORS issues
+            const fallbackImages = {
+                // Boutique
+                'men-ethnic-kurta': 'https://images.unsplash.com/photo-1602810319381-13c3e46b55c7?w=400',
+                'women-sarees': 'https://images.unsplash.com/photo-1583391733956-6c78276477e4?w=400',
+                'kids-western-boys': 'https://images.unsplash.com/photo-1503919436217-dfe2c8c8de1a?w=400',
+                
+                // Home Foods
+                'north-curry-dal': 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400',
+                'south-dosa-idli': 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=400',
+                
+                // Salons
+                'hair-cut-style': 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400',
+                
+                // Default
+                'default': 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400'
+            };
+            
+            return fallbackImages[subcategory] || fallbackImages['default'];
+        }
+
+        // 📦 ADD PRODUCT WITH CORS-SAFE IMAGES
+        async function addProduct() {
+            const name = document.getElementById('productName').value.trim();
+            const price = document.getElementById('productPrice').value.trim();
+            const description = document.getElementById('productDescription').value.trim();
+            const category = document.getElementById('productCategory').value;
+            const subcategory = document.getElementById('productSubcategory').value;
+            const imageUrl = document.getElementById('productImage').value.trim();
+            const stock = document.getElementById('productStock').value.trim();
+            
+            if (!name || !price || !description || !category || !subcategory) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            if (isNaN(price) || price <= 0) {
+                showNotification('Please enter a valid price', 'error');
+                return;
+            }
+            
+            // Show loading state
+            const addButton = document.querySelector('[onclick="addProduct()"]');
+            addButton.textContent = '🔄 Adding Product...';
+            addButton.disabled = true;
+            
+            try {
+                // Generate CORS-safe image if no URL provided
+                let finalImageUrl = imageUrl;
+                if (!imageUrl) {
+                    finalImageUrl = await getDefaultProductImage(subcategory, name);
+                }
+                
+                const product = {
+                    id: 'prod_' + Date.now(),
+                    name: name,
+                    price: parseFloat(price),
+                    description: description,
+                    category: category,
+                    subcategory: subcategory,
+                    imageUrl: finalImageUrl,
+                    stock: stock ? parseInt(stock) : 10,
+                    createdAt: new Date().toISOString()
+                };
+                
+                userProducts.push(product);
+                
+                // Clear form
+                document.getElementById('productName').value = '';
+                document.getElementById('productPrice').value = '';
+                document.getElementById('productDescription').value = '';
+                document.getElementById('productSubcategory').value = '';
+                document.getElementById('productImage').value = '';
+                document.getElementById('productStock').value = '10';
+                
+                displayProducts();
+                updateThemePreviews();
+                calculateLeadScore();
+                
+                showNotification(`Product "${name}" added successfully!`, 'success');
+                
+            } catch (error) {
+                console.error('Error adding product:', error);
+                showNotification('Error adding product. Please try again.', 'error');
+            } finally {
+                // Reset button
+                addButton.textContent = '➕ Add Product';
+                addButton.disabled = false;
+            }
+        }
+
+        // 📋 DISPLAY PRODUCTS
+        function displayProducts() {
+            const productsList = document.getElementById('productsList');
+            const productCount = document.getElementById('productCount');
+            
+            productCount.textContent = userProducts.length;
+            
+            if (userProducts.length === 0) {
+                productsList.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+                        <p>No products added yet. Add your first product above!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            productsList.innerHTML = userProducts.map(product => `
+                <div class="product-card" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div style="height: 150px; background-image: url('${product.imageUrl}'); background-size: cover; background-position: center; position: relative;">
+                        <div style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; color: #059669;">
+                            ₹${product.price.toLocaleString()}
+                        </div>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="font-size: 1.1rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">${product.name}</div>
+                        <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">${product.description}</div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b;">
+                            <span>📦 Stock: ${product.stock}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 🎨 UPDATE THEME PREVIEWS
+        function updateThemePreviews() {
+            const businessCategory = document.getElementById('category').value;
+            const categoryData = indianBusinessCategories[businessCategory];
+            
+            if (!categoryData) return;
+            
+            const menuText = selectedSubcategories.map(category => category.categoryName).join(' • ');
+            
+            ['modern', 'colorful', 'elegant'].forEach(theme => {
+                const menuEl = document.getElementById(`${theme}MenuCategories`);
+                const productsEl = document.getElementById(`${theme}ThemeProducts`);
+                
+                if (menuEl) menuEl.textContent = menuText || 'Your Categories';
+                
+                if (productsEl) {
+                    if (userProducts.length === 0) {
+                        productsEl.innerHTML = `
+                            <div style="text-align: center; color: #64748b; padding: 20px; font-size: 0.8rem;">
+                                Your products will appear here
+                            </div>
+                        `;
+                    } else {
+                        productsEl.innerHTML = userProducts.slice(0, 2).map(product => `
+                            <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.8); padding: 8px; border-radius: 6px; font-size: 0.7rem;">
+                                <div style="width: 30px; height: 30px; background-image: url('${product.imageUrl}'); background-size: cover; border-radius: 4px;"></div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: bold; color: #1e293b;">${product.name}</div>
+                                    <div style="color: #059669; font-weight: bold;">₹${product.price}</div>
+                                </div>
+                            </div>
+                        `).join('') + (userProducts.length > 2 ? 
+                            `<div style="text-align: center; font-size: 0.7rem; color: #64748b;">+${userProducts.length - 2} more</div>` : '');
+                    }
+                }
+            });
+        }
+
+        // 🎨 PROCEED TO THEMES
+        function proceedToThemes() {
+            updateThemePreviews();
+            calculateLeadScore();
+            showNotification(`Great! You've added ${userProducts.length} products. Moving to themes...`, 'success');
+            setTimeout(() => showScreen('themes'), 1500);
+        }
+
+        // 🎨 THEME SELECTION
+        function selectTheme(theme) {
+            selectedTheme = theme;
+            
+            document.querySelectorAll('.theme-preview').forEach(card => {
+                card.classList.remove('selected');
+                card.style.borderColor = 'rgba(139, 111, 205, 0.1)';
+            });
+            
+            const selectedCard = event.target.closest('.theme-preview');
+            selectedCard.classList.add('selected');
+            selectedCard.style.borderColor = '#6b46c1';
+            
+            const selectedDiv = document.getElementById('selectedTheme');
+            const selectedText = document.getElementById('selectedThemeText');
+            const completeBtn = document.getElementById('themeNextBtn');
+            
+            const themeNames = {
+                'modern': 'Modern Professional - Clean and minimal design',
+                'colorful': 'Colorful Creative - Vibrant and engaging design',
+                'elegant': 'Elegant Luxury - Sophisticated and refined design'
+            };
+            
+            selectedDiv.style.display = 'block';
+            selectedText.textContent = `You've selected: ${themeNames[theme]}`;
+            
+            completeBtn.disabled = false;
+            completeBtn.style.opacity = '1';
+            
+            calculateLeadScore();
+            showNotification(`Theme selected: ${themeNames[theme].split(' - ')[0]}`, 'success');
+        }
+
+        // 🚀 COMPLETE SETUP WITH FINAL SAVE
+        async function completeSetup() {
+            if (!selectedTheme) {
+                showNotification('Please select a theme to complete setup', 'error');
+                return;
+            }
+
+            // Final scoring bonus for completion
+            leadScore = Math.min(leadScore + 15, 100);
+            
+            // Mark as completed
+            const completeSetupData = {
+                user_id: currentUserId,
+                setup_completed: true,
+                completed_at: new Date().toISOString(),
+                final_lead_score: leadScore,
+                selected_goals: selectedGoals,
+                goals_display: selectedGoals.map(goal => {
+                    const goalNames = {
+                        'ecommerce': 'Sell Online (E-commerce)',
+                        'customers': 'Reach More Customers',
+                        'manage': 'Manage Customers',
+                        'search': 'Appear in Search Results',
+                        'brand': 'Establish my Brand'
+                    };
+                    return goalNames[goal] || goal;
+                }),
+                selected_subcategories: selectedSubcategories,
+                products_count: userProducts.length,
+                products: userProducts,
+                selected_theme: selectedTheme,
+                name: document.getElementById('fullName').value,
+                business_name: document.getElementById('businessName').value,
+                phone: document.getElementById('phoneNumber').value,
+                supabase_saved: supabaseWorking,
+                cors_status: corsStatus
+            };
+
+            // Save completion data
+            localStorage.setItem('topiko_complete_setup', JSON.stringify(completeSetupData));
+            
+            // Final save to localStorage
+            calculateLeadScore();
+            
+            // Try final Supabase update if working
+            if (supabaseWorking && currentUserId) {
+                try {
+                    const finalUpdate = await saveToSupabase({
+                        id: currentUserId,
+                        name: document.getElementById('fullName').value,
+                        phone: document.getElementById('phoneNumber').value,
+                        business_name: document.getElementById('businessName').value,
+                        address: document.getElementById('address').value,
+                        business_type: document.getElementById('businessType').value,
+                        business_category: document.getElementById('category').value,
+                        updated_at: new Date().toISOString()
+                    }, {
+                        user_id: currentUserId,
+                        setup_completed: true,
+                        final_lead_score: leadScore,
+                        selected_theme: selectedTheme,
+                        products_count: userProducts.length,
+                        lead_status: 'Setup Complete',
+                        updated_at: new Date().toISOString()
+                    });
+                    
+                    if (finalUpdate.success) {
+                        showNotification('🎉 Setup completed and saved to database!', 'success');
+                    }
+                } catch (error) {
+                    console.log('Final save to Supabase failed, but localStorage is updated');
+                }
+            }
+            
+            showNotification('🎉 Setup completed successfully!', 'success');
+            
+            // Show completion message
+            setTimeout(() => {
+                alert(`✅ Congratulations! 
+                
+Your Topiko business platform setup is complete:
+
+📊 Lead Intelligence Summary:
+• Name: ${document.getElementById('fullName').value}
+• Business: ${document.getElementById('businessName').value}
+• Category: ${document.getElementById('category').value}
+• Goals: ${selectedGoals.length} selected
+• Categories: ${selectedSubcategories.length} main categories
+• Products: ${userProducts.length} added
+• Theme: ${selectedTheme}
+• Final Score: ${leadScore}/100
+• Quality: ${leadScore >= 70 ? 'Hot Lead 🔥' : leadScore >= 40 ? 'Warm Lead 🌡️' : 'Cold Lead ❄️'}
+• Database Status: ${supabaseWorking ? 'Connected ✅' : 'Local Storage Only ⚠️'}
+
+🎯 Your lead data has been captured and will appear in the CRM system for assignment to an SDR.
+
+This CORS-safe system is now ready for deployment!`);
+                
+                console.log('🎉 CORS-safe setup completed. Lead ready for CRM assignment.');
+            }, 1500);
+        }
+
+        // 📄 SCREEN NAVIGATION
+        function showScreen(screenId) {
+            pageViews++;
+            
+            // Track time on previous screen
+            const currentScreen = document.querySelector('.screen.active');
+            if (currentScreen) {
+                const screenName = currentScreen.id;
+                if (!behaviorData.timeOnPages[screenName]) {
+                    behaviorData.timeOnPages[screenName] = 0;
+                }
+                behaviorData.timeOnPages[screenName] += Date.now() - behaviorData.lastScreenTime;
+            }
+            behaviorData.lastScreenTime = Date.now();
+            
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Show selected screen
+            document.getElementById(screenId).classList.add('active');
+
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[onclick="showScreen('${screenId}')"]`).classList.add('active');
+            
+            // Special handling for categories page
+            if (screenId === 'categories') {
+                setTimeout(loadSubcategories, 100);
+            }
+            
+            behaviorData.clickEvents.push({
+                type: 'navigation',
+                screen: screenId,
+                timestamp: Date.now()
+            });
+            
+            calculateLeadScore();
+        }
+
+        // 🔔 NOTIFICATIONS
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type} show`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 400);
+            }, 3000);
+        }
+
+        // 🚀 INITIALIZATION
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Topiko CORS-Safe Lead Form Initialized');
+            
+            // Initialize tracking
+            captureUTMParameters();
+            detectDevice();
+            
+            // Test Supabase connection
+            updateCORSStatus('🔧 Testing database connection...', 'warning');
+            const connectionWorking = await testSupabaseConnection();
+            
+            if (connectionWorking) {
+                console.log('✅ Supabase connection successful - database saves enabled');
+            } else {
+                console.log('⚠️ Supabase connection failed - localStorage only mode');
+                showNotification('⚠️ Using offline mode - data will sync when connection is restored', 'warning');
+            }
+            
+            // Start session intelligence timer
+            setInterval(updateSessionIntelligence, 1000);
+            
+            // Track initial page load
+            behaviorData.clickEvents.push({
+                type: 'page_load',
+                screen: 'welcome',
+                timestamp: Date.now(),
+                cors_status: corsStatus,
+                supabase_working: supabaseWorking
+            });
+            
+            console.log('✅ CORS-Safe Lead Intelligence System Ready');
+            console.log('📊 Features: Cross-browser compatibility, Supabase + localStorage hybrid');
+            console.log('🔧 CORS Status:', corsStatus, '| Supabase Working:', supabaseWorking);
+        });
+
+        // Track all clicks for behavior analysis
+        document.addEventListener('click', function(event) {
+            behaviorData.clickEvents.push({
+                type: 'click',
+                element: event.target.tagName,
+                class: event.target.className,
+                id: event.target.id,
+                timestamp: Date.now()
+            });
+        });
+
+        // Track form focus events
+        document.addEventListener('focus', function(event) {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') {
+                behaviorData.formInteractions.push({
+                    type: 'field_focus',
+                    field: event.target.id,
+                    timestamp: Date.now()
+                });
+            }
+        }, true);
+
+        // Save progress on page unload
+        window.addEventListener('beforeunload', function() {
+            if (currentUserId) {
+                saveToLocalStorage();
+            }
+        });
+
+        // 🧪 DEBUGGING AND TESTING FUNCTIONS
+        console.log('🧪 CORS-Safe Testing Functions Available:');
+        console.log('- testSupabaseConnection() - Test database connection');
+        console.log('- saveToLocalStorage() - Force save to localStorage');
+        console.log('- updateCORSStatus(message, type) - Update CORS indicator');
+        console.log('🔧 CORS Status:', corsStatus);
+        console.log('📡 Supabase Working:', supabaseWorking);
+    </script>
+</body>
+</html>
