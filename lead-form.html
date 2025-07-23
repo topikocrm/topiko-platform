@@ -1168,7 +1168,7 @@
         async function saveToSupabase(data, table = 'users') {
             try {
                 console.log(`💾 Saving to Supabase table: ${table}`);
-                console.log('📤 Data being sent:', data);
+                console.log('📤 Data being sent:', JSON.stringify(data, null, 2));
                 
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
                     method: 'POST',
@@ -1191,11 +1191,13 @@
                 } else {
                     const errorText = await response.text();
                     console.error('❌ Supabase save failed:', response.status, errorText);
+                    console.error('❌ Failed data was:', JSON.stringify(data, null, 2));
                     updateDatabaseStatus('error', '❌ Database error');
                     return { success: false, error: `HTTP ${response.status}: ${errorText}` };
                 }
             } catch (error) {
                 console.error('💥 Supabase save exception:', error);
+                console.error('💥 Failed data was:', JSON.stringify(data, null, 2));
                 updateDatabaseStatus('error', '❌ Database offline');
                 return { success: false, error: error.message };
             }
