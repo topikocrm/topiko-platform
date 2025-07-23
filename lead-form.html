@@ -1179,11 +1179,13 @@
             }
         }
 
-        // 💾 CORRECT SUPABASE API SAVE
+        // 💾 CORRECT SUPABASE API SAVE - ENHANCED PRODUCTION DEBUGGING
         async function saveToSupabase(data, table = 'users') {
             try {
                 console.log(`💾 Saving to Supabase table: ${table}`);
                 console.log('📤 Data being sent:', JSON.stringify(data, null, 2));
+                console.log('📊 Data size:', JSON.stringify(data).length, 'characters');
+                console.log('🔗 Request URL:', `${SUPABASE_URL}/rest/v1/${table}`);
                 
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
                     method: 'POST',
@@ -1197,6 +1199,7 @@
                 });
 
                 console.log('📥 Supabase response status:', response.status, response.statusText);
+                console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
 
                 if (response.ok) {
                     const result = await response.json();
@@ -1205,16 +1208,42 @@
                     return { success: true, data: result };
                 } else {
                     const errorText = await response.text();
-                    console.error('❌ Supabase save failed:', response.status, errorText);
+                    console.error('❌ Supabase save failed - DETAILED ERROR:');
+                    console.error('❌ Status:', response.status, response.statusText);
+                    console.error('❌ Error body:', errorText);
+                    console.error('❌ Request headers used:', {
+                        'apikey': SUPABASE_ANON_KEY.substring(0, 20) + '...',
+                        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY.substring(0, 20) + '...',
+                        'Content-Type': 'application/json'
+                    });
                     console.error('❌ Failed data was:', JSON.stringify(data, null, 2));
+                    
                     updateDatabaseStatus('error', '❌ Database error');
-                    return { success: false, error: `HTTP ${response.status}: ${errorText}` };
+                    
+                    // Parse error message for better debugging
+                    let detailedError = `HTTP ${response.status}: ${errorText}`;
+                    try {
+                        const errorObj = JSON.parse(errorText);
+                        if (errorObj.message) {
+                            detailedError = `${errorObj.code || 'ERROR'}: ${errorObj.message}`;
+                            if (errorObj.details) detailedError += ` | Details: ${errorObj.details}`;
+                            if (errorObj.hint) detailedError += ` | Hint: ${errorObj.hint}`;
+                        }
+                    } catch (e) {
+                        // Error response wasn't JSON, use raw text
+                    }
+                    
+                    return { success: false, error: detailedError };
                 }
             } catch (error) {
-                console.error('💥 Supabase save exception:', error);
+                console.error('💥 Supabase save exception - NETWORK ERROR:');
+                console.error('💥 Error type:', error.name);
+                console.error('💥 Error message:', error.message);
+                console.error('💥 Error stack:', error.stack);
                 console.error('💥 Failed data was:', JSON.stringify(data, null, 2));
+                
                 updateDatabaseStatus('error', '❌ Database offline');
-                return { success: false, error: error.message };
+                return { success: false, error: `Network Error: ${error.message}` };
             }
         }
 
@@ -1229,7 +1258,21 @@
                     ...leadData,
                     user_id: currentUserId,
                     created_at: new Date().toISOString(),
-                    data_source: 'localStorage_primary'
+                    data_source: 'localStorage_primary',
+                    // ADD LEAD INTELLIGENCE TO LOCALSTORAGE
+                    lead_intelligence: {
+                        lead_score: leadScore,
+                        lead_quality: leadScore >= 70 ? 'Hot' : leadScore >= 40 ? 'Warm' : 'Cold',
+                        engagement_level: leadScore >= 70 ? 'High' : leadScore >= 40 ? 'Medium' : 'Low',
+                        session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
+                        page_views: pageViews,
+                        selected_goals: selectedGoals,
+                        selected_language: selectedLanguage,
+                        device_type: deviceInfo.type,
+                        browser: deviceInfo.browser,
+                        utm_source: utmParams.source,
+                        ready_for_sdr_assignment: true
+                    }
                 };
                 
                 // Find existing lead or add new one
@@ -1241,8 +1284,10 @@
                 }
                 
                 localStorage.setItem('topiko_local_leads', JSON.stringify(existingLeads));
-                console.log('✅ Data saved to localStorage (primary storage)');
-                showNotification('💾 Data saved locally', 'success');
+                console.log('✅ COMPLETE DATA saved to localStorage (primary storage)');
+                
+                // SHOW SUCCESS MESSAGE WITH LEAD SCORE
+                showNotification(`💾 Lead saved! Score: ${leadScore}/100 (${leadScore >= 70 ? 'Hot' : leadScore >= 40 ? 'Warm' : 'Cold'} lead)`, 'success');
                 
             } catch (error) {
                 console.error('❌ LocalStorage save failed:', error);
