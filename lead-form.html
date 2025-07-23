@@ -22,6 +22,63 @@
             min-height: 100vh;
         }
 
+        /* Lead Intelligence Widget */
+        .lead-intelligence-widget {
+            position: fixed;
+            top: 4rem;
+            left: 1rem;
+            background: linear-gradient(135deg, #6b46c1 0%, #8b6fcd 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(107, 70, 193, 0.3);
+            z-index: 1000;
+            min-width: 200px;
+            backdrop-filter: blur(20px);
+        }
+
+        .widget-header {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .lead-score-display {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .lead-quality {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .lead-quality.hot {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .lead-quality.warm {
+            background: rgba(251, 191, 36, 0.2);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .lead-quality.cold {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .widget-details {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            line-height: 1.3;
+        }
+
         /* Database Status Indicator */
         .db-status {
             position: fixed;
@@ -409,84 +466,114 @@
             transform: scale(1);
         }
 
-        /* Subcategories */
-        .subcategory-card {
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.6);
-            border: 2px solid rgba(139, 111, 205, 0.1);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
+        /* Enhanced Categories Styling */
+        .categories-section {
+            margin-bottom: 3rem;
         }
 
-        .subcategory-card:hover {
-            background: rgba(139, 111, 205, 0.1);
-            border-color: #8b6fcd;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(139, 111, 205, 0.15);
-        }
-
-        .subcategory-card.selected {
-            background: rgba(139, 111, 205, 0.15);
-            border-color: #8b6fcd;
-            box-shadow: 0 6px 20px rgba(139, 111, 205, 0.2);
-        }
-
-        /* Product Cards */
-        .product-card {
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid rgba(139, 111, 205, 0.1);
+        .category-group {
+            background: rgba(255, 255, 255, 0.7);
             border-radius: 16px;
             padding: 1.5rem;
-            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(139, 111, 205, 0.1);
         }
 
-        .product-card:hover {
-            background: rgba(255, 255, 255, 0.95);
-            border-color: rgba(139, 111, 205, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(139, 111, 205, 0.15);
-        }
-
-        /* Theme Previews */
-        .theme-preview {
-            border: 3px solid rgba(139, 111, 205, 0.1);
-            border-radius: 20px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: white;
-            position: relative;
-        }
-
-        .theme-preview:hover {
-            border-color: #8b6fcd;
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(139, 111, 205, 0.25);
-        }
-
-        .theme-preview.selected {
-            border-color: #6b46c1 !important;
-            box-shadow: 0 12px 35px rgba(107, 70, 193, 0.3) !important;
-            transform: translateY(-3px);
-        }
-
-        .theme-preview.selected::after {
-            content: '✓';
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #6b46c1;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
+        .main-category-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .main-category-header:hover {
+            background: rgba(139, 111, 205, 0.05);
+        }
+
+        .main-category-checkbox {
+            margin-right: 1rem;
+            transform: scale(1.2);
+        }
+
+        .main-category-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .main-category-title {
+            color: #6b46c1;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .subcategories-grid {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-left: 3rem;
+        }
+
+        .subcategories-grid.show {
+            display: grid;
+        }
+
+        .subcategory-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(139, 111, 205, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .subcategory-item:hover {
+            background: rgba(139, 111, 205, 0.05);
+            border-color: rgba(139, 111, 205, 0.2);
+        }
+
+        .subcategory-checkbox {
+            margin-right: 0.75rem;
+        }
+
+        .subcategory-icon {
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+        }
+
+        .subcategory-label {
+            font-size: 0.9rem;
+            color: #553c9a;
+            font-weight: 500;
+        }
+
+        /* Selection Summary */
+        .selection-summary {
+            background: rgba(139, 111, 205, 0.1);
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .selection-summary.show {
+            display: block;
+        }
+
+        .selection-summary h4 {
+            color: #6b46c1;
+            margin-bottom: 0.5rem;
+        }
+
+        .selection-summary .summary-content {
+            color: #553c9a;
+            font-size: 0.9rem;
+            line-height: 1.4;
         }
 
         /* Notification */
@@ -559,6 +646,13 @@
                 margin-right: 0;
                 margin-bottom: 1rem;
             }
+
+            .lead-intelligence-widget {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin-bottom: 1rem;
+            }
         }
     </style>
 </head>
@@ -566,6 +660,16 @@
     <!-- Database Status Indicator -->
     <div class="db-status testing" id="dbStatus">
         🔄 Testing connection...
+    </div>
+
+    <!-- Lead Intelligence Widget -->
+    <div class="lead-intelligence-widget" id="leadWidget">
+        <div class="widget-header">🎯 Lead Intelligence</div>
+        <div class="lead-score-display" id="widgetScore">0/100</div>
+        <div class="lead-quality cold" id="widgetQuality">Cold Lead</div>
+        <div class="widget-details" id="widgetDetails">
+            Session: 0m | Pages: 1 | Goals: 0
+        </div>
     </div>
 
     <!-- Debug Toggle -->
@@ -578,7 +682,7 @@
     </div>
 
     <div class="app-container">
-        <!-- Sidebar Navigation - COMPLETE VERSION -->
+        <!-- Sidebar Navigation -->
         <nav class="sidebar">
             <div class="logo-section">
                 <h1>Topiko</h1>
@@ -636,7 +740,7 @@
                 <div class="welcome-screen">
                     <h1 class="topiko-logo">Topiko</h1>
                     <p style="font-size: 1.2rem; color: #6b46c1; margin-bottom: 2rem;">Complete Business Platform for Indian SMBs</p>
-                    <p style="font-size: 1rem; color: #ef4444; margin-bottom: 2rem; font-weight: bold;">🔧 HOUR 9 FIX - Complete Lead Intelligence Debug</p>
+                    <p style="font-size: 1rem; color: #22c55e; margin-bottom: 2rem; font-weight: bold;">🎉 ENHANCED VERSION - Categories + Live Intelligence Widget!</p>
                     <button class="try-free-button" onclick="showScreen('language')">
                         Try for Free
                     </button>
@@ -678,7 +782,7 @@
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
                                 <h3>தமிழ்</h3>
-                                <p>தமிழில் தொடரவும்</p>
+                                <p>தমিழில் தொடরவும்</p>
                             </div>
                         </div>
                     </div>
@@ -803,9 +907,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="category">Business Category</label>
+                        <label for="category">Primary Business Category</label>
                         <select id="category" onchange="trackFormProgress()">
-                            <option value="">Select your business category</option>
+                            <option value="">Select your primary business category</option>
                             <option value="boutique">🏪 Boutique</option>
                             <option value="home-foods">🍛 Home Foods</option>
                             <option value="salons">💄 Salons & Beauty</option>
@@ -823,19 +927,23 @@
                 </div>
             </section>
 
-            <!-- Categories Screen -->
+            <!-- Enhanced Categories Screen -->
             <section class="screen" id="categories">
-                <div class="content-card" style="max-width: 800px; margin: 0 auto;">
-                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Choose Your Subcategories</h2>
-                    <p style="text-align: center; margin-bottom: 1rem;">Based on your <strong id="selectedBusinessType">business</strong>, select the subcategories that best describe your products/services</p>
+                <div class="content-card" style="max-width: 1000px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Select Your Business Categories</h2>
+                    <p style="text-align: center; margin-bottom: 1rem;">Choose all categories and subcategories that apply to your business</p>
                     
-                    <div id="subcategoriesContainer" style="margin-bottom: 3rem;">
-                        <!-- Subcategories will be populated based on business category -->
+                    <!-- Selection Summary -->
+                    <div class="selection-summary" id="selectionSummary">
+                        <h4>✅ Your Selections</h4>
+                        <div class="summary-content" id="summaryContent">
+                            No categories selected yet
+                        </div>
                     </div>
 
-                    <div class="selected-subcategories" id="selectedSubcategories" style="display: none; background: rgba(139, 111, 205, 0.1); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem;">
-                        <h3 style="color: #6b46c1; margin-bottom: 0.5rem;">✅ Selected Subcategories</h3>
-                        <div id="selectedSubcategoriesList" style="color: #553c9a;"></div>
+                    <!-- Categories Section -->
+                    <div class="categories-section" id="categoriesContainer">
+                        <!-- Categories will be populated here -->
                     </div>
 
                     <button class="submit-button" onclick="proceedToProducts()" id="categoryNextBtn" disabled>
@@ -865,38 +973,10 @@
                                 <input type="number" id="productPrice" placeholder="e.g., 899">
                             </div>
                         </div>
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-                            <div class="form-group">
-                                <label for="productCategory">Category</label>
-                                <select id="productCategory">
-                                    <option value="">Select category</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="productSubcategory">Subcategory</label>
-                                <select id="productSubcategory">
-                                    <option value="">Select subcategory</option>
-                                </select>
-                            </div>
-                        </div>
                         
                         <div class="form-group">
                             <label for="productDescription">Description</label>
                             <textarea id="productDescription" rows="3" placeholder="Brief description of your product or service"></textarea>
-                        </div>
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-                            <div class="form-group">
-                                <label for="productImage">Product Image URL (optional)</label>
-                                <input type="url" id="productImage" placeholder="https://example.com/image.jpg">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="productStock">Stock/Availability</label>
-                                <input type="number" id="productStock" placeholder="e.g., 50" value="10">
-                            </div>
                         </div>
                         
                         <button type="button" onclick="addProduct()" style="background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%); color: white; border: none; padding: 0.8rem 2rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
@@ -941,13 +1021,8 @@
                                 <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">Clean & Minimal</p>
                             </div>
                             <div style="padding: 15px; min-height: 200px;">
-                                <div class="theme-menu" style="background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem;">
-                                    <div style="font-weight: bold; color: #667eea;" id="modernMenuCategories">Your Categories</div>
-                                </div>
-                                <div class="theme-products" id="modernThemeProducts" style="display: grid; gap: 10px;">
-                                    <div style="text-align: center; color: #64748b; padding: 20px;">
-                                        <small>Your products will appear here</small>
-                                    </div>
+                                <div style="text-align: center; color: #64748b; padding: 20px;">
+                                    <small>Your products will appear here</small>
                                 </div>
                             </div>
                         </div>
@@ -959,13 +1034,8 @@
                                 <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">Vibrant & Fun</p>
                             </div>
                             <div style="padding: 15px; min-height: 200px;">
-                                <div class="theme-menu" style="background: #fef3c7; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem;">
-                                    <div style="font-weight: bold; color: #ff6b6b;" id="colorfulMenuCategories">Your Categories</div>
-                                </div>
-                                <div class="theme-products" id="colorfulThemeProducts" style="display: grid; gap: 10px;">
-                                    <div style="text-align: center; color: #64748b; padding: 20px;">
-                                        <small>Your products will appear here</small>
-                                    </div>
+                                <div style="text-align: center; color: #64748b; padding: 20px;">
+                                    <small>Your products will appear here</small>
                                 </div>
                             </div>
                         </div>
@@ -977,13 +1047,8 @@
                                 <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">Sophisticated</p>
                             </div>
                             <div style="padding: 15px; min-height: 200px;">
-                                <div class="theme-menu" style="background: #f3f4f6; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem;">
-                                    <div style="font-weight: bold; color: #2c3e50;" id="elegantMenuCategories">Your Categories</div>
-                                </div>
-                                <div class="theme-products" id="elegantThemeProducts" style="display: grid; gap: 10px;">
-                                    <div style="text-align: center; color: #64748b; padding: 20px;">
-                                        <small>Your products will appear here</small>
-                                    </div>
+                                <div style="text-align: center; color: #64748b; padding: 20px;">
+                                    <small>Your products will appear here</small>
                                 </div>
                             </div>
                         </div>
@@ -1008,13 +1073,14 @@
     </div>
 
     <script>
-        // 🎯 LEAD INTELLIGENCE SYSTEM - HOUR 9 COMPLETE FIX
+        // 🎯 ENHANCED LEAD INTELLIGENCE SYSTEM - CATEGORIES + LIVE WIDGET
         
         // ✅ CORE VARIABLES
         let sessionStartTime = Date.now();
         let selectedGoals = [];
         let selectedLanguage = 'en';
-        let selectedSubcategories = [];
+        let selectedMainCategories = [];  // NEW: Main categories
+        let selectedSubcategories = [];   // ENHANCED: Subcategories
         let selectedTheme = '';
         let userProducts = [];
         let currentUserId = null;
@@ -1033,14 +1099,14 @@
         let databaseConnected = false;
         let debugLogs = [];
 
-        // 🚀 SUPABASE CONFIGURATION - CORRECT HEADERS
+        // 🚀 SUPABASE CONFIGURATION
         const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co'
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k'
 
-        // 🇮🇳 INDIAN SMB BUSINESS CATEGORIES
-        const indianBusinessCategories = {
+        // 🇮🇳 COMPREHENSIVE INDIAN SMB BUSINESS CATEGORIES
+        const comprehensiveBusinessCategories = {
             boutique: {
-                name: 'Boutique',
+                name: 'Boutique & Fashion Store',
                 icon: '🏪',
                 subcategories: [
                     { id: 'women-ethnic', name: 'Women\'s Ethnic Wear', icon: '👗' },
@@ -1048,43 +1114,59 @@
                     { id: 'kids-wear', name: 'Kids Wear', icon: '👶' },
                     { id: 'accessories', name: 'Fashion Accessories', icon: '👜' },
                     { id: 'footwear', name: 'Footwear', icon: '👠' },
-                    { id: 'western-wear', name: 'Western Wear', icon: '👔' }
+                    { id: 'western-wear', name: 'Western Wear', icon: '👔' },
+                    { id: 'party-wear', name: 'Party & Wedding Wear', icon: '🎉' },
+                    { id: 'designer-wear', name: 'Designer Collection', icon: '💎' },
+                    { id: 'casual-wear', name: 'Casual Wear', icon: '👕' },
+                    { id: 'formal-wear', name: 'Formal Wear', icon: '🤵' }
                 ]
             },
             'home-foods': {
-                name: 'Home Foods',
+                name: 'Home Foods & Catering',
                 icon: '🍛',
                 subcategories: [
                     { id: 'north-indian', name: 'North Indian Cuisine', icon: '🍛' },
                     { id: 'south-indian', name: 'South Indian Cuisine', icon: '🥞' },
                     { id: 'street-food', name: 'Street Food', icon: '🥨' },
                     { id: 'sweets-snacks', name: 'Sweets & Snacks', icon: '🍬' },
-                    { id: 'beverages', name: 'Beverages', icon: '🧃' },
-                    { id: 'healthy-food', name: 'Healthy Food', icon: '🥗' }
+                    { id: 'beverages', name: 'Beverages & Drinks', icon: '🧃' },
+                    { id: 'healthy-food', name: 'Healthy Food', icon: '🥗' },
+                    { id: 'regional-cuisine', name: 'Regional Specialties', icon: '🍲' },
+                    { id: 'tiffin-service', name: 'Tiffin & Meal Service', icon: '🍱' },
+                    { id: 'catering', name: 'Event Catering', icon: '🍽️' },
+                    { id: 'bakery', name: 'Bakery Items', icon: '🧁' }
                 ]
             },
             salons: {
-                name: 'Salons & Beauty',
+                name: 'Salons & Beauty Services',
                 icon: '💄',
                 subcategories: [
-                    { id: 'hair-services', name: 'Hair Services', icon: '💇' },
+                    { id: 'hair-services', name: 'Hair Cut & Styling', icon: '💇' },
                     { id: 'facial-skincare', name: 'Facial & Skincare', icon: '🧴' },
                     { id: 'bridal-makeup', name: 'Bridal Makeup', icon: '👰' },
-                    { id: 'nail-art', name: 'Nail Art', icon: '💅' },
+                    { id: 'nail-art', name: 'Nail Art & Manicure', icon: '💅' },
                     { id: 'spa-massage', name: 'Spa & Massage', icon: '💆' },
-                    { id: 'mens-grooming', name: 'Men\'s Grooming', icon: '🧔' }
+                    { id: 'mens-grooming', name: 'Men\'s Grooming', icon: '🧔' },
+                    { id: 'eyebrow-threading', name: 'Eyebrow & Threading', icon: '👁️' },
+                    { id: 'makeup-artist', name: 'Professional Makeup', icon: '🎨' },
+                    { id: 'hair-treatment', name: 'Hair Treatment', icon: '💆‍♀️' },
+                    { id: 'beauty-consultation', name: 'Beauty Consultation', icon: '🗣️' }
                 ]
             },
             grocery: {
                 name: 'Grocery & Provisions',
                 icon: '🛒',
                 subcategories: [
-                    { id: 'vegetables-fruits', name: 'Vegetables & Fruits', icon: '🥬' },
+                    { id: 'vegetables-fruits', name: 'Fresh Vegetables & Fruits', icon: '🥬' },
                     { id: 'dairy-products', name: 'Dairy Products', icon: '🥛' },
                     { id: 'grains-pulses', name: 'Grains & Pulses', icon: '🌾' },
                     { id: 'spices-masala', name: 'Spices & Masala', icon: '🌶️' },
                     { id: 'packaged-foods', name: 'Packaged Foods', icon: '📦' },
-                    { id: 'household-items', name: 'Household Items', icon: '🧽' }
+                    { id: 'household-items', name: 'Household Items', icon: '🧽' },
+                    { id: 'organic-products', name: 'Organic Products', icon: '🌱' },
+                    { id: 'frozen-foods', name: 'Frozen Foods', icon: '🧊' },
+                    { id: 'beverages', name: 'Beverages & Drinks', icon: '🥤' },
+                    { id: 'personal-care', name: 'Personal Care Items', icon: '🧴' }
                 ]
             },
             furniture: {
@@ -1094,21 +1176,29 @@
                     { id: 'living-room', name: 'Living Room Furniture', icon: '🛋️' },
                     { id: 'bedroom', name: 'Bedroom Furniture', icon: '🛏️' },
                     { id: 'kitchen-dining', name: 'Kitchen & Dining', icon: '🍽️' },
-                    { id: 'home-decor', name: 'Home Decor', icon: '🖼️' },
-                    { id: 'lighting', name: 'Lighting', icon: '💡' },
-                    { id: 'storage', name: 'Storage Solutions', icon: '📚' }
+                    { id: 'home-decor', name: 'Home Decor & Art', icon: '🖼️' },
+                    { id: 'lighting', name: 'Lighting Solutions', icon: '💡' },
+                    { id: 'storage', name: 'Storage Solutions', icon: '📚' },
+                    { id: 'office-furniture', name: 'Office Furniture', icon: '🪑' },
+                    { id: 'outdoor-furniture', name: 'Outdoor Furniture', icon: '🏡' },
+                    { id: 'modular-furniture', name: 'Modular Furniture', icon: '🔧' },
+                    { id: 'antique-furniture', name: 'Antique & Vintage', icon: '🏺' }
                 ]
             },
             fashion: {
                 name: 'Fashion & Apparel',
                 icon: '👗',
                 subcategories: [
-                    { id: 'casual-wear', name: 'Casual Wear', icon: '👕' },
-                    { id: 'formal-wear', name: 'Formal Wear', icon: '👔' },
-                    { id: 'party-wear', name: 'Party Wear', icon: '🎉' },
-                    { id: 'sports-wear', name: 'Sports Wear', icon: '👟' },
-                    { id: 'innerwear', name: 'Innerwear', icon: '🩲' },
-                    { id: 'bags-wallets', name: 'Bags & Wallets', icon: '👜' }
+                    { id: 'mens-clothing', name: 'Men\'s Clothing', icon: '👔' },
+                    { id: 'womens-clothing', name: 'Women\'s Clothing', icon: '👗' },
+                    { id: 'kids-clothing', name: 'Kids Clothing', icon: '👶' },
+                    { id: 'shoes-footwear', name: 'Shoes & Footwear', icon: '👟' },
+                    { id: 'bags-wallets', name: 'Bags & Wallets', icon: '👜' },
+                    { id: 'watches', name: 'Watches & Timepieces', icon: '⌚' },
+                    { id: 'sunglasses', name: 'Sunglasses & Eyewear', icon: '🕶️' },
+                    { id: 'sportswear', name: 'Sportswear & Activewear', icon: '🏃‍♂️' },
+                    { id: 'lingerie', name: 'Innerwear & Lingerie', icon: '🩲' },
+                    { id: 'fashion-jewelry', name: 'Fashion Jewelry', icon: '💍' }
                 ]
             },
             jewellery: {
@@ -1117,22 +1207,30 @@
                 subcategories: [
                     { id: 'gold-jewellery', name: 'Gold Jewellery', icon: '🥇' },
                     { id: 'silver-jewellery', name: 'Silver Jewellery', icon: '🥈' },
-                    { id: 'fashion-jewellery', name: 'Fashion Jewellery', icon: '💎' },
-                    { id: 'watches', name: 'Watches', icon: '⌚' },
+                    { id: 'diamond-jewellery', name: 'Diamond Jewellery', icon: '💎' },
+                    { id: 'fashion-jewellery', name: 'Fashion Jewellery', icon: '✨' },
                     { id: 'precious-stones', name: 'Precious Stones', icon: '💎' },
-                    { id: 'custom-jewellery', name: 'Custom Jewellery', icon: '🔧' }
+                    { id: 'custom-jewellery', name: 'Custom Jewellery', icon: '🔧' },
+                    { id: 'traditional-jewellery', name: 'Traditional Jewellery', icon: '🏺' },
+                    { id: 'bridal-sets', name: 'Bridal Jewellery Sets', icon: '👰' },
+                    { id: 'mens-jewellery', name: 'Men\'s Jewellery', icon: '🤵' },
+                    { id: 'vintage-jewellery', name: 'Vintage & Antique', icon: '🏺' }
                 ]
             },
             electronics: {
                 name: 'Electronics & Gadgets',
                 icon: '📱',
                 subcategories: [
-                    { id: 'mobile-accessories', name: 'Mobile & Accessories', icon: '📱' },
+                    { id: 'mobile-phones', name: 'Mobile Phones', icon: '📱' },
+                    { id: 'mobile-accessories', name: 'Mobile Accessories', icon: '📱' },
                     { id: 'laptops-computers', name: 'Laptops & Computers', icon: '💻' },
                     { id: 'home-appliances', name: 'Home Appliances', icon: '🔌' },
-                    { id: 'audio-video', name: 'Audio & Video', icon: '🎵' },
-                    { id: 'gaming', name: 'Gaming', icon: '🎮' },
-                    { id: 'electronics-repair', name: 'Electronics Repair', icon: '🔧' }
+                    { id: 'audio-video', name: 'Audio & Video Systems', icon: '🎵' },
+                    { id: 'gaming', name: 'Gaming Accessories', icon: '🎮' },
+                    { id: 'electronics-repair', name: 'Electronics Repair', icon: '🔧' },
+                    { id: 'smart-devices', name: 'Smart Home Devices', icon: '🏠' },
+                    { id: 'cameras', name: 'Cameras & Photography', icon: '📷' },
+                    { id: 'wearable-tech', name: 'Wearable Technology', icon: '⌚' }
                 ]
             }
         };
@@ -1140,12 +1238,10 @@
         // 🔍 DEBUG LOGGING SYSTEM
         function addDebugLog(message, type = 'info') {
             const timestamp = new Date().toLocaleTimeString();
-            const logEntry = `[${timestamp}] ${message}`;
             debugLogs.push({ timestamp, message, type });
             
             console.log(`🔍 DEBUG ${type.toUpperCase()}: ${message}`);
             
-            // Update debug panel
             const debugLogEl = document.getElementById('debugLog');
             if (debugLogEl) {
                 debugLogEl.innerHTML = debugLogs.slice(-20).map(log => 
@@ -1160,6 +1256,49 @@
         function toggleDebugPanel() {
             const panel = document.getElementById('debugPanel');
             panel.classList.toggle('show');
+        }
+
+        // 🎯 LIVE LEAD INTELLIGENCE WIDGET UPDATE
+        function updateLeadIntelligenceWidget() {
+            const widget = document.getElementById('leadWidget');
+            const scoreEl = document.getElementById('widgetScore');
+            const qualityEl = document.getElementById('widgetQuality');
+            const detailsEl = document.getElementById('widgetDetails');
+            
+            if (!widget) return;
+            
+            // Calculate current score
+            calculateLeadScore();
+            
+            // Update score display
+            scoreEl.textContent = `${leadScore}/100`;
+            
+            // Update quality
+            let quality = 'Cold Lead';
+            let qualityClass = 'cold';
+            
+            if (leadScore >= 70) {
+                quality = 'Hot Lead 🔥';
+                qualityClass = 'hot';
+            } else if (leadScore >= 40) {
+                quality = 'Warm Lead 🌡️';
+                qualityClass = 'warm';
+            } else {
+                quality = 'Cold Lead ❄️';
+                qualityClass = 'cold';
+            }
+            
+            qualityEl.textContent = quality;
+            qualityEl.className = `lead-quality ${qualityClass}`;
+            
+            // Update details
+            const sessionMinutes = Math.round((Date.now() - sessionStartTime) / 60000);
+            detailsEl.innerHTML = `
+                Session: ${sessionMinutes}m | Pages: ${pageViews}<br>
+                Goals: ${selectedGoals.length} | Categories: ${selectedMainCategories.length + selectedSubcategories.length}
+            `;
+            
+            addDebugLog(`🎯 Lead Intelligence Widget Updated: Score ${leadScore}/100, Quality: ${quality}`);
         }
 
         // 🎯 UTM PARAMETER TRACKING
@@ -1264,30 +1403,19 @@
             try {
                 addDebugLog(`🚀 STARTING SAVE to table: ${table}`);
                 addDebugLog(`📤 Data being sent: ${JSON.stringify(data, null, 2)}`);
-                addDebugLog(`📊 Data size: ${JSON.stringify(data).length} characters`);
-                addDebugLog(`🔗 Request URL: ${SUPABASE_URL}/rest/v1/${table}`);
-                
-                const headers = {
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=representation'
-                };
-                
-                addDebugLog(`📨 Request headers: ${JSON.stringify({
-                    'apikey': SUPABASE_ANON_KEY.substring(0, 20) + '...',
-                    'Authorization': 'Bearer ' + SUPABASE_ANON_KEY.substring(0, 20) + '...',
-                    'Content-Type': 'application/json'
-                })}`);
                 
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
                     method: 'POST',
-                    headers: headers,
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
                     body: JSON.stringify(data)
                 });
 
                 addDebugLog(`📥 Response status: ${response.status} ${response.statusText}`);
-                addDebugLog(`📥 Response headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()))}`);
 
                 if (response.ok) {
                     const result = await response.json();
@@ -1296,14 +1424,9 @@
                     return { success: true, data: result };
                 } else {
                     const errorText = await response.text();
-                    addDebugLog(`❌ SAVE FAILED to ${table}:`, 'error');
-                    addDebugLog(`❌ Status: ${response.status} ${response.statusText}`, 'error');
-                    addDebugLog(`❌ Error body: ${errorText}`, 'error');
-                    addDebugLog(`❌ Failed data was: ${JSON.stringify(data, null, 2)}`, 'error');
-                    
+                    addDebugLog(`❌ SAVE FAILED to ${table}: Status ${response.status} - ${errorText}`, 'error');
                     updateDatabaseStatus('error', '❌ Database error');
                     
-                    // Parse error message for better debugging
                     let detailedError = `HTTP ${response.status}: ${errorText}`;
                     try {
                         const errorObj = JSON.parse(errorText);
@@ -1312,25 +1435,18 @@
                             if (errorObj.details) detailedError += ` | Details: ${errorObj.details}`;
                             if (errorObj.hint) detailedError += ` | Hint: ${errorObj.hint}`;
                         }
-                    } catch (e) {
-                        // Error response wasn't JSON, use raw text
-                    }
+                    } catch (e) {}
                     
-                    addDebugLog(`❌ Detailed error: ${detailedError}`, 'error');
                     return { success: false, error: detailedError };
                 }
             } catch (error) {
-                addDebugLog(`💥 SAVE EXCEPTION to ${table}:`, 'error');
-                addDebugLog(`💥 Error type: ${error.name}`, 'error');
-                addDebugLog(`💥 Error message: ${error.message}`, 'error');
-                addDebugLog(`💥 Failed data was: ${JSON.stringify(data, null, 2)}`, 'error');
-                
+                addDebugLog(`💥 SAVE EXCEPTION to ${table}: ${error.message}`, 'error');
                 updateDatabaseStatus('error', '❌ Database offline');
                 return { success: false, error: `Network Error: ${error.message}` };
             }
         }
 
-        // 💾 FIXED SAVE WITH EXPLICIT LEAD INTELLIGENCE HANDLING
+        // 💾 ENHANCED SAVE WITH CATEGORIES SUPPORT
         async function saveDataSafely(leadData) {
             addDebugLog('💾 Starting COMPLETE data save process...');
             
@@ -1351,12 +1467,12 @@
                         page_views: pageViews,
                         selected_goals: selectedGoals,
                         selected_language: selectedLanguage,
+                        selected_main_categories: selectedMainCategories,  // NEW
+                        selected_subcategories: selectedSubcategories,     // ENHANCED
                         device_type: deviceInfo.type,
                         browser: deviceInfo.browser,
                         utm_source: utmParams.source,
                         ready_for_sdr_assignment: true,
-                        // Complete flow data
-                        selected_subcategories: selectedSubcategories,
                         selected_theme: selectedTheme,
                         products_count: userProducts.length,
                         products: userProducts
@@ -1379,14 +1495,13 @@
                 addDebugLog(`❌ LocalStorage save failed: ${error.message}`, 'error');
             }
             
-            // STEP 2: Try to save to Supabase with EXPLICIT error handling
+            // STEP 2: Try to save to Supabase with DUPLICATE EMAIL HANDLING
             if (databaseConnected) {
                 addDebugLog('🗄️ Attempting database save...');
                 
-                // Prepare USERS table data (basic user info only)
                 const usersData = {
                     name: leadData.name,
-                    email: leadData.email,  // Required field
+                    email: leadData.email,
                     phone: leadData.phone,
                     business_name: leadData.business_name,
                     address: leadData.address,
@@ -1397,71 +1512,80 @@
                 addDebugLog('🔄 STEP 1: Saving to USERS table...');
                 const usersResult = await saveToSupabase(usersData, 'users');
                 
+                let userId = null;
+                
                 if (usersResult.success) {
                     addDebugLog('✅ USERS table save successful!', 'success');
                     showNotification('✅ User data saved to database!', 'success');
+                    userId = usersResult.data[0].id;
+                } else if (usersResult.error.includes('duplicate key value') || usersResult.error.includes('23505')) {
+                    addDebugLog('⚠️ DUPLICATE EMAIL detected - checking if user exists...', 'info');
                     
-                    // STEP 3: Save LEAD INTELLIGENCE with explicit debugging
-                    if (usersResult.data && usersResult.data.length > 0) {
-                        const userId = usersResult.data[0].id;
-                        currentUserId = userId;
+                    try {
+                        const response = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${leadData.email}`, {
+                            method: 'GET',
+                            headers: {
+                                'apikey': SUPABASE_ANON_KEY,
+                                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
                         
-                        addDebugLog(`🔄 STEP 2: Saving LEAD INTELLIGENCE for user ID: ${userId}...`);
-                        
-                        // Prepare LEAD INTELLIGENCE data with EXACT schema match
-                        const intelligenceData = {
-                            user_id: userId,  // Foreign key reference
-                            lead_score: leadScore,
-                            lead_quality: leadScore >= 70 ? 'Hot' : leadScore >= 40 ? 'Warm' : 'Cold',
-                            engagement_level: leadScore >= 70 ? 'High' : leadScore >= 40 ? 'Medium' : 'Low',
-                            session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
-                            page_views: pageViews,
-                            selected_goals: selectedGoals,  // This should be JSONB in database
-                            selected_language: selectedLanguage,
-                            device_type: deviceInfo.type,
-                            browser: deviceInfo.browser,
-                            utm_source: utmParams.source,
-                            lead_status: 'New',
-                            ready_for_sdr_assignment: true
-                        };
-                        
-                        addDebugLog(`📊 LEAD INTELLIGENCE data prepared: ${JSON.stringify(intelligenceData, null, 2)}`);
-                        
-                        const intelligenceResult = await saveToSupabase(intelligenceData, 'lead_intelligence');
-                        
-                        if (intelligenceResult.success) {
-                            addDebugLog('🎉 BOTH tables saved successfully! Complete data in database!', 'success');
-                            showNotification('🎉 Complete lead intelligence saved!', 'success');
-                        } else {
-                            addDebugLog(`❌ LEAD INTELLIGENCE save failed: ${intelligenceResult.error}`, 'error');
-                            showNotification(`⚠️ User saved, but lead intelligence failed: ${intelligenceResult.error}`, 'warning');
-                            
-                            // Show specific error to help debug
-                            setTimeout(() => {
-                                alert(`🔍 LEAD INTELLIGENCE DEBUG INFO:
-
-❌ Error Details: ${intelligenceResult.error}
-
-📊 Data being saved:
-- User ID: ${userId}
-- Lead Score: ${leadScore}
-- Selected Goals: ${JSON.stringify(selectedGoals)}
-- Device Type: ${deviceInfo.type}
-- UTM Source: ${utmParams.source}
-
-✅ User table: SAVED
-❌ Lead Intelligence table: FAILED
-
-Check the debug panel for detailed logs!`);
-                            }, 2000);
+                        if (response.ok) {
+                            const existingUsers = await response.json();
+                            if (existingUsers.length > 0) {
+                                userId = existingUsers[0].id;
+                                addDebugLog(`✅ FOUND existing user with ID: ${userId}`, 'success');
+                                showNotification('⚠️ Email exists, but proceeding with lead intelligence!', 'warning');
+                            }
                         }
-                    } else {
-                        addDebugLog('❌ No user ID returned from users table save', 'error');
-                        showNotification('⚠️ User saved but no ID returned for intelligence', 'warning');
+                    } catch (error) {
+                        addDebugLog(`❌ Could not fetch existing user: ${error.message}`, 'error');
                     }
                 } else {
                     addDebugLog(`❌ USERS table save failed: ${usersResult.error}`, 'error');
                     showNotification(`💾 Database save failed: ${usersResult.error}`, 'error');
+                }
+                
+                // STEP 3: Save LEAD INTELLIGENCE with ENHANCED CATEGORIES
+                if (userId) {
+                    currentUserId = userId;
+                    
+                    addDebugLog(`🔄 STEP 2: Saving LEAD INTELLIGENCE for user ID: ${userId}...`);
+                    
+                    const intelligenceData = {
+                        user_id: userId,
+                        lead_score: leadScore,
+                        lead_quality: leadScore >= 70 ? 'Hot' : leadScore >= 40 ? 'Warm' : 'Cold',
+                        engagement_level: leadScore >= 70 ? 'High' : leadScore >= 40 ? 'Medium' : 'Low',
+                        session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
+                        page_views: pageViews,
+                        selected_goals: selectedGoals,
+                        selected_language: selectedLanguage,
+                        device_type: deviceInfo.type,
+                        browser: deviceInfo.browser,
+                        utm_source: utmParams.source,
+                        lead_status: 'New',
+                        ready_for_sdr_assignment: true,
+                        // ENHANCED: Add category data if schema supports it
+                        selected_main_categories: selectedMainCategories,    // NEW FIELD
+                        selected_subcategories: selectedSubcategories        // ENHANCED FIELD
+                    };
+                    
+                    addDebugLog(`📊 LEAD INTELLIGENCE data prepared: ${JSON.stringify(intelligenceData, null, 2)}`);
+                    
+                    const intelligenceResult = await saveToSupabase(intelligenceData, 'lead_intelligence');
+                    
+                    if (intelligenceResult.success) {
+                        addDebugLog('🎉 LEAD INTELLIGENCE saved successfully! Complete data in database!', 'success');
+                        showNotification('🎉 Complete lead intelligence saved!', 'success');
+                    } else {
+                        addDebugLog(`❌ LEAD INTELLIGENCE save failed: ${intelligenceResult.error}`, 'error');
+                        showNotification(`⚠️ Lead intelligence failed: ${intelligenceResult.error}`, 'warning');
+                    }
+                } else {
+                    addDebugLog('❌ Could not get user ID for lead intelligence save', 'error');
+                    showNotification('⚠️ Could not save lead intelligence - no user ID', 'warning');
                 }
             } else {
                 addDebugLog('⚠️ Database not connected, localStorage only', 'info');
@@ -1469,7 +1593,7 @@ Check the debug panel for detailed logs!`);
             }
         }
 
-        // 📊 LEAD SCORING ALGORITHM
+        // 📊 ENHANCED LEAD SCORING ALGORITHM
         function calculateLeadScore() {
             let score = 0;
             
@@ -1491,8 +1615,9 @@ Check the debug panel for detailed logs!`);
             // Page Views (2 points per page, max 10)
             score += Math.min(pageViews * 2, 10);
             
-            // Subcategories Selected (3 points per subcategory, max 15)
-            score += Math.min(selectedSubcategories.length * 3, 15);
+            // Categories Selected (3 points per main category, 2 points per subcategory, max 20)
+            score += Math.min(selectedMainCategories.length * 3, 15);
+            score += Math.min(selectedSubcategories.length * 2, 15);
             
             // Products Added (2 points per product, max 10)
             score += Math.min(userProducts.length * 2, 10);
@@ -1503,6 +1628,9 @@ Check the debug panel for detailed logs!`);
             leadScore = Math.min(score, 100);
             addDebugLog(`📊 Lead Score Updated: ${leadScore}/100`);
             
+            // Update widget
+            updateLeadIntelligenceWidget();
+            
             return leadScore;
         }
 
@@ -1510,7 +1638,6 @@ Check the debug panel for detailed logs!`);
         function selectLanguage(lang, element) {
             selectedLanguage = lang;
             
-            // Update UI
             document.querySelectorAll('.language-option').forEach(option => {
                 option.classList.remove('selected');
             });
@@ -1569,7 +1696,7 @@ Check the debug panel for detailed logs!`);
             calculateLeadScore();
         }
 
-        // 📝 REGISTRATION SUBMISSION - FIXED VERSION WITH DEBUGGING
+        // 📝 REGISTRATION SUBMISSION
         async function submitRegistration() {
             addDebugLog('🎯 REGISTRATION SUBMISSION STARTED');
             
@@ -1587,7 +1714,6 @@ Check the debug panel for detailed logs!`);
                 return;
             }
 
-            // Validate email format
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 showNotification('Please enter a valid email address', 'error');
@@ -1597,23 +1723,19 @@ Check the debug panel for detailed logs!`);
 
             showNotification('Creating your account...', 'info');
             addDebugLog('✅ Form validation passed, proceeding with save...');
+            addDebugLog(`🔍 Attempting to save user with email: ${email}`);
 
-            // Generate user ID
             currentUserId = 'topiko_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             addDebugLog(`🆔 Generated user ID: ${currentUserId}`);
 
-            // Create comprehensive lead data with CORRECT field names
             const leadData = {
-                // Basic Info - matching database schema exactly
                 name: name,
-                email: email,  // Required field
+                email: email,
                 phone: phone,
                 business_name: business,
                 address: address,
                 business_type: type,
                 business_category: category,
-                
-                // Lead Intelligence metadata (for localStorage)
                 selected_language: selectedLanguage,
                 selected_goals: selectedGoals,
                 lead_score: leadScore,
@@ -1634,7 +1756,6 @@ Check the debug panel for detailed logs!`);
 
             addDebugLog(`📋 Complete lead data prepared: ${JSON.stringify(leadData, null, 2)}`);
 
-            // Save using enhanced hybrid method with explicit debugging
             await saveDataSafely(leadData);
             
             showNotification('✅ Registration completed successfully!', 'success');
@@ -1643,109 +1764,148 @@ Check the debug panel for detailed logs!`);
             setTimeout(() => showScreen('categories'), 2000);
         }
 
-        // 📋 LOAD SUBCATEGORIES
-        function loadSubcategories() {
-            const businessCategory = document.getElementById('category').value;
-            const selectedBusinessTypeEl = document.getElementById('selectedBusinessType');
-            const subcategoriesContainer = document.getElementById('subcategoriesContainer');
+        // 🏷️ LOAD COMPREHENSIVE CATEGORIES
+        function loadComprehensiveCategories() {
+            const categoriesContainer = document.getElementById('categoriesContainer');
             
-            if (!businessCategory || !indianBusinessCategories[businessCategory]) {
-                subcategoriesContainer.innerHTML = '<p style="text-align: center; color: #64748b;">Please complete your registration first.</p>';
-                return;
-            }
-            
-            const categoryData = indianBusinessCategories[businessCategory];
-            selectedBusinessTypeEl.textContent = categoryData.name;
-            
-            subcategoriesContainer.innerHTML = `
-                <h3 style="color: #6b46c1; text-align: center; margin-bottom: 2rem;">
-                    ${categoryData.icon} ${categoryData.name} Subcategories
-                </h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                    ${categoryData.subcategories.map(subcat => `
-                        <div class="subcategory-card" onclick="toggleSubcategory('${subcat.id}', this)" 
-                             style="padding: 1rem; background: rgba(255, 255, 255, 0.6); border: 2px solid rgba(139, 111, 205, 0.1); 
-                                    border-radius: 12px; cursor: pointer; transition: all 0.3s ease; text-align: center;">
-                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">${subcat.icon}</div>
-                            <h4 style="color: #6b46c1; margin-bottom: 0.3rem; font-size: 0.9rem;">${subcat.name}</h4>
-                        </div>
-                    `).join('')}
+            const categoryGroups = Object.entries(comprehensiveBusinessCategories).map(([key, category]) => `
+                <div class="category-group">
+                    <div class="main-category-header" onclick="toggleMainCategory('${key}')">
+                        <input type="checkbox" id="main-${key}" class="main-category-checkbox" onchange="handleMainCategoryChange('${key}')" />
+                        <div class="main-category-icon">${category.icon}</div>
+                        <div class="main-category-title">${category.name}</div>
+                    </div>
+                    
+                    <div class="subcategories-grid" id="subcategories-${key}">
+                        ${category.subcategories.map(subcat => `
+                            <div class="subcategory-item">
+                                <input type="checkbox" id="sub-${subcat.id}" class="subcategory-checkbox" value="${subcat.id}" onchange="handleSubcategoryChange('${key}', '${subcat.id}')" />
+                                <div class="subcategory-icon">${subcat.icon}</div>
+                                <label for="sub-${subcat.id}" class="subcategory-label">${subcat.name}</label>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
-            `;
+            `).join('');
+            
+            categoriesContainer.innerHTML = categoryGroups;
+            
+            addDebugLog('📂 Comprehensive categories loaded with checkboxes');
         }
 
-        // 🏷️ TOGGLE SUBCATEGORY
-        function toggleSubcategory(subcategoryId, element) {
-            if (selectedSubcategories.includes(subcategoryId)) {
-                selectedSubcategories = selectedSubcategories.filter(id => id !== subcategoryId);
-                element.classList.remove('selected');
+        // 🏷️ TOGGLE MAIN CATEGORY
+        function toggleMainCategory(categoryKey) {
+            const subcategoriesGrid = document.getElementById(`subcategories-${categoryKey}`);
+            subcategoriesGrid.classList.toggle('show');
+        }
+
+        // 🏷️ HANDLE MAIN CATEGORY CHANGE
+        function handleMainCategoryChange(categoryKey) {
+            const checkbox = document.getElementById(`main-${categoryKey}`);
+            
+            if (checkbox.checked) {
+                if (!selectedMainCategories.includes(categoryKey)) {
+                    selectedMainCategories.push(categoryKey);
+                }
+                // Show subcategories when main category is selected
+                document.getElementById(`subcategories-${categoryKey}`).classList.add('show');
             } else {
-                selectedSubcategories.push(subcategoryId);
-                element.classList.add('selected');
+                selectedMainCategories = selectedMainCategories.filter(id => id !== categoryKey);
+                // Hide subcategories and uncheck all when main category is unchecked
+                document.getElementById(`subcategories-${categoryKey}`).classList.remove('show');
+                
+                // Uncheck all subcategories of this main category
+                const subcategoryCheckboxes = document.querySelectorAll(`#subcategories-${categoryKey} .subcategory-checkbox`);
+                subcategoryCheckboxes.forEach(subCheckbox => {
+                    if (subCheckbox.checked) {
+                        subCheckbox.checked = false;
+                        selectedSubcategories = selectedSubcategories.filter(id => id !== subCheckbox.value);
+                    }
+                });
             }
             
-            updateSelectedSubcategories();
+            updateSelectionSummary();
             calculateLeadScore();
         }
 
-        // 📝 UPDATE SELECTED SUBCATEGORIES
-        function updateSelectedSubcategories() {
-            const selectedDiv = document.getElementById('selectedSubcategories');
-            const selectedList = document.getElementById('selectedSubcategoriesList');
+        // 🏷️ HANDLE SUBCATEGORY CHANGE
+        function handleSubcategoryChange(categoryKey, subcategoryId) {
+            const checkbox = document.getElementById(`sub-${subcategoryId}`);
+            
+            if (checkbox.checked) {
+                if (!selectedSubcategories.includes(subcategoryId)) {
+                    selectedSubcategories.push(subcategoryId);
+                }
+                // Auto-check main category if not already checked
+                const mainCheckbox = document.getElementById(`main-${categoryKey}`);
+                if (!mainCheckbox.checked) {
+                    mainCheckbox.checked = true;
+                    if (!selectedMainCategories.includes(categoryKey)) {
+                        selectedMainCategories.push(categoryKey);
+                    }
+                }
+            } else {
+                selectedSubcategories = selectedSubcategories.filter(id => id !== subcategoryId);
+            }
+            
+            updateSelectionSummary();
+            calculateLeadScore();
+        }
+
+        // 📝 UPDATE SELECTION SUMMARY
+        function updateSelectionSummary() {
+            const summaryDiv = document.getElementById('selectionSummary');
+            const summaryContent = document.getElementById('summaryContent');
             const nextBtn = document.getElementById('categoryNextBtn');
             
-            if (selectedSubcategories.length > 0) {
-                selectedDiv.style.display = 'block';
+            const totalSelections = selectedMainCategories.length + selectedSubcategories.length;
+            
+            if (totalSelections > 0) {
+                summaryDiv.classList.add('show');
                 
-                const businessCategory = document.getElementById('category').value;
-                const categoryData = indianBusinessCategories[businessCategory];
-                const subcategoryNames = selectedSubcategories.map(id => {
-                    const subcat = categoryData.subcategories.find(s => s.id === id);
-                    return subcat ? `${subcat.icon} ${subcat.name}` : id;
-                });
+                let summaryText = '';
                 
-                selectedList.innerHTML = subcategoryNames.join(' • ');
+                if (selectedMainCategories.length > 0) {
+                    const mainCategoryNames = selectedMainCategories.map(key => {
+                        const category = comprehensiveBusinessCategories[key];
+                        return `${category.icon} ${category.name}`;
+                    });
+                    summaryText += `<strong>Main Categories:</strong> ${mainCategoryNames.join(', ')}<br>`;
+                }
+                
+                if (selectedSubcategories.length > 0) {
+                    const subcategoryNames = selectedSubcategories.map(id => {
+                        // Find the subcategory across all main categories
+                        for (const [key, category] of Object.entries(comprehensiveBusinessCategories)) {
+                            const subcat = category.subcategories.find(s => s.id === id);
+                            if (subcat) return `${subcat.icon} ${subcat.name}`;
+                        }
+                        return id;
+                    });
+                    summaryText += `<strong>Subcategories:</strong> ${subcategoryNames.join(', ')}`;
+                }
+                
+                summaryContent.innerHTML = summaryText;
                 nextBtn.disabled = false;
                 nextBtn.style.opacity = '1';
             } else {
-                selectedDiv.style.display = 'none';
+                summaryDiv.classList.remove('show');
                 nextBtn.disabled = true;
                 nextBtn.style.opacity = '0.5';
             }
+            
+            addDebugLog(`Categories selected: ${selectedMainCategories.length} main, ${selectedSubcategories.length} sub`);
         }
 
         // ➡️ PROCEED TO PRODUCTS
         function proceedToProducts() {
-            if (selectedSubcategories.length === 0) {
-                showNotification('Please select at least one subcategory', 'error');
+            if (selectedMainCategories.length === 0 && selectedSubcategories.length === 0) {
+                showNotification('Please select at least one category or subcategory', 'error');
                 return;
             }
             
-            populateProductCategories();
-            showNotification('Moving to product setup...', 'info');
+            showNotification(`Great! You've selected ${selectedMainCategories.length} main categories and ${selectedSubcategories.length} subcategories`, 'success');
             setTimeout(() => showScreen('products'), 1000);
-        }
-
-        // 📦 POPULATE PRODUCT CATEGORIES
-        function populateProductCategories() {
-            const businessCategory = document.getElementById('category').value;
-            const categoryData = indianBusinessCategories[businessCategory];
-            const productCategorySelect = document.getElementById('productCategory');
-            const productSubcategorySelect = document.getElementById('productSubcategory');
-            
-            productCategorySelect.innerHTML = '<option value="">Select category</option>';
-            productSubcategorySelect.innerHTML = '<option value="">Select subcategory</option>';
-            
-            productCategorySelect.innerHTML += `<option value="${businessCategory}">${categoryData.name}</option>`;
-            
-            selectedSubcategories.forEach(subcatId => {
-                const subcat = categoryData.subcategories.find(s => s.id === subcatId);
-                if (subcat) {
-                    productSubcategorySelect.innerHTML += `<option value="${subcatId}">${subcat.name}</option>`;
-                }
-            });
-            
-            productCategorySelect.value = businessCategory;
         }
 
         // 📦 ADD PRODUCT
@@ -1753,12 +1913,8 @@ Check the debug panel for detailed logs!`);
             const name = document.getElementById('productName').value.trim();
             const price = document.getElementById('productPrice').value.trim();
             const description = document.getElementById('productDescription').value.trim();
-            const category = document.getElementById('productCategory').value;
-            const subcategory = document.getElementById('productSubcategory').value;
-            const imageUrl = document.getElementById('productImage').value.trim();
-            const stock = document.getElementById('productStock').value.trim();
             
-            if (!name || !price || !description || !category || !subcategory) {
+            if (!name || !price || !description) {
                 showNotification('Please fill in all required fields', 'error');
                 return;
             }
@@ -1773,10 +1929,6 @@ Check the debug panel for detailed logs!`);
                 name: name,
                 price: parseFloat(price),
                 description: description,
-                category: category,
-                subcategory: subcategory,
-                imageUrl: imageUrl || getDefaultProductImage(subcategory),
-                stock: stock ? parseInt(stock) : 10,
                 createdAt: new Date().toISOString()
             };
             
@@ -1786,20 +1938,11 @@ Check the debug panel for detailed logs!`);
             document.getElementById('productName').value = '';
             document.getElementById('productPrice').value = '';
             document.getElementById('productDescription').value = '';
-            document.getElementById('productSubcategory').value = '';
-            document.getElementById('productImage').value = '';
-            document.getElementById('productStock').value = '10';
             
             displayProducts();
-            updateThemePreviews();
             calculateLeadScore();
             
             showNotification(`Product "${name}" added successfully!`, 'success');
-        }
-
-        // 🖼️ GET DEFAULT PRODUCT IMAGE
-        function getDefaultProductImage(subcategory) {
-            return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjFmNWY5Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjM2NjcwIiBmb250LWZhbWlseT0iYXJpYWwiIGZvbnQtc2l6ZT0iNDAiPvCfk6Y8L3RleHQ+PC9zdmc+';
         }
 
         // 📋 DISPLAY PRODUCTS
@@ -1821,66 +1964,17 @@ Check the debug panel for detailed logs!`);
             
             productsList.innerHTML = userProducts.map(product => `
                 <div class="product-card" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                    <div style="height: 150px; background-image: url('${product.imageUrl}'); background-size: cover; background-position: center; position: relative;">
-                        <div style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; color: #059669;">
-                            ₹${product.price.toLocaleString()}
-                        </div>
-                    </div>
                     <div style="padding: 1rem;">
                         <div style="font-size: 1.1rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">${product.name}</div>
-                        <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">${product.description}</div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b;">
-                            <span>📦 Stock: ${product.stock}</span>
-                        </div>
+                        <div style="color: #059669; font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem;">₹${product.price.toLocaleString()}</div>
+                        <div style="color: #64748b; font-size: 0.9rem;">${product.description}</div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // 🎨 UPDATE THEME PREVIEWS
-        function updateThemePreviews() {
-            const businessCategory = document.getElementById('category').value;
-            const categoryData = indianBusinessCategories[businessCategory];
-            
-            if (!categoryData) return;
-            
-            const menuText = selectedSubcategories.map(id => {
-                const subcat = categoryData.subcategories.find(s => s.id === id);
-                return subcat ? subcat.name : id;
-            }).join(' • ');
-            
-            ['modern', 'colorful', 'elegant'].forEach(theme => {
-                const menuEl = document.getElementById(`${theme}MenuCategories`);
-                const productsEl = document.getElementById(`${theme}ThemeProducts`);
-                
-                if (menuEl) menuEl.textContent = menuText || 'Your Categories';
-                
-                if (productsEl) {
-                    if (userProducts.length === 0) {
-                        productsEl.innerHTML = `
-                            <div style="text-align: center; color: #64748b; padding: 20px; font-size: 0.8rem;">
-                                Your products will appear here
-                            </div>
-                        `;
-                    } else {
-                        productsEl.innerHTML = userProducts.slice(0, 2).map(product => `
-                            <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.8); padding: 8px; border-radius: 6px; font-size: 0.7rem;">
-                                <div style="width: 30px; height: 30px; background-image: url('${product.imageUrl}'); background-size: cover; border-radius: 4px;"></div>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: bold; color: #1e293b;">${product.name}</div>
-                                    <div style="color: #059669; font-weight: bold;">₹${product.price}</div>
-                                </div>
-                            </div>
-                        `).join('') + (userProducts.length > 2 ? 
-                            `<div style="text-align: center; font-size: 0.7rem; color: #64748b;">+${userProducts.length - 2} more</div>` : '');
-                    }
-                }
-            });
-        }
-
         // 🎨 PROCEED TO THEMES
         function proceedToThemes() {
-            updateThemePreviews();
             calculateLeadScore();
             showNotification(`Great! You've added ${userProducts.length} products. Moving to themes...`, 'success');
             setTimeout(() => showScreen('themes'), 1500);
@@ -1924,7 +2018,6 @@ Check the debug panel for detailed logs!`);
                 return;
             }
 
-            // Final data compilation
             const completeSetupData = {
                 user_id: currentUserId,
                 name: document.getElementById('fullName').value,
@@ -1934,7 +2027,8 @@ Check the debug panel for detailed logs!`);
                 business_category: document.getElementById('category').value,
                 selected_language: selectedLanguage,
                 selected_goals: selectedGoals,
-                selected_subcategories: selectedSubcategories,
+                selected_main_categories: selectedMainCategories,   // NEW
+                selected_subcategories: selectedSubcategories,     // ENHANCED
                 selected_theme: selectedTheme,
                 products_count: userProducts.length,
                 products: userProducts,
@@ -1943,32 +2037,29 @@ Check the debug panel for detailed logs!`);
                 completed_at: new Date().toISOString()
             };
 
-            // Save final completion data
             await saveDataSafely(completeSetupData);
             
             showNotification('🎉 Setup completed successfully!', 'success');
             
-            // Show completion message
             setTimeout(() => {
                 const dbStatus = databaseConnected ? 'Database connected ✅' : 'Offline mode 💾';
                 alert(`✅ Congratulations! 
                 
 Your Topiko business platform setup is complete:
 • Business: ${document.getElementById('businessName').value}
-• Theme: ${selectedTheme}
+• Categories: ${selectedMainCategories.length} main, ${selectedSubcategories.length} sub
 • Products: ${userProducts.length}
+• Theme: ${selectedTheme}
 • Lead Score: ${leadScore}/100
 
 ${dbStatus}
 
-Your lead data has been captured and is ready for the CRM system!
+Enhanced Features:
+• Live lead intelligence tracking
+• Comprehensive category selection
+• Real-time scoring widget
 
-🎯 Next Steps:
-1. Your data is saved and accessible via CRM
-2. SDR assignment will happen automatically
-3. You'll be contacted within 24 hours
-
-This completes the working version!`);
+Your complete lead data has been captured!`);
             }, 1500);
         }
 
@@ -1976,26 +2067,12 @@ This completes the working version!`);
         function showScreen(screenId) {
             pageViews++;
             
-            // Track time on previous screen
-            const currentScreen = document.querySelector('.screen.active');
-            if (currentScreen) {
-                const screenName = currentScreen.id;
-                if (!behaviorData.timeOnPages[screenName]) {
-                    behaviorData.timeOnPages[screenName] = 0;
-                }
-                behaviorData.timeOnPages[screenName] += Date.now() - (behaviorData.lastScreenTime || sessionStartTime);
-            }
-            behaviorData.lastScreenTime = Date.now();
-            
-            // Hide all screens
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
             });
 
-            // Show selected screen
             document.getElementById(screenId).classList.add('active');
 
-            // Update navigation
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
             });
@@ -2003,7 +2080,7 @@ This completes the working version!`);
             
             // Special handling for categories page
             if (screenId === 'categories') {
-                setTimeout(loadSubcategories, 100);
+                setTimeout(loadComprehensiveCategories, 100);
             }
             
             addDebugLog(`📄 Navigated to screen: ${screenId}`);
@@ -2025,23 +2102,25 @@ This completes the working version!`);
 
         // 🚀 INITIALIZATION
         document.addEventListener('DOMContentLoaded', async function() {
-            addDebugLog('🚀 Topiko Lead Form - HOUR 9 COMPLETE VERSION Initialized');
+            addDebugLog('🚀 Topiko Lead Form - ENHANCED VERSION Initialized');
             
-            // Initialize tracking
             captureUTMParameters();
             detectDevice();
-            
-            // Test database connection
             databaseConnected = await testDatabaseConnection();
             
-            addDebugLog('✅ Lead Intelligence System Ready with Complete Flow');
-            addDebugLog('💾 Primary Storage: localStorage (100% reliable)');
-            addDebugLog('🔌 Database Storage: Supabase (with detailed error logging)');
-            addDebugLog('🔍 Debug panel available - click "Debug" button to view logs');
-            addDebugLog('📱 All 7 screens available: Home, Language, Goals, Registration, Categories, Products, Themes');
+            // Initialize lead intelligence widget
+            updateLeadIntelligenceWidget();
+            
+            // Update widget every 10 seconds
+            setInterval(updateLeadIntelligenceWidget, 10000);
+            
+            addDebugLog('✅ Enhanced Lead Intelligence System Ready');
+            addDebugLog('🎯 Live intelligence widget active');
+            addDebugLog('📂 Comprehensive categories with checkboxes loaded');
+            addDebugLog('💾 Enhanced database storage for categories');
         });
 
-        // Track all clicks
+        // Track all clicks for behavior analysis
         document.addEventListener('click', function(event) {
             behaviorData.clickEvents.push({
                 type: 'click',
@@ -2050,6 +2129,9 @@ This completes the working version!`);
                 id: event.target.id,
                 timestamp: Date.now()
             });
+            
+            // Update widget on interaction
+            setTimeout(updateLeadIntelligenceWidget, 100);
         });
 
         // Track form focus events
@@ -2060,15 +2142,11 @@ This completes the working version!`);
                     field: event.target.id,
                     timestamp: Date.now()
                 });
+                
+                // Update widget on form interaction
+                setTimeout(updateLeadIntelligenceWidget, 100);
             }
         }, true);
-
-        // Periodic connection testing
-        setInterval(async () => {
-            if (!databaseConnected) {
-                databaseConnected = await testDatabaseConnection();
-            }
-        }, 30000); // Test every 30 seconds if offline
     </script>
 </body>
 </html>
