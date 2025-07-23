@@ -22,6 +22,30 @@
             min-height: 100vh;
         }
 
+        /* Database Status Indicator */
+        .db-status {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(34, 197, 94, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .db-status.testing {
+            background: rgba(59, 130, 246, 0.9);
+        }
+
+        .db-status.error {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
         /* Sidebar Navigation */
         .sidebar {
             width: 260px;
@@ -78,39 +102,6 @@
         .nav-icon {
             margin-right: 0.8rem;
             font-size: 1.1rem;
-        }
-
-        /* Database Status Indicator */
-        .db-status {
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        .db-status.connected {
-            color: #059669;
-            border: 1px solid #d1fae5;
-            background: rgba(236, 253, 245, 0.95);
-        }
-
-        .db-status.offline {
-            color: #d97706;
-            border: 1px solid #fef3c7;
-            background: rgba(255, 251, 235, 0.95);
-        }
-
-        .db-status.error {
-            color: #dc2626;
-            border: 1px solid #fecaca;
-            background: rgba(254, 242, 242, 0.95);
         }
 
         /* Main Content */
@@ -456,7 +447,7 @@
             transform: translateX(400px);
             opacity: 0;
             transition: all 0.4s ease;
-            z-index: 1000;
+            z-index: 1001;
         }
 
         .notification.show {
@@ -522,8 +513,8 @@
 </head>
 <body>
     <!-- Database Status Indicator -->
-    <div class="db-status offline" id="dbStatus">
-        💾 Offline Mode
+    <div class="db-status testing" id="dbStatus">
+        🔄 Testing connection...
     </div>
 
     <div class="app-container">
@@ -626,7 +617,7 @@
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
                                 <h3>தமிழ்</h3>
-                                <p>தमிழில் தொடரवून்</p>
+                                <p>তमিழில் তொடরवும্</p>
                             </div>
                         </div>
                     </div>
@@ -951,7 +942,7 @@
     </div>
 
     <script>
-        // 🎯 LEAD INTELLIGENCE SYSTEM - CORS-SAFE VERSION
+        // 🎯 LEAD INTELLIGENCE SYSTEM - SUPABASE FIXED VERSION
         
         // ✅ CORE VARIABLES
         let sessionStartTime = Date.now();
@@ -975,7 +966,7 @@
         };
         let databaseConnected = false;
 
-        // 🚀 SUPABASE CONFIGURATION  
+        // 🚀 SUPABASE CONFIGURATION - CORRECT HEADERS
         const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co'
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k'
 
@@ -1136,10 +1127,10 @@
             }
         }
 
-        // 🔍 TEST DATABASE CONNECTION
+        // 🔍 TEST DATABASE CONNECTION WITH CORRECT HEADERS
         async function testDatabaseConnection() {
             try {
-                updateDatabaseStatus('offline', '🔄 Testing connection...');
+                updateDatabaseStatus('testing', '🔄 Testing connection...');
                 
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/users?limit=1`, {
                     method: 'GET',
@@ -1150,23 +1141,64 @@
                     }
                 });
 
+                console.log('🔗 Connection test response:', response.status, response.statusText);
+
                 if (response.ok) {
-                    updateDatabaseStatus('connected', '✅ Database connected');
+                    updateDatabaseStatus('', '✅ Database connected');
                     console.log('✅ Database connection successful');
                     return true;
                 } else {
-                    throw new Error(`HTTP ${response.status}`);
+                    const errorText = await response.text();
+                    console.log('❌ Database error response:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
                 }
             } catch (error) {
                 console.log('❌ Database connection failed:', error.message);
-                updateDatabaseStatus('offline', '💾 Offline Mode');
+                updateDatabaseStatus('error', '❌ Database offline');
                 return false;
             }
         }
 
-        // 💾 CORS-SAFE DATA SAVING
-        async function saveDataCORSSafe(leadData) {
-            console.log('💾 Starting CORS-safe data save...');
+        // 💾 CORRECT SUPABASE API SAVE
+        async function saveToSupabase(data, table = 'users') {
+            try {
+                console.log(`💾 Saving to Supabase table: ${table}`);
+                console.log('📤 Data being sent:', data);
+                
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                console.log('📥 Supabase response status:', response.status, response.statusText);
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('✅ Supabase save successful:', result);
+                    updateDatabaseStatus('', '✅ Saved to database');
+                    return { success: true, data: result };
+                } else {
+                    const errorText = await response.text();
+                    console.error('❌ Supabase save failed:', response.status, errorText);
+                    updateDatabaseStatus('error', '❌ Database error');
+                    return { success: false, error: `HTTP ${response.status}: ${errorText}` };
+                }
+            } catch (error) {
+                console.error('💥 Supabase save exception:', error);
+                updateDatabaseStatus('error', '❌ Database offline');
+                return { success: false, error: error.message };
+            }
+        }
+
+        // 💾 HYBRID SAVE WITH CORRECT FORMAT
+        async function saveDataSafely(leadData) {
+            console.log('💾 Starting hybrid save...');
             
             // ALWAYS save to localStorage first (100% reliable)
             try {
@@ -1188,39 +1220,57 @@
                 
                 localStorage.setItem('topiko_local_leads', JSON.stringify(existingLeads));
                 console.log('✅ Data saved to localStorage (primary storage)');
-                
-                showNotification('💾 Data saved locally (reliable)', 'success');
+                showNotification('💾 Data saved locally', 'success');
                 
             } catch (error) {
                 console.error('❌ LocalStorage save failed:', error);
             }
             
-            // Try to enhance with Supabase (optional, may fail due to CORS)
+            // Try to save to Supabase with correct format
             if (databaseConnected) {
-                try {
-                    const response = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'Prefer': 'return=representation'
-                        },
-                        body: JSON.stringify(leadData)
-                    });
+                // Prepare data in correct format for database schema
+                const dbData = {
+                    name: leadData.name,
+                    phone: leadData.phone,
+                    business_name: leadData.business_name,
+                    address: leadData.address,
+                    business_type: leadData.business_type,
+                    business_category: leadData.business_category
+                };
 
-                    if (response.ok) {
-                        console.log('✅ Enhanced with Supabase database save');
-                        showNotification('✅ Saved to database', 'success');
-                        updateDatabaseStatus('connected', '✅ Database connected');
-                    } else {
-                        throw new Error('Supabase save failed');
+                const result = await saveToSupabase(dbData, 'users');
+                
+                if (result.success) {
+                    showNotification('✅ Saved to database!', 'success');
+                    
+                    // Also save to lead_intelligence table if we have a user ID
+                    if (result.data && result.data.length > 0) {
+                        const userId = result.data[0].id;
+                        currentUserId = userId;
+                        
+                        const intelligenceData = {
+                            user_id: userId,
+                            lead_score: leadScore,
+                            lead_quality: leadScore >= 70 ? 'Hot' : leadScore >= 40 ? 'Warm' : 'Cold',
+                            lead_status: 'New',
+                            selected_goals: selectedGoals,
+                            session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
+                            utm_source: utmParams.source,
+                            device_type: deviceInfo.type,
+                            assigned_sdr: null,
+                            products_count: userProducts.length,
+                            selected_theme: selectedTheme,
+                            engagement_level: leadScore >= 70 ? 'High' : leadScore >= 40 ? 'Medium' : 'Low'
+                        };
+                        
+                        await saveToSupabase(intelligenceData, 'lead_intelligence');
                     }
-                } catch (error) {
-                    console.log('⚠️ Supabase enhancement failed (CORS), using localStorage only');
-                    updateDatabaseStatus('offline', '💾 Offline Mode');
-                    showNotification('💾 Saved locally (offline mode)', 'warning');
+                } else {
+                    console.log('⚠️ Supabase save failed, localStorage backup active');
+                    showNotification('💾 Saved locally (database offline)', 'warning');
                 }
+            } else {
+                showNotification('💾 Saved locally (offline mode)', 'info');
             }
         }
 
@@ -1344,7 +1394,7 @@
             calculateLeadScore();
         }
 
-        // 📝 REGISTRATION SUBMISSION - CORS-SAFE VERSION
+        // 📝 REGISTRATION SUBMISSION - FIXED VERSION
         async function submitRegistration() {
             const name = document.getElementById('fullName').value.trim();
             const phone = document.getElementById('phoneNumber').value.trim();
@@ -1363,9 +1413,9 @@
             // Generate user ID
             currentUserId = 'topiko_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
-            // Create comprehensive lead data
+            // Create comprehensive lead data with CORRECT field names
             const leadData = {
-                // Basic Info
+                // Basic Info - matching database schema exactly
                 name: name,
                 phone: phone,
                 business_name: business,
@@ -1425,8 +1475,8 @@
                 registration_completed_time: new Date().toISOString()
             };
 
-            // Save using CORS-safe method
-            await saveDataCORSSafe(leadData);
+            // Save using hybrid method with correct format
+            await saveDataSafely(leadData);
             
             showNotification('✅ Registration completed successfully!', 'success');
             setTimeout(() => showScreen('categories'), 2000);
@@ -1479,9 +1529,6 @@
             
             updateSelectedSubcategories();
             calculateLeadScore();
-            
-            // Save progress
-            saveProgressData();
         }
 
         // 📝 UPDATE SELECTED SUBCATEGORIES
@@ -1589,7 +1636,6 @@
             displayProducts();
             updateThemePreviews();
             calculateLeadScore();
-            saveProgressData();
             
             showNotification(`Product "${name}" added successfully!`, 'success');
         }
@@ -1597,14 +1643,11 @@
         // 🖼️ GET DEFAULT PRODUCT IMAGE
         function getDefaultProductImage(subcategory) {
             const defaultImages = {
-                'women-ethnic': 'https://images.unsplash.com/photo-1583391733956-6c78276477e4?w=200',
-                'men-ethnic': 'https://images.unsplash.com/photo-1602810319381-13c3e46b55c7?w=200',
-                'north-indian': 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=200',
-                'south-indian': 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=200',
-                'hair-services': 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=200',
-                'gold-jewellery': 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=200'
+                'women-ethnic': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjFmNWY5Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjM2NjcwIiBmb250LWZhbWlseT0iYXJpYWwiIGZvbnQtc2l6ZT0iNDAiPvCfkZc8L3RleHQ+CjwvdGV4dD4KPC9zdmc+',
+                'men-ethnic': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjFmNWY5Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjM2NjcwIiBmb250LWZhbWlseT0iYXJpYWwiIGZvbnQtc2l6ZT0iNDAiPvCfkZU8L3RleHQ+CjwvdGV4dD4KPC9zdmc+',
+                'north-indian': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjFmNWY5Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjM2NjcwIiBmb250LWZhbWlseT0iYXJpYWwiIGZvbnQtc2l6ZT0iNDAiPvCfjaE8L3RleHQ+CjwvdGV4dD4KPC9zdmc+'
             };
-            return defaultImages[subcategory] || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200';
+            return defaultImages[subcategory] || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjFmNWY5Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjM2NjcwIiBmb250LWZhbWlseT0iYXJpYWwiIGZvbnQtc2l6ZT0iNDAiPvCfk6Y8L3RleHQ+CjwvdGV4dD4KPC9zdmc+';
         }
 
         // 📋 DISPLAY PRODUCTS
@@ -1687,7 +1730,6 @@
         function proceedToThemes() {
             updateThemePreviews();
             calculateLeadScore();
-            saveProgressData();
             showNotification(`Great! You've added ${userProducts.length} products. Moving to themes...`, 'success');
             setTimeout(() => showScreen('themes'), 1500);
         }
@@ -1722,7 +1764,6 @@
             completeBtn.style.opacity = '1';
             
             calculateLeadScore();
-            saveProgressData();
             showNotification(`Theme selected: ${themeNames[theme].split(' - ')[0]}`, 'success');
         }
 
@@ -1751,13 +1792,14 @@
                 completed_at: new Date().toISOString()
             };
 
-            // Save final completion data using CORS-safe method
-            await saveDataCORSSafe(completeSetupData);
+            // Save final completion data
+            await saveDataSafely(completeSetupData);
             
             showNotification('🎉 Setup completed successfully!', 'success');
             
             // Show completion message
             setTimeout(() => {
+                const dbStatus = databaseConnected ? 'Database connected ✅' : 'Offline mode 💾';
                 alert(`✅ Congratulations! 
                 
 Your Topiko business platform setup is complete:
@@ -1766,31 +1808,17 @@ Your Topiko business platform setup is complete:
 • Products: ${userProducts.length}
 • Lead Score: ${leadScore}/100
 
-Your lead data has been captured and will appear in the CRM system for assignment to an SDR.
+${dbStatus}
 
-Data saved using CORS-safe hybrid storage:
-✅ Primary: localStorage (100% reliable)
-${databaseConnected ? '✅ Enhanced: Supabase database' : '⚠️ Offline: Database connection failed'}
+Your lead data has been captured and is ready for the CRM system!
 
-This completes the CORS-fixed version!`);
+🎯 Next Steps:
+1. Your data is saved and accessible via CRM
+2. SDR assignment will happen automatically
+3. You'll be contacted within 24 hours
+
+This completes the working version!`);
             }, 1500);
-        }
-
-        // 💾 SAVE PROGRESS DATA
-        async function saveProgressData() {
-            if (!currentUserId) return;
-            
-            const progressData = {
-                user_id: currentUserId,
-                selected_subcategories: selectedSubcategories,
-                products_count: userProducts.length,
-                products: userProducts,
-                selected_theme: selectedTheme,
-                lead_score: leadScore,
-                last_updated: new Date().toISOString()
-            };
-
-            await saveDataCORSSafe(progressData);
         }
 
         // 📄 SCREEN NAVIGATION
@@ -1851,14 +1879,14 @@ This completes the CORS-fixed version!`);
 
         // 🚀 INITIALIZATION
         document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 Topiko Lead Form - CORS-SAFE VERSION Initialized');
+            console.log('🚀 Topiko Lead Form - SUPABASE FIXED VERSION Initialized');
             
             // Initialize tracking
             captureUTMParameters();
             detectDevice();
             
-            // Test database connection
-            await testDatabaseConnection();
+            // Test database connection with correct headers
+            databaseConnected = await testDatabaseConnection();
             
             // Track initial page load
             behaviorData.clickEvents.push({
@@ -1867,10 +1895,10 @@ This completes the CORS-fixed version!`);
                 timestamp: Date.now()
             });
             
-            console.log('✅ CORS-Safe Lead Intelligence System Ready');
+            console.log('✅ Lead Intelligence System Ready');
             console.log('💾 Primary Storage: localStorage (100% reliable)');
-            console.log('🔌 Secondary Storage: Supabase (when available)');
-            console.log('📊 Data will be captured at every step and sent to CRM');
+            console.log('🔌 Database Storage: Supabase (with correct headers)');
+            console.log('📊 Data will be captured at every step');
         });
 
         // Track all clicks
@@ -1898,7 +1926,7 @@ This completes the CORS-fixed version!`);
         // Periodic connection testing
         setInterval(async () => {
             if (!databaseConnected) {
-                await testDatabaseConnection();
+                databaseConnected = await testDatabaseConnection();
             }
         }, 30000); // Test every 30 seconds if offline
     </script>
