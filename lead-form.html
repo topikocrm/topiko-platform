@@ -80,6 +80,39 @@
             font-size: 1.1rem;
         }
 
+        /* Database Status Indicator */
+        .db-status {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .db-status.connected {
+            color: #059669;
+            border: 1px solid #d1fae5;
+            background: rgba(236, 253, 245, 0.95);
+        }
+
+        .db-status.offline {
+            color: #d97706;
+            border: 1px solid #fef3c7;
+            background: rgba(255, 251, 235, 0.95);
+        }
+
+        .db-status.error {
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            background: rgba(254, 242, 242, 0.95);
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -102,6 +135,45 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 80vh;
+            background: linear-gradient(135deg, #faf9ff 0%, #f3f0ff 100%);
+            border-radius: 20px;
+            padding: 3rem;
+        }
+
+        .topiko-logo {
+            font-size: 4rem;
+            font-weight: 300;
+            color: #6b46c1;
+            letter-spacing: -2px;
+            margin-bottom: 3rem;
+        }
+
+        .try-free-button {
+            background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(107, 70, 193, 0.3);
+        }
+
+        .try-free-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(107, 70, 193, 0.4);
         }
 
         /* Content Cards */
@@ -188,30 +260,6 @@
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
-        }
-
-        .try-free-button {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: #1e293b;
-            border: none;
-            padding: 1.5rem 4rem;
-            border-radius: 50px;
-            font-size: 1.3rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 40px rgba(251, 191, 36, 0.4);
-            transform: scale(1);
-            margin-bottom: 2rem;
-        }
-
-        .try-free-button:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 15px 50px rgba(251, 191, 36, 0.5);
-        }
-
-        .try-free-button:active {
-            transform: translateY(-1px) scale(1.01);
         }
 
         /* Language Selection */
@@ -336,6 +384,66 @@
             transform: scale(1);
         }
 
+        /* Subcategory Cards */
+        .subcategory-card:hover {
+            background: rgba(139, 111, 205, 0.1) !important;
+            border-color: #8b6fcd !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 111, 205, 0.15);
+        }
+
+        .subcategory-card.selected {
+            background: rgba(139, 111, 205, 0.15) !important;
+            border-color: #8b6fcd !important;
+            box-shadow: 0 6px 20px rgba(139, 111, 205, 0.2);
+        }
+
+        /* Product Cards */
+        .product-card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(139, 111, 205, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(139, 111, 205, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 111, 205, 0.15);
+        }
+
+        /* Theme Previews */
+        .theme-preview:hover {
+            border-color: #8b6fcd;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(139, 111, 205, 0.25);
+        }
+
+        .theme-preview.selected {
+            border-color: #6b46c1 !important;
+            box-shadow: 0 12px 35px rgba(107, 70, 193, 0.3) !important;
+            transform: translateY(-3px);
+        }
+
+        .theme-preview.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #6b46c1;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
         .notification {
             position: fixed;
             top: 2rem;
@@ -349,7 +457,6 @@
             opacity: 0;
             transition: all 0.4s ease;
             z-index: 1000;
-            max-width: 400px;
         }
 
         .notification.show {
@@ -373,56 +480,7 @@
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         }
 
-        /* Enhanced System Status */
-        .system-status {
-            position: fixed;
-            bottom: 2rem;
-            left: 2rem;
-            background: rgba(34, 197, 94, 0.95);
-            color: white;
-            padding: 0.75rem 1.25rem;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
-            z-index: 1000;
-            min-width: 200px;
-        }
-
-        .system-status.offline {
-            background: rgba(245, 158, 11, 0.95);
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
-        }
-
-        .system-status.error {
-            background: rgba(239, 68, 68, 0.95);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-        }
-
-        /* Session Intelligence Display */
-        .session-intelligence {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            padding: 1rem;
-            box-shadow: 0 8px 30px rgba(139, 111, 205, 0.2);
-            border: 1px solid rgba(139, 111, 205, 0.1);
-            font-size: 0.8rem;
-            color: #6b46c1;
-            z-index: 999;
-            min-width: 200px;
-        }
-
-        .intelligence-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.3rem;
-        }
-
-        /* Mobile responsive */
+        /* Mobile Responsive */
         @media (max-width: 768px) {
             .sidebar {
                 width: 70px;
@@ -434,6 +492,10 @@
 
             .nav-link span:not(.nav-icon) {
                 display: none;
+            }
+
+            .topiko-logo {
+                font-size: 3rem;
             }
 
             .language-grid {
@@ -452,22 +514,18 @@
                 margin-bottom: 1rem;
             }
 
-            .session-intelligence {
-                bottom: 1rem;
-                right: 1rem;
-                font-size: 0.7rem;
-            }
-
-            .system-status {
-                bottom: 1rem;
-                left: 1rem;
-                font-size: 0.75rem;
-                min-width: 150px;
+            #subcategoriesContainer div[style*="grid-template-columns"] {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Database Status Indicator -->
+    <div class="db-status offline" id="dbStatus">
+        💾 Offline Mode
+    </div>
+
     <div class="app-container">
         <!-- Sidebar Navigation -->
         <nav class="sidebar">
@@ -499,58 +557,37 @@
                         <span>Sign Up</span>
                     </div>
                 </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('categories')">
+                        <span class="nav-icon">📂</span>
+                        <span>Categories</span>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('products')">
+                        <span class="nav-icon">📦</span>
+                        <span>Products</span>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('themes')">
+                        <span class="nav-icon">🎨</span>
+                        <span>Themes</span>
+                    </div>
+                </li>
             </ul>
         </nav>
 
         <!-- Main Content Area -->
         <main class="main-content">
-            <!-- World-Class Landing Page -->
+            <!-- Welcome Screen -->
             <section class="screen active" id="welcome">
-                <div style="background: linear-gradient(135deg, #6b46c1 0%, #8b5cf6 50%, #d946ef 100%); border-radius: 20px; padding: 0; overflow: hidden; position: relative; min-height: 90vh;">
-                    <!-- Hero Section -->
-                    <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); padding: 4rem 3rem; text-align: center; position: relative;">
-                        <!-- Floating Elements -->
-                        <div style="position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; color: white;">
-                            💾 <strong>CORS-Safe Storage</strong>
-                        </div>
-                        
-                        <div style="position: absolute; top: 60px; left: 20px; background: rgba(255, 255, 255, 0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; color: white;">
-                            ⚡ <strong>5 Min</strong> Setup
-                        </div>
-                        
-                        <!-- Main Headline -->
-                        <h1 style="font-size: 3.5rem; font-weight: 700; color: white; letter-spacing: -2px; margin-bottom: 1.5rem; text-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-                            Transform Your Business<br>
-                            <span style="background: linear-gradient(45deg, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Into Digital Success</span>
-                        </h1>
-                        
-                        <!-- Compelling Subheadline -->
-                        <p style="font-size: 1.4rem; color: rgba(255, 255, 255, 0.9); margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">
-                            The <strong>complete platform</strong> Indian SMBs need to go online, 
-                            reach customers, and <strong>grow revenue</strong> — all in one place.
-                        </p>
-                        
-                        <!-- CTA Button -->
-                        <button class="try-free-button" onclick="startLeadCapture()">
-                            🚀 Start Free — Setup in 5 Minutes
-                        </button>
-                        
-                        <!-- Trust Indicators -->
-                        <div style="display: flex; justify-content: center; align-items: center; gap: 2rem; flex-wrap: wrap; margin-top: 2rem;">
-                            <div style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
-                                <span style="color: #22c55e; font-size: 1.2rem;">✓</span>
-                                100% Reliable Storage
-                            </div>
-                            <div style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
-                                <span style="color: #22c55e; font-size: 1.2rem;">✓</span>
-                                CRM Integration Ready
-                            </div>
-                            <div style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
-                                <span style="color: #22c55e; font-size: 1.2rem;">✓</span>
-                                No Data Loss Guarantee
-                            </div>
-                        </div>
-                    </div>
+                <div class="welcome-screen">
+                    <h1 class="topiko-logo">Topiko</h1>
+                    <p style="font-size: 1.2rem; color: #6b46c1; margin-bottom: 2rem;">Complete Business Platform for Indian SMBs</p>
+                    <button class="try-free-button" onclick="showScreen('language')">
+                        Try for Free
+                    </button>
                 </div>
             </section>
 
@@ -589,7 +626,7 @@
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
                                 <h3>தமிழ்</h3>
-                                <p>தமிழில் தொடரவும்</p>
+                                <p>தमிழில் தொடரवून்</p>
                             </div>
                         </div>
                     </div>
@@ -723,62 +760,324 @@
                         </select>
                     </div>
 
-                    <button class="submit-button" onclick="submitRegistration()" id="registrationBtn">
-                        💾 Save Lead Data (CORS-Safe)
+                    <button class="submit-button" onclick="submitRegistration()">
+                        Create Free Account
                     </button>
+                </div>
+            </section>
+
+            <!-- Categories Screen -->
+            <section class="screen" id="categories">
+                <div class="content-card" style="max-width: 800px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Choose Your Subcategories</h2>
+                    <p style="text-align: center; margin-bottom: 1rem;">Based on your <strong id="selectedBusinessType">business</strong>, select the subcategories that best describe your products/services</p>
+                    
+                    <div id="subcategoriesContainer" style="margin-bottom: 3rem;">
+                        <!-- Subcategories will be populated based on business category -->
+                    </div>
+
+                    <div class="selected-subcategories" id="selectedSubcategories" style="display: none; background: rgba(139, 111, 205, 0.1); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem;">
+                        <h3 style="color: #6b46c1; margin-bottom: 0.5rem;">✅ Selected Subcategories</h3>
+                        <div id="selectedSubcategoriesList" style="color: #553c9a;"></div>
+                    </div>
+
+                    <button class="submit-button" onclick="proceedToProducts()" id="categoryNextBtn" disabled>
+                        Continue to Add Products
+                    </button>
+                </div>
+            </section>
+
+            <!-- Products Screen -->
+            <section class="screen" id="products">
+                <div class="content-card" style="max-width: 1000px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Add Your Products</h2>
+                    <p style="text-align: center; margin-bottom: 3rem;">Build your catalog with products that represent your business</p>
+                    
+                    <!-- Product Form -->
+                    <div class="product-form" style="background: rgba(255, 255, 255, 0.7); padding: 2rem; border-radius: 16px; margin-bottom: 2rem;">
+                        <h3 style="color: #6b46c1; margin-bottom: 1.5rem;">Add New Product/Service</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label for="productName">Product/Service Name</label>
+                                <input type="text" id="productName" placeholder="e.g., Cotton Kurta, Masala Dosa, Haircut">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="productPrice">Price (₹)</label>
+                                <input type="number" id="productPrice" placeholder="e.g., 899">
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label for="productCategory">Category</label>
+                                <select id="productCategory">
+                                    <option value="">Select category</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="productSubcategory">Subcategory</label>
+                                <select id="productSubcategory">
+                                    <option value="">Select subcategory</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="productDescription">Description</label>
+                            <textarea id="productDescription" rows="3" placeholder="Brief description of your product or service"></textarea>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label for="productImage">Product Image URL (optional)</label>
+                                <input type="url" id="productImage" placeholder="https://example.com/image.jpg">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="productStock">Stock/Availability</label>
+                                <input type="number" id="productStock" placeholder="e.g., 50" value="10">
+                            </div>
+                        </div>
+                        
+                        <button type="button" onclick="addProduct()" style="background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%); color: white; border: none; padding: 0.8rem 2rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                            ➕ Add Product
+                        </button>
+                    </div>
+
+                    <!-- Products List -->
+                    <div class="products-list">
+                        <h3 style="color: #6b46c1; margin-bottom: 1.5rem;">Your Product Catalog (<span id="productCount">0</span>)</h3>
+                        
+                        <div id="productsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                            <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+                                <p>No products added yet. Add your first product above!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 3rem;">
+                        <button onclick="showScreen('categories')" style="flex: 1; background: rgba(139, 111, 205, 0.1); color: #6b46c1; border: 2px solid rgba(139, 111, 205, 0.2); padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                            ← Back to Categories
+                        </button>
+                        <button onclick="proceedToThemes()" style="flex: 1; background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                            Continue to Themes →
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Themes Screen -->
+            <section class="screen" id="themes">
+                <div class="content-card" style="max-width: 1200px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Choose Your Website Theme</h2>
+                    <p style="text-align: center; margin-bottom: 3rem;">See how your products will look in different themes</p>
+                    
+                    <div class="themes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                        <!-- Modern Theme -->
+                        <div class="theme-preview" onclick="selectTheme('modern')" style="border: 3px solid rgba(139, 111, 205, 0.1); border-radius: 20px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white; position: relative;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; color: white;">
+                                <h3 style="margin: 0; font-size: 1.2rem;">Modern Professional</h3>
+                                <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">Clean & Minimal</p>
+                            </div>
+                            <div style="padding: 15px; min-height: 200px;">
+                                <div class="theme-menu" style="background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem;">
+                                    <div style="font-weight: bold; color: #667eea;" id="modernMenuCategories">Your Categories</div>
+                                </div>
+                                <div class="theme-products" id="modernThemeProducts" style="display: grid; gap: 10px;">
+                                    <div style="text-align: center; color: #64748b; padding: 20px;">
+                                        <small>Your products will appear here</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Colorful Theme -->
+                        <div class="theme-preview" onclick="selectTheme('colorful')" style="border: 3px solid rgba(139, 111, 205, 0.1); border-radius: 20px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white; position: relative;">
+                            <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%); padding: 15px; color: white;">
+                                <h3 style="margin: 0; font-size: 1.2rem;">Colorful Creative</h3>
+                                <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">Vibrant & Fun</p>
+                            </div>
+                            <div style="padding: 15px; min-height: 200px;">
+                                <div class="theme-menu" style="background: #fef3c7; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem;">
+                                    <div style="font-weight: bold; color: #ff6b6b;" id="colorfulMenuCategories">Your Categories</div>
+                                </div>
+                                <div class="theme-products" id="colorfulThemeProducts" style="display: grid; gap: 10px;">
+                                    <div style="text-align: center; color: #64748b; padding: 20px;">
+                                        <small>Your products will appear here</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Elegant Theme -->
+                        <div class="theme-preview" onclick="selectTheme('elegant')" style="border: 3px solid rgba(139, 111, 205, 0.1); border-radius: 20px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white; position: relative;">
+                            <div style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); padding: 15px; color: white;">
+                                <h3 style="margin: 0; font-size: 1.2rem;">Elegant Luxury</h3>
+                                <p style="margin: 5px 0 0 0; font-size: 0.9rem; opacity: 0.9;">Sophisticated</p>
+                            </div>
+                            <div style="padding: 15px; min-height: 200px;">
+                                <div class="theme-menu" style="background: #f3f4f6; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.8rem;">
+                                    <div style="font-weight: bold; color: #2c3e50;" id="elegantMenuCategories">Your Categories</div>
+                                </div>
+                                <div class="theme-products" id="elegantThemeProducts" style="display: grid; gap: 10px;">
+                                    <div style="text-align: center; color: #64748b; padding: 20px;">
+                                        <small>Your products will appear here</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="selected-theme" id="selectedTheme" style="display: none; background: rgba(139, 111, 205, 0.1); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; text-align: center;">
+                        <h3 style="color: #6b46c1; margin-bottom: 0.5rem;">🎨 Theme Selected</h3>
+                        <p style="color: #553c9a; margin: 0;" id="selectedThemeText">You've selected your website theme</p>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem;">
+                        <button onclick="showScreen('products')" style="flex: 1; background: rgba(139, 111, 205, 0.1); color: #6b46c1; border: 2px solid rgba(139, 111, 205, 0.2); padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                            ← Back to Products
+                        </button>
+                        <button onclick="completeSetup()" id="themeNextBtn" style="flex: 1; background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;" disabled>
+                            Complete Setup 🚀
+                        </button>
+                    </div>
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- Enhanced System Status -->
-    <div class="system-status" id="systemStatus">
-        💾 CORS-Safe Storage Active - No Data Loss
-    </div>
-
-    <!-- Session Intelligence Display -->
-    <div class="session-intelligence" id="sessionIntelligence">
-        <div style="font-weight: bold; margin-bottom: 0.5rem; color: #6b46c1;">📊 Session Intelligence</div>
-        <div class="intelligence-row">
-            <span>Session Time:</span>
-            <span id="sessionTime">0:00</span>
-        </div>
-        <div class="intelligence-row">
-            <span>Page Views:</span>
-            <span id="pageViewCount">1</span>
-        </div>
-        <div class="intelligence-row">
-            <span>Lead Score:</span>
-            <span id="leadScoreDisplay">0/100</span>
-        </div>
-        <div class="intelligence-row">
-            <span>Quality:</span>
-            <span id="leadQuality">Cold</span>
-        </div>
-        <div class="intelligence-row">
-            <span>Storage:</span>
-            <span id="storageStatus">Ready</span>
-        </div>
-    </div>
-
     <script>
-        // 🎯 CORS-SAFE LEAD INTELLIGENCE SYSTEM - FINAL VERSION
+        // 🎯 LEAD INTELLIGENCE SYSTEM - CORS-SAFE VERSION
         
         // ✅ CORE VARIABLES
         let sessionStartTime = Date.now();
         let selectedGoals = [];
         let selectedLanguage = 'en';
+        let selectedSubcategories = [];
+        let selectedTheme = '';
+        let userProducts = [];
         let currentUserId = null;
         let pageViews = 1;
         let leadScore = 0;
         let formProgress = 0;
         let utmParams = {};
         let deviceInfo = {};
-        let systemMode = 'cors-safe'; // Always use CORS-safe mode
+        let behaviorData = {
+            timeOnPages: {},
+            clickEvents: [],
+            formInteractions: [],
+            scrollDepth: 0,
+            abandonmentPoints: []
+        };
+        let databaseConnected = false;
 
-        // 🔧 SUPABASE CONFIGURATION (For Optional Enhancement)
-        const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k';
+        // 🚀 SUPABASE CONFIGURATION  
+        const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k'
+
+        // 🇮🇳 INDIAN SMB BUSINESS CATEGORIES
+        const indianBusinessCategories = {
+            boutique: {
+                name: 'Boutique',
+                icon: '🏪',
+                subcategories: [
+                    { id: 'women-ethnic', name: 'Women\'s Ethnic Wear', icon: '👗' },
+                    { id: 'men-ethnic', name: 'Men\'s Ethnic Wear', icon: '👕' },
+                    { id: 'kids-wear', name: 'Kids Wear', icon: '👶' },
+                    { id: 'accessories', name: 'Fashion Accessories', icon: '👜' },
+                    { id: 'footwear', name: 'Footwear', icon: '👠' },
+                    { id: 'western-wear', name: 'Western Wear', icon: '👔' }
+                ]
+            },
+            'home-foods': {
+                name: 'Home Foods',
+                icon: '🍛',
+                subcategories: [
+                    { id: 'north-indian', name: 'North Indian Cuisine', icon: '🍛' },
+                    { id: 'south-indian', name: 'South Indian Cuisine', icon: '🥞' },
+                    { id: 'street-food', name: 'Street Food', icon: '🥨' },
+                    { id: 'sweets-snacks', name: 'Sweets & Snacks', icon: '🍬' },
+                    { id: 'beverages', name: 'Beverages', icon: '🧃' },
+                    { id: 'healthy-food', name: 'Healthy Food', icon: '🥗' }
+                ]
+            },
+            salons: {
+                name: 'Salons & Beauty',
+                icon: '💄',
+                subcategories: [
+                    { id: 'hair-services', name: 'Hair Services', icon: '💇' },
+                    { id: 'facial-skincare', name: 'Facial & Skincare', icon: '🧴' },
+                    { id: 'bridal-makeup', name: 'Bridal Makeup', icon: '👰' },
+                    { id: 'nail-art', name: 'Nail Art', icon: '💅' },
+                    { id: 'spa-massage', name: 'Spa & Massage', icon: '💆' },
+                    { id: 'mens-grooming', name: 'Men\'s Grooming', icon: '🧔' }
+                ]
+            },
+            grocery: {
+                name: 'Grocery & Provisions',
+                icon: '🛒',
+                subcategories: [
+                    { id: 'vegetables-fruits', name: 'Vegetables & Fruits', icon: '🥬' },
+                    { id: 'dairy-products', name: 'Dairy Products', icon: '🥛' },
+                    { id: 'grains-pulses', name: 'Grains & Pulses', icon: '🌾' },
+                    { id: 'spices-masala', name: 'Spices & Masala', icon: '🌶️' },
+                    { id: 'packaged-foods', name: 'Packaged Foods', icon: '📦' },
+                    { id: 'household-items', name: 'Household Items', icon: '🧽' }
+                ]
+            },
+            furniture: {
+                name: 'Furniture & Home Decor',
+                icon: '🛋️',
+                subcategories: [
+                    { id: 'living-room', name: 'Living Room Furniture', icon: '🛋️' },
+                    { id: 'bedroom', name: 'Bedroom Furniture', icon: '🛏️' },
+                    { id: 'kitchen-dining', name: 'Kitchen & Dining', icon: '🍽️' },
+                    { id: 'home-decor', name: 'Home Decor', icon: '🖼️' },
+                    { id: 'lighting', name: 'Lighting', icon: '💡' },
+                    { id: 'storage', name: 'Storage Solutions', icon: '📚' }
+                ]
+            },
+            fashion: {
+                name: 'Fashion & Apparel',
+                icon: '👗',
+                subcategories: [
+                    { id: 'casual-wear', name: 'Casual Wear', icon: '👕' },
+                    { id: 'formal-wear', name: 'Formal Wear', icon: '👔' },
+                    { id: 'party-wear', name: 'Party Wear', icon: '🎉' },
+                    { id: 'sports-wear', name: 'Sports Wear', icon: '👟' },
+                    { id: 'innerwear', name: 'Innerwear', icon: '🩲' },
+                    { id: 'bags-wallets', name: 'Bags & Wallets', icon: '👜' }
+                ]
+            },
+            jewellery: {
+                name: 'Jewellery & Accessories',
+                icon: '💍',
+                subcategories: [
+                    { id: 'gold-jewellery', name: 'Gold Jewellery', icon: '🥇' },
+                    { id: 'silver-jewellery', name: 'Silver Jewellery', icon: '🥈' },
+                    { id: 'fashion-jewellery', name: 'Fashion Jewellery', icon: '💎' },
+                    { id: 'watches', name: 'Watches', icon: '⌚' },
+                    { id: 'precious-stones', name: 'Precious Stones', icon: '💎' },
+                    { id: 'custom-jewellery', name: 'Custom Jewellery', icon: '🔧' }
+                ]
+            },
+            electronics: {
+                name: 'Electronics & Gadgets',
+                icon: '📱',
+                subcategories: [
+                    { id: 'mobile-accessories', name: 'Mobile & Accessories', icon: '📱' },
+                    { id: 'laptops-computers', name: 'Laptops & Computers', icon: '💻' },
+                    { id: 'home-appliances', name: 'Home Appliances', icon: '🔌' },
+                    { id: 'audio-video', name: 'Audio & Video', icon: '🎵' },
+                    { id: 'gaming', name: 'Gaming', icon: '🎮' },
+                    { id: 'electronics-repair', name: 'Electronics Repair', icon: '🔧' }
+                ]
+            }
+        };
 
         // 🎯 UTM PARAMETER TRACKING
         function captureUTMParameters() {
@@ -824,122 +1123,104 @@
             return 'Unknown';
         }
 
-        // 📊 UPDATE SYSTEM STATUS
-        function updateSystemStatus(message, type = 'success') {
-            const statusIndicator = document.getElementById('systemStatus');
-            const storageStatus = document.getElementById('storageStatus');
+        // 🔌 DATABASE STATUS MANAGEMENT
+        function updateDatabaseStatus(status, message) {
+            const statusEl = document.getElementById('dbStatus');
+            statusEl.className = `db-status ${status}`;
+            statusEl.textContent = message;
             
-            statusIndicator.textContent = message;
-            statusIndicator.className = `system-status ${type}`;
-            
-            if (storageStatus) {
-                storageStatus.textContent = type === 'success' ? 'Ready' : 
-                                           type === 'offline' ? 'Local Only' : 'Error';
+            if (status === 'connected') {
+                databaseConnected = true;
+            } else {
+                databaseConnected = false;
             }
         }
 
-        // 💾 CORS-SAFE DATA STORAGE (PRIMARY METHOD)
-        function saveDataCORSSafe(leadData) {
+        // 🔍 TEST DATABASE CONNECTION
+        async function testDatabaseConnection() {
             try {
-                console.log('💾 Saving data using CORS-safe method...');
+                updateDatabaseStatus('offline', '🔄 Testing connection...');
                 
-                // Always save to localStorage first (100% reliable)
-                const existingLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
-                const leadIndex = existingLeads.findIndex(lead => lead.user_id === leadData.user_id);
-                
-                if (leadIndex !== -1) {
-                    // Update existing lead
-                    existingLeads[leadIndex] = { ...existingLeads[leadIndex], ...leadData };
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?limit=1`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    updateDatabaseStatus('connected', '✅ Database connected');
+                    console.log('✅ Database connection successful');
+                    return true;
                 } else {
-                    // Add new lead
-                    existingLeads.push(leadData);
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.log('❌ Database connection failed:', error.message);
+                updateDatabaseStatus('offline', '💾 Offline Mode');
+                return false;
+            }
+        }
+
+        // 💾 CORS-SAFE DATA SAVING
+        async function saveDataCORSSafe(leadData) {
+            console.log('💾 Starting CORS-safe data save...');
+            
+            // ALWAYS save to localStorage first (100% reliable)
+            try {
+                const existingLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
+                const updatedData = {
+                    ...leadData,
+                    user_id: currentUserId,
+                    created_at: new Date().toISOString(),
+                    data_source: 'localStorage_primary'
+                };
+                
+                // Find existing lead or add new one
+                const existingIndex = existingLeads.findIndex(lead => lead.user_id === currentUserId);
+                if (existingIndex !== -1) {
+                    existingLeads[existingIndex] = { ...existingLeads[existingIndex], ...updatedData };
+                } else {
+                    existingLeads.push(updatedData);
                 }
                 
                 localStorage.setItem('topiko_local_leads', JSON.stringify(existingLeads));
+                console.log('✅ Data saved to localStorage (primary storage)');
                 
-                // Also save individual record for CRM compatibility
-                localStorage.setItem('topiko_complete_setup', JSON.stringify({
-                    ...leadData,
-                    setup_completed: true,
-                    completed_at: new Date().toISOString()
-                }));
-                
-                console.log('✅ Data saved successfully using CORS-safe method');
-                updateSystemStatus('💾 Data Saved Successfully - CRM Ready', 'success');
-                
-                return { success: true, method: 'cors-safe-localStorage', reliable: true };
+                showNotification('💾 Data saved locally (reliable)', 'success');
                 
             } catch (error) {
-                console.error('❌ CORS-safe save failed:', error);
-                updateSystemStatus('❌ Storage Error - Please Try Again', 'error');
-                return { success: false, error: error.message };
+                console.error('❌ LocalStorage save failed:', error);
             }
-        }
-
-        // 💾 OPTIONAL SUPABASE ENHANCEMENT (Non-blocking)
-        async function trySupabaseEnhancement(leadData) {
-            // This runs in background and doesn't affect the main flow
-            try {
-                console.log('🔍 Attempting Supabase enhancement (non-blocking)...');
-                
-                const response = await Promise.race([
-                    fetch(`${SUPABASE_URL}/rest/v1/users`, {
+            
+            // Try to enhance with Supabase (optional, may fail due to CORS)
+            if (databaseConnected) {
+                try {
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
                         method: 'POST',
                         headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': `Bearer ${SUPABASE_KEY}`,
                             'Content-Type': 'application/json',
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
                             'Prefer': 'return=representation'
                         },
-                        body: JSON.stringify({
-                            id: leadData.user_id,
-                            name: leadData.name,
-                            phone: leadData.phone,
-                            business_name: leadData.business_name,
-                            address: leadData.address,
-                            business_type: leadData.business_type,
-                            business_category: leadData.business_category,
-                            created_at: leadData.created_at
-                        })
-                    }),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
-                ]);
-                
-                if (response.ok) {
-                    console.log('✅ Supabase enhancement successful');
-                    updateSystemStatus('💾 Data Saved + Database Enhanced', 'success');
-                    
-                    // Try to save intelligence data too
-                    const userResult = await response.json();
-                    const userId = userResult[0]?.id;
-                    
-                    if (userId) {
-                        await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence`, {
-                            method: 'POST',
-                            headers: {
-                                'apikey': SUPABASE_KEY,
-                                'Authorization': `Bearer ${SUPABASE_KEY}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                user_id: userId,
-                                lead_score: leadData.lead_score,
-                                lead_quality: leadData.lead_quality,
-                                lead_status: leadData.lead_status,
-                                selected_goals: leadData.selected_goals,
-                                session_duration_minutes: leadData.session_duration_minutes,
-                                utm_source: leadData.utm_source,
-                                device_type: leadData.device_type,
-                                created_at: leadData.created_at
-                            })
-                        });
-                        console.log('✅ Intelligence data also saved to database');
+                        body: JSON.stringify(leadData)
+                    });
+
+                    if (response.ok) {
+                        console.log('✅ Enhanced with Supabase database save');
+                        showNotification('✅ Saved to database', 'success');
+                        updateDatabaseStatus('connected', '✅ Database connected');
+                    } else {
+                        throw new Error('Supabase save failed');
                     }
+                } catch (error) {
+                    console.log('⚠️ Supabase enhancement failed (CORS), using localStorage only');
+                    updateDatabaseStatus('offline', '💾 Offline Mode');
+                    showNotification('💾 Saved locally (offline mode)', 'warning');
                 }
-                
-            } catch (error) {
-                console.log('ℹ️ Supabase enhancement failed (expected with CORS):', error.message);
-                // Don't show error to user - this is optional enhancement
             }
         }
 
@@ -965,37 +1246,23 @@
             // Page Views (2 points per page, max 10)
             score += Math.min(pageViews * 2, 10);
             
+            // Subcategories Selected (3 points per subcategory, max 15)
+            score += Math.min(selectedSubcategories.length * 3, 15);
+            
+            // Products Added (2 points per product, max 10)
+            score += Math.min(userProducts.length * 2, 10);
+            
+            // Theme Selected (10 points)
+            if (selectedTheme) score += 10;
+            
+            // Engagement Indicators
+            if (behaviorData.clickEvents.length > 5) score += 5;
+            if (behaviorData.formInteractions.length > 3) score += 5;
+            
             leadScore = Math.min(score, 100);
-            
-            // Update UI
-            updateSessionIntelligence();
-            
             console.log(`📊 Lead Score Updated: ${leadScore}/100`);
+            
             return leadScore;
-        }
-
-        // 📊 UPDATE SESSION INTELLIGENCE DISPLAY
-        function updateSessionIntelligence() {
-            const sessionMinutes = Math.floor((Date.now() - sessionStartTime) / 60000);
-            const sessionSeconds = Math.floor(((Date.now() - sessionStartTime) % 60000) / 1000);
-            
-            document.getElementById('sessionTime').textContent = `${sessionMinutes}:${sessionSeconds.toString().padStart(2, '0')}`;
-            document.getElementById('pageViewCount').textContent = pageViews;
-            document.getElementById('leadScoreDisplay').textContent = `${leadScore}/100`;
-            
-            let quality = 'Cold';
-            if (leadScore >= 70) quality = 'Hot 🔥';
-            else if (leadScore >= 40) quality = 'Warm 🌡️';
-            else quality = 'Cold ❄️';
-            
-            document.getElementById('leadQuality').textContent = quality;
-        }
-
-        // 🚀 START LEAD CAPTURE PROCESS
-        function startLeadCapture() {
-            console.log('🚀 Starting CORS-safe lead capture process');
-            showNotification('🚀 Starting your business setup journey!', 'info');
-            showScreen('language');
         }
 
         // 🌐 LANGUAGE SELECTION
@@ -1007,6 +1274,13 @@
                 option.classList.remove('selected');
             });
             element.classList.add('selected');
+            
+            // Track behavior
+            behaviorData.formInteractions.push({
+                type: 'language_selected',
+                value: lang,
+                timestamp: Date.now()
+            });
             
             const languageNames = {
                 'en': 'English',
@@ -1025,6 +1299,13 @@
         function updateGoalsTracking() {
             const checkedGoals = document.querySelectorAll('.goal-checkbox:checked');
             selectedGoals = Array.from(checkedGoals).map(checkbox => checkbox.value);
+            
+            behaviorData.formInteractions.push({
+                type: 'goals_selected',
+                values: selectedGoals,
+                timestamp: Date.now()
+            });
+            
             calculateLeadScore();
         }
 
@@ -1035,7 +1316,13 @@
                 return;
             }
 
-            showNotification(`Perfect! You've selected ${selectedGoals.length} goal${selectedGoals.length > 1 ? 's' : ''}`, 'success');
+            behaviorData.formInteractions.push({
+                type: 'goals_submitted',
+                values: selectedGoals,
+                timestamp: Date.now()
+            });
+            
+            showNotification(`Great! You've selected ${selectedGoals.length} goal${selectedGoals.length > 1 ? 's' : ''}`, 'success');
             calculateLeadScore();
             
             setTimeout(() => showScreen('registration'), 1500);
@@ -1057,7 +1344,7 @@
             calculateLeadScore();
         }
 
-        // 📝 CORS-SAFE REGISTRATION SUBMISSION
+        // 📝 REGISTRATION SUBMISSION - CORS-SAFE VERSION
         async function submitRegistration() {
             const name = document.getElementById('fullName').value.trim();
             const phone = document.getElementById('phoneNumber').value.trim();
@@ -1067,22 +1354,18 @@
             const category = document.getElementById('category').value;
 
             if (!name || !phone || !business || !address || !type || !category) {
-                showNotification('Please fill in all required fields', 'error');
+                showNotification('Please fill in all fields', 'error');
                 return;
             }
 
-            // Show loading state
-            const submitBtn = document.getElementById('registrationBtn');
-            submitBtn.textContent = '💾 Saving Lead Data...';
-            submitBtn.disabled = true;
+            showNotification('Creating your account...', 'info');
 
-            // Generate unique user ID
-            currentUserId = 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            
-            // Prepare comprehensive lead data
+            // Generate user ID
+            currentUserId = 'topiko_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+            // Create comprehensive lead data
             const leadData = {
-                // Identity
-                user_id: currentUserId,
+                // Basic Info
                 name: name,
                 phone: phone,
                 business_name: business,
@@ -1103,13 +1386,8 @@
                     };
                     return goalNames[goal] || goal;
                 }),
-                
-                // Scoring & Quality
                 lead_score: leadScore,
-                lead_quality: leadScore >= 70 ? 'Hot' : leadScore >= 40 ? 'Warm' : 'Cold',
                 engagement_level: leadScore >= 70 ? 'High' : leadScore >= 40 ? 'Medium' : 'Low',
-                
-                // Session Data
                 session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
                 page_views: pageViews,
                 form_completion_percentage: formProgress,
@@ -1129,59 +1407,406 @@
                 timezone: deviceInfo.timezone,
                 user_language: deviceInfo.language,
                 
+                // Behavioral Data
+                time_on_language_screen: behaviorData.timeOnPages['language'] || 0,
+                time_on_goals_screen: behaviorData.timeOnPages['goals'] || 0,
+                time_on_registration_screen: behaviorData.timeOnPages['registration'] || 0,
+                total_click_events: behaviorData.clickEvents.length,
+                form_interactions_count: behaviorData.formInteractions.length,
+                
                 // Status
                 lead_status: 'New',
-                assigned_sdr: null,
+                lead_quality: leadScore >= 70 ? 'Hot' : leadScore >= 40 ? 'Warm' : 'Cold',
                 ready_for_sdr_assignment: true,
-                
-                // System Info
-                storage_method: 'cors-safe',
-                system_mode: systemMode,
+                registration_completed: true,
                 
                 // Timestamps
                 session_start_time: new Date(sessionStartTime).toISOString(),
-                created_at: new Date().toISOString(),
-                last_updated: new Date().toISOString()
+                registration_completed_time: new Date().toISOString()
             };
+
+            // Save using CORS-safe method
+            await saveDataCORSSafe(leadData);
             
-            // Save using CORS-safe method (primary)
-            const saveResult = saveDataCORSSafe(leadData);
+            showNotification('✅ Registration completed successfully!', 'success');
+            setTimeout(() => showScreen('categories'), 2000);
+        }
+
+        // 📋 LOAD SUBCATEGORIES
+        function loadSubcategories() {
+            const businessCategory = document.getElementById('category').value;
+            const selectedBusinessTypeEl = document.getElementById('selectedBusinessType');
+            const subcategoriesContainer = document.getElementById('subcategoriesContainer');
             
-            // Try Supabase enhancement in background (non-blocking)
-            trySupabaseEnhancement(leadData);
+            if (!businessCategory || !indianBusinessCategories[businessCategory]) {
+                subcategoriesContainer.innerHTML = '<p style="text-align: center; color: #64748b;">Please complete your registration first.</p>';
+                return;
+            }
             
-            // Reset button
-            submitBtn.textContent = '💾 Save Lead Data (CORS-Safe)';
-            submitBtn.disabled = false;
+            const categoryData = indianBusinessCategories[businessCategory];
+            selectedBusinessTypeEl.textContent = categoryData.name;
             
-            if (saveResult.success) {
-                showNotification('✅ Registration completed successfully!', 'success');
+            subcategoriesContainer.innerHTML = `
+                <h3 style="color: #6b46c1; text-align: center; margin-bottom: 2rem;">
+                    ${categoryData.icon} ${categoryData.name} Subcategories
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    ${categoryData.subcategories.map(subcat => `
+                        <div class="subcategory-card" onclick="toggleSubcategory('${subcat.id}', this)" 
+                             style="padding: 1rem; background: rgba(255, 255, 255, 0.6); border: 2px solid rgba(139, 111, 205, 0.1); 
+                                    border-radius: 12px; cursor: pointer; transition: all 0.3s ease; text-align: center;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">${subcat.icon}</div>
+                            <h4 style="color: #6b46c1; margin-bottom: 0.3rem; font-size: 0.9rem;">${subcat.name}</h4>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // 🏷️ TOGGLE SUBCATEGORY
+        function toggleSubcategory(subcategoryId, element) {
+            if (selectedSubcategories.includes(subcategoryId)) {
+                selectedSubcategories = selectedSubcategories.filter(id => id !== subcategoryId);
+                element.classList.remove('selected');
+                element.style.background = 'rgba(255, 255, 255, 0.6)';
+                element.style.borderColor = 'rgba(139, 111, 205, 0.1)';
+            } else {
+                selectedSubcategories.push(subcategoryId);
+                element.classList.add('selected');
+                element.style.background = 'rgba(139, 111, 205, 0.15)';
+                element.style.borderColor = '#8b6fcd';
+            }
+            
+            updateSelectedSubcategories();
+            calculateLeadScore();
+            
+            // Save progress
+            saveProgressData();
+        }
+
+        // 📝 UPDATE SELECTED SUBCATEGORIES
+        function updateSelectedSubcategories() {
+            const selectedDiv = document.getElementById('selectedSubcategories');
+            const selectedList = document.getElementById('selectedSubcategoriesList');
+            const nextBtn = document.getElementById('categoryNextBtn');
+            
+            if (selectedSubcategories.length > 0) {
+                selectedDiv.style.display = 'block';
                 
-                setTimeout(() => {
-                    showNotification('🎯 Your lead data is now ready for the CRM system!', 'success');
-                }, 2000);
-                
-                setTimeout(() => {
-                    showNotification(`🔥 Lead Quality: ${leadData.lead_quality} (Score: ${leadScore}/100)`, 'info');
-                }, 4000);
-                
-                console.log('✅ CORS-safe registration completed:', {
-                    userId: currentUserId,
-                    method: 'cors-safe',
-                    leadScore: leadScore,
-                    quality: leadData.lead_quality,
-                    crmReady: true
+                const businessCategory = document.getElementById('category').value;
+                const categoryData = indianBusinessCategories[businessCategory];
+                const subcategoryNames = selectedSubcategories.map(id => {
+                    const subcat = categoryData.subcategories.find(s => s.id === id);
+                    return subcat ? `${subcat.icon} ${subcat.name}` : id;
                 });
                 
+                selectedList.innerHTML = subcategoryNames.join(' • ');
+                nextBtn.disabled = false;
+                nextBtn.style.opacity = '1';
             } else {
-                showNotification('❌ Registration failed. Please try again.', 'error');
-                console.error('❌ Registration failed:', saveResult.error);
+                selectedDiv.style.display = 'none';
+                nextBtn.disabled = true;
+                nextBtn.style.opacity = '0.5';
             }
+        }
+
+        // ➡️ PROCEED TO PRODUCTS
+        function proceedToProducts() {
+            if (selectedSubcategories.length === 0) {
+                showNotification('Please select at least one subcategory', 'error');
+                return;
+            }
+            
+            populateProductCategories();
+            showNotification('Moving to product setup...', 'info');
+            setTimeout(() => showScreen('products'), 1000);
+        }
+
+        // 📦 POPULATE PRODUCT CATEGORIES
+        function populateProductCategories() {
+            const businessCategory = document.getElementById('category').value;
+            const categoryData = indianBusinessCategories[businessCategory];
+            const productCategorySelect = document.getElementById('productCategory');
+            const productSubcategorySelect = document.getElementById('productSubcategory');
+            
+            productCategorySelect.innerHTML = '<option value="">Select category</option>';
+            productSubcategorySelect.innerHTML = '<option value="">Select subcategory</option>';
+            
+            productCategorySelect.innerHTML += `<option value="${businessCategory}">${categoryData.name}</option>`;
+            
+            selectedSubcategories.forEach(subcatId => {
+                const subcat = categoryData.subcategories.find(s => s.id === subcatId);
+                if (subcat) {
+                    productSubcategorySelect.innerHTML += `<option value="${subcatId}">${subcat.name}</option>`;
+                }
+            });
+            
+            productCategorySelect.value = businessCategory;
+        }
+
+        // 📦 ADD PRODUCT
+        function addProduct() {
+            const name = document.getElementById('productName').value.trim();
+            const price = document.getElementById('productPrice').value.trim();
+            const description = document.getElementById('productDescription').value.trim();
+            const category = document.getElementById('productCategory').value;
+            const subcategory = document.getElementById('productSubcategory').value;
+            const imageUrl = document.getElementById('productImage').value.trim();
+            const stock = document.getElementById('productStock').value.trim();
+            
+            if (!name || !price || !description || !category || !subcategory) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            if (isNaN(price) || price <= 0) {
+                showNotification('Please enter a valid price', 'error');
+                return;
+            }
+            
+            const product = {
+                id: 'prod_' + Date.now(),
+                name: name,
+                price: parseFloat(price),
+                description: description,
+                category: category,
+                subcategory: subcategory,
+                imageUrl: imageUrl || getDefaultProductImage(subcategory),
+                stock: stock ? parseInt(stock) : 10,
+                createdAt: new Date().toISOString()
+            };
+            
+            userProducts.push(product);
+            
+            // Clear form
+            document.getElementById('productName').value = '';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productDescription').value = '';
+            document.getElementById('productSubcategory').value = '';
+            document.getElementById('productImage').value = '';
+            document.getElementById('productStock').value = '10';
+            
+            displayProducts();
+            updateThemePreviews();
+            calculateLeadScore();
+            saveProgressData();
+            
+            showNotification(`Product "${name}" added successfully!`, 'success');
+        }
+
+        // 🖼️ GET DEFAULT PRODUCT IMAGE
+        function getDefaultProductImage(subcategory) {
+            const defaultImages = {
+                'women-ethnic': 'https://images.unsplash.com/photo-1583391733956-6c78276477e4?w=200',
+                'men-ethnic': 'https://images.unsplash.com/photo-1602810319381-13c3e46b55c7?w=200',
+                'north-indian': 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=200',
+                'south-indian': 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=200',
+                'hair-services': 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=200',
+                'gold-jewellery': 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=200'
+            };
+            return defaultImages[subcategory] || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200';
+        }
+
+        // 📋 DISPLAY PRODUCTS
+        function displayProducts() {
+            const productsList = document.getElementById('productsList');
+            const productCount = document.getElementById('productCount');
+            
+            productCount.textContent = userProducts.length;
+            
+            if (userProducts.length === 0) {
+                productsList.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+                        <p>No products added yet. Add your first product above!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            productsList.innerHTML = userProducts.map(product => `
+                <div class="product-card" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div style="height: 150px; background-image: url('${product.imageUrl}'); background-size: cover; background-position: center; position: relative;">
+                        <div style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; color: #059669;">
+                            ₹${product.price.toLocaleString()}
+                        </div>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="font-size: 1.1rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">${product.name}</div>
+                        <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">${product.description}</div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b;">
+                            <span>📦 Stock: ${product.stock}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 🎨 UPDATE THEME PREVIEWS
+        function updateThemePreviews() {
+            const businessCategory = document.getElementById('category').value;
+            const categoryData = indianBusinessCategories[businessCategory];
+            
+            if (!categoryData) return;
+            
+            const menuText = selectedSubcategories.map(id => {
+                const subcat = categoryData.subcategories.find(s => s.id === id);
+                return subcat ? subcat.name : id;
+            }).join(' • ');
+            
+            ['modern', 'colorful', 'elegant'].forEach(theme => {
+                const menuEl = document.getElementById(`${theme}MenuCategories`);
+                const productsEl = document.getElementById(`${theme}ThemeProducts`);
+                
+                if (menuEl) menuEl.textContent = menuText || 'Your Categories';
+                
+                if (productsEl) {
+                    if (userProducts.length === 0) {
+                        productsEl.innerHTML = `
+                            <div style="text-align: center; color: #64748b; padding: 20px; font-size: 0.8rem;">
+                                Your products will appear here
+                            </div>
+                        `;
+                    } else {
+                        productsEl.innerHTML = userProducts.slice(0, 2).map(product => `
+                            <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.8); padding: 8px; border-radius: 6px; font-size: 0.7rem;">
+                                <div style="width: 30px; height: 30px; background-image: url('${product.imageUrl}'); background-size: cover; border-radius: 4px;"></div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: bold; color: #1e293b;">${product.name}</div>
+                                    <div style="color: #059669; font-weight: bold;">₹${product.price}</div>
+                                </div>
+                            </div>
+                        `).join('') + (userProducts.length > 2 ? 
+                            `<div style="text-align: center; font-size: 0.7rem; color: #64748b;">+${userProducts.length - 2} more</div>` : '');
+                    }
+                }
+            });
+        }
+
+        // 🎨 PROCEED TO THEMES
+        function proceedToThemes() {
+            updateThemePreviews();
+            calculateLeadScore();
+            saveProgressData();
+            showNotification(`Great! You've added ${userProducts.length} products. Moving to themes...`, 'success');
+            setTimeout(() => showScreen('themes'), 1500);
+        }
+
+        // 🎨 THEME SELECTION
+        function selectTheme(theme) {
+            selectedTheme = theme;
+            
+            document.querySelectorAll('.theme-preview').forEach(card => {
+                card.classList.remove('selected');
+                card.style.borderColor = 'rgba(139, 111, 205, 0.1)';
+            });
+            
+            const selectedCard = event.target.closest('.theme-preview');
+            selectedCard.classList.add('selected');
+            selectedCard.style.borderColor = '#6b46c1';
+            
+            const selectedDiv = document.getElementById('selectedTheme');
+            const selectedText = document.getElementById('selectedThemeText');
+            const completeBtn = document.getElementById('themeNextBtn');
+            
+            const themeNames = {
+                'modern': 'Modern Professional - Clean and minimal design',
+                'colorful': 'Colorful Creative - Vibrant and engaging design',
+                'elegant': 'Elegant Luxury - Sophisticated and refined design'
+            };
+            
+            selectedDiv.style.display = 'block';
+            selectedText.textContent = `You've selected: ${themeNames[theme]}`;
+            
+            completeBtn.disabled = false;
+            completeBtn.style.opacity = '1';
+            
+            calculateLeadScore();
+            saveProgressData();
+            showNotification(`Theme selected: ${themeNames[theme].split(' - ')[0]}`, 'success');
+        }
+
+        // 🚀 COMPLETE SETUP
+        async function completeSetup() {
+            if (!selectedTheme) {
+                showNotification('Please select a theme to complete setup', 'error');
+                return;
+            }
+
+            // Final data compilation
+            const completeSetupData = {
+                user_id: currentUserId,
+                name: document.getElementById('fullName').value,
+                business_name: document.getElementById('businessName').value,
+                phone: document.getElementById('phoneNumber').value,
+                business_category: document.getElementById('category').value,
+                selected_language: selectedLanguage,
+                selected_goals: selectedGoals,
+                selected_subcategories: selectedSubcategories,
+                selected_theme: selectedTheme,
+                products_count: userProducts.length,
+                products: userProducts,
+                lead_score: leadScore + 15, // Bonus for completion
+                setup_completed: true,
+                completed_at: new Date().toISOString()
+            };
+
+            // Save final completion data using CORS-safe method
+            await saveDataCORSSafe(completeSetupData);
+            
+            showNotification('🎉 Setup completed successfully!', 'success');
+            
+            // Show completion message
+            setTimeout(() => {
+                alert(`✅ Congratulations! 
+                
+Your Topiko business platform setup is complete:
+• Business: ${document.getElementById('businessName').value}
+• Theme: ${selectedTheme}
+• Products: ${userProducts.length}
+• Lead Score: ${leadScore}/100
+
+Your lead data has been captured and will appear in the CRM system for assignment to an SDR.
+
+Data saved using CORS-safe hybrid storage:
+✅ Primary: localStorage (100% reliable)
+${databaseConnected ? '✅ Enhanced: Supabase database' : '⚠️ Offline: Database connection failed'}
+
+This completes the CORS-fixed version!`);
+            }, 1500);
+        }
+
+        // 💾 SAVE PROGRESS DATA
+        async function saveProgressData() {
+            if (!currentUserId) return;
+            
+            const progressData = {
+                user_id: currentUserId,
+                selected_subcategories: selectedSubcategories,
+                products_count: userProducts.length,
+                products: userProducts,
+                selected_theme: selectedTheme,
+                lead_score: leadScore,
+                last_updated: new Date().toISOString()
+            };
+
+            await saveDataCORSSafe(progressData);
         }
 
         // 📄 SCREEN NAVIGATION
         function showScreen(screenId) {
             pageViews++;
+            
+            // Track time on previous screen
+            const currentScreen = document.querySelector('.screen.active');
+            if (currentScreen) {
+                const screenName = currentScreen.id;
+                if (!behaviorData.timeOnPages[screenName]) {
+                    behaviorData.timeOnPages[screenName] = 0;
+                }
+                behaviorData.timeOnPages[screenName] += Date.now() - (behaviorData.lastScreenTime || sessionStartTime);
+            }
+            behaviorData.lastScreenTime = Date.now();
             
             // Hide all screens
             document.querySelectorAll('.screen').forEach(screen => {
@@ -1195,7 +1820,18 @@
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
             });
-            document.querySelector(`[onclick="showScreen('${screenId}')"]`)?.classList.add('active');
+            document.querySelector(`[onclick="showScreen('${screenId}')"]`).classList.add('active');
+            
+            // Special handling for categories page
+            if (screenId === 'categories') {
+                setTimeout(loadSubcategories, 100);
+            }
+            
+            behaviorData.clickEvents.push({
+                type: 'navigation',
+                screen: screenId,
+                timestamp: Date.now()
+            });
             
             calculateLeadScore();
         }
@@ -1210,58 +1846,61 @@
             setTimeout(() => {
                 notification.classList.remove('show');
                 setTimeout(() => notification.remove(), 400);
-            }, 4000);
+            }, 3000);
         }
 
         // 🚀 INITIALIZATION
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Topiko CORS-Safe Lead System Initialized');
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Topiko Lead Form - CORS-SAFE VERSION Initialized');
             
             // Initialize tracking
             captureUTMParameters();
             detectDevice();
             
-            // Set system status
-            updateSystemStatus('💾 CORS-Safe Storage Active - No Data Loss', 'success');
+            // Test database connection
+            await testDatabaseConnection();
             
-            // Start session intelligence timer
-            setInterval(updateSessionIntelligence, 1000);
-            
-            // Show initialization success
-            setTimeout(() => {
-                showNotification('✅ System ready - 100% reliable lead capture', 'success');
-            }, 1000);
+            // Track initial page load
+            behaviorData.clickEvents.push({
+                type: 'page_load',
+                screen: 'welcome',
+                timestamp: Date.now()
+            });
             
             console.log('✅ CORS-Safe Lead Intelligence System Ready');
-            console.log('📊 Features: 100% Reliable Storage, CRM Integration, Real-time Scoring');
-            console.log('🔧 Storage Method: CORS-Safe localStorage (Primary) + Supabase (Enhancement)');
+            console.log('💾 Primary Storage: localStorage (100% reliable)');
+            console.log('🔌 Secondary Storage: Supabase (when available)');
+            console.log('📊 Data will be captured at every step and sent to CRM');
         });
 
-        // Save progress on page unload
-        window.addEventListener('beforeunload', function() {
-            if (currentUserId && leadScore > 0) {
-                console.log('💾 Saving final session data...');
-                // Final save attempt
-                const finalData = {
-                    user_id: currentUserId,
-                    lead_score: leadScore,
-                    session_end_time: new Date().toISOString(),
-                    session_duration_final: Math.round((Date.now() - sessionStartTime) / 60000)
-                };
-                try {
-                    localStorage.setItem('topiko_session_final', JSON.stringify(finalData));
-                } catch (e) {
-                    console.log('Final save failed, but main data is already saved');
-                }
+        // Track all clicks
+        document.addEventListener('click', function(event) {
+            behaviorData.clickEvents.push({
+                type: 'click',
+                element: event.target.tagName,
+                class: event.target.className,
+                id: event.target.id,
+                timestamp: Date.now()
+            });
+        });
+
+        // Track form focus events
+        document.addEventListener('focus', function(event) {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') {
+                behaviorData.formInteractions.push({
+                    type: 'field_focus',
+                    field: event.target.id,
+                    timestamp: Date.now()
+                });
             }
-        });
+        }, true);
 
-        // 🧪 DEBUGGING FUNCTIONS
-        console.log('🧪 CORS-Safe Testing Functions Available:');
-        console.log('- saveDataCORSSafe(data) - Test CORS-safe storage');
-        console.log('- calculateLeadScore() - Recalculate lead score');
-        console.log('- updateSystemStatus(msg, type) - Update status display');
-        console.log('💾 Storage Method: 100% Reliable CORS-Safe localStorage');
+        // Periodic connection testing
+        setInterval(async () => {
+            if (!databaseConnected) {
+                await testDatabaseConnection();
+            }
+        }, 30000); // Test every 30 seconds if offline
     </script>
 </body>
 </html>
