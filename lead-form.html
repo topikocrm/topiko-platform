@@ -710,6 +710,11 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="Enter your email address" oninput="trackFormProgress()">
+                    </div>
+
+                    <div class="form-group">
                         <label for="phoneNumber">Phone Number</label>
                         <input type="tel" id="phoneNumber" placeholder="Enter your phone number" oninput="trackFormProgress()">
                     </div>
@@ -1228,9 +1233,10 @@
             
             // Try to save to Supabase with correct format
             if (databaseConnected) {
-                // Prepare data in correct format for database schema
+                // Prepare data in correct format for database schema (including required email field)
                 const dbData = {
                     name: leadData.name,
+                    email: leadData.email,  // ← REQUIRED FIELD now included!
                     phone: leadData.phone,
                     business_name: leadData.business_name,
                     address: leadData.address,
@@ -1380,7 +1386,7 @@
 
         // 📝 FORM PROGRESS TRACKING
         function trackFormProgress() {
-            const formFields = ['fullName', 'phoneNumber', 'businessName', 'address', 'businessType', 'category'];
+            const formFields = ['fullName', 'email', 'phoneNumber', 'businessName', 'address', 'businessType', 'category'];
             let completedFields = 0;
             
             formFields.forEach(fieldId => {
@@ -1397,14 +1403,22 @@
         // 📝 REGISTRATION SUBMISSION - FIXED VERSION
         async function submitRegistration() {
             const name = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phoneNumber').value.trim();
             const business = document.getElementById('businessName').value.trim();
             const address = document.getElementById('address').value.trim();
             const type = document.getElementById('businessType').value;
             const category = document.getElementById('category').value;
 
-            if (!name || !phone || !business || !address || !type || !category) {
+            if (!name || !email || !phone || !business || !address || !type || !category) {
                 showNotification('Please fill in all fields', 'error');
+                return;
+            }
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showNotification('Please enter a valid email address', 'error');
                 return;
             }
 
@@ -1413,10 +1427,11 @@
             // Generate user ID
             currentUserId = 'topiko_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
-            // Create comprehensive lead data with CORRECT field names
+            // Create comprehensive lead data with CORRECT field names including EMAIL
             const leadData = {
-                // Basic Info - matching database schema exactly
+                // Basic Info - matching database schema exactly (including required email field)
                 name: name,
+                email: email,  // ← REQUIRED FIELD that was missing!
                 phone: phone,
                 business_name: business,
                 address: address,
@@ -1778,6 +1793,7 @@
             const completeSetupData = {
                 user_id: currentUserId,
                 name: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
                 business_name: document.getElementById('businessName').value,
                 phone: document.getElementById('phoneNumber').value,
                 business_category: document.getElementById('category').value,
