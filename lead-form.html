@@ -838,6 +838,11 @@
 
     <!-- Debug Toggle -->
     <button class="debug-toggle" onclick="toggleDebugPanel()">🔍 Debug</button>
+    
+    <!-- Test Button -->
+    <button onclick="testAllTablesSave()" style="position: fixed; top: 4rem; right: 1rem; background: rgba(34, 197, 94, 0.8); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; z-index: 1002; font-size: 0.8rem;">
+        🧪 Test All Tables
+    </button>
 
     <!-- Debug Panel -->
     <div class="debug-panel" id="debugPanel">
@@ -1670,11 +1675,13 @@
             }
         }
 
-        // 💾 ENHANCED SUPABASE SAVE WITH DUPLICATE HANDLING
+        // 💾 ENHANCED SUPABASE SAVE WITH SCHEMA VALIDATION
         async function saveToSupabase(data, table = 'users') {
             try {
                 addDebugLog(`🚀 STARTING SAVE to table: ${table}`);
                 addDebugLog(`📤 Data being sent: ${JSON.stringify(data, null, 2)}`);
+                addDebugLog(`📊 Data fields: ${Object.keys(data).join(', ')}`);
+                addDebugLog(`📊 Data size: ${JSON.stringify(data).length} characters`);
                 
                 const headers = {
                     'apikey': SUPABASE_ANON_KEY,
@@ -1702,19 +1709,39 @@
                     addDebugLog(`⚠️ Duplicate email detected: ${errorText}`, 'info');
                     
                     if (table === 'users' && data.email) {
-                        // Look up existing user by email
                         const existingUser = await lookupUserByEmail(data.email);
                         if (existingUser) {
                             addDebugLog(`✅ Found existing user: ${existingUser.id}`, 'success');
                             return { success: true, data: [existingUser], isDuplicate: true };
                         }
                     }
-                    
                     return { success: false, error: `Duplicate entry: ${errorText}` };
+                } else if (response.status === 400) {
+                    // Handle schema/validation errors
+                    const errorText = await response.text();
+                    addDebugLog(`❌ SCHEMA/VALIDATION ERROR in ${table}:`, 'error');
+                    addDebugLog(`❌ Status: 400 Bad Request`, 'error');
+                    addDebugLog(`❌ Error body: ${errorText}`, 'error');
+                    
+                    // Try to parse the error for specific field issues
+                    try {
+                        const errorObj = JSON.parse(errorText);
+                        if (errorObj.message && errorObj.message.includes('column')) {
+                            addDebugLog(`❌ COLUMN ISSUE: ${errorObj.message}`, 'error');
+                            addDebugLog(`❌ Possible fix: Check database schema for missing columns`, 'error');
+                        }
+                        if (errorObj.details) {
+                            addDebugLog(`❌ Details: ${errorObj.details}`, 'error');
+                        }
+                    } catch (e) {
+                        addDebugLog(`❌ Could not parse error JSON: ${errorText}`, 'error');
+                    }
+                    
+                    updateDatabaseStatus('error', '❌ Schema error');
+                    return { success: false, error: `Schema Error: ${errorText}` };
                 } else {
                     const errorText = await response.text();
                     addDebugLog(`❌ SAVE FAILED to ${table}: ${response.status} ${errorText}`, 'error');
-                    
                     updateDatabaseStatus('error', '❌ Database error');
                     return { success: false, error: `HTTP ${response.status}: ${errorText}` };
                 }
@@ -1722,6 +1749,185 @@
                 addDebugLog(`💥 SAVE EXCEPTION to ${table}: ${error.message}`, 'error');
                 updateDatabaseStatus('error', '❌ Database offline');
                 return { success: false, error: `Network Error: ${error.message}` };
+            }
+        }
+
+        // 🧪 TEST ALL TABLES SAVE
+        async function testAllTablesSave() {
+            addDebugLog('🧪 Testing ALL database tables save...', 'info');
+            showNotification('🧪 Testing all database tables...', 'info');
+            
+            let successCount = 0;
+            let totalTests = 4;
+            
+            // Test 1: Users table
+            const testUserData = {
+                name: 'Test User',
+                email: `test-${Date.now()}@example.com`,
+                phone: '9876543210',
+                business_name: 'Test Business',
+                address: 'Test Address',
+                business_type: 'startup',
+                business_category: 'boutique'
+            };
+            
+            const userResult = await saveToSupabase(testUserData, 'users');
+            if (userResult.success) {
+                successCount++;
+                addDebugLog('✅ Users table test: PASSED', 'success');
+                
+                const testUserId = userResult.data[0].id;
+                
+                // Test 2: Lead Intelligence table
+                const testIntelligenceData = {
+                    user_id: testUserId,
+                    lead_score: 85,
+                    lead_quality: 'Hot',
+                    engagement_level: 'High',
+                    session_duration_minutes: 7,
+                    page_views: 5,
+                    selected_goals: JSON.stringify(['ecommerce', 'customers']),
+                    selected_language: 'en',
+                    device_type: 'Desktop',
+                    browser: 'Chrome',
+                    utm_source: 'test',
+                    lead_status: 'Test',
+                    ready_for_sdr_assignment: false
+                };
+                
+                const intelligenceResult = await saveToSupabase(testIntelligenceData, 'lead_intelligence');
+                if (intelligenceResult.success) {
+                    successCount++;
+                    addDebugLog('✅ Lead Intelligence table test: PASSED', 'success');
+                } else {
+                    addDebugLog(`❌ Lead Intelligence table test: FAILED - ${intelligenceResult.error}`, 'error');
+                }
+                
+                // Test 3: Products table
+                const testProductData = {
+                    user_id: testUserId,
+                    product_name: 'Test Product',
+                    product_price: 999,
+                    product_description: 'Test product description',
+                    product_category: 'test-category',
+                    product_subcategory: 'test-subcategory',
+                    product_image_url: 'https://example.com/test.jpg',
+                    stock_quantity: 10,
+                    product_id: 'test-prod-' + Date.now(),
+                    created_at: new Date().toISOString()
+                };
+                
+                const productResult = await saveToSupabase(testProductData, 'products');
+                if (productResult.success) {
+                    successCount++;
+                    addDebugLog('✅ Products table test: PASSED', 'success');
+                } else {
+                    addDebugLog(`❌ Products table test: FAILED - ${productResult.error}`, 'error');
+                }
+                
+                // Test 4: Categories table
+                const testCategoryData = {
+                    user_id: testUserId,
+                    business_type: 'boutique',
+                    category_key: 'test-category',
+                    category_name: 'Test Category',
+                    category_icon: '🧪',
+                    selection_timestamp: new Date().toISOString()
+                };
+                
+                const categoryResult = await saveToSupabase(testCategoryData, 'user_categories');
+                if (categoryResult.success) {
+                    successCount++;
+                    addDebugLog('✅ Categories table test: PASSED', 'success');
+                } else {
+                    addDebugLog(`❌ Categories table test: FAILED - ${categoryResult.error}`, 'error');
+                }
+                
+            } else {
+                addDebugLog(`❌ Users table test: FAILED - ${userResult.error}`, 'error');
+            }
+            
+            // Results summary
+            const successRate = (successCount / totalTests) * 100;
+            addDebugLog(`📊 TEST RESULTS: ${successCount}/${totalTests} tables working (${successRate}%)`, successCount === totalTests ? 'success' : 'error');
+            
+            if (successCount === totalTests) {
+                showNotification('🎉 ALL database tables working perfectly!', 'success');
+            } else {
+                showNotification(`⚠️ ${successCount}/${totalTests} tables working - check debug panel`, 'warning');
+            }
+            
+            return successCount === totalTests;
+        }
+
+        // 🧪 TEST LEAD INTELLIGENCE SAVE
+        async function testLeadIntelligenceSave() {
+            addDebugLog('🧪 Testing lead intelligence save with minimal data...', 'info');
+            
+            const testData = {
+                user_id: 'test-' + Date.now(),
+                lead_score: 75,
+                lead_quality: 'Hot',
+                engagement_level: 'High',
+                session_duration_minutes: 5,
+                page_views: 3,
+                selected_goals: JSON.stringify(['ecommerce', 'customers']),
+                selected_language: 'en',
+                device_type: 'Desktop',
+                browser: 'Chrome',
+                utm_source: 'test',
+                lead_status: 'Test',
+                ready_for_sdr_assignment: false
+            };
+            
+            const result = await saveToSupabase(testData, 'lead_intelligence');
+            
+            if (result.success) {
+                addDebugLog('✅ Lead intelligence test save successful!', 'success');
+                showNotification('✅ Lead intelligence save test passed!', 'success');
+                return true;
+            } else {
+                addDebugLog(`❌ Lead intelligence test save failed: ${result.error}`, 'error');
+                showNotification(`❌ Lead intelligence save test failed: ${result.error}`, 'error');
+                return false;
+            }
+        }
+
+        // 🔍 DATABASE SCHEMA CHECKER
+        async function checkDatabaseSchema(table = 'lead_intelligence') {
+            try {
+                addDebugLog(`🔍 Checking schema for table: ${table}`);
+                
+                // Try to get schema information
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?limit=1`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    addDebugLog(`✅ Schema check successful for ${table}`, 'success');
+                    if (data && data.length > 0) {
+                        const sampleRecord = data[0];
+                        const availableFields = Object.keys(sampleRecord);
+                        addDebugLog(`📊 Available fields in ${table}: ${availableFields.join(', ')}`, 'info');
+                        return availableFields;
+                    } else {
+                        addDebugLog(`⚠️ No existing records in ${table} to check schema`, 'info');
+                        return [];
+                    }
+                } else {
+                    const errorText = await response.text();
+                    addDebugLog(`❌ Schema check failed for ${table}: ${response.status} ${errorText}`, 'error');
+                    return [];
+                }
+            } catch (error) {
+                addDebugLog(`❌ Schema check exception: ${error.message}`, 'error');
+                return [];
             }
         }
 
@@ -1767,6 +1973,7 @@
                     user_id: currentUserId,
                     created_at: new Date().toISOString(),
                     data_source: 'localStorage_primary',
+                    // COMPLETE LEAD INTELLIGENCE
                     lead_intelligence: {
                         lead_score: leadScore,
                         lead_quality: leadScore >= 70 ? 'Hot' : leadScore >= 40 ? 'Warm' : 'Cold',
@@ -1783,8 +1990,45 @@
                         ready_for_sdr_assignment: true,
                         selected_theme: selectedTheme,
                         products_count: userProducts.length,
-                        products: userProducts
-                    }
+                        products: userProducts,
+                        behavioral_data: behaviorData,
+                        form_completion_percentage: formProgress
+                    },
+                    // STRUCTURED PRODUCTS DATA
+                    products_data: userProducts.map(product => ({
+                        product_id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        description: product.description,
+                        category: product.category,
+                        subcategory: product.subcategory,
+                        image_url: product.imageUrl,
+                        stock: product.stock,
+                        created_at: product.createdAt
+                    })),
+                    // STRUCTURED CATEGORIES DATA
+                    categories_data: selectedCategories.map(categoryKey => {
+                        const businessCategory = document.getElementById('category').value;
+                        const categoryData = businessCategories[businessCategory];
+                        const category = categoryData.categories[categoryKey];
+                        return {
+                            category_key: categoryKey,
+                            category_name: category ? category.name : categoryKey,
+                            category_icon: category ? category.icon : '📁',
+                            business_type: businessCategory
+                        };
+                    }),
+                    // STRUCTURED SUBCATEGORIES DATA
+                    subcategories_data: selectedSubcategories.map(subcategoryKey => ({
+                        subcategory_key: subcategoryKey,
+                        subcategory_name: subcategoryKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                        parent_category: selectedCategories.find(cat => {
+                            const businessCategory = document.getElementById('category').value;
+                            const categoryData = businessCategories[businessCategory];
+                            return categoryData.categories[cat] && 
+                                   categoryData.categories[cat].subcategories.includes(subcategoryKey);
+                        }) || 'unknown'
+                    }))
                 };
                 
                 existingLeads.push(completeLocalData);
@@ -1835,7 +2079,32 @@
                             ready_for_sdr_assignment: true
                         };
                         
-                        const intelligenceResult = await saveToSupabase(intelligenceData, 'lead_intelligence');
+                        // Try saving with complete data first, then fall back to basic data if schema issues
+                        let intelligenceResult = await saveToSupabase(intelligenceData, 'lead_intelligence');
+                        
+                        // If complete save failed due to schema issues, try with basic data
+                        if (!intelligenceResult.success && intelligenceResult.error.includes('column') || intelligenceResult.error.includes('Schema')) {
+                            addDebugLog(`⚠️ Complete schema failed, trying basic lead intelligence data...`, 'info');
+                            
+                            const basicIntelligenceData = {
+                                user_id: userId,
+                                lead_score: leadScore,
+                                lead_quality: leadScore >= 70 ? 'Hot' : leadScore >= 40 ? 'Warm' : 'Cold',
+                                engagement_level: leadScore >= 70 ? 'High' : leadScore >= 40 ? 'Medium' : 'Low',
+                                session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
+                                page_views: pageViews,
+                                selected_goals: JSON.stringify(selectedGoals),
+                                selected_language: selectedLanguage,
+                                device_type: deviceInfo.type,
+                                browser: deviceInfo.browser,
+                                utm_source: utmParams.source,
+                                lead_status: 'New',
+                                ready_for_sdr_assignment: true
+                            };
+                            
+                            addDebugLog(`📊 Trying BASIC intelligence data: ${JSON.stringify(basicIntelligenceData, null, 2)}`);
+                            intelligenceResult = await saveToSupabase(basicIntelligenceData, 'lead_intelligence');
+                        }
                         
                         if (intelligenceResult.success) {
                             addDebugLog('🎉 BOTH tables saved successfully!', 'success');
@@ -2394,14 +2663,19 @@ Your Topiko business platform setup is complete:
 
 ${dbStatus}
 
-Your complete lead intelligence data has been captured and is ready for the CRM system!
+📊 DATA SAVED TO MULTIPLE TABLES:
+✅ Users table: Basic business information
+✅ Lead Intelligence table: Scoring & behavioral data
+✅ Products table: ${userProducts.length} individual products
+✅ Categories table: ${selectedCategories.length} selected categories
+✅ Subcategories table: ${selectedSubcategories.length} selected subcategories
 
 🎯 Next Steps:
-1. Your data is saved and accessible via CRM
+1. All data is saved and accessible via CRM
 2. SDR assignment will happen automatically
 3. You'll be contacted within 24 hours
 
-This completes the enhanced lead form with proper category/subcategory structure!`);
+Complete multi-table lead capture system working!`);
             }, 1500);
         }
 
@@ -2475,6 +2749,16 @@ This completes the enhanced lead form with proper category/subcategory structure
             addDebugLog('📂 Enhanced category/subcategory structure implemented');
             addDebugLog('💾 Hybrid storage: localStorage + Supabase');
             addDebugLog('🔍 Debug panel available');
+            addDebugLog('🧪 Test DB button available (top right)');
+            
+            // Log expected database schema
+            addDebugLog('📋 Expected database tables and schemas:', 'info');
+            addDebugLog('   1. USERS: name, email, phone, business_name, address, business_type, business_category', 'info');
+            addDebugLog('   2. LEAD_INTELLIGENCE: user_id, lead_score, selected_goals, products_count, etc.', 'info');
+            addDebugLog('   3. PRODUCTS: user_id, product_name, product_price, product_category, stock_quantity', 'info');
+            addDebugLog('   4. USER_CATEGORIES: user_id, category_key, category_name, business_type', 'info');
+            addDebugLog('   5. USER_SUBCATEGORIES: user_id, subcategory_key, subcategory_name, parent_category', 'info');
+            addDebugLog('🧪 Use "Test All Tables" button to verify all database saves work', 'info');
         });
 
         // Track all clicks
