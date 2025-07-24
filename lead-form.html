@@ -588,6 +588,86 @@
             transform: scale(1);
         }
 
+        /* Radio Button Styling for Qualifying Questions */
+        .qualifying-question {
+            margin-bottom: 2.5rem;
+        }
+
+        .qualifying-question h3 {
+            color: #6b46c1;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .radio-options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .radio-option {
+            position: relative;
+        }
+
+        .radio-input {
+            display: none;
+        }
+
+        .radio-card {
+            display: flex;
+            align-items: center;
+            padding: 1.2rem 1.5rem;
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid rgba(139, 111, 205, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            color: #553c9a;
+        }
+
+        .radio-card:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(139, 111, 205, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(139, 111, 205, 0.1);
+        }
+
+        .radio-input:checked + .radio-card {
+            background: rgba(139, 111, 205, 0.1);
+            border-color: #8b6fcd;
+            color: #6b46c1;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(139, 111, 205, 0.2);
+        }
+
+        .radio-icon {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(139, 111, 205, 0.3);
+            border-radius: 50%;
+            margin-right: 1rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .radio-input:checked + .radio-card .radio-icon {
+            border-color: #8b6fcd;
+            background: rgba(139, 111, 205, 0.1);
+        }
+
+        .radio-input:checked + .radio-card .radio-icon::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #8b6fcd;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
         /* Categories and Subcategories */
         .category-section {
             margin-bottom: 2rem;
@@ -990,24 +1070,31 @@
                         <span class="nav-icon">✨</span>
                         <span>Preview</span>
                     </div>
-                    </li><li class="nav-item">
+                </li>
+                <li class="nav-item">
                     <div class="nav-link" onclick="showScreen('registration')">
                         <span class="nav-icon">📝</span>
                         <span>Sign Up</span>
                     </div>
-    </li>
-    <li class="nav-item">
-        <div class="nav-link" onclick="showScreen('setup-intro')">
-            <span class="nav-icon">🚀</span>
-            <span>Setup</span>
-        </div>
-    </li>
-    <li class="nav-item">
-        <div class="nav-link" onclick="showScreen('categories')">
-            <span class="nav-icon">📂</span>
-            <span>Categories</span>
-        </div>
-    </li>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('setup-intro')">
+                        <span class="nav-icon">🚀</span>
+                        <span>Setup</span>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('qualifying-questions')">
+                        <span class="nav-icon">❓</span>
+                        <span>Questions</span>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('categories')">
+                        <span class="nav-icon">📂</span>
+                        <span>Categories</span>
+                    </div>
+                </li>
                 <li class="nav-item">
                     <div class="nav-link" onclick="showScreen('products')">
                         <span class="nav-icon">📦</span>
@@ -1030,7 +1117,7 @@
                 <div class="welcome-screen">
                     <h1 class="topiko-logo">Topiko</h1>
                     <p style="font-size: 1.2rem; color: #6b46c1; margin-bottom: 2rem;">Complete Business Platform for Indian SMBs</p>
-                    <p style="font-size: 1rem; color: #059669; margin-bottom: 2rem; font-weight: bold;">✅ Enhanced with Goals Transition & Theme Selection</p>
+                    <p style="font-size: 1rem; color: #059669; margin-bottom: 2rem; font-weight: bold;">✅ Enhanced with Qualifying Questions</p>
                     <button class="try-free-button" onclick="startLeadFlow()">
                         Try for Free
                     </button>
@@ -1254,18 +1341,18 @@
                     </button>
                 </div>
             </section>
+
             <!-- Setup Introduction Screen -->
             <section class="screen" id="setup-intro">
                 <div class="content-card" style="max-width: 700px; margin: 0 auto; text-align: center; position: relative; overflow: hidden;">
                     <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #22c55e, #16a34a, #059669); border-radius: 20px 20px 0 0;"></div>
-                    
                     
                     <h2 style="color: #059669; font-size: 2.2rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.3;">
                         Great, we got your details!
                     </h2>
                     <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.2); border-radius: 16px; padding: 1.5rem; margin: 2rem 0;">
                         <p style="color: #059669; font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem;">
-                            Justa Give us 5 more minutes, <br>We'll show you how your business can look online.<br>
+                            Just Give us 5 more minutes, <br>We'll show you how your business can look online.<br>
                             Try for free. No Pressure. No Obligation. See it first. Decide later! 
                         </p>
                         
@@ -1274,17 +1361,156 @@
                         </div>
                     </div>
             
-                 <!--   <div style="background: rgba(139, 111, 205, 0.1); border: 2px solid rgba(139, 111, 205, 0.2); border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
-                        <p style="color: #6b46c1; font-size: 1.4rem; font-weight: 700; letter-spacing: 0.5px;">
-                            Ready? 🚀
-                        </p>
-                    </div> -->
-            
                     <button class="submit-button" onclick="startBusinessSetup()" style="animation: pulse 2s infinite; font-size: 1.2rem; padding: 1.2rem 3rem;">
                         Let's Do This! 🎯
                     </button>
                 </div>
             </section>
+
+            <!-- NEW: Qualifying Questions Screen -->
+            <section class="screen" id="qualifying-questions">
+                <div class="content-card" style="max-width: 800px; margin: 0 auto;">
+                    <div style="text-align: center; margin-bottom: 3rem;">
+                        <h2 style="color: #6b46c1; font-size: 2.2rem; font-weight: 700; margin-bottom: 1rem;">
+                            OK, Great. Let's setup things for you
+                        </h2>
+                        <p style="color: #553c9a; font-size: 1.2rem; font-weight: 500;">
+                            But before that I just need a couple of details about you
+                        </p>
+                    </div>
+
+                    <!-- Question 1: Online Presence -->
+                    <div class="qualifying-question">
+                        <h3>Do you currently have any online presence?</h3>
+                        <div class="radio-options">
+                            <div class="radio-option">
+                                <input type="radio" id="presence-none" name="online_presence" value="none" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="presence-none" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    No online presence at all
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="presence-whatsapp" name="online_presence" value="whatsapp" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="presence-whatsapp" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    Only WhatsApp Business
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="presence-social" name="online_presence" value="social" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="presence-social" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    Social media pages (Facebook/Instagram)
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="presence-basic" name="online_presence" value="basic_website" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="presence-basic" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    Basic website
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="presence-full" name="online_presence" value="full_website" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="presence-full" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    Full website with online ordering
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 2: Budget -->
+                    <div class="qualifying-question">
+                        <h3>To meet your business goals, how much budget can you allocate per year?</h3>
+                        <div class="radio-options">
+                            <div class="radio-option">
+                                <input type="radio" id="budget-low" name="budget" value="5000-10000" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="budget-low" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    ₹5,000 to ₹10,000
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="budget-medium" name="budget" value="10000-25000" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="budget-medium" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    ₹10,000 to ₹25,000
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="budget-high" name="budget" value="25000+" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="budget-high" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    More than ₹25,000
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 3: Decision Maker -->
+                    <div class="qualifying-question">
+                        <h3>Are you the decision maker for your business?</h3>
+                        <div class="radio-options">
+                            <div class="radio-option">
+                                <input type="radio" id="decision-yes" name="decision_maker" value="yes" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="decision-yes" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    Yes
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="decision-no" name="decision_maker" value="no" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="decision-no" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    No
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 4: Timeline -->
+                    <div class="qualifying-question">
+                        <h3>How soon do you want to get started?</h3>
+                        <div class="radio-options">
+                            <div class="radio-option">
+                                <input type="radio" id="timeline-immediate" name="timeline" value="immediately" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="timeline-immediate" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    Immediately
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="timeline-week" name="timeline" value="within_week" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="timeline-week" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    Within a week
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="timeline-month" name="timeline" value="this_month" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="timeline-month" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    This month
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="timeline-checking" name="timeline" value="just_checking" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="timeline-checking" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    Just checking
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="submit-button" onclick="proceedToCategories()" id="qualifyingNextBtn" disabled style="opacity: 0.5;">
+                        Create my Business 🚀
+                    </button>
+                </div>
+            </section>
+
             <!-- Categories Screen -->
             <section class="screen" id="categories">
                 <div class="content-card" style="max-width: 1200px; margin: 0 auto;">
@@ -1516,7 +1742,7 @@
     </div>
 
     <script>
-        // 🎯 TOPIKO LEAD INTELLIGENCE SYSTEM - COMPLETE & FIXED
+        // 🎯 TOPIKO LEAD INTELLIGENCE SYSTEM - ENHANCED WITH QUALIFYING QUESTIONS
         
         // ✅ CORE VARIABLES
         let sessionStartTime = Date.now();
@@ -1541,6 +1767,14 @@
         };
         let databaseConnected = false;
         let debugLogs = [];
+
+        // 🆕 NEW: Qualifying Questions Data
+        let qualifyingAnswers = {
+            online_presence: '',
+            budget: '',
+            decision_maker: '',
+            timeline: ''
+        };
 
         // 🚀 SUPABASE CONFIGURATION
         const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co'
@@ -2164,16 +2398,14 @@
             
             // Test user save with only schema-compliant fields
             const testUserData = {
-                name: 'Test User Goals Transition',
+                name: 'Test User with Qualifying Questions',
                 email: `test-${Date.now()}@example.com`,
                 phone: '9876543210',
-                business_name: 'Test Business Goals',
+                business_name: 'Test Business Enhanced',
                 business_type: 'startup',
                 business_category: 'boutique',
                 selected_language: 'en',
                 selected_goals: ['ecommerce', 'customers']
-                // Note: Only including fields that definitely exist in schema
-                // Extended fields like selected_categories will be added later if schema supports them
             };
             
             addDebugLog(`🧪 Test data prepared: ${JSON.stringify(testUserData, null, 2)}`);
@@ -2183,30 +2415,6 @@
             if (userResult.success) {
                 showNotification('✅ Database save test successful!', 'success');
                 addDebugLog('✅ Test user created successfully', 'success');
-                
-                // Test a basic product save if user creation worked
-                if (userResult.data && userResult.data.length > 0) {
-                    const testUserId = userResult.data[0].id;
-                    
-                    const testProductData = {
-                        user_id: testUserId,
-                        name: 'Test Product',
-                        price: 999,
-                        description: 'Test product description',
-                        image_url: null
-                        // Only using schema-compliant fields
-                    };
-                    
-                    const productResult = await saveToSupabase(testProductData, 'products');
-                    if (productResult.success) {
-                        showNotification('✅ Products table also working!', 'success');
-                        addDebugLog('✅ Test product also created successfully', 'success');
-                    } else {
-                        showNotification('⚠️ User save OK, product save failed', 'warning');
-                        addDebugLog(`⚠️ Test product failed: ${productResult.error}`, 'error');
-                    }
-                }
-                
                 return true;
             } else {
                 showNotification(`❌ Database save test failed: ${userResult.error}`, 'error');
@@ -2215,7 +2423,7 @@
             }
         }
 
-        // 📊 LEAD SCORING ALGORITHM
+        // 📊 ENHANCED LEAD SCORING ALGORITHM WITH QUALIFYING QUESTIONS
         function calculateLeadScore() {
             let score = 0;
             
@@ -2249,10 +2457,43 @@
             // Theme Selected (5 points)
             if (selectedTheme) score += 5;
             
+            // 🆕 NEW: Qualifying Questions Scoring (max 25 points)
+            let qualifyingScore = 0;
+            
+            // Online Presence Scoring
+            switch (qualifyingAnswers.online_presence) {
+                case 'none': qualifyingScore += 8; break; // Highest potential
+                case 'whatsapp': qualifyingScore += 6; break;
+                case 'social': qualifyingScore += 4; break;
+                case 'basic_website': qualifyingScore += 3; break;
+                case 'full_website': qualifyingScore += 2; break; // Already established
+            }
+            
+            // Budget Scoring
+            switch (qualifyingAnswers.budget) {
+                case '25000+': qualifyingScore += 8; break; // High budget
+                case '10000-25000': qualifyingScore += 6; break;
+                case '5000-10000': qualifyingScore += 4; break;
+            }
+            
+            // Decision Maker Scoring
+            if (qualifyingAnswers.decision_maker === 'yes') qualifyingScore += 5;
+            if (qualifyingAnswers.decision_maker === 'no') qualifyingScore += 2;
+            
+            // Timeline Scoring
+            switch (qualifyingAnswers.timeline) {
+                case 'immediately': qualifyingScore += 4; break; // Hot lead
+                case 'within_week': qualifyingScore += 3; break;
+                case 'this_month': qualifyingScore += 2; break;
+                case 'just_checking': qualifyingScore += 1; break;
+            }
+            
+            score += Math.min(qualifyingScore, 25);
+            
             leadScore = Math.min(score, 100);
             updateLeadIntelligenceWidget();
             
-            addDebugLog(`📊 Lead Score Updated: ${leadScore}/100 (Categories: ${selectedCategories.length}, Subcategories: ${selectedSubcategories.length})`);
+            addDebugLog(`📊 Lead Score Updated: ${leadScore}/100 (Qualifying: ${qualifyingScore}/25)`);
             return leadScore;
         }
 
@@ -2392,7 +2633,6 @@
 
         // 🌟 DISPLAY GOALS TRANSITION WITH PERSONALIZED MESSAGING
         function displayGoalsTransition(selectedGoals) {
-            // Update content with optimized messaging
             document.getElementById('celebrationEmoji').textContent = '🎯';
             document.getElementById('mainMessage').textContent = 'Excellent! You\'ve selected the options most important for Business Growth';
             document.getElementById('subMessage').textContent = 'These strategic choices will accelerate your business success and help you achieve your objectives faster.';
@@ -2432,27 +2672,29 @@
             // Add sparkle effects for excitement
             setTimeout(createSparkles, 500);
         }
-// 🚀 DISPLAY SETUP INTRO GOALS
-function displaySetupIntroGoals() {
-    const setupGoalsList = document.getElementById('setupGoalsList');
-    if (!setupGoalsList || selectedGoals.length === 0) return;
-    
-    setupGoalsList.innerHTML = selectedGoals.map(goal => 
-        `<div style="background: rgba(34, 197, 94, 0.15); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; color: #059669; font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;">
-            <span style="margin-right: 0.8rem; font-size: 1.3rem;">${goalNames[goal]?.split(' ')[0] || '🎯'}</span>
-            <span>${goalNames[goal]?.substring(2) || goal}</span>
-        </div>`
-    ).join('');
-    
-    addDebugLog(`Setup intro goals displayed: ${selectedGoals.join(', ')}`);
-}
 
-// 🚀 START BUSINESS SETUP
-function startBusinessSetup() {
-    addDebugLog('🚀 Starting business setup flow');
-    showNotification('Let\'s set up your business categories!', 'success');
-    setTimeout(() => showScreen('categories'), 1000);
-}
+        // 🚀 DISPLAY SETUP INTRO GOALS
+        function displaySetupIntroGoals() {
+            const setupGoalsList = document.getElementById('setupGoalsList');
+            if (!setupGoalsList || selectedGoals.length === 0) return;
+            
+            setupGoalsList.innerHTML = selectedGoals.map(goal => 
+                `<div style="background: rgba(34, 197, 94, 0.15); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; color: #059669; font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;">
+                    <span style="margin-right: 0.8rem; font-size: 1.3rem;">${goalNames[goal]?.split(' ')[0] || '🎯'}</span>
+                    <span>${goalNames[goal]?.substring(2) || goal}</span>
+                </div>`
+            ).join('');
+            
+            addDebugLog(`Setup intro goals displayed: ${selectedGoals.join(', ')}`);
+        }
+
+        // 🚀 START BUSINESS SETUP - NOW GOES TO QUALIFYING QUESTIONS
+        function startBusinessSetup() {
+            addDebugLog('🚀 Starting business setup flow - going to qualifying questions');
+            showNotification('Let\'s gather some more details about your business!', 'success');
+            setTimeout(() => showScreen('qualifying-questions'), 1000);
+        }
+
         // 🚀 PROCEED FROM TRANSITION TO REGISTRATION
         function proceedFromTransition() {
             // Add excitement animation
@@ -2601,6 +2843,79 @@ function startBusinessSetup() {
                 addDebugLog(`❌ User registration failed: ${userResult.error}`, 'error');
                 showNotification('❌ Registration failed. Please try again.', 'error');
             }
+        }
+
+        // 🆕 NEW: QUALIFYING QUESTIONS FUNCTIONS
+        function updateQualifyingData() {
+            // Get all selected qualifying answers
+            qualifyingAnswers.online_presence = document.querySelector('input[name="online_presence"]:checked')?.value || '';
+            qualifyingAnswers.budget = document.querySelector('input[name="budget"]:checked')?.value || '';
+            qualifyingAnswers.decision_maker = document.querySelector('input[name="decision_maker"]:checked')?.value || '';  
+            qualifyingAnswers.timeline = document.querySelector('input[name="timeline"]:checked')?.value || '';
+            
+            addDebugLog(`Qualifying answers updated: ${JSON.stringify(qualifyingAnswers)}`);
+            
+            // Update lead score with new qualifying data
+            calculateLeadScore();
+            
+            // Check if all questions are answered
+            const allAnswered = Object.values(qualifyingAnswers).every(answer => answer !== '');
+            const nextBtn = document.getElementById('qualifyingNextBtn');
+            
+            if (allAnswered) {
+                nextBtn.disabled = false;
+                nextBtn.style.opacity = '1';
+            } else {
+                nextBtn.disabled = true;
+                nextBtn.style.opacity = '0.5';
+            }
+        }
+
+        // 🆕 NEW: PROCEED TO CATEGORIES AFTER QUALIFYING QUESTIONS
+        async function proceedToCategories() {
+            if (Object.values(qualifyingAnswers).some(answer => answer === '')) {
+                showNotification('Please answer all questions to continue', 'error');
+                return;
+            }
+            
+            addDebugLog(`Proceeding with qualifying answers: ${JSON.stringify(qualifyingAnswers)}`);
+            
+            // Update lead intelligence with qualifying data if we have user ID
+            if (currentUserId) {
+                try {
+                    const qualifyingUpdateData = {
+                        online_presence: qualifyingAnswers.online_presence,
+                        annual_budget: qualifyingAnswers.budget,
+                        is_decision_maker: qualifyingAnswers.decision_maker === 'yes',
+                        timeline_preference: qualifyingAnswers.timeline,
+                        lead_score: calculateLeadScore(),
+                        qualifying_questions_completed: true
+                    };
+                    
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence?user_id=eq.${currentUserId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify(qualifyingUpdateData)
+                    });
+                    
+                    if (response.ok) {
+                        addDebugLog('✅ Qualifying data updated in database', 'success');
+                    } else {
+                        const errorText = await response.text();
+                        addDebugLog(`⚠️ Qualifying update failed: ${response.status} ${errorText}`, 'error');
+                    }
+                } catch (error) {
+                    addDebugLog(`⚠️ Qualifying update failed: ${error.message}`, 'error');
+                }
+            }
+            
+            showNotification('Great! Let\'s set up your business categories now', 'success');
+            setTimeout(() => showScreen('categories'), 1000);
         }
 
         // 📂 ENHANCED LOAD CATEGORIES FUNCTION
@@ -3056,7 +3371,7 @@ function startBusinessSetup() {
             addDebugLog(`Theme previews populated with ${previewProducts.length} products`);
         }
 
-        // 🚀 ENHANCED COMPLETE SETUP WITH ERROR HANDLING - FIXED FUNCTION
+        // 🚀 ENHANCED COMPLETE SETUP WITH QUALIFYING QUESTIONS DATA
         async function completeSetup() {
             const finalScore = calculateLeadScore() + 10; // Bonus for completion
             
@@ -3079,6 +3394,12 @@ function startBusinessSetup() {
                 categories_data: selectedCategories,
                 subcategories_data: selectedSubcategories,
                 selected_theme: selectedTheme,
+                // 🆕 NEW: Include qualifying questions data
+                qualifying_answers: qualifyingAnswers,
+                online_presence: qualifyingAnswers.online_presence,
+                annual_budget: qualifyingAnswers.budget,
+                is_decision_maker: qualifyingAnswers.decision_maker === 'yes',
+                timeline_preference: qualifyingAnswers.timeline,
                 lead_score: finalScore,
                 lead_quality: finalScore >= 70 ? 'Hot' : finalScore >= 40 ? 'Warm' : 'Cold',
                 session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
@@ -3106,7 +3427,13 @@ function startBusinessSetup() {
                         session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
                         page_views: pageViews,
                         form_completion_percentage: 100,
-                        ready_for_sdr_assignment: true
+                        ready_for_sdr_assignment: true,
+                        // 🆕 NEW: Add qualifying questions data
+                        online_presence: qualifyingAnswers.online_presence,
+                        annual_budget: qualifyingAnswers.budget,
+                        is_decision_maker: qualifyingAnswers.decision_maker === 'yes',
+                        timeline_preference: qualifyingAnswers.timeline,
+                        qualifying_questions_completed: true
                     };
                     
                     addDebugLog(`💾 Updating lead intelligence with final data: ${JSON.stringify(finalIntelligenceData, null, 2)}`);
@@ -3142,7 +3469,7 @@ function startBusinessSetup() {
                 showNotification('✅ Setup completed! (No database connection)', 'warning');
             }
             
-            addDebugLog(`✅ Setup completed! Final score: ${finalScore}/100`, 'success');
+            addDebugLog(`✅ Setup completed with qualifying questions! Final score: ${finalScore}/100`, 'success');
             
             // Show completion message
             showNotification('🎉 Setup completed successfully! Your business is ready!', 'success');
@@ -3153,8 +3480,33 @@ function startBusinessSetup() {
             }, 2000);
         }
 
-        // 🎉 SHOW COMPLETION SUMMARY
+        // 🎉 ENHANCED SHOW COMPLETION SUMMARY WITH QUALIFYING DATA
         function showCompletionSummary(finalScore, leadData) {
+            const qualifyingLabels = {
+                online_presence: {
+                    'none': 'No online presence',
+                    'whatsapp': 'WhatsApp Business only',
+                    'social': 'Social media pages',
+                    'basic_website': 'Basic website',
+                    'full_website': 'Full e-commerce site'
+                },
+                budget: {
+                    '5000-10000': '₹5K - ₹10K annually',
+                    '10000-25000': '₹10K - ₹25K annually',
+                    '25000+': 'Above ₹25K annually'
+                },
+                decision_maker: {
+                    'yes': 'Yes, I make decisions',
+                    'no': 'No, not the decision maker'
+                },
+                timeline: {
+                    'immediately': 'Start immediately',
+                    'within_week': 'Within a week',
+                    'this_month': 'This month',
+                    'just_checking': 'Just exploring options'
+                }
+            };
+
             const completionHTML = `
                 <div class="content-card" style="max-width: 800px; margin: 0 auto; text-align: center; position: relative; overflow: hidden;">
                     <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #22c55e, #16a34a, #059669); border-radius: 20px 20px 0 0;"></div>
@@ -3204,6 +3556,17 @@ function startBusinessSetup() {
                             </div>
                         </div>
 
+                        <!-- 🆕 NEW: Qualifying Questions Summary -->
+                        <div style="background: rgba(59, 130, 246, 0.1); border: 2px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0;">
+                            <h4 style="color: #1d4ed8; margin-bottom: 1rem;">💼 Business Insights</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: left; font-size: 0.9rem;">
+                                <div><strong>Online Presence:</strong> ${qualifyingLabels.online_presence[qualifyingAnswers.online_presence] || 'Not specified'}</div>
+                                <div><strong>Annual Budget:</strong> ${qualifyingLabels.budget[qualifyingAnswers.budget] || 'Not specified'}</div>
+                                <div><strong>Decision Maker:</strong> ${qualifyingLabels.decision_maker[qualifyingAnswers.decision_maker] || 'Not specified'}</div>
+                                <div><strong>Timeline:</strong> ${qualifyingLabels.timeline[qualifyingAnswers.timeline] || 'Not specified'}</div>
+                            </div>
+                        </div>
+
                         <div style="background: rgba(34, 197, 94, 0.15); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0;">
                             <h4 style="color: #059669; margin-bottom: 1rem;">🚀 What's Next?</h4>
                             <div style="text-align: left; color: #064e3b;">
@@ -3234,7 +3597,7 @@ function startBusinessSetup() {
             const themesScreen = document.getElementById('themes');
             themesScreen.innerHTML = completionHTML;
             
-            addDebugLog('✅ Completion summary displayed', 'success');
+            addDebugLog('✅ Enhanced completion summary displayed with qualifying data', 'success');
         }
 
         // 🔄 NAVIGATION FUNCTIONS
@@ -3251,7 +3614,7 @@ function startBusinessSetup() {
         function startOver() {
             addDebugLog('🔄 Starting over - resetting form');
             
-            // Reset all variables
+            // Reset all variables including qualifying answers
             selectedGoals = [];
             selectedLanguage = 'en';
             selectedCategories = [];
@@ -3263,6 +3626,13 @@ function startBusinessSetup() {
             leadScore = 0;
             formProgress = 0;
             sessionStartTime = Date.now();
+            // 🆕 NEW: Reset qualifying answers
+            qualifyingAnswers = {
+                online_presence: '',
+                budget: '',
+                decision_maker: '',
+                timeline: ''
+            };
             
             // Clear form fields
             const formFields = ['fullName', 'email', 'phoneNumber', 'businessName', 'address', 'businessType', 'category'];
@@ -3271,9 +3641,9 @@ function startBusinessSetup() {
                 if (field) field.value = '';
             });
             
-            // Clear checkboxes
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
+            // Clear checkboxes and radio buttons
+            document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
+                input.checked = false;
             });
             
             // Reset UI
@@ -3307,7 +3677,7 @@ function startBusinessSetup() {
 
         // 🚀 INITIALIZATION FUNCTIONS
         function initializeApp() {
-            addDebugLog('🚀 Initializing Topiko Lead Form Application', 'info');
+            addDebugLog('🚀 Initializing Enhanced Topiko Lead Form with Qualifying Questions', 'info');
             
             // Capture UTM parameters and device info
             captureUTMParameters();
@@ -3323,7 +3693,7 @@ function startBusinessSetup() {
             pageViews = 1;
             sessionStartTime = Date.now();
             
-            addDebugLog('✅ Application initialized successfully', 'success');
+            addDebugLog('✅ Enhanced application initialized successfully', 'success');
         }
 
         // 🎯 PAGE LOAD EVENT
@@ -3344,13 +3714,14 @@ function startBusinessSetup() {
                         selectedSubcategories,
                         userProducts,
                         selectedTheme,
+                        qualifyingAnswers, // 🆕 NEW: Include qualifying answers
                         leadScore,
                         formProgress,
                         sessionStartTime,
                         lastSaved: Date.now()
                     };
                     localStorage.setItem('topiko_current_session', JSON.stringify(currentData));
-                    addDebugLog('💾 Session auto-saved to localStorage');
+                    addDebugLog('💾 Enhanced session auto-saved to localStorage');
                 }
             }, 30000);
         });
@@ -3365,13 +3736,14 @@ function startBusinessSetup() {
                 selectedSubcategories,
                 userProducts,
                 selectedTheme,
+                qualifyingAnswers, // 🆕 NEW: Include qualifying answers
                 leadScore,
                 formProgress,
                 sessionStartTime,
                 lastSaved: Date.now()
             };
             localStorage.setItem('topiko_current_session', JSON.stringify(currentData));
-            addDebugLog('💾 Session saved on page unload');
+            addDebugLog('💾 Enhanced session saved on page unload');
         });
 
         // 🔍 ERROR HANDLING
@@ -3386,13 +3758,15 @@ function startBusinessSetup() {
         });
 
         // 📊 CONSOLE LOGGING FOR DEBUGGING
-        addDebugLog('🎯 Topiko Lead Form - All functions loaded and ready', 'success');
-        console.log('🎯 Topiko Lead Intelligence System Loaded');
+        addDebugLog('🎯 Enhanced Topiko Lead Form with Qualifying Questions - All functions loaded and ready', 'success');
+        console.log('🎯 Enhanced Topiko Lead Intelligence System Loaded');
         console.log('📊 Available functions:', [
             'showScreen()', 'startLeadFlow()', 'selectLanguage()', 'submitGoals()', 
-            'submitRegistration()', 'addProduct()', 'completeSetup()', 'testDatabaseSave()',
-            'toggleDebugPanel()', 'calculateLeadScore()', 'showNotification()', 'selectTheme()'
+            'submitRegistration()', 'updateQualifyingData()', 'proceedToCategories()', 'addProduct()', 
+            'completeSetup()', 'testDatabaseSave()', 'toggleDebugPanel()', 'calculateLeadScore()', 
+            'showNotification()', 'selectTheme()'
         ]);
+        console.log('🆕 NEW: Qualifying questions system with enhanced lead scoring');
     </script>
 </body>
 </html>
