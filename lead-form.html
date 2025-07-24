@@ -2436,8 +2436,9 @@
             
             // 3. SIGN UP COMPLETION (20 points)
             // Check if registration is completed (all required fields filled)
-            const registrationCompleted = checkRegistrationCompletion();
-            if (registrationCompleted) score += 20;
+           // const registrationCompleted = checkRegistrationCompletion();
+            //if (registrationCompleted) score += 20;
+            if (formProgress === 100) score += 20;
             
             // 4. "LET'S DO THIS" BUTTON CLICKED (10 points)
             // This is tracked when startBusinessSetup() is called
@@ -2677,7 +2678,7 @@
 
         // 🚀 START BUSINESS SETUP - NOW GOES TO QUALIFYING QUESTIONS
         function startBusinessSetup() {
-          setupButtonClicked = true; // Track that "Let's Do This" was clicked
+         setupButtonClicked = true; // Track that "Let's Do This" was clicked
             addDebugLog('🚀 Starting business setup flow - "Let\'s Do This" button clicked (+10 points)');
             calculateLeadScore(); // Recalculate score with the new points
             showNotification('Let\'s gather some more details about your business!', 'success');
