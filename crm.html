@@ -855,41 +855,498 @@
             font-size: 0.8rem;
         }
 
-        /* 📱 RESPONSIVE */
-        @media (max-width: 768px) {
-            .crm-sidebar {
-                width: 70px;
-            }
+/* Replace your existing responsive section with this: */
 
-            .crm-logo h1,
-            .crm-logo p {
-                display: none;
-            }
+/* =================================== */
+/* MOBILE-FIRST RESPONSIVE DESIGN */
+/* =================================== */
 
-            .crm-nav-link span:not(.crm-nav-icon) {
-                display: none;
-            }
+/* Base mobile styles (320px and up) */
+@media (max-width: 768px) {
+    
+    /* 📱 MOBILE SIDEBAR */
+    .crm-sidebar {
+        position: fixed;
+        top: 0;
+        left: -280px; /* Hidden by default */
+        width: 280px;
+        height: 100vh;
+        z-index: 2000;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+    }
+    
+    .crm-sidebar.mobile-open {
+        left: 0; /* Show when open */
+    }
+    
+    /* Mobile overlay */
+    .mobile-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1999;
+        display: none;
+    }
+    
+    .mobile-overlay.show {
+        display: block;
+    }
+    
+    /* 📱 MOBILE HEADER */
+    .mobile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: white;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+    
+    .mobile-menu-btn {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 0.7rem;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .mobile-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    /* 📊 MAIN CONTENT ADJUSTMENTS */
+    .crm-main {
+        padding: 0;
+        width: 100%;
+    }
+    
+    .crm-header {
+        display: none; /* Hide desktop header */
+    }
+    
+    /* 📈 MOBILE STATS GRID */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stat-card {
+        padding: 1rem;
+        text-align: center;
+    }
+    
+    .stat-icon {
+        font-size: 1.5rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .stat-title {
+        font-size: 0.75rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    .stat-value {
+        font-size: 1.8rem;
+        margin-bottom: 0.2rem;
+    }
+    
+    .stat-change {
+        font-size: 0.7rem;
+    }
+    
+    /* 🔍 MOBILE FILTERS */
+    .filters-section {
+        margin: 0 1rem 1rem 1rem;
+        padding: 1rem;
+    }
+    
+    .filters-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .filters-title {
+        font-size: 1.1rem;
+    }
+    
+    .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+    
+    .filter-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+    
+    .filter-btn {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.8rem;
+        text-align: center;
+    }
+    
+    .clear-filters-btn {
+        width: 100%;
+        padding: 0.8rem;
+        margin-top: 1rem;
+    }
+    
+    /* 📋 MOBILE LEADS SECTION */
+    .leads-section {
+        margin: 0 1rem;
+        padding: 1rem;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+    }
+    
+    /* 📱 CARD-BASED LAYOUT (Replace Table) */
+    .leads-table {
+        display: none; /* Hide table on mobile */
+    }
+    
+    .mobile-leads-container {
+        display: block;
+    }
+    
+    .mobile-lead-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-lead-card:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+    }
+    
+    .mobile-lead-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.8rem;
+    }
+    
+    .mobile-lead-info h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.2rem;
+    }
+    
+    .mobile-lead-info p {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-bottom: 0.1rem;
+    }
+    
+    .mobile-lead-score {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        font-size: 0.9rem;
+    }
+    
+    .mobile-lead-details {
+        margin-bottom: 1rem;
+    }
+    
+    .mobile-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.3rem 0;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.85rem;
+    }
+    
+    .mobile-detail-row:last-child {
+        border-bottom: none;
+    }
+    
+    .mobile-detail-label {
+        color: #64748b;
+        font-weight: 500;
+    }
+    
+    .mobile-detail-value {
+        color: #1e293b;
+        font-weight: 600;
+        text-align: right;
+    }
+    
+    .mobile-goals-tags, .mobile-categories-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+        margin-top: 0.5rem;
+    }
+    
+    .mobile-goal-tag {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        color: #1d4ed8;
+        padding: 0.2rem 0.5rem;
+        border-radius: 10px;
+        font-size: 0.7rem;
+        font-weight: 500;
+    }
+    
+    .mobile-category-tag {
+        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        color: #7c3aed;
+        padding: 0.2rem 0.5rem;
+        border-radius: 8px;
+        font-size: 0.65rem;
+        font-weight: 500;
+    }
+    
+    .mobile-lead-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .mobile-assign-btn, .mobile-intel-btn {
+        flex: 1;
+        padding: 0.7rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-assign-btn {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: white;
+    }
+    
+    .mobile-assign-btn:disabled {
+        background: #e2e8f0;
+        color: #94a3b8;
+    }
+    
+    .mobile-intel-btn {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        color: white;
+    }
+    
+    /* 🎯 MOBILE INTELLIGENCE PANEL */
+    .sdr-intelligence {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        max-width: none;
+        max-height: none;
+        border-radius: 0;
+        z-index: 2001;
+        overflow-y: auto;
+    }
+    
+    .intelligence-header-crm {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        margin: 0;
+        border-radius: 0;
+    }
+    
+    .intelligence-close {
+        top: 15px;
+        right: 20px;
+        width: 35px;
+        height: 35px;
+        font-size: 1.3rem;
+    }
+    
+    /* 📝 MOBILE COMMENT FORM */
+    .comments-section-crm {
+        margin: 1rem 0;
+    }
+    
+    .comment-textarea-crm {
+        min-height: 80px;
+        font-size: 0.9rem;
+    }
+    
+    .comment-form-buttons-crm {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .comment-save-btn-crm, .comment-cancel-btn-crm {
+        width: 100%;
+        padding: 0.7rem;
+    }
+    
+    /* 🔍 MOBILE SDR DROPDOWN */
+    .sdr-select-dropdown {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90vw;
+        max-width: 300px;
+        max-height: 60vh;
+        border-radius: 12px;
+        z-index: 2002;
+    }
+    
+    .sdr-option {
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    /* 📊 MOBILE SORT CONTROLS */
+    .section-header > div {
+        width: 100%;
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    #sortBy, #sortOrderBtn {
+        flex: 1;
+        padding: 0.7rem;
+        font-size: 0.8rem;
+    }
+    
+    /* 🔔 MOBILE NOTIFICATIONS */
+    .notification {
+        top: 1rem;
+        right: 1rem;
+        left: 1rem;
+        width: calc(100vw - 2rem);
+        max-width: none;
+        font-size: 0.9rem;
+        padding: 1rem;
+    }
+    
+    /* 🔧 MOBILE DEBUG PANEL */
+    .debug-panel {
+        margin: 0 1rem 1rem 1rem;
+        font-size: 0.75rem;
+        padding: 0.8rem;
+    }
+    
+    #debugContent {
+        max-height: 150px;
+        overflow-y: auto;
+    }
+}
 
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+/* =================================== */
+/* TABLET RESPONSIVE (769px - 1024px) */
+/* =================================== */
 
-            .filters-grid {
-                grid-template-columns: 1fr;
-            }
+@media (min-width: 769px) and (max-width: 1024px) {
+    .crm-sidebar {
+        width: 200px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .filters-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .leads-table {
+        font-size: 0.8rem;
+    }
+    
+    .leads-table th,
+    .leads-table td {
+        padding: 0.7rem;
+    }
+    
+    .sdr-intelligence {
+        width: 350px;
+        right: 10px;
+    }
+}
 
-            .leads-table {
-                font-size: 0.85rem;
-            }
+/* =================================== */
+/* DESKTOP (1025px and up) */
+/* =================================== */
 
-            .sdr-intelligence {
-                bottom: 1rem;
-                right: 1rem;
-                left: 1rem;
-                width: auto;
-                max-width: none;
-            }
-        }
+@media (min-width: 1025px) {
+    /* Default desktop styles already applied */
+    .mobile-header {
+        display: none;
+    }
+    
+    .mobile-leads-container {
+        display: none;
+    }
+    
+    .leads-table {
+        display: table;
+    }
+}
+
+/* =================================== */
+/* TOUCH-FRIENDLY ENHANCEMENTS */
+/* =================================== */
+
+@media (hover: none) and (pointer: coarse) {
+    .filter-btn,
+    .assign-btn,
+    .view-intelligence-btn,
+    .mobile-assign-btn,
+    .mobile-intel-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .filter-select,
+    .filter-input {
+        min-height: 44px;
+        padding: 0.8rem 1rem;
+        font-size: 16px;
+    }
+}
 
         /* 🎨 ANIMATIONS */
         @keyframes fadeIn {
