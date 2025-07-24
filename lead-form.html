@@ -1967,12 +1967,12 @@
             return validatedData;
         }
 
-        // 🧪 ENHANCED TEST DATABASE SAVE
+        // 🧪 ENHANCED TEST DATABASE SAVE - FIXED FOR SCHEMA COMPLIANCE
         async function testDatabaseSave() {
             addDebugLog('🧪 Testing database save functionality...', 'info');
             showNotification('🧪 Testing database save...', 'info');
             
-            // Test user save with minimal required fields only
+            // Test user save with only schema-compliant fields
             const testUserData = {
                 name: 'Test User Goals Transition',
                 email: `test-${Date.now()}@example.com`,
@@ -1982,21 +1982,41 @@
                 business_category: 'boutique',
                 selected_language: 'en',
                 selected_goals: ['ecommerce', 'customers']
+                // Note: Only including fields that definitely exist in schema
+                // Extended fields like selected_categories will be added later if schema supports them
             };
             
-            // Only add new fields if they exist in the schema
-            try {
-                testUserData.selected_categories = ['mens-wear', 'womens-wear'];
-                testUserData.selected_subcategories = ['shirts', 'dresses', 'casual-wear'];
-            } catch (e) {
-                addDebugLog('New category fields not available yet, using basic data', 'info');
-            }
+            addDebugLog(`🧪 Test data prepared: ${JSON.stringify(testUserData, null, 2)}`);
             
             const userResult = await saveToSupabase(testUserData, 'users');
             
             if (userResult.success) {
                 showNotification('✅ Database save test successful!', 'success');
                 addDebugLog('✅ Test user created successfully', 'success');
+                
+                // Test a basic product save if user creation worked
+                if (userResult.data && userResult.data.length > 0) {
+                    const testUserId = userResult.data[0].id;
+                    
+                    const testProductData = {
+                        user_id: testUserId,
+                        name: 'Test Product',
+                        price: 999,
+                        description: 'Test product description',
+                        image_url: null
+                        // Only using schema-compliant fields
+                    };
+                    
+                    const productResult = await saveToSupabase(testProductData, 'products');
+                    if (productResult.success) {
+                        showNotification('✅ Products table also working!', 'success');
+                        addDebugLog('✅ Test product also created successfully', 'success');
+                    } else {
+                        showNotification('⚠️ User save OK, product save failed', 'warning');
+                        addDebugLog(`⚠️ Test product failed: ${productResult.error}`, 'error');
+                    }
+                }
+                
                 return true;
             } else {
                 showNotification(`❌ Database save test failed: ${userResult.error}`, 'error');
@@ -2653,7 +2673,7 @@
             setTimeout(() => showScreen('products'), 1000);
         }
 
-        // 📦 ADD PRODUCT
+        // 📦 ADD PRODUCT - FIXED FOR CORRECT DATABASE SCHEMA
         async function addProduct() {
             const name = document.getElementById('productName').value.trim();
             const price = document.getElementById('productPrice').value.trim();
@@ -2684,32 +2704,32 @@
             
             userProducts.push(product);
             
-            // Save to database if we have user ID
+            // Save to database if we have user ID - ONLY USING EXISTING SCHEMA FIELDS
             if (currentUserId) {
                 const productDbData = {
                     user_id: currentUserId,
-                    category_id: null, // Will be updated when categories table is properly populated
                     name: name,
                     price: parseFloat(price),
                     description: description,
                     image_url: imageUrl || null
+                    // Note: category_id is FK to categories table, but we'll leave it null for now
+                    // category_key and subcategory_key don't exist in schema, so we skip them
                 };
                 
-                // Add enhanced fields if schema supports them
-                try {
-                    productDbData.category_key = categoryKey;
-                    productDbData.subcategory_key = subcategoryKey;
-                } catch (e) {
-                    addDebugLog('Enhanced product fields not available, using basic data', 'info');
-                }
+                addDebugLog(`💾 Saving product with schema-compliant data: ${JSON.stringify(productDbData, null, 2)}`);
                 
                 const productResult = await saveToSupabase(productDbData, 'products');
                 if (productResult.success) {
                     addDebugLog(`✅ Product saved to database: ${name}`, 'success');
+                    showNotification(`✅ Product "${name}" saved to database!`, 'success');
                 } else {
-                    addDebugLog(`⚠️ Product save failed: ${productResult.error}`, 'error');
-                    // Continue anyway - product is saved locally
+                    addDebugLog(`⚠️ Product database save failed: ${productResult.error}`, 'error');
+                    showNotification(`⚠️ Product saved locally (database issue)`, 'warning');
+                    // Continue anyway - product is saved locally and will sync later
                 }
+            } else {
+                addDebugLog(`📝 Product saved locally (no user ID yet): ${name}`, 'info');
+                showNotification(`📝 Product "${name}" added (will save to database after registration)`, 'info');
             }
             
             // Clear form
@@ -2723,7 +2743,7 @@
             displayProducts();
             calculateLeadScore();
             
-            showNotification(`Product "${name}" added successfully!`, 'success');
+            addDebugLog(`📦 Product added successfully: ${name} (₹${price})`);
         }
 
         // 🖼️ GET DEFAULT PRODUCT IMAGE
@@ -2815,6 +2835,7 @@
             // Update lead intelligence with final data if possible
             if (currentUserId) {
                 try {
+                    // Only use fields that definitely exist in the lead_intelligence schema
                     const finalIntelligenceData = {
                         lead_score: finalScore,
                         lead_quality: finalScore >= 70 ? 'Hot' : finalScore >= 40 ? 'Warm' : 'Cold',
@@ -2822,20 +2843,10 @@
                         session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
                         page_views: pageViews,
                         form_completion_percentage: 100,
-                        ready_for_sdr_assignment: true,
-                        setup_completed_time: new Date().toISOString()
+                        ready_for_sdr_assignment: true
                     };
                     
-                    // Add enhanced fields if schema supports them
-                    try {
-                        finalIntelligenceData.selected_categories = selectedCategories;
-                        finalIntelligenceData.selected_subcategories = selectedSubcategories;
-                        finalIntelligenceData.categories_count = selectedCategories.length;
-                        finalIntelligenceData.subcategories_count = selectedSubcategories.length;
-                        finalIntelligenceData.products_count = userProducts.length;
-                    } catch (e) {
-                        addDebugLog('Enhanced fields not available for final update', 'info');
-                    }
+                    addDebugLog(`💾 Updating lead intelligence with final data: ${JSON.stringify(finalIntelligenceData, null, 2)}`);
                     
                     // Update the existing lead intelligence record
                     const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence?user_id=eq.${currentUserId}`, {
@@ -2850,16 +2861,22 @@
                     });
                     
                     if (response.ok) {
-                        addDebugLog('✅ Final lead intelligence updated', 'success');
+                        addDebugLog('✅ Final lead intelligence updated successfully', 'success');
+                        showNotification('✅ Setup completed and saved to database!', 'success');
                     } else {
                         const errorText = await response.text();
                         addDebugLog(`⚠️ Intelligence final update failed: ${response.status} ${errorText}`, 'error');
+                        showNotification('✅ Setup completed! (Some data saved locally)', 'warning');
                         // Continue anyway - data is saved in localStorage
                     }
                 } catch (error) {
                     addDebugLog(`⚠️ Intelligence final update failed: ${error.message}`, 'error');
+                    showNotification('✅ Setup completed! (Data saved locally)', 'warning');
                     // Continue anyway - data is saved in localStorage
                 }
+            } else {
+                addDebugLog('⚠️ No user ID available for final database update', 'warning');
+                showNotification('✅ Setup completed! (No database connection)', 'warning');
             }
             
             addDebugLog(`✅ Setup completed! Final score: ${finalScore}/100`, 'success');
