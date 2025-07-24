@@ -260,7 +260,7 @@
             60% { transform: translateY(-10px); }
         }
 
-        /* Transition Screen Styles */
+        /* Goals Transition Styles */
         .goal-pill {
             background: linear-gradient(135deg, #8b6fcd, #6b46c1);
             color: white;
@@ -833,13 +833,6 @@
             color: #8b6fcd;
         }
 
-        /* Sparkle Animation Styles */
-        @keyframes sparkleFloat {
-            0% { transform: translateY(0) scale(0) rotate(0deg); opacity: 1; }
-            50% { transform: translateY(-30px) scale(1) rotate(180deg); opacity: 1; }
-            100% { transform: translateY(-60px) scale(0) rotate(360deg); opacity: 0; }
-        }
-
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -988,7 +981,7 @@
                 <div class="welcome-screen">
                     <h1 class="topiko-logo">Topiko</h1>
                     <p style="font-size: 1.2rem; color: #6b46c1; margin-bottom: 2rem;">Complete Business Platform for Indian SMBs</p>
-                    <p style="font-size: 1rem; color: #059669; margin-bottom: 2rem; font-weight: bold;">✅ Enhanced Version with Goals Transition</p>
+                    <p style="font-size: 1rem; color: #059669; margin-bottom: 2rem; font-weight: bold;">✅ Enhanced with Goals Transition</p>
                     <button class="try-free-button" onclick="startLeadFlow()">
                         Try for Free
                     </button>
@@ -2116,7 +2109,7 @@
             calculateLeadScore();
         }
 
-        // 🎯 SUBMIT GOALS
+        // 🎯 SUBMIT GOALS - UPDATED TO GO TO TRANSITION
         function submitGoals() {
             if (selectedGoals.length === 0) {
                 showNotification('Please select at least one goal to continue', 'error');
@@ -2216,6 +2209,9 @@
             }
 
             addDebugLog(`Goals transition displayed for: ${selectedGoals.join(', ')}`);
+            
+            // Add sparkle effects for excitement
+            setTimeout(createSparkles, 500);
         }
 
         // 🚀 PROCEED FROM TRANSITION TO REGISTRATION
@@ -2229,6 +2225,44 @@
                 setTimeout(() => showScreen('registration'), 1000);
             }, 150);
         }
+
+        // ✨ CREATE SPARKLE EFFECTS FOR EXCITEMENT
+        function createSparkles() {
+            const container = document.querySelector('#goals-transition .content-card');
+            if (!container) return;
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.style.position = 'absolute';
+                    sparkle.style.fontSize = '1.5rem';
+                    sparkle.style.color = '#8b6fcd';
+                    sparkle.style.pointerEvents = 'none';
+                    sparkle.style.zIndex = '10';
+                    sparkle.textContent = '✨';
+                    sparkle.style.left = Math.random() * 80 + 10 + '%';
+                    sparkle.style.top = Math.random() * 80 + 10 + '%';
+                    
+                    // Sparkle animation
+                    sparkle.style.animation = 'sparkleFloat 3s ease-out forwards';
+                    
+                    container.appendChild(sparkle);
+                    
+                    setTimeout(() => sparkle.remove(), 3000);
+                }, i * 300);
+            }
+        }
+
+        // Add sparkle animation styles
+        const sparkleStyles = document.createElement('style');
+        sparkleStyles.textContent = `
+            @keyframes sparkleFloat {
+                0% { transform: translateY(0) scale(0) rotate(0deg); opacity: 1; }
+                50% { transform: translateY(-30px) scale(1) rotate(180deg); opacity: 1; }
+                100% { transform: translateY(-60px) scale(0) rotate(360deg); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(sparkleStyles);
 
         // 📝 FORM PROGRESS TRACKING
         function trackFormProgress() {
@@ -2783,191 +2817,4 @@
                         addDebugLog('✅ Final lead intelligence updated', 'success');
                     } else {
                         const errorText = await response.text();
-                        addDebugLog(`⚠️ Final update failed: ${response.status} ${errorText}`, 'error');
-                    }
-                } catch (error) {
-                    addDebugLog(`⚠️ Final update failed: ${error.message}`, 'error');
-                }
-            }
-            
-            showNotification('🎉 Setup completed successfully!', 'success');
-            
-            setTimeout(() => {
-                const dbStatus = databaseConnected ? 'Database connected ✅' : 'Offline mode 💾';
-                alert(`✅ Congratulations! 
-                
-Your Topiko business platform setup is complete:
-
-• Business: ${document.getElementById('businessName').value}
-• Goals: ${selectedGoals.join(', ')}
-• Categories: ${selectedCategories.length}
-• Subcategories: ${selectedSubcategories.length}
-• Products: ${userProducts.length}
-• Final Lead Score: ${finalScore}/100
-
-${dbStatus}
-
-🎯 ENHANCED GOALS TRANSITION SYSTEM:
-✅ Personalized messaging per goal
-✅ Dynamic content and features preview
-✅ Excitement animations and sparkles
-✅ Goal-specific action buttons
-✅ Confidence-building statistics
-
-📊 COMPLETE INTELLIGENCE CAPTURE:
-✅ Goals-based lead scoring
-✅ Personalized user journey
-✅ Enhanced error handling
-✅ Complete database integration
-
-🚀 Ready for CRM Integration with Goals Data!`);
-            }, 1500);
-        }
-
-        // 📄 SCREEN NAVIGATION
-        function showScreen(screenId) {
-            pageViews++;
-            
-            // Track time on previous screen
-            const currentScreen = document.querySelector('.screen.active');
-            if (currentScreen) {
-                const screenName = currentScreen.id;
-                if (!behaviorData.timeOnPages[screenName]) {
-                    behaviorData.timeOnPages[screenName] = 0;
-                }
-                behaviorData.timeOnPages[screenName] += Date.now() - (behaviorData.lastScreenTime || sessionStartTime);
-            }
-            behaviorData.lastScreenTime = Date.now();
-            
-            // Hide all screens
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-
-            // Show selected screen
-            document.getElementById(screenId).classList.add('active');
-
-            // Update navigation
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            document.querySelector(`[onclick="showScreen('${screenId}')"]`).classList.add('active');
-            
-            // Special handling for categories page
-            if (screenId === 'categories') {
-                setTimeout(loadCategories, 100);
-            }
-            
-            // Special handling for goals transition page
-            if (screenId === 'goals-transition') {
-                setTimeout(() => {
-                    if (selectedGoals.length > 0) {
-                        displayGoalsTransition(selectedGoals);
-                        // Add sparkle effects for excitement
-                        createSparkles();
-                    }
-                }, 100);
-            }
-            
-            addDebugLog(`📄 Navigated to screen: ${screenId}`);
-            calculateLeadScore();
-        }
-
-        // 🔔 NOTIFICATIONS
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type} show`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 400);
-            }, 3000);
-        }
-
-        // ✨ CREATE SPARKLE EFFECTS FOR EXCITEMENT
-        function createSparkles() {
-            const container = document.querySelector('#goals-transition .content-card');
-            if (!container) return;
-            
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    const sparkle = document.createElement('div');
-                    sparkle.style.position = 'absolute';
-                    sparkle.style.fontSize = '1.5rem';
-                    sparkle.style.color = '#8b6fcd';
-                    sparkle.style.pointerEvents = 'none';
-                    sparkle.style.zIndex = '10';
-                    sparkle.textContent = '✨';
-                    sparkle.style.left = Math.random() * 80 + 10 + '%';
-                    sparkle.style.top = Math.random() * 80 + 10 + '%';
-                    
-                    // Sparkle animation
-                    sparkle.style.animation = 'sparkleFloat 3s ease-out forwards';
-                    
-                    container.appendChild(sparkle);
-                    
-                    setTimeout(() => sparkle.remove(), 3000);
-                }, i * 300);
-            }
-        }
-
-        // 🚀 ENHANCED INITIALIZATION
-        document.addEventListener('DOMContentLoaded', async function() {
-            addDebugLog('🚀 Topiko Lead Form - Goals Transition Version Initialized');
-            
-            // Initialize tracking
-            captureUTMParameters();
-            detectDevice();
-            
-            // Test database connection
-            databaseConnected = await testDatabaseConnection();
-            
-            // Initialize lead intelligence widget
-            updateLeadIntelligenceWidget();
-            
-            addDebugLog('✅ Goals transition system ready');
-            addDebugLog('🌟 Personalized messaging for all goal combinations');
-            addDebugLog('🎯 Enhanced lead intelligence with goals tracking');
-            addDebugLog('🎨 Sparkle animations and excitement effects');
-            addDebugLog('💾 Database schema enhanced with error recovery');
-            addDebugLog('🔍 Debug panel available (top right)');
-            addDebugLog('🧪 Test save button available');
-            
-            // Log goal configurations
-            addDebugLog('🎯 Goal Configurations Loaded:', 'info');
-            Object.keys(goalConfigs).forEach(goal => {
-                addDebugLog(`   ${goalNames[goal]}: ${goalConfigs[goal].title}`, 'info');
-            });
-            addDebugLog('🌟 All personalized goal messaging ready', 'success');
-        });
-
-        // Track behavior
-        document.addEventListener('click', function(event) {
-            behaviorData.clickEvents.push({
-                type: 'click',
-                element: event.target.tagName,
-                class: event.target.className,
-                id: event.target.id,
-                timestamp: Date.now()
-            });
-        });
-
-        document.addEventListener('focus', function(event) {
-            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') {
-                behaviorData.formInteractions.push({
-                    type: 'field_focus',
-                    field: event.target.id,
-                    timestamp: Date.now()
-                });
-            }
-        }, true);
-
-        // Update lead intelligence widget periodically
-        setInterval(() => {
-            updateLeadIntelligenceWidget();
-        }, 30000);
-    </script>
-</body>
-</html>
+                        addDebug
