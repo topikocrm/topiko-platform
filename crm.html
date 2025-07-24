@@ -1428,6 +1428,13 @@
 </div>
 
 <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
+    <div class="mobile-header">
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+    <div class="mobile-title">Topiko CRM</div>
+    <div></div>
+</div>
+
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
     <div class="crm-container">
         <!-- 🎯 CRM SIDEBAR -->
         <nav class="crm-sidebar">
@@ -3570,6 +3577,78 @@ function debugSDRFilter() {
     const sdrFilter = document.getElementById('sdrFilter');
     console.log('SDR Filter Options:', sdrFilter ? sdrFilter.options.length : 'Filter not found');
 }
+
+   console.log('✅ Enhanced CRM ready for advanced lead management');
+    
+    // ADD ALL THE DEBUG FUNCTIONS HERE:
+    
+    // Mobile debug functions
+    function showMobileDebug() {
+        const debugDiv = document.getElementById('mobileDebug');
+        const debugContent = document.getElementById('debugContent');
+        
+        debugContent.innerHTML = `
+            <strong>🔍 Mobile Debug Info:</strong><br>
+            Window Width: ${window.innerWidth}px<br>
+            SDR Team: ${sdrTeam.length} SDRs<br>
+            All Leads: ${allLeads.length}<br>
+            Filtered Leads: ${filteredLeads.length}<br>
+            Functions Loaded: ${typeof showSDRSelector !== 'undefined' ? '✅' : '❌'}<br>
+            Mobile Modal: ${mobileSDRModal ? 'Exists' : 'None'}<br>
+            Last Error: <span id="mobileErrorLog">None</span>
+        `;
+        
+        debugDiv.style.display = 'block';
+    }
+
+    function closeMobileDebug() {
+        document.getElementById('mobileDebug').style.display = 'none';
+    }
+
+    function logMobileError(message) {
+        const errorLog = document.getElementById('mobileErrorLog');
+        if (errorLog) {
+            errorLog.textContent = message;
+            errorLog.style.color = '#ff6b6b';
+        }
+        console.error('📱 Mobile Error:', message);
+    }
+
+    function testMobileSDRWithFeedback() {
+        logMobileError('Testing SDR assignment...');
+        
+        if (allLeads.length === 0) {
+            logMobileError('No leads available');
+            return;
+        }
+        
+        if (sdrTeam.length === 0) {
+            logMobileError('No SDRs loaded');
+            return;
+        }
+        
+        const testLead = allLeads.find(l => !l.assigned_sdr_id);
+        if (!testLead) {
+            logMobileError('No unassigned leads');
+            return;
+        }
+        
+        logMobileError(`Testing with lead: ${testLead.name}`);
+        
+        try {
+            showMobileSDRSelector(testLead.id);
+            logMobileError('SDR modal should be visible');
+        } catch (error) {
+            logMobileError(`Error: ${error.message}`);
+        }
+    }
+    
+    console.log('✅ Mobile debug functions loaded');
+
+
+
+</script> ← Your closing script tag     
+        
     </script>
 </body>
 </html>
