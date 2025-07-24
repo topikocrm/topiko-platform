@@ -42,7 +42,49 @@
             align-items: center;
             gap: 0.5rem;
         }
-        
+ /* Stacked button layout */
+.leads-table td:last-child {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+    min-width: 120px;
+}
+
+.assign-btn-container {
+    position: relative;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.assign-btn, .view-intelligence-btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.3rem;
+}
+
+.assign-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-intelligence-btn {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    border: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}       
         .sdr-option:hover {
             background: #f8fafc;
             color: #3b82f6;
