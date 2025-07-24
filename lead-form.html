@@ -2481,7 +2481,7 @@
             leadScore = Math.min(score, 100);
             updateLeadIntelligenceWidget();
             
-            addDebugLog(`📊 Lead Score Updated: ${leadScore}/100 (Goals: ${selectedGoals.length * 5}, Signup: ${registrationCompleted ? 20 : 0}, Setup: ${setupButtonClicked ? 10 : 0}, Categories: ${(selectedCategories.length + selectedSubcategories.length) * 2}, Budget: ${(qualifyingAnswers.budget === '10000-25000' || qualifyingAnswers.budget === '25000+') ? 5 : 0}, Decision Maker: ${qualifyingAnswers.decision_maker === 'yes' ? 5 : 0}, Products: ${userProducts.length * 5})`);
+           // addDebugLog(`📊 Lead Score Updated: ${leadScore}/100 (Goals: ${selectedGoals.length * 5}, Signup: ${registrationCompleted ? 20 : 0}, Setup: ${setupButtonClicked ? 10 : 0}, Categories: ${(selectedCategories.length + selectedSubcategories.length) * 2}, Budget: ${(qualifyingAnswers.budget === '10000-25000' || qualifyingAnswers.budget === '25000+') ? 5 : 0}, Decision Maker: ${qualifyingAnswers.decision_maker === 'yes' ? 5 : 0}, Products: ${userProducts.length * 5})`);
             return leadScore;
         }
 
