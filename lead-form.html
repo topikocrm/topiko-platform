@@ -839,33 +839,6 @@
             color: #8b6fcd;
         }
 
-        /* Theme Selection */
-        .theme-option {
-            transition: all 0.3s ease;
-        }
-
-        .theme-option:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(139, 111, 205, 0.2);
-            border-color: #8b6fcd !important;
-        }
-
-        .theme-option.selected {
-            border-color: #8b6fcd !important;
-            box-shadow: 0 12px 40px rgba(139, 111, 205, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .theme-preview-item {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 6px;
-            padding: 0.5rem;
-            font-size: 0.7rem;
-            text-align: center;
-            margin: 0.2rem 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -1012,12 +985,6 @@
                     <div class="nav-link" onclick="showScreen('products')">
                         <span class="nav-icon">📦</span>
                         <span>Products</span>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <div class="nav-link" onclick="showScreen('themes')">
-                        <span class="nav-icon">🎨</span>
-                        <span>Themes</span>
                     </div>
                 </li>
             </ul>
@@ -1265,7 +1232,7 @@
                     </h2>
                     <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.2); border-radius: 16px; padding: 1.5rem; margin: 2rem 0;">
                         <p style="color: #059669; font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem;">
-                            Justa Give us 5 more minutes, <br>We'll show you how your business can look online.<br>
+                            Justa Give us 5 more minutes, <br>We’ll show you how your business can look online.<br>
                             Try for free. No Pressure. No Obligation. See it first. Decide later! 
                         </p>
                         
@@ -1385,128 +1352,7 @@
                         <button onclick="showScreen('categories')" style="flex: 1; background: rgba(139, 111, 205, 0.1); color: #6b46c1; border: 2px solid rgba(139, 111, 205, 0.2); padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
                             ← Back to Categories
                         </button>
-                        <button onclick="proceedToThemes()" style="flex: 1; background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
-                            Choose Theme 🎨
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Theme Selection Screen -->
-            <section class="screen" id="themes">
-                <div class="content-card" style="max-width: 1200px; margin: 0 auto;">
-                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Choose Your Business Theme</h2>
-                    <p style="text-align: center; margin-bottom: 3rem;">Select a theme that represents your business style. See how your products will look!</p>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
-                        <!-- Modern & Minimalist Theme -->
-                        <div class="theme-option" onclick="selectTheme('modern', this)" style="border: 3px solid rgba(139, 111, 205, 0.2); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white;">
-                            <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
-                                <h3 style="color: #1f2937; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center;">
-                                    <span style="margin-right: 0.5rem;">✨</span>
-                                    Modern & Minimalist
-                                </h3>
-                                <p style="color: #6b7280; font-size: 0.9rem;">Clean, simple design that focuses on your products</p>
-                            </div>
-                            <div style="padding: 1rem; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;" id="modern-preview">
-                                    <!-- Products preview will be populated here -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Colorful & Vibrant Theme -->
-                        <div class="theme-option" onclick="selectTheme('vibrant', this)" style="border: 3px solid rgba(139, 111, 205, 0.2); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white;">
-                            <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
-                                <h3 style="color: #1f2937; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center;">
-                                    <span style="margin-right: 0.5rem;">🌈</span>
-                                    Colorful & Vibrant
-                                </h3>
-                                <p style="color: #6b7280; font-size: 0.9rem;">Bold colors and energetic design to attract customers</p>
-                            </div>
-                            <div style="padding: 1rem; background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 50%, #fecaca 100%);">
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;" id="vibrant-preview">
-                                    <!-- Products preview will be populated here -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Professional & Corporate Theme -->
-                        <div class="theme-option" onclick="selectTheme('professional', this)" style="border: 3px solid rgba(139, 111, 205, 0.2); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white;">
-                            <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
-                                <h3 style="color: #1f2937; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center;">
-                                    <span style="margin-right: 0.5rem;">💼</span>
-                                    Professional & Corporate
-                                </h3>
-                                <p style="color: #6b7280; font-size: 0.9rem;">Sophisticated design that builds trust and credibility</p>
-                            </div>
-                            <div style="padding: 1rem; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white;">
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;" id="professional-preview">
-                                    <!-- Products preview will be populated here -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Traditional & Classic Theme -->
-                        <div class="theme-option" onclick="selectTheme('traditional', this)" style="border: 3px solid rgba(139, 111, 205, 0.2); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white;">
-                            <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
-                                <h3 style="color: #1f2937; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center;">
-                                    <span style="margin-right: 0.5rem;">🏛️</span>
-                                    Traditional & Classic
-                                </h3>
-                                <p style="color: #6b7280; font-size: 0.9rem;">Timeless design with warm, welcoming feel</p>
-                            </div>
-                            <div style="padding: 1rem; background: linear-gradient(135deg, #fef7cd 0%, #fde68a 100%);">
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;" id="traditional-preview">
-                                    <!-- Products preview will be populated here -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Creative & Artistic Theme -->
-                        <div class="theme-option" onclick="selectTheme('creative', this)" style="border: 3px solid rgba(139, 111, 205, 0.2); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white;">
-                            <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
-                                <h3 style="color: #1f2937; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center;">
-                                    <span style="margin-right: 0.5rem;">🎨</span>
-                                    Creative & Artistic
-                                </h3>
-                                <p style="color: #6b7280; font-size: 0.9rem;">Unique, artistic design that showcases creativity</p>
-                            </div>
-                            <div style="padding: 1rem; background: linear-gradient(135deg, #ddd6fe 0%, #c7d2fe 50%, #bfdbfe 100%);">
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;" id="creative-preview">
-                                    <!-- Products preview will be populated here -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Elegant & Luxury Theme -->
-                        <div class="theme-option" onclick="selectTheme('luxury', this)" style="border: 3px solid rgba(139, 111, 205, 0.2); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white;">
-                            <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
-                                <h3 style="color: #1f2937; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center;">
-                                    <span style="margin-right: 0.5rem;">💎</span>
-                                    Elegant & Luxury
-                                </h3>
-                                <p style="color: #6b7280; font-size: 0.9rem;">Premium design for high-end products and services</p>
-                            </div>
-                            <div style="padding: 1rem; background: linear-gradient(135deg, #1c1917 0%, #292524 100%); color: #d6d3d1;">
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;" id="luxury-preview">
-                                    <!-- Products preview will be populated here -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="text-align: center; margin: 2rem 0;">
-                        <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 1rem;">
-                            <span id="selectedThemeName">No theme selected</span> | You can change this anytime later
-                        </p>
-                    </div>
-
-                    <div style="display: flex; gap: 1rem; margin-top: 3rem;">
-                        <button onclick="showScreen('products')" style="flex: 1; background: rgba(139, 111, 205, 0.1); color: #6b46c1; border: 2px solid rgba(139, 111, 205, 0.2); padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
-                            ← Back to Products
-                        </button>
-                        <button onclick="completeSetup()" id="themeNextBtn" disabled style="flex: 1; background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer; opacity: 0.5;">
+                        <button onclick="completeSetup()" style="flex: 1; background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
                             Complete Setup 🚀
                         </button>
                     </div>
@@ -1527,7 +1373,6 @@
         let userProducts = [];
         let currentUserId = null;
         let createdCategoryIds = [];
-        let selectedTheme = null;
         let pageViews = 1;
         let leadScore = 0;
         let formProgress = 0;
@@ -2246,9 +2091,6 @@
             // Products Added (3 points per product, max 15)
             score += Math.min(userProducts.length * 3, 15);
             
-            // Theme Selected (5 points)
-            if (selectedTheme) score += 5;
-            
             leadScore = Math.min(score, 100);
             updateLeadIntelligenceWidget();
             
@@ -2322,11 +2164,6 @@
                 // Load categories if needed
                 if (screenId === 'categories') {
                     loadCategories();
-                }
-                
-                // Populate theme previews if needed
-                if (screenId === 'themes') {
-                    populateThemePreviews();
                 }
                 
                 addDebugLog(`Screen shown: ${screenId} (Page views: ${pageViews})`);
@@ -2651,4 +2488,653 @@ function startBusinessSetup() {
                         <div class="subcategory-item">
                             <input type="checkbox" id="sub-${subcategoryKey}" value="${subcategoryKey}" class="subcategory-checkbox"
                                    ${isSubSelected ? 'checked' : ''} onchange="toggleSubcategorySelection('${subcategoryKey}')">
-                            <label for="sub-${subcategoryKey}" class="subc
+                            <label for="sub-${subcategoryKey}" class="subcategory-label">
+                                ${subcategoryName}
+                                <span class="subcategory-checkmark">✓</span>
+                            </label>
+                        </div>
+                    `;
+                });
+                
+                categoriesHTML += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            categoriesHTML += `
+                    </div>
+                </div>
+            `;
+            
+            categoriesContainer.innerHTML = categoriesHTML;
+            
+            // Update product categories dropdown and summary
+            updateProductCategoriesDropdown();
+            updateSelectionSummary();
+            
+            addDebugLog(`Categories loaded: ${Object.keys(categoryData.categories).length} categories available`, 'success');
+        }
+
+        // 🔽 TOGGLE CATEGORY SELECTION
+        function toggleCategorySelection(categoryKey) {
+            if (selectedCategories.includes(categoryKey)) {
+                selectedCategories = selectedCategories.filter(cat => cat !== categoryKey);
+                addDebugLog(`Category deselected: ${categoryKey}`);
+            } else {
+                selectedCategories.push(categoryKey);
+                addDebugLog(`Category selected: ${categoryKey}`);
+            }
+            
+            updateSelectionSummary();
+            updateProductCategoriesDropdown();
+            calculateLeadScore();
+            updateNextButton();
+        }
+
+        // 🔽 TOGGLE SUBCATEGORY SELECTION
+        function toggleSubcategorySelection(subcategoryKey) {
+            if (selectedSubcategories.includes(subcategoryKey)) {
+                selectedSubcategories = selectedSubcategories.filter(sub => sub !== subcategoryKey);
+                addDebugLog(`Subcategory deselected: ${subcategoryKey}`);
+            } else {
+                selectedSubcategories.push(subcategoryKey);
+                addDebugLog(`Subcategory selected: ${subcategoryKey}`);
+            }
+            
+            updateSelectionSummary();
+            calculateLeadScore();
+            updateNextButton();
+        }
+
+        // 📊 UPDATE SELECTION SUMMARY
+        function updateSelectionSummary() {
+            const summaryEl = document.getElementById('selectionSummary');
+            const categoriesCountEl = document.getElementById('categoriesCount');
+            const subcategoriesCountEl = document.getElementById('subcategoriesCount');
+            
+            if (selectedCategories.length > 0 || selectedSubcategories.length > 0) {
+                summaryEl.style.display = 'block';
+                categoriesCountEl.textContent = selectedCategories.length;
+                subcategoriesCountEl.textContent = selectedSubcategories.length;
+            } else {
+                summaryEl.style.display = 'none';
+            }
+        }
+
+        // 🔄 UPDATE NEXT BUTTON
+        function updateNextButton() {
+            const nextBtn = document.getElementById('categoryNextBtn');
+            if (selectedCategories.length > 0) {
+                nextBtn.disabled = false;
+                nextBtn.style.opacity = '1';
+            } else {
+                nextBtn.disabled = true;
+                nextBtn.style.opacity = '0.5';
+            }
+        }
+
+        // 📦 UPDATE PRODUCT CATEGORIES DROPDOWN
+        function updateProductCategoriesDropdown() {
+            const productCategorySelect = document.getElementById('productCategory');
+            const productSubcategorySelect = document.getElementById('productSubcategory');
+            
+            productCategorySelect.innerHTML = '<option value="">Select from your chosen categories</option>';
+            productSubcategorySelect.innerHTML = '<option value="">Select a subcategory</option>';
+            
+            const businessCategory = document.getElementById('category').value;
+            if (!businessCategory || !businessCategories[businessCategory]) return;
+            
+            const categoryData = businessCategories[businessCategory];
+            
+            selectedCategories.forEach(categoryKey => {
+                const category = categoryData.categories[categoryKey];
+                if (category) {
+                    productCategorySelect.innerHTML += `<option value="${categoryKey}">${category.name}</option>`;
+                }
+            });
+            
+            // Update subcategories when category changes
+            productCategorySelect.onchange = function() {
+                const selectedCat = this.value;
+                productSubcategorySelect.innerHTML = '<option value="">Select a subcategory</option>';
+                
+                if (selectedCat && categoryData.categories[selectedCat]) {
+                    const category = categoryData.categories[selectedCat];
+                    category.subcategories.forEach(subcategoryKey => {
+                        const subcategoryName = subcategoryNames[subcategoryKey] || subcategoryKey.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        productSubcategorySelect.innerHTML += `<option value="${subcategoryKey}">${subcategoryName}</option>`;
+                    });
+                }
+            };
+        }
+
+        // ➡️ ENHANCED PROCEED TO PRODUCTS WITH ERROR HANDLING
+        async function proceedToProducts() {
+            if (selectedCategories.length === 0) {
+                showNotification('Please select at least one category', 'error');
+                return;
+            }
+            
+            addDebugLog(`Proceeding to products with ${selectedCategories.length} categories and ${selectedSubcategories.length} subcategories`);
+            
+            if (currentUserId) {
+                // Try to update user record with categories and subcategories
+                try {
+                    const updateData = {
+                        selected_categories: selectedCategories,
+                        selected_subcategories: selectedSubcategories
+                    };
+                    
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${currentUserId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify(updateData)
+                    });
+                    
+                    if (response.ok) {
+                        addDebugLog('✅ User categories updated in database', 'success');
+                    } else {
+                        const errorText = await response.text();
+                        addDebugLog(`⚠️ Category update failed: ${response.status} ${errorText}`, 'error');
+                        // Continue anyway - categories will be saved in localStorage
+                    }
+                } catch (error) {
+                    addDebugLog(`⚠️ Category update failed: ${error.message}`, 'error');
+                    // Continue anyway - categories will be saved in localStorage
+                }
+                
+                // Try to update lead intelligence
+                try {
+                    const intelligenceUpdateData = {
+                        selected_categories: selectedCategories,
+                        selected_subcategories: selectedSubcategories,
+                        categories_count: selectedCategories.length,
+                        subcategories_count: selectedSubcategories.length,
+                        lead_score: calculateLeadScore()
+                    };
+                    
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence?user_id=eq.${currentUserId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify(intelligenceUpdateData)
+                    });
+                    
+                    if (response.ok) {
+                        addDebugLog('✅ Lead intelligence categories updated', 'success');
+                    } else {
+                        const errorText = await response.text();
+                        addDebugLog(`⚠️ Intelligence update failed: ${response.status} ${errorText}`, 'error');
+                        // Continue anyway
+                    }
+                } catch (error) {
+                    addDebugLog(`⚠️ Intelligence update failed: ${error.message}`, 'error');
+                    // Continue anyway
+                }
+            }
+            
+            showNotification(`Moving to products with ${selectedCategories.length} categories selected...`, 'info');
+            setTimeout(() => showScreen('products'), 1000);
+        }
+
+        // 📦 ADD PRODUCT - FIXED FOR CORRECT DATABASE SCHEMA
+        async function addProduct() {
+            const name = document.getElementById('productName').value.trim();
+            const price = document.getElementById('productPrice').value.trim();
+            const description = document.getElementById('productDescription').value.trim();
+            const categoryKey = document.getElementById('productCategory').value;
+            const subcategoryKey = document.getElementById('productSubcategory').value;
+            const imageUrl = document.getElementById('productImage').value.trim();
+            
+            if (!name || !price || !description || !categoryKey) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            if (isNaN(price) || price <= 0) {
+                showNotification('Please enter a valid price', 'error');
+                return;
+            }
+            
+            const product = {
+                name: name,
+                price: parseFloat(price),
+                description: description,
+                categoryKey: categoryKey,
+                subcategoryKey: subcategoryKey || null,
+                imageUrl: imageUrl || getDefaultProductImage(),
+                createdAt: new Date().toISOString()
+            };
+            
+            userProducts.push(product);
+            
+            // Save to database if we have user ID - ONLY USING EXISTING SCHEMA FIELDS
+            if (currentUserId) {
+                const productDbData = {
+                    user_id: currentUserId,
+                    name: name,
+                    price: parseFloat(price),
+                    description: description,
+                    image_url: imageUrl || null
+                    // Note: category_id is FK to categories table, but we'll leave it null for now
+                    // category_key and subcategory_key don't exist in schema, so we skip them
+                };
+                
+                addDebugLog(`💾 Saving product with schema-compliant data: ${JSON.stringify(productDbData, null, 2)}`);
+                
+                const productResult = await saveToSupabase(productDbData, 'products');
+                if (productResult.success) {
+                    addDebugLog(`✅ Product saved to database: ${name}`, 'success');
+                    showNotification(`✅ Product "${name}" saved to database!`, 'success');
+                } else {
+                    addDebugLog(`⚠️ Product database save failed: ${productResult.error}`, 'error');
+                    showNotification(`⚠️ Product saved locally (database issue)`, 'warning');
+                    // Continue anyway - product is saved locally and will sync later
+                }
+            } else {
+                addDebugLog(`📝 Product saved locally (no user ID yet): ${name}`, 'info');
+                showNotification(`📝 Product "${name}" added (will save to database after registration)`, 'info');
+            }
+            
+            // Clear form
+            document.getElementById('productName').value = '';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productDescription').value = '';
+            document.getElementById('productCategory').value = '';
+            document.getElementById('productSubcategory').value = '';
+            document.getElementById('productImage').value = '';
+            
+            displayProducts();
+            calculateLeadScore();
+            
+            addDebugLog(`📦 Product added successfully: ${name} (₹${price})`);
+        }
+
+        // 🖼️ GET DEFAULT PRODUCT IMAGE
+        function getDefaultProductImage() {
+            return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjFmNWY5Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjM2NjcwIiBmb250LWZhbWlseT0iYXJpYWwiIGZvbnQtc2l6ZT0iNDAiPvCfk6Y8L3RleHQ+PC9zdmc+';
+        }
+
+        // 📋 DISPLAY PRODUCTS
+        function displayProducts() {
+            const productsList = document.getElementById('productsList');
+            const productCount = document.getElementById('productCount');
+            
+            productCount.textContent = userProducts.length;
+            
+            if (userProducts.length === 0) {
+                productsList.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+                        <p>No products added yet. Add your first product above!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const businessCategory = document.getElementById('category').value;
+            const categoryData = businessCategories[businessCategory];
+            
+            productsList.innerHTML = userProducts.map(product => {
+                const categoryName = categoryData?.categories[product.categoryKey]?.name || product.categoryKey;
+                const subcategoryName = product.subcategoryKey ? 
+                    (subcategoryNames[product.subcategoryKey] || product.subcategoryKey) : '';
+                
+                return `
+                    <div class="product-card">
+                        <div class="product-image" style="background-image: url('${product.imageUrl}');">
+                            <div class="product-price">₹${product.price.toLocaleString()}</div>
+                        </div>
+                        <div class="product-content">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-description">${product.description}</div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
+                                <span>📁 ${categoryName}</span>
+                                ${subcategoryName ? `<span>🏷️ ${subcategoryName}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 🚀 ENHANCED COMPLETE SETUP WITH ERROR HANDLING - FIXED FUNCTION
+        async function completeSetup() {
+            const finalScore = calculateLeadScore() + 10; // Bonus for completion
+            
+            // Save all data to localStorage for immediate CRM sync
+            const leadData = {
+                user_id: currentUserId,
+                name: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phoneNumber').value,
+                business_name: document.getElementById('businessName').value,
+                address: document.getElementById('address').value,
+                business_type: document.getElementById('businessType').value,
+                business_category: document.getElementById('category').value,
+                selected_language: selectedLanguage,
+                selected_goals: selectedGoals,
+                selected_categories: selectedCategories,
+                selected_subcategories: selectedSubcategories,
+                products_count: userProducts.length,
+                products_data: userProducts,
+                categories_data: selectedCategories,
+                subcategories_data: selectedSubcategories,
+                lead_score: finalScore,
+                lead_quality: finalScore >= 70 ? 'Hot' : finalScore >= 40 ? 'Warm' : 'Cold',
+                session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
+                page_views: pageViews,
+                utm_source: utmParams.source,
+                device_type: deviceInfo.type,
+                browser: deviceInfo.browser,
+                setup_completed: true,
+                completed_at: new Date().toISOString()
+            };
+            
+            // Save to localStorage for immediate CRM sync
+            const existingLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
+            existingLeads.push(leadData);
+            localStorage.setItem('topiko_local_leads', JSON.stringify(existingLeads));
+            
+            // Update lead intelligence with final data if possible
+            if (currentUserId) {
+                try {
+                    // Only use fields that definitely exist in the lead_intelligence schema
+                    const finalIntelligenceData = {
+                        lead_score: finalScore,
+                        lead_quality: finalScore >= 70 ? 'Hot' : finalScore >= 40 ? 'Warm' : 'Cold',
+                        engagement_level: finalScore >= 70 ? 'High' : finalScore >= 40 ? 'Medium' : 'Low',
+                        session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
+                        page_views: pageViews,
+                        form_completion_percentage: 100,
+                        ready_for_sdr_assignment: true
+                    };
+                    
+                    addDebugLog(`💾 Updating lead intelligence with final data: ${JSON.stringify(finalIntelligenceData, null, 2)}`);
+                    
+                    // Update the existing lead intelligence record
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence?user_id=eq.${currentUserId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify(finalIntelligenceData)
+                    });
+                    
+                    if (response.ok) {
+                        addDebugLog('✅ Final lead intelligence updated successfully', 'success');
+                        showNotification('✅ Setup completed and saved to database!', 'success');
+                    } else {
+                        const errorText = await response.text();
+                        addDebugLog(`⚠️ Intelligence final update failed: ${response.status} ${errorText}`, 'error');
+                        showNotification('✅ Setup completed! (Some data saved locally)', 'warning');
+                        // Continue anyway - data is saved in localStorage
+                    }
+                } catch (error) {
+                    addDebugLog(`⚠️ Intelligence final update failed: ${error.message}`, 'error');
+                    showNotification('✅ Setup completed! (Data saved locally)', 'warning');
+                    // Continue anyway - data is saved in localStorage
+                }
+            } else {
+                addDebugLog('⚠️ No user ID available for final database update', 'warning');
+                showNotification('✅ Setup completed! (No database connection)', 'warning');
+            }
+            
+            addDebugLog(`✅ Setup completed! Final score: ${finalScore}/100`, 'success');
+            
+            // Show completion message
+            showNotification('🎉 Setup completed successfully! Your business is ready!', 'success');
+            
+            // Display completion summary
+            setTimeout(() => {
+                showCompletionSummary(finalScore, leadData);
+            }, 2000);
+        }
+
+        // 🎉 SHOW COMPLETION SUMMARY
+        function showCompletionSummary(finalScore, leadData) {
+            const completionHTML = `
+                <div class="content-card" style="max-width: 800px; margin: 0 auto; text-align: center; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #22c55e, #16a34a, #059669); border-radius: 20px 20px 0 0;"></div>
+                    
+                    <div style="font-size: 4rem; margin-bottom: 1.5rem; animation: bounce 2s infinite;">🎉</div>
+                    
+                    <h2 style="color: #059669; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;">
+                        Congratulations! Your Setup is Complete!
+                    </h2>
+                    
+                    <p style="color: #064e3b; font-size: 1.2rem; margin-bottom: 2rem;">
+                        Your business profile has been created successfully and you're ready to start growing!
+                    </p>
+
+                    <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 16px; padding: 2rem; margin: 2rem 0;">
+                        <h3 style="color: #059669; font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">📊 Your Business Summary</h3>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                            <div style="background: rgba(255, 255, 255, 0.8); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: #059669;">${finalScore}</div>
+                                <div style="color: #064e3b; font-size: 0.9rem;">Lead Score</div>
+                            </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.8); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎨</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: #059669;">${selectedGoals.length}</div>
+                                <div style="color: #064e3b; font-size: 0.9rem;">Goals Selected</div>
+                            </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.8); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📂</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: #059669;">${selectedCategories.length}</div>
+                                <div style="color: #064e3b; font-size: 0.9rem;">Categories</div>
+                            </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.8); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📦</div>
+                                <div style="font-size: 1.8rem; font-weight: bold; color: #059669;">${userProducts.length}</div>
+                                <div style="color: #064e3b; font-size: 0.9rem;">Products Added</div>
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(34, 197, 94, 0.15); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0;">
+                            <h4 style="color: #059669; margin-bottom: 1rem;">🚀 What's Next?</h4>
+                            <div style="text-align: left; color: #064e3b;">
+                                <p>✅ Your business profile is now live and searchable</p>
+                                <p>✅ Our sales team will review your setup and contact you within 24 hours</p>
+                                <p>✅ You'll receive onboarding materials and training resources</p>
+                                <p>✅ Start attracting customers immediately with your new presence</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button onclick="goToDashboard()" style="flex: 1; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; border: none; padding: 1rem 2rem; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
+                            View Dashboard 📊
+                        </button>
+                        <button onclick="startOver()" style="flex: 1; background: rgba(34, 197, 94, 0.1); color: #059669; border: 2px solid rgba(34, 197, 94, 0.3); padding: 1rem 2rem; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer;">
+                            Start Another 🔄
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 2rem; color: #6b7280; font-size: 0.9rem;">
+                        <p>🎯 Your lead quality: <strong>${leadData.lead_quality}</strong> | Session time: <strong>${leadData.session_duration_minutes}m</strong></p>
+                    </div>
+                </div>
+            `;
+            
+            // Replace the products screen content with completion summary
+            const productsScreen = document.getElementById('products');
+            productsScreen.innerHTML = completionHTML;
+            
+            addDebugLog('✅ Completion summary displayed', 'success');
+        }
+
+        // 🔄 NAVIGATION FUNCTIONS
+        function goToDashboard() {
+            addDebugLog('🚀 Redirecting to CRM dashboard');
+            showNotification('Redirecting to dashboard...', 'info');
+            
+            // Redirect to CRM after a short delay
+            setTimeout(() => {
+                window.location.href = './crm.html';
+            }, 1500);
+        }
+
+        function startOver() {
+            addDebugLog('🔄 Starting over - resetting form');
+            
+            // Reset all variables
+            selectedGoals = [];
+            selectedLanguage = 'en';
+            selectedCategories = [];
+            selectedSubcategories = [];
+            userProducts = [];
+            currentUserId = null;
+            pageViews = 1;
+            leadScore = 0;
+            formProgress = 0;
+            sessionStartTime = Date.now();
+            
+            // Clear form fields
+            const formFields = ['fullName', 'email', 'phoneNumber', 'businessName', 'address', 'businessType', 'category'];
+            formFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) field.value = '';
+            });
+            
+            // Clear checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Reset UI
+            updateLeadIntelligenceWidget();
+            showNotification('Form reset! Starting fresh...', 'info');
+            
+            // Go back to welcome screen
+            setTimeout(() => showScreen('welcome'), 1000);
+        }
+
+        // 📢 ENHANCED NOTIFICATION SYSTEM
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const content = document.getElementById('notificationContent');
+            
+            if (!notification || !content) {
+                console.log(`Notification: ${message}`);
+                return;
+            }
+            
+            content.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            // Auto-hide after 4 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+            
+            addDebugLog(`Notification (${type}): ${message}`);
+        }
+
+        // 🚀 INITIALIZATION FUNCTIONS
+        function initializeApp() {
+            addDebugLog('🚀 Initializing Topiko Lead Form Application', 'info');
+            
+            // Capture UTM parameters and device info
+            captureUTMParameters();
+            detectDevice();
+            
+            // Test database connection
+            testDatabaseConnection();
+            
+            // Initialize lead intelligence
+            updateLeadIntelligenceWidget();
+            
+            // Setup page view tracking
+            pageViews = 1;
+            sessionStartTime = Date.now();
+            
+            addDebugLog('✅ Application initialized successfully', 'success');
+        }
+
+        // 🎯 PAGE LOAD EVENT
+        document.addEventListener('DOMContentLoaded', function() {
+            addDebugLog('📄 DOM Content Loaded - Starting initialization');
+            initializeApp();
+            
+            // Update session time every 30 seconds
+            setInterval(() => {
+                updateLeadIntelligenceWidget();
+                
+                // Auto-save to localStorage every 30 seconds
+                if (currentUserId || selectedGoals.length > 0) {
+                    const currentData = {
+                        selectedGoals,
+                        selectedLanguage,
+                        selectedCategories,
+                        selectedSubcategories,
+                        userProducts,
+                        leadScore,
+                        formProgress,
+                        sessionStartTime,
+                        lastSaved: Date.now()
+                    };
+                    localStorage.setItem('topiko_current_session', JSON.stringify(currentData));
+                    addDebugLog('💾 Session auto-saved to localStorage');
+                }
+            }, 30000);
+        });
+
+        // 🔧 UTILITY FUNCTIONS
+        window.addEventListener('beforeunload', function(e) {
+            // Save current session before leaving
+            const currentData = {
+                selectedGoals,
+                selectedLanguage,
+                selectedCategories,
+                selectedSubcategories,
+                userProducts,
+                leadScore,
+                formProgress,
+                sessionStartTime,
+                lastSaved: Date.now()
+            };
+            localStorage.setItem('topiko_current_session', JSON.stringify(currentData));
+            addDebugLog('💾 Session saved on page unload');
+        });
+
+        // 🔍 ERROR HANDLING
+        window.addEventListener('error', function(e) {
+            addDebugLog(`❌ JavaScript Error: ${e.error?.message || e.message}`, 'error');
+            showError('Application Error', e.error?.message || e.message);
+        });
+
+        window.addEventListener('unhandledrejection', function(e) {
+            addDebugLog(`❌ Unhandled Promise Rejection: ${e.reason}`, 'error');
+            showError('Promise Error', e.reason);
+        });
+
+        // 📊 CONSOLE LOGGING FOR DEBUGGING
+        addDebugLog('🎯 Topiko Lead Form - All functions loaded and ready', 'success');
+        console.log('🎯 Topiko Lead Intelligence System Loaded');
+        console.log('📊 Available functions:', [
+            'showScreen()', 'startLeadFlow()', 'selectLanguage()', 'submitGoals()', 
+            'submitRegistration()', 'addProduct()', 'completeSetup()', 'testDatabaseSave()',
+            'toggleDebugPanel()', 'calculateLeadScore()', 'showNotification()'
+        ]);
+    </script>
+</body>
+</html>
