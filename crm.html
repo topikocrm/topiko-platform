@@ -1415,82 +1415,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        <style>
-/* Enhanced lead scoring breakdown styles */
-.scoring-breakdown-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 0;
-    border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-    font-size: 0.75rem;
-}
-
-.scoring-breakdown-item:last-child {
-    border-bottom: none;
-    font-weight: bold;
-    margin-top: 4px;
-    padding-top: 8px;
-    border-top: 2px solid rgba(59, 130, 246, 0.2);
-}
-
-.qualifying-badge {
-    display: inline-block;
-    padding: 2px 6px;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    font-weight: 500;
-    margin: 2px;
-}
-
-.badge-hot { background: #fee2e2; color: #dc2626; }
-.badge-warm { background: #fef3c7; color: #d97706; }
-.badge-qualified { background: #dcfce7; color: #16a34a; }
-.badge-budget { background: #e0f2fe; color: #0369a1; }
-
-/* Enhanced priority lead highlighting */
-.priority-lead-row {
-    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%) !important;
-    border-left: 4px solid #dc2626 !important;
-}
-
-.priority-lead-row:hover {
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
-}
-
-/* Enhanced stat cards for new metrics */
-.stat-card .stat-icon {
-    animation: none;
-}
-
-.stat-card:hover .stat-icon {
-    animation: bounce 0.6s ease;
-}
-
-/* Mobile enhancements for new fields */
-@media (max-width: 768px) {
-    .qualifying-info-mobile {
-        background: rgba(139, 92, 246, 0.1);
-        border-radius: 8px;
-        padding: 0.5rem;
-        margin: 0.5rem 0;
-        font-size: 0.8rem;
-    }
-    
-    .timeline-badge-mobile {
-        display: inline-block;
-        padding: 0.2rem 0.5rem;
-        border-radius: 12px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        margin: 0.2rem;
-    }
-    
-    .timeline-immediately { background: #fee2e2; color: #dc2626; }
-    .timeline-week { background: #fef3c7; color: #d97706; }
-    .timeline-month { background: #f3f4f6; color: #6b7280; }
-    .timeline-checking { background: #f3f4f6; color: #6b7280; }
-}
     </style>
 </head>
 <body>
@@ -1577,28 +1501,28 @@
                         <div class="stat-value" id="totalLeads">0</div>
                         <div class="stat-change stat-positive">↑ Real-time sync</div>
                     </div>
-                
+
                     <div class="stat-card">
                         <div class="stat-icon">🔥</div>
-                        <div class="stat-title">Hot Leads (65+)</div>
+                        <div class="stat-title">Hot Leads (70+)</div>
                         <div class="stat-value" id="hotLeads">0</div>
-                        <div class="stat-change stat-positive" id="hotLeadsInsight">🎯 Ready for SDR</div>
+                        <div class="stat-change stat-positive">🎯 Ready for SDR</div>
                     </div>
-                
+
                     <div class="stat-card">
                         <div class="stat-icon">🌡️</div>
-                        <div class="stat-title">Warm Leads (41-65)</div>
+                        <div class="stat-title">Warm Leads (40+)</div>
                         <div class="stat-value" id="warmLeads">0</div>
-                        <div class="stat-change stat-positive" id="warmLeadsInsight">📞 Follow-up needed</div>
+                        <div class="stat-change stat-positive">📞 Follow-up needed</div>
                     </div>
-                
+
                     <div class="stat-card">
                         <div class="stat-icon">❄️</div>
-                        <div class="stat-title">Cold Leads (<41)</div>
+                        <div class="stat-title">Cold Leads (<40)</div>
                         <div class="stat-value" id="coldLeads">0</div>
                         <div class="stat-change">📧 Nurture pipeline</div>
                     </div>
-                
+
                     <div class="stat-card">
                         <div class="stat-icon">✅</div>
                         <div class="stat-title">Assigned Leads</div>
@@ -1606,28 +1530,6 @@
                         <div class="stat-change stat-positive">👨‍💼 Active SDRs</div>
                     </div>
 
-                    <div class="stat-card" style="position: relative;">
-                        <div class="stat-icon">💾</div>
-                        <div class="stat-title">Database Sync</div>
-                        <div class="stat-value" id="dbStatus">✅</div>
-                        <div class="stat-change" id="dbStatusText">Connected</div>
-                        
-                 <!-- 🆕 NEW: Priority Leads Stat -->
-                    <div class="stat-card">
-                        <div class="stat-icon">⚡</div>
-                        <div class="stat-title">Priority Leads</div>
-                        <div class="stat-value" id="priorityLeads">0</div>
-                        <div class="stat-change stat-positive">🔥 Immediate + Decision Makers</div>
-                    </div>
-                
-                    <!-- 🆕 NEW: High Budget Leads Stat -->
-                    <div class="stat-card">
-                        <div class="stat-icon">💰</div>
-                        <div class="stat-title">High Budget (₹25K+)</div>
-                        <div class="stat-value" id="highBudgetLeads">0</div>
-                        <div class="stat-change stat-positive">💸 Premium prospects</div>
-                    </div>
-                
                     <div class="stat-card" style="position: relative;">
                         <div class="stat-icon">💾</div>
                         <div class="stat-title">Database Sync</div>
@@ -1643,11 +1545,10 @@
                     </div>
                 </div>
 
-
-                <!-- 🆕 ENHANCED: Debug Panel with New Scoring Information -->
+                <!-- Debug Panel -->
                 <div id="debugPanel" class="debug-panel" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="color: #60a5fa; margin: 0;">🔧 Enhanced CRM Debug Panel - New Scoring Algorithm</h3>
+                        <h3 style="color: #60a5fa; margin: 0;">🔧 Enhanced CRM Debug Panel</h3>
                         <button onclick="toggleDebugPanel()" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Close</button>
                     </div>
                     <div id="debugContent"></div>
@@ -1656,9 +1557,6 @@
                         <button onclick="testSupabase()" style="background: #059669; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">🔍 Test DB</button>
                         <button onclick="clearStorage()" style="background: #f59e0b; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">🗑️ Clear</button>
                         <button onclick="syncSDRs()" style="background: #6366f1; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">👨‍💼 Sync SDRs</button>
-                        <!-- 🆕 NEW: New scoring debug buttons -->
-                        <button onclick="debugNewScoring()" style="background: #8b5cf6; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">📊 Scoring Debug</button>
-                        <button onclick="testTimelineFilter()" style="background: #f59e0b; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">⏰ Test Timeline</button>
                     </div>
                 </div>
 
@@ -1695,27 +1593,7 @@
                                 <option value="Cold">Cold (<40)</option>
                             </select>
                         </div>
-                        <div class="filter-group">
-                            <label class="filter-label">Lead Quality</label>
-                            <select class="filter-select" id="qualityFilter" onchange="applyFilters()">
-                                <option value="">All Qualities</option>
-                                <option value="Hot">🔥 Hot (65+)</option>
-                                <option value="Warm">🌡️ Warm (41-65)</option>
-                                <option value="Cold">❄️ Cold (<41)</option>
-                            </select>
-                        </div>
-                        
-                        <!-- 🆕 NEW: Additional Filter for Timeline -->
-                        <div class="filter-group">
-                            <label class="filter-label">Timeline Urgency</label>
-                            <select class="filter-select" id="timelineFilter" onchange="applyFilters()">
-                                <option value="">All Timelines</option>
-                                <option value="immediately">🔥 Immediately</option>
-                                <option value="within_week">🌡️ Within a Week</option>
-                                <option value="this_month">📅 This Month</option>
-                                <option value="just_checking">🔍 Just Checking</option>
-                            </select>
-                        </div>
+
                         <div class="filter-group">
                             <label class="filter-label">Assigned SDR</label>
                             <select class="filter-select" id="sdrFilter" onchange="applyFilters()">
@@ -1751,19 +1629,13 @@
                         </div>
                     </div>
 
-               <div class="filter-buttons">
-                    <button class="filter-btn active" onclick="toggleScoreFilter('all')">All Scores</button>
-                    <button class="filter-btn" onclick="toggleScoreFilter('high')">High Engagement</button>
-                    <button class="filter-btn" onclick="toggleScoreFilter('categories')">Has Categories</button>
-                    <button class="filter-btn" onclick="toggleScoreFilter('products')">Has Products</button>
-                    <button class="filter-btn" onclick="toggleScoreFilter('complete')">Setup Complete</button>
-                    <!-- 🆕 NEW: Priority filter for immediate timeline + decision makers -->
-                    <button class="filter-btn" onclick="toggleScoreFilter('priority')" title="Immediate timeline + Decision makers">🔥 Priority Leads</button>
-                    <!-- 🆕 NEW: Decision makers filter -->
-                    <button class="filter-btn" onclick="toggleScoreFilter('decision_makers')" title="Confirmed decision makers">💼 Decision Makers</button>
-                    <!-- 🆕 NEW: High budget filter -->
-                    <button class="filter-btn" onclick="toggleScoreFilter('high_budget')" title="Budget above ₹25K">💰 High Budget</button>
-                </div>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="toggleScoreFilter('all')">All Scores</button>
+                        <button class="filter-btn" onclick="toggleScoreFilter('high')">High Engagement</button>
+                        <button class="filter-btn" onclick="toggleScoreFilter('categories')">Has Categories</button>
+                        <button class="filter-btn" onclick="toggleScoreFilter('products')">Has Products</button>
+                        <button class="filter-btn" onclick="toggleScoreFilter('complete')">Setup Complete</button>
+                    </div>
                 </div>
 
                 <!-- 🎯 ENHANCED LEADS TABLE -->
@@ -1787,16 +1659,12 @@
                         </div>
                     </div>
 
-                    <!-- 🆕 NEW: Enhanced Lead Table Header with Timeline Information -->
-                    <!-- Update the leads table header to include timeline information -->
                     <table class="leads-table" id="leadsTable">
                         <thead>
                             <tr>
                                 <th class="sortable" onclick="sortTable('name')">Lead Information</th>
                                 <th class="sortable" onclick="sortTable('categories')">🎯 Goals & Categories</th>
                                 <th class="sortable" onclick="sortTable('lead_score')">Intelligence Score</th>
-                                <!-- 🆕 NEW: Enhanced column for qualifying questions -->
-                                <th class="sortable" onclick="sortTable('timeline_preference')">💼 Qualifying Info</th>
                                 <th class="sortable" onclick="sortTable('utm_source')">Source & Device</th>
                                 <th class="sortable" onclick="sortTable('lead_status')">Status & SDR</th>
                                 <th>Actions</th>
@@ -1804,9 +1672,9 @@
                         </thead>
                         <tbody id="leadsTableBody">
                             <tr>
-                                <td colspan="7" style="text-align: center; padding: 2rem; color: #64748b;">
+                                <td colspan="6" style="text-align: center; padding: 2rem; color: #64748b;">
                                     <div class="loading"></div>
-                                    <div style="margin-top: 1rem;">Loading leads with enhanced scoring...</div>
+                                    <div style="margin-top: 1rem;">Loading leads...</div>
                                 </td>
                             </tr>
                         </tbody>
