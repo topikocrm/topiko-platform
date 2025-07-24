@@ -1376,6 +1376,16 @@
     </style>
 </head>
 <body>
+    <!-- Add this BEFORE <div class="crm-container"> -->
+<div class="mobile-header">
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+        ☰
+    </button>
+    <div class="mobile-title">Topiko CRM</div>
+    <div></div>
+</div>
+
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
     <div class="crm-container">
         <!-- 🎯 CRM SIDEBAR -->
         <nav class="crm-sidebar">
@@ -2853,7 +2863,15 @@
             setTimeout(() => {
                 showNotification('🚀 Enhanced CRM ready! Advanced filtering & schema-compliant data sync active.', 'info');
             }, 1000);
-            
+             // ADD THIS AT THE END:
+    // Force mobile update on load
+    setTimeout(() => {
+        if (window.innerWidth <= 768) {
+            updateLeadsTableMobile();
+        }
+    }, 2000);
+    
+    console.log('✅ Enhanced CRM ready for advanced lead management');
             // Auto-refresh every 15 seconds
             setInterval(async () => {
                 lastCheck = Date.now();
@@ -3241,6 +3259,153 @@ async function addComment(leadId, commentText, commentType = 'general', sdrId = 
 }
 
 console.log('✅ SDR Selection & Comments functions loaded');
+        // Add these functions to your JavaScript:
+
+// Mobile menu functionality
+function toggleMobileMenu() {
+    const sidebar = document.querySelector('.crm-sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    
+    sidebar.classList.toggle('mobile-open');
+    overlay.classList.toggle('show');
+}
+
+function closeMobileMenu() {
+    const sidebar = document.querySelector('.crm-sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    
+    sidebar.classList.remove('mobile-open');
+    overlay.classList.remove('show');
+}
+
+// Create mobile leads container
+function createMobileContainer() {
+    const tableSection = document.querySelector('.leads-section');
+    let mobileDiv = document.getElementById('mobileLeadsContainer');
+    
+    if (!mobileDiv) {
+        mobileDiv = document.createElement('div');
+        mobileDiv.id = 'mobileLeadsContainer';
+        mobileDiv.className = 'mobile-leads-container';
+        tableSection.appendChild(mobileDiv);
+    }
+    
+    return mobileDiv;
+}
+
+// Mobile leads display function
+function updateLeadsTableMobile() {
+    const container = createMobileContainer();
+    
+    if (filteredLeads.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #64748b;">
+                <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">📊 No leads found</div>
+                <div style="font-size: 0.9rem;">Try adjusting your filters</div>
+                <button onclick="clearAllFilters()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    Clear Filters
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    const displayLeads = filteredLeads.slice(0, 20);
+    
+    container.innerHTML = displayLeads.map(lead => {
+        const assignedSDR = lead.assigned_sdr_id ? 
+            sdrTeam.find(sdr => sdr.id === lead.assigned_sdr_id)?.name || 'Unknown SDR' : 
+            'Unassigned';
+            
+        return `
+            <div class="mobile-lead-card">
+                <div class="mobile-lead-header">
+                    <div class="mobile-lead-info">
+                        <h3>${lead.name}</h3>
+                        <p>🏢 ${lead.business_name}</p>
+                        <p>📧 ${lead.email}</p>
+                        <p>📞 ${lead.phone}</p>
+                    </div>
+                    <div class="mobile-lead-score score-${lead.lead_quality.toLowerCase()}">
+                        ${lead.lead_score}
+                    </div>
+                </div>
+                
+                <div class="mobile-lead-details">
+                    <div class="mobile-detail-row">
+                        <span class="mobile-detail-label">Status:</span>
+                        <span class="mobile-detail-value">${lead.lead_status}</span>
+                    </div>
+                    <div class="mobile-detail-row">
+                        <span class="mobile-detail-label">SDR:</span>
+                        <span class="mobile-detail-value">${assignedSDR}</span>
+                    </div>
+                    <div class="mobile-detail-row">
+                        <span class="mobile-detail-label">Source:</span>
+                        <span class="mobile-detail-value">${lead.utm_source}</span>
+                    </div>
+                    <div class="mobile-detail-row">
+                        <span class="mobile-detail-label">Session:</span>
+                        <span class="mobile-detail-value">${lead.session_duration_minutes}m</span>
+                    </div>
+                    <div class="mobile-detail-row">
+                        <span class="mobile-detail-label">Created:</span>
+                        <span class="mobile-detail-value">${getTimeAgo(lead.created_at)}</span>
+                    </div>
+                </div>
+                
+                ${lead.goals_display && lead.goals_display.length > 0 ? `
+                    <div class="mobile-goals-tags">
+                        ${lead.goals_display.map(goal => `<span class="mobile-goal-tag">${goal}</span>`).join('')}
+                    </div>
+                ` : ''}
+                
+                ${lead.categories_display && lead.categories_display.length > 0 ? `
+                    <div class="mobile-categories-tags">
+                        ${lead.categories_display.slice(0, 3).map(cat => `<span class="mobile-category-tag">${cat}</span>`).join('')}
+                        ${lead.categories_display.length > 3 ? `<span class="mobile-category-tag">+${lead.categories_display.length - 3}</span>` : ''}
+                    </div>
+                ` : ''}
+                
+                <div class="mobile-lead-actions">
+                    <button class="mobile-assign-btn" onclick="showSDRSelector('${lead.id}', event)" ${lead.assigned_sdr_id ? 'disabled' : ''}>
+                        ${lead.assigned_sdr_id ? 'Assigned' : 'Assign SDR'}
+                    </button>
+                    <button class="mobile-intel-btn" onclick="showLeadIntelligence('${lead.id}')">
+                        📊 Intelligence
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Update the existing updateLeadsTable function to also call mobile version
+const originalUpdateLeadsTable = updateLeadsTable;
+updateLeadsTable = function() {
+    originalUpdateLeadsTable();
+    
+    // Add mobile update
+    if (window.innerWidth <= 768) {
+        updateLeadsTableMobile();
+    }
+};
+
+// Auto-update mobile on resize
+window.addEventListener('resize', function() {
+    if (window.innerWidth <= 768) {
+        updateLeadsTableMobile();
+    }
+});
+
+// Close mobile menu when navigating
+const originalShowCRMSection = showCRMSection;
+showCRMSection = function(sectionId) {
+    originalShowCRMSection(sectionId);
+    closeMobileMenu();
+};
+
+console.log('✅ Mobile menu and leads display functions loaded');
     </script>
 </body>
 </html>
