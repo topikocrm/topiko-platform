@@ -254,6 +254,87 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        /* Transition Screen Styles */
+        .goal-pill {
+            background: linear-gradient(135deg, #8b6fcd, #6b46c1);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(139, 111, 205, 0.3);
+            margin: 0.3rem;
+            display: inline-block;
+        }
+
+        .time-promise {
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            color: #059669;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .confidence-boost {
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            color: #d97706;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .features-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(139, 111, 205, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 111, 205, 0.15);
+            border-color: rgba(139, 111, 205, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-title {
+            color: #6b46c1;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .feature-desc {
+            color: #553c9a;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
         /* Welcome Screen */
         .welcome-screen {
             display: flex;
@@ -752,6 +833,13 @@
             color: #8b6fcd;
         }
 
+        /* Sparkle Animation Styles */
+        @keyframes sparkleFloat {
+            0% { transform: translateY(0) scale(0) rotate(0deg); opacity: 1; }
+            50% { transform: translateY(-30px) scale(1) rotate(180deg); opacity: 1; }
+            100% { transform: translateY(-60px) scale(0) rotate(360deg); opacity: 0; }
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -778,6 +866,10 @@
             }
 
             .summary-content {
+                grid-template-columns: 1fr;
+            }
+
+            .features-preview {
                 grid-template-columns: 1fr;
             }
         }
@@ -863,6 +955,12 @@
                     </div>
                 </li>
                 <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('goals-transition')">
+                        <span class="nav-icon">✨</span>
+                        <span>Preview</span>
+                    </div>
+                </li>
+                <li class="nav-item">
                     <div class="nav-link" onclick="showScreen('registration')">
                         <span class="nav-icon">📝</span>
                         <span>Sign Up</span>
@@ -890,7 +988,7 @@
                 <div class="welcome-screen">
                     <h1 class="topiko-logo">Topiko</h1>
                     <p style="font-size: 1.2rem; color: #6b46c1; margin-bottom: 2rem;">Complete Business Platform for Indian SMBs</p>
-                    <p style="font-size: 1rem; color: #059669; margin-bottom: 2rem; font-weight: bold;">✅ Error-Fixed Version - Enhanced Validation</p>
+                    <p style="font-size: 1rem; color: #059669; margin-bottom: 2rem; font-weight: bold;">✅ Enhanced Version with Goals Transition</p>
                     <button class="try-free-button" onclick="startLeadFlow()">
                         Try for Free
                     </button>
@@ -1010,6 +1108,44 @@
                     <button class="submit-button" onclick="submitGoals()">
                         Next Step
                     </button>
+                </div>
+            </section>
+
+            <!-- Goals Transition Screen - NEW! -->
+            <section class="screen" id="goals-transition">
+                <div class="content-card" style="max-width: 800px; margin: 0 auto; position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #8b6fcd, #6b46c1, #553c9a); border-radius: 20px 20px 0 0;"></div>
+                    
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: 1.5rem; animation: bounce 2s infinite;" id="celebrationEmoji">🎉</div>
+                        
+                        <h2 style="color: #6b46c1; font-size: 2.2rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.3; letter-spacing: -0.5px;" id="mainMessage">
+                            Perfect! Let's make it happen!
+                        </h2>
+                        
+                        <p style="color: #553c9a; font-size: 1.3rem; font-weight: 500; margin-bottom: 2rem; line-height: 1.5;" id="subMessage">
+                            I can see exactly what you need, and I'm excited to show you how our platform will transform your business.
+                        </p>
+
+                        <div style="background: rgba(139, 111, 205, 0.1); border: 2px solid rgba(139, 111, 205, 0.2); border-radius: 16px; padding: 1.5rem; margin: 2rem 0;">
+                            <h3 style="color: #6b46c1; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">🎯 Your Selected Goals:</h3>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;" id="goalsList">
+                                <!-- Goals will be populated here -->
+                            </div>
+                        </div>
+
+                        <div id="customContent">
+                            <!-- Custom content based on goals will be inserted here -->
+                        </div>
+
+                        <button class="submit-button" onclick="proceedFromTransition()" style="animation: pulse 2s infinite;">
+                            <span id="actionText">Let's Get Started! 🚀</span>
+                        </button>
+
+                        <div style="margin-top: 2rem; color: #64748b; font-size: 0.9rem;">
+                            <p>✨ Join thousands of successful Indian businesses already using Topiko</p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -1187,7 +1323,7 @@
     </div>
 
     <script>
-        // 🎯 TOPIKO LEAD INTELLIGENCE SYSTEM - ERROR-FIXED VERSION
+        // 🎯 TOPIKO LEAD INTELLIGENCE SYSTEM - WITH GOALS TRANSITION
         
         // ✅ CORE VARIABLES
         let sessionStartTime = Date.now();
@@ -1215,6 +1351,84 @@
         // 🚀 SUPABASE CONFIGURATION
         const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co'
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k'
+
+        // 🌟 GOAL CONFIGURATIONS WITH PERSONALIZED MESSAGING
+        const goalConfigs = {
+            ecommerce: {
+                emoji: '🛒',
+                title: 'Alright, let\'s setup your store, right here, right now!',
+                subtitle: 'Building your online store has never been this simple.',
+                timePromise: '⏰ It takes less than 5 minutes, I promise!',
+                features: [
+                    { icon: '🏪', title: 'Instant Store', desc: 'Get your shop online immediately' },
+                    { icon: '💳', title: 'Payment Ready', desc: 'Accept payments from day one' },
+                    { icon: '📱', title: 'Mobile Optimized', desc: 'Perfect on all devices' },
+                    { icon: '🚀', title: 'Go Live Fast', desc: 'Start selling in minutes' }
+                ],
+                confidence: '🎯 Over 10,000+ stores launched this month alone!'
+            },
+            customers: {
+                emoji: '📈',
+                title: 'Ready to reach thousands of new customers?',
+                subtitle: 'Let\'s expand your customer base and grow your market reach exponentially.',
+                timePromise: '📊 Your customer growth strategy starts in under 5 minutes!',
+                features: [
+                    { icon: '🎯', title: 'Smart Targeting', desc: 'Find your ideal customers' },
+                    { icon: '📢', title: 'Marketing Tools', desc: 'Reach more people effectively' },
+                    { icon: '📊', title: 'Growth Analytics', desc: 'Track your expansion' },
+                    { icon: '🌟', title: 'Brand Visibility', desc: 'Get discovered easily' }
+                ],
+                confidence: '🚀 Our users typically see 3x more customers within 30 days!'
+            },
+            manage: {
+                emoji: '👥',
+                title: 'Time to organize and delight your customers!',
+                subtitle: 'Build lasting relationships and never lose track of important customer details.',
+                timePromise: '⚡ Your customer management system ready in 5 minutes!',
+                features: [
+                    { icon: '📋', title: 'Customer Database', desc: 'Organize all customer info' },
+                    { icon: '💬', title: 'Communication Tools', desc: 'Stay connected easily' },
+                    { icon: '📈', title: 'Relationship Tracking', desc: 'Build stronger bonds' },
+                    { icon: '🎁', title: 'Loyalty Programs', desc: 'Reward your best customers' }
+                ],
+                confidence: '💪 Businesses using our CRM see 40% higher customer retention!'
+            },
+            search: {
+                emoji: '🔍',
+                title: 'Let\'s get you discovered by everyone searching!',
+                subtitle: 'Your business deserves to be found by customers actively looking for what you offer.',
+                timePromise: '🎯 Your search visibility boost starts in just 5 minutes!',
+                features: [
+                    { icon: '🌐', title: 'SEO Optimization', desc: 'Rank higher in searches' },
+                    { icon: '📍', title: 'Local Discovery', desc: 'Be found in your area' },
+                    { icon: '⭐', title: 'Online Reviews', desc: 'Build trust and credibility' },
+                    { icon: '📊', title: 'Search Analytics', desc: 'Track your visibility' }
+                ],
+                confidence: '🎉 Our clients get 5x more online visibility within their first month!'
+            },
+            brand: {
+                emoji: '⭐',
+                title: 'Ready to build a brand that stands out?',
+                subtitle: 'Let\'s create a professional, memorable brand that customers will love and trust.',
+                timePromise: '✨ Your professional brand identity ready in 5 minutes!',
+                features: [
+                    { icon: '🎨', title: 'Brand Design', desc: 'Professional look & feel' },
+                    { icon: '💼', title: 'Business Identity', desc: 'Stand out from competition' },
+                    { icon: '🌟', title: 'Trust Building', desc: 'Gain customer confidence' },
+                    { icon: '📈', title: 'Brand Growth', desc: 'Scale your reputation' }
+                ],
+                confidence: '🏆 Businesses with strong branding see 23% more revenue growth!'
+            }
+        };
+
+        // Goal display names
+        const goalNames = {
+            ecommerce: '🛒 Sell Online',
+            customers: '📈 Reach More Customers', 
+            manage: '👥 Manage Customers',
+            search: '🔍 Appear in Search Results',
+            brand: '⭐ Establish Brand'
+        };
 
         // 🇮🇳 ENHANCED BUSINESS CATEGORIES WITH DETAILED SUBCATEGORIES
         const businessCategories = {
@@ -1756,10 +1970,10 @@
             
             // Test user save with minimal required fields only
             const testUserData = {
-                name: 'Test User Schema',
+                name: 'Test User Goals Transition',
                 email: `test-${Date.now()}@example.com`,
                 phone: '9876543210',
-                business_name: 'Test Business Schema',
+                business_name: 'Test Business Goals',
                 business_type: 'startup',
                 business_category: 'boutique',
                 selected_language: 'en',
@@ -1913,7 +2127,107 @@
             showNotification(`Great! You've selected ${selectedGoals.length} goal${selectedGoals.length > 1 ? 's' : ''}`, 'success');
             calculateLeadScore();
             
-            setTimeout(() => showScreen('registration'), 1500);
+            // Show transition screen with personalized messaging
+            setTimeout(() => {
+                showScreen('goals-transition');
+                displayGoalsTransition(selectedGoals);
+            }, 1500);
+        }
+
+        // 🌟 DISPLAY GOALS TRANSITION WITH PERSONALIZED MESSAGING
+        function displayGoalsTransition(selectedGoals) {
+            // Display selected goals
+            const goalsList = document.getElementById('goalsList');
+            goalsList.innerHTML = selectedGoals.map(goal => 
+                `<div class="goal-pill">${goalNames[goal] || goal}</div>`
+            ).join('');
+
+            // Determine primary goal configuration
+            let primaryConfig;
+            
+            if (selectedGoals.includes('ecommerce')) {
+                primaryConfig = goalConfigs.ecommerce;
+            } else if (selectedGoals.includes('customers')) {
+                primaryConfig = goalConfigs.customers;
+            } else if (selectedGoals.includes('manage')) {
+                primaryConfig = goalConfigs.manage;
+            } else if (selectedGoals.includes('search')) {
+                primaryConfig = goalConfigs.search;
+            } else if (selectedGoals.includes('brand')) {
+                primaryConfig = goalConfigs.brand;
+            } else {
+                // Default configuration
+                primaryConfig = {
+                    emoji: '🚀',
+                    title: 'Perfect! Let\'s build something amazing together!',
+                    subtitle: 'Your business transformation starts right now.',
+                    timePromise: '⚡ Complete setup in under 5 minutes!',
+                    features: [
+                        { icon: '🎯', title: 'Goal Focused', desc: 'Tailored to your needs' },
+                        { icon: '⚡', title: 'Quick Setup', desc: 'Start in minutes' },
+                        { icon: '📈', title: 'Proven Results', desc: 'Trusted by thousands' },
+                        { icon: '🎉', title: 'Easy to Use', desc: 'No technical skills needed' }
+                    ],
+                    confidence: '💪 Join thousands of successful businesses on Topiko!'
+                };
+            }
+
+            // Update content with primary configuration
+            document.getElementById('celebrationEmoji').textContent = primaryConfig.emoji;
+            document.getElementById('mainMessage').textContent = primaryConfig.title;
+            document.getElementById('subMessage').textContent = primaryConfig.subtitle;
+            
+            // Create custom content
+            const customContent = document.getElementById('customContent');
+            customContent.innerHTML = `
+                <div class="time-promise">
+                    ${primaryConfig.timePromise}
+                </div>
+                
+                <div class="features-preview">
+                    ${primaryConfig.features.map(feature => `
+                        <div class="feature-item">
+                            <div class="feature-icon">${feature.icon}</div>
+                            <div class="feature-title">${feature.title}</div>
+                            <div class="feature-desc">${feature.desc}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="confidence-boost">
+                    ${primaryConfig.confidence}
+                </div>
+            `;
+
+            // Update action button text based on primary goal
+            const actionText = document.getElementById('actionText');
+            if (selectedGoals.includes('ecommerce')) {
+                actionText.innerHTML = 'Setup My Store Now! 🛒';
+            } else if (selectedGoals.includes('customers')) {
+                actionText.innerHTML = 'Grow My Customer Base! 📈';
+            } else if (selectedGoals.includes('manage')) {
+                actionText.innerHTML = 'Organize My Customers! 👥';
+            } else if (selectedGoals.includes('search')) {
+                actionText.innerHTML = 'Get Discovered Online! 🔍';
+            } else if (selectedGoals.includes('brand')) {
+                actionText.innerHTML = 'Build My Brand! ⭐';
+            } else {
+                actionText.innerHTML = 'Let\'s Get Started! 🚀';
+            }
+
+            addDebugLog(`Goals transition displayed for: ${selectedGoals.join(', ')}`);
+        }
+
+        // 🚀 PROCEED FROM TRANSITION TO REGISTRATION
+        function proceedFromTransition() {
+            // Add excitement animation
+            const button = document.querySelector('#goals-transition .submit-button');
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = 'scale(1)';
+                showNotification('Let\'s create your account and get started!', 'success');
+                setTimeout(() => showScreen('registration'), 1000);
+            }, 150);
         }
 
         // 📝 FORM PROGRESS TRACKING
@@ -2485,6 +2799,7 @@
 Your Topiko business platform setup is complete:
 
 • Business: ${document.getElementById('businessName').value}
+• Goals: ${selectedGoals.join(', ')}
 • Categories: ${selectedCategories.length}
 • Subcategories: ${selectedSubcategories.length}
 • Products: ${userProducts.length}
@@ -2492,21 +2807,20 @@ Your Topiko business platform setup is complete:
 
 ${dbStatus}
 
-📊 ENHANCED CATEGORIES SYSTEM:
-✅ Business Category: ${document.getElementById('category').value}
-✅ Selected Categories: ${selectedCategories.join(', ')}
-✅ Selected Subcategories: ${selectedSubcategories.length} items
-✅ Product Categories: Properly mapped
-✅ Database Schema: Enhanced with error handling
+🎯 ENHANCED GOALS TRANSITION SYSTEM:
+✅ Personalized messaging per goal
+✅ Dynamic content and features preview
+✅ Excitement animations and sparkles
+✅ Goal-specific action buttons
+✅ Confidence-building statistics
 
-🎯 Ready for CRM Integration:
-• Complete category and subcategory mapping
-• Enhanced error handling and validation
-• Proper database relationships
-• Enhanced lead intelligence
-• Ready for SDR assignment
+📊 COMPLETE INTELLIGENCE CAPTURE:
+✅ Goals-based lead scoring
+✅ Personalized user journey
+✅ Enhanced error handling
+✅ Complete database integration
 
-Error-Fixed Categories System Working Perfectly!`);
+🚀 Ready for CRM Integration with Goals Data!`);
             }, 1500);
         }
 
@@ -2544,6 +2858,17 @@ Error-Fixed Categories System Working Perfectly!`);
                 setTimeout(loadCategories, 100);
             }
             
+            // Special handling for goals transition page
+            if (screenId === 'goals-transition') {
+                setTimeout(() => {
+                    if (selectedGoals.length > 0) {
+                        displayGoalsTransition(selectedGoals);
+                        // Add sparkle effects for excitement
+                        createSparkles();
+                    }
+                }, 100);
+            }
+            
             addDebugLog(`📄 Navigated to screen: ${screenId}`);
             calculateLeadScore();
         }
@@ -2561,9 +2886,36 @@ Error-Fixed Categories System Working Perfectly!`);
             }, 3000);
         }
 
+        // ✨ CREATE SPARKLE EFFECTS FOR EXCITEMENT
+        function createSparkles() {
+            const container = document.querySelector('#goals-transition .content-card');
+            if (!container) return;
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.style.position = 'absolute';
+                    sparkle.style.fontSize = '1.5rem';
+                    sparkle.style.color = '#8b6fcd';
+                    sparkle.style.pointerEvents = 'none';
+                    sparkle.style.zIndex = '10';
+                    sparkle.textContent = '✨';
+                    sparkle.style.left = Math.random() * 80 + 10 + '%';
+                    sparkle.style.top = Math.random() * 80 + 10 + '%';
+                    
+                    // Sparkle animation
+                    sparkle.style.animation = 'sparkleFloat 3s ease-out forwards';
+                    
+                    container.appendChild(sparkle);
+                    
+                    setTimeout(() => sparkle.remove(), 3000);
+                }, i * 300);
+            }
+        }
+
         // 🚀 ENHANCED INITIALIZATION
         document.addEventListener('DOMContentLoaded', async function() {
-            addDebugLog('🚀 Topiko Lead Form - ERROR-FIXED VERSION Initialized');
+            addDebugLog('🚀 Topiko Lead Form - Goals Transition Version Initialized');
             
             // Initialize tracking
             captureUTMParameters();
@@ -2575,21 +2927,20 @@ Error-Fixed Categories System Working Perfectly!`);
             // Initialize lead intelligence widget
             updateLeadIntelligenceWidget();
             
-            addDebugLog('✅ Error-fixed categories and subcategories system ready');
-            addDebugLog('🔧 Enhanced error handling and validation active');
-            addDebugLog('📊 Comprehensive category mapping implemented');
-            addDebugLog('🎯 Lead intelligence widget active');
+            addDebugLog('✅ Goals transition system ready');
+            addDebugLog('🌟 Personalized messaging for all goal combinations');
+            addDebugLog('🎯 Enhanced lead intelligence with goals tracking');
+            addDebugLog('🎨 Sparkle animations and excitement effects');
             addDebugLog('💾 Database schema enhanced with error recovery');
             addDebugLog('🔍 Debug panel available (top right)');
             addDebugLog('🧪 Test save button available');
             
-            // Log enhanced schema mapping
-            addDebugLog('📋 Error-Fixed Schema Status:', 'info');
-            addDebugLog('   ✅ Enhanced error handling for missing columns', 'info');
-            addDebugLog('   ✅ Fallback to basic data when enhanced fields unavailable', 'info');
-            addDebugLog('   ✅ Comprehensive data validation before database saves', 'info');
-            addDebugLog('   ✅ Detailed error reporting and recovery', 'info');
-            addDebugLog('🎯 All category operations with proper error handling', 'success');
+            // Log goal configurations
+            addDebugLog('🎯 Goal Configurations Loaded:', 'info');
+            Object.keys(goalConfigs).forEach(goal => {
+                addDebugLog(`   ${goalNames[goal]}: ${goalConfigs[goal].title}`, 'info');
+            });
+            addDebugLog('🌟 All personalized goal messaging ready', 'success');
         });
 
         // Track behavior
