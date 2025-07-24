@@ -17,7 +17,111 @@
             min-height: 100vh;
             color: #334155;
         }
-
+        /* SDR Selection Dropdown */
+        .sdr-select-dropdown {
+            position: absolute;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 200px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .sdr-select-dropdown.show { display: block; }
+        
+        .sdr-option {
+            padding: 0.7rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sdr-option:hover {
+            background: #f8fafc;
+            color: #3b82f6;
+        }
+        
+        .sdr-avatar-small {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.7rem;
+        }
+        
+        /* Comments Section */
+        .comments-section-crm {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border-left: 4px solid #64748b;
+        }
+        
+        .comments-header-crm {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .add-comment-btn-crm {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .comment-item-crm {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+        }
+        
+        .comment-form-crm {
+            display: none;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-top: 10px;
+        }
+        
+        .comment-form-crm.show { display: block; }
+        
+        .comment-textarea-crm {
+            width: 100%;
+            min-height: 60px;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .assign-btn-container {
+            position: relative;
+            display: inline-block;
+        }
         .crm-container {
             display: flex;
             min-height: 100vh;
@@ -1152,7 +1256,26 @@
             <div style="font-weight: 600; color: #b45309; margin-bottom: 6px;">🏷️ Subcategories:</div>
             <div class="subcategories-list-crm" id="subcategoriesListCRM">No subcategories selected</div>
         </div>
-        
+        <div class="comments-section-crm">
+    <div class="comments-header-crm">
+        <div class="comments-title-crm">💬 Lead Comments</div>
+        <button class="add-comment-btn-crm" onclick="toggleCommentForm()">+ Add</button>
+    </div>
+    
+    <div class="comments-list-crm" id="commentsListCRM">
+        <div style="text-align: center; color: #64748b; font-size: 0.75rem; padding: 10px;">
+            No comments yet
+        </div>
+    </div>
+    
+    <div class="comment-form-crm" id="commentFormCRM">
+        <textarea class="comment-textarea-crm" id="commentTextCRM" placeholder="Add a comment about this lead..."></textarea>
+        <div class="comment-form-buttons-crm">
+            <button class="comment-cancel-btn-crm" onclick="toggleCommentForm()">Cancel</button>
+            <button class="comment-save-btn-crm" onclick="saveComment()">Save Comment</button>
+        </div>
+    </div>
+</div>
         <button class="call-action-btn" onclick="initiateCall()" id="callActionBtn">
             📞 Call Lead Now
         </button>
@@ -1820,11 +1943,14 @@
                         ${lead.ready_for_sdr_assignment ? '<div style="font-size: 0.7rem; color: #059669; margin-top: 0.2rem;">✅ Ready</div>' : ''}
                     </td>
                     <td>
-                        <button class="assign-btn" onclick="assignToSDR('${lead.id}')" ${lead.assigned_sdr_id ? 'disabled' : ''}>
-                            ${lead.assigned_sdr_id ? 'Assigned' : 'Assign SDR'}
-                        </button>
-                        <button class="view-intelligence-btn" onclick="showLeadIntelligence('${lead.id}')">
-                            📊 Intel
+                       <div class="assign-btn-container">
+                                <button class="assign-btn" onclick="showSDRSelector('${lead.id}', event)" ${lead.assigned_sdr_id ? 'disabled' : ''}>
+                                    ${lead.assigned_sdr_id ? 'Assigned' : 'Assign SDR'}
+                                </button>
+                                <div class="sdr-select-dropdown" id="sdrDropdown-${lead.id}"></div>
+                            </div>                       
+                            <button class="view-intelligence-btn" onclick="showLeadIntelligence('${lead.id}')">
+                            📊 Lead Intel
                         </button>
                     </td>
                 `;
@@ -2049,7 +2175,8 @@
             
             // Update call button
             document.getElementById('callActionBtn').textContent = `📞 Call ${lead.name.split(' ')[0]}`;
-            
+            loadLeadComments(leadId);
+
             // Show panel
             document.getElementById('sdrIntelligence').classList.add('show');
             
@@ -2235,7 +2362,190 @@
                     console.log(`🔄 Auto-refresh found ${newCount} new leads`);
                 }
             }, 15000);
+ // Global variable for comments
+let leadComments = {};
+
+// Enhanced SDR Assignment with Selection
+function showSDRSelector(leadId, event) {
+    event.stopPropagation();
+    
+    const lead = allLeads.find(l => l.id === leadId);
+    if (!lead || lead.assigned_sdr_id) return;
+    
+    const dropdown = document.getElementById(`sdrDropdown-${leadId}`);
+    
+    // Hide other dropdowns
+    document.querySelectorAll('.sdr-select-dropdown').forEach(dd => {
+        if (dd.id !== `sdrDropdown-${leadId}`) dd.classList.remove('show');
+    });
+    
+    // Populate with SDR options
+    let sdrOptionsHTML = sdrTeam.filter(sdr => sdr.is_active).map(sdr => {
+        const assignedCount = allLeads.filter(l => l.assigned_sdr_id === sdr.id).length;
+        return `
+            <div class="sdr-option" onclick="assignLeadToSDR('${leadId}', '${sdr.id}')">
+                <div class="sdr-avatar-small">${sdr.name.charAt(0)}</div>
+                <div>
+                    <div style="font-weight: 600;">${sdr.name}</div>
+                    <div style="font-size: 0.7rem; color: #64748b;">${assignedCount} leads</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    dropdown.innerHTML = sdrOptionsHTML;
+    dropdown.classList.toggle('show');
+    
+    // Close on outside click
+    setTimeout(() => {
+        document.addEventListener('click', function closeDropdown(e) {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+                document.removeEventListener('click', closeDropdown);
+            }
+        });
+    }, 100);
+}
+
+function assignLeadToSDR(leadId, sdrId) {
+    const lead = allLeads.find(l => l.id === leadId);
+    const sdr = sdrTeam.find(s => s.id === sdrId);
+    if (!lead || !sdr) return;
+    
+    lead.assigned_sdr_id = sdrId;
+    lead.lead_status = 'Assigned';
+    
+    document.getElementById(`sdrDropdown-${leadId}`).classList.remove('show');
+    showNotification(`Lead assigned to ${sdr.name}`, 'success');
+    
+    // Add automatic comment
+    addComment(leadId, `Lead assigned to SDR: ${sdr.name}`, 'system');
+    
+    updateLeadsTable();
+    updateDashboardStats();
+}
+
+// Comments System Functions
+async function loadLeadComments(leadId) {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_comments?lead_id=eq.${leadId}&order=created_at.desc`, {
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            leadComments[leadId] = await response.json();
+        } else {
+            leadComments[leadId] = [];
+        }
+        displayComments(leadId);
+    } catch (error) {
+        console.error('Error loading comments:', error);
+        leadComments[leadId] = [];
+        displayComments(leadId);
+    }
+}
+
+function displayComments(leadId) {
+    const commentsList = document.getElementById('commentsListCRM');
+    const comments = leadComments[leadId] || [];
+    
+    if (comments.length === 0) {
+        commentsList.innerHTML = '<div style="text-align: center; color: #64748b; font-size: 0.75rem; padding: 10px;">No comments yet</div>';
+        return;
+    }
+    
+    const commentsHTML = comments.map(comment => {
+        const sdr = sdrTeam.find(s => s.id === comment.sdr_id);
+        const sdrName = sdr ? sdr.name : 'System';
+        const commentDate = new Date(comment.created_at).toLocaleDateString('en-IN', {
+            day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+        });
+        
+        return `
+            <div class="comment-item-crm">
+                <div class="comment-meta-crm" style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #64748b; margin-bottom: 4px;">
+                    <span style="font-weight: 600;">${sdrName}</span>
+                    <span>${commentDate}</span>
+                </div>
+                <div class="comment-text-crm" style="color: #374151; line-height: 1.4;">${comment.comment_text}</div>
+            </div>
+        `;
+    }).join('');
+    
+    commentsList.innerHTML = commentsHTML;
+}
+
+function toggleCommentForm() {
+    const form = document.getElementById('commentFormCRM');
+    const textarea = document.getElementById('commentTextCRM');
+    
+    if (form.classList.contains('show')) {
+        form.classList.remove('show');
+        textarea.value = '';
+    } else {
+        form.classList.add('show');
+        textarea.focus();
+    }
+}
+
+async function saveComment() {
+    const textarea = document.getElementById('commentTextCRM');
+    const commentText = textarea.value.trim();
+    
+    if (!commentText || !currentSelectedLead) {
+        showNotification('Please enter a comment', 'error');
+        return;
+    }
+    
+    await addComment(currentSelectedLead.id, commentText, 'general');
+    toggleCommentForm();
+}
+
+async function addComment(leadId, commentText, commentType = 'general', sdrId = null) {
+    const commentData = {
+        lead_id: leadId,
+        sdr_id: sdrId,
+        comment_text: commentText,
+        comment_type: commentType,
+        created_at: new Date().toISOString()
+    };
+    
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_comments`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify(commentData)
+        });
+        
+        if (response.ok) {
+            const savedComment = await response.json();
+            if (!leadComments[leadId]) leadComments[leadId] = [];
+            leadComments[leadId].unshift(savedComment[0]);
             
+            if (currentSelectedLead && currentSelectedLead.id === leadId) {
+                displayComments(leadId);
+            }
+            
+            if (commentType === 'general') {
+                showNotification('Comment added successfully', 'success');
+            }
+        }
+    } catch (error) {
+        console.error('Error saving comment:', error);
+        if (commentType === 'general') {
+            showNotification('Error saving comment', 'error');
+        }
+    }
+}           
             console.log('✅ Enhanced CRM ready for advanced lead management');
             console.log('🔗 Connected to: Enhanced Schema (users + lead_intelligence + crm_leads)');
             console.log('📊 Features: Advanced filtering, sorting, SDR management, schema compliance');
