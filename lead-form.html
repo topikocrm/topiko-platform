@@ -771,6 +771,33 @@
             margin-bottom: 1rem;
         }
 
+        /* Theme Selection Styles */
+        .theme-option {
+            transition: all 0.3s ease;
+        }
+
+        .theme-option:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(139, 111, 205, 0.2);
+            border-color: #8b6fcd !important;
+        }
+
+        .theme-option.selected {
+            border-color: #8b6fcd !important;
+            box-shadow: 0 12px 40px rgba(139, 111, 205, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .theme-preview-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 6px;
+            padding: 0.5rem;
+            font-size: 0.7rem;
+            text-align: center;
+            margin: 0.2rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
         /* Notification */
         .notification {
             position: fixed;
@@ -987,6 +1014,12 @@
                         <span>Products</span>
                     </div>
                 </li>
+                <li class="nav-item">
+                    <div class="nav-link" onclick="showScreen('themes')">
+                        <span class="nav-icon">🎨</span>
+                        <span>Themes</span>
+                    </div>
+                </li>
             </ul>
         </nav>
 
@@ -997,7 +1030,7 @@
                 <div class="welcome-screen">
                     <h1 class="topiko-logo">Topiko</h1>
                     <p style="font-size: 1.2rem; color: #6b46c1; margin-bottom: 2rem;">Complete Business Platform for Indian SMBs</p>
-                    <p style="font-size: 1rem; color: #059669; margin-bottom: 2rem; font-weight: bold;">✅ Enhanced with Goals Transition</p>
+                    <p style="font-size: 1rem; color: #059669; margin-bottom: 2rem; font-weight: bold;">✅ Enhanced with Goals Transition & Theme Selection</p>
                     <button class="try-free-button" onclick="startLeadFlow()">
                         Try for Free
                     </button>
@@ -1232,7 +1265,7 @@
                     </h2>
                     <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.2); border-radius: 16px; padding: 1.5rem; margin: 2rem 0;">
                         <p style="color: #059669; font-size: 1.2rem; font-weight: 600; margin-bottom: 1.5rem;">
-                            Justa Give us 5 more minutes, <br>We’ll show you how your business can look online.<br>
+                            Justa Give us 5 more minutes, <br>We'll show you how your business can look online.<br>
                             Try for free. No Pressure. No Obligation. See it first. Decide later! 
                         </p>
                         
@@ -1352,7 +1385,128 @@
                         <button onclick="showScreen('categories')" style="flex: 1; background: rgba(139, 111, 205, 0.1); color: #6b46c1; border: 2px solid rgba(139, 111, 205, 0.2); padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
                             ← Back to Categories
                         </button>
-                        <button onclick="completeSetup()" style="flex: 1; background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                        <button onclick="proceedToThemes()" style="flex: 1; background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                            Choose Theme 🎨
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Theme Selection Screen -->
+            <section class="screen" id="themes">
+                <div class="content-card" style="max-width: 1200px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Choose Your Business Theme</h2>
+                    <p style="text-align: center; margin-bottom: 3rem;">Select a theme that represents your business style. See how your products will look!</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+                        <!-- Modern & Minimalist Theme -->
+                        <div class="theme-option" onclick="selectTheme('modern', this)" style="border: 3px solid rgba(139, 111, 205, 0.2); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white;">
+                            <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
+                                <h3 style="color: #1f2937; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center;">
+                                    <span style="margin-right: 0.5rem;">✨</span>
+                                    Modern & Minimalist
+                                </h3>
+                                <p style="color: #6b7280; font-size: 0.9rem;">Clean, simple design that focuses on your products</p>
+                            </div>
+                            <div style="padding: 1rem; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;" id="modern-preview">
+                                    <!-- Products preview will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Colorful & Vibrant Theme -->
+                        <div class="theme-option" onclick="selectTheme('vibrant', this)" style="border: 3px solid rgba(139, 111, 205, 0.2); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white;">
+                            <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
+                                <h3 style="color: #1f2937; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center;">
+                                    <span style="margin-right: 0.5rem;">🌈</span>
+                                    Colorful & Vibrant
+                                </h3>
+                                <p style="color: #6b7280; font-size: 0.9rem;">Bold colors and energetic design to attract customers</p>
+                            </div>
+                            <div style="padding: 1rem; background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 50%, #fecaca 100%);">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;" id="vibrant-preview">
+                                    <!-- Products preview will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Professional & Corporate Theme -->
+                        <div class="theme-option" onclick="selectTheme('professional', this)" style="border: 3px solid rgba(139, 111, 205, 0.2); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white;">
+                            <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
+                                <h3 style="color: #1f2937; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center;">
+                                    <span style="margin-right: 0.5rem;">💼</span>
+                                    Professional & Corporate
+                                </h3>
+                                <p style="color: #6b7280; font-size: 0.9rem;">Sophisticated design that builds trust and credibility</p>
+                            </div>
+                            <div style="padding: 1rem; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;" id="professional-preview">
+                                    <!-- Products preview will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Traditional & Classic Theme -->
+                        <div class="theme-option" onclick="selectTheme('traditional', this)" style="border: 3px solid rgba(139, 111, 205, 0.2); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white;">
+                            <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
+                                <h3 style="color: #1f2937; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center;">
+                                    <span style="margin-right: 0.5rem;">🏛️</span>
+                                    Traditional & Classic
+                                </h3>
+                                <p style="color: #6b7280; font-size: 0.9rem;">Timeless design with warm, welcoming feel</p>
+                            </div>
+                            <div style="padding: 1rem; background: linear-gradient(135deg, #fef7cd 0%, #fde68a 100%);">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;" id="traditional-preview">
+                                    <!-- Products preview will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Creative & Artistic Theme -->
+                        <div class="theme-option" onclick="selectTheme('creative', this)" style="border: 3px solid rgba(139, 111, 205, 0.2); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white;">
+                            <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
+                                <h3 style="color: #1f2937; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center;">
+                                    <span style="margin-right: 0.5rem;">🎨</span>
+                                    Creative & Artistic
+                                </h3>
+                                <p style="color: #6b7280; font-size: 0.9rem;">Unique, artistic design that showcases creativity</p>
+                            </div>
+                            <div style="padding: 1rem; background: linear-gradient(135deg, #ddd6fe 0%, #c7d2fe 50%, #bfdbfe 100%);">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;" id="creative-preview">
+                                    <!-- Products preview will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Elegant & Luxury Theme -->
+                        <div class="theme-option" onclick="selectTheme('luxury', this)" style="border: 3px solid rgba(139, 111, 205, 0.2); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; background: white;">
+                            <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
+                                <h3 style="color: #1f2937; font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center;">
+                                    <span style="margin-right: 0.5rem;">💎</span>
+                                    Elegant & Luxury
+                                </h3>
+                                <p style="color: #6b7280; font-size: 0.9rem;">Premium design for high-end products and services</p>
+                            </div>
+                            <div style="padding: 1rem; background: linear-gradient(135deg, #1c1917 0%, #292524 100%); color: #d6d3d1;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;" id="luxury-preview">
+                                    <!-- Products preview will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 1rem;">
+                            <span id="selectedThemeName">No theme selected</span> | You can change this anytime later
+                        </p>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 3rem;">
+                        <button onclick="showScreen('products')" style="flex: 1; background: rgba(139, 111, 205, 0.1); color: #6b46c1; border: 2px solid rgba(139, 111, 205, 0.2); padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer;">
+                            ← Back to Products
+                        </button>
+                        <button onclick="completeSetup()" id="themeNextBtn" disabled style="flex: 1; background: linear-gradient(135deg, #8b6fcd 0%, #6b46c1 100%); color: white; border: none; padding: 1rem; border-radius: 12px; font-weight: 600; cursor: pointer; opacity: 0.5;">
                             Complete Setup 🚀
                         </button>
                     </div>
@@ -1373,6 +1527,7 @@
         let userProducts = [];
         let currentUserId = null;
         let createdCategoryIds = [];
+        let selectedTheme = null;
         let pageViews = 1;
         let leadScore = 0;
         let formProgress = 0;
@@ -2091,6 +2246,9 @@
             // Products Added (3 points per product, max 15)
             score += Math.min(userProducts.length * 3, 15);
             
+            // Theme Selected (5 points)
+            if (selectedTheme) score += 5;
+            
             leadScore = Math.min(score, 100);
             updateLeadIntelligenceWidget();
             
@@ -2164,6 +2322,11 @@
                 // Load categories if needed
                 if (screenId === 'categories') {
                     loadCategories();
+                }
+                
+                // Populate theme previews if needed
+                if (screenId === 'themes') {
+                    populateThemePreviews();
                 }
                 
                 addDebugLog(`Screen shown: ${screenId} (Page views: ${pageViews})`);
@@ -2808,6 +2971,91 @@ function startBusinessSetup() {
             }).join('');
         }
 
+        // 🎨 THEME SELECTION FUNCTIONS
+        function proceedToThemes() {
+            if (userProducts.length === 0) {
+                showNotification('Please add at least one product before selecting a theme', 'warning');
+                return;
+            }
+            
+            addDebugLog(`Proceeding to themes with ${userProducts.length} products`);
+            showNotification('Loading theme selection...', 'info');
+            setTimeout(() => {
+                showScreen('themes');
+                populateThemePreviews();
+            }, 1000);
+        }
+
+        function selectTheme(themeName, element) {
+            selectedTheme = themeName;
+            
+            // Update UI - remove selected class from all theme options
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked theme
+            element.classList.add('selected');
+            
+            // Update theme name display
+            const themeNames = {
+                'modern': 'Modern & Minimalist',
+                'vibrant': 'Colorful & Vibrant', 
+                'professional': 'Professional & Corporate',
+                'traditional': 'Traditional & Classic',
+                'creative': 'Creative & Artistic',
+                'luxury': 'Elegant & Luxury'
+            };
+            
+            document.getElementById('selectedThemeName').textContent = themeNames[themeName];
+            
+            // Enable next button
+            const nextBtn = document.getElementById('themeNextBtn');
+            nextBtn.disabled = false;
+            nextBtn.style.opacity = '1';
+            
+            showNotification(`Theme selected: ${themeNames[themeName]}`, 'success');
+            calculateLeadScore();
+            
+            addDebugLog(`Theme selected: ${themeName}`);
+        }
+
+        function populateThemePreviews() {
+            const themePreviewIds = ['modern-preview', 'vibrant-preview', 'professional-preview', 'traditional-preview', 'creative-preview', 'luxury-preview'];
+            
+            // If no products, show placeholder
+            if (userProducts.length === 0) {
+                themePreviewIds.forEach(previewId => {
+                    const previewEl = document.getElementById(previewId);
+                    if (previewEl) {
+                        previewEl.innerHTML = `
+                            <div class="theme-preview-item">Sample Product</div>
+                            <div class="theme-preview-item">₹999</div>
+                        `;
+                    }
+                });
+                addDebugLog('Theme previews populated with sample data');
+                return;
+            }
+            
+            // Use first 2 products for preview
+            const previewProducts = userProducts.slice(0, 2);
+            
+            themePreviewIds.forEach(previewId => {
+                const previewEl = document.getElementById(previewId);
+                if (previewEl) {
+                    previewEl.innerHTML = previewProducts.map(product => 
+                        `<div class="theme-preview-item">
+                            <div style="font-weight: 600; margin-bottom: 2px;">${product.name.substring(0, 15)}${product.name.length > 15 ? '...' : ''}</div>
+                            <div style="color: #059669; font-weight: bold;">₹${product.price.toLocaleString()}</div>
+                        </div>`
+                    ).join('');
+                }
+            });
+            
+            addDebugLog(`Theme previews populated with ${previewProducts.length} products`);
+        }
+
         // 🚀 ENHANCED COMPLETE SETUP WITH ERROR HANDLING - FIXED FUNCTION
         async function completeSetup() {
             const finalScore = calculateLeadScore() + 10; // Bonus for completion
@@ -2830,6 +3078,7 @@ function startBusinessSetup() {
                 products_data: userProducts,
                 categories_data: selectedCategories,
                 subcategories_data: selectedSubcategories,
+                selected_theme: selectedTheme,
                 lead_score: finalScore,
                 lead_quality: finalScore >= 70 ? 'Hot' : finalScore >= 40 ? 'Warm' : 'Cold',
                 session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
@@ -2947,6 +3196,12 @@ function startBusinessSetup() {
                                 <div style="font-size: 1.8rem; font-weight: bold; color: #059669;">${userProducts.length}</div>
                                 <div style="color: #064e3b; font-size: 0.9rem;">Products Added</div>
                             </div>
+                            
+                            <div style="background: rgba(255, 255, 255, 0.8); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎨</div>
+                                <div style="font-size: ${selectedTheme ? '1.2rem' : '1.8rem'}; font-weight: bold; color: #059669;">${selectedTheme ? selectedTheme.charAt(0).toUpperCase() + selectedTheme.slice(1) : 'None'}</div>
+                                <div style="color: #064e3b; font-size: 0.9rem;">Theme Selected</div>
+                            </div>
                         </div>
 
                         <div style="background: rgba(34, 197, 94, 0.15); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0;">
@@ -2975,9 +3230,9 @@ function startBusinessSetup() {
                 </div>
             `;
             
-            // Replace the products screen content with completion summary
-            const productsScreen = document.getElementById('products');
-            productsScreen.innerHTML = completionHTML;
+            // Replace the themes screen content with completion summary
+            const themesScreen = document.getElementById('themes');
+            themesScreen.innerHTML = completionHTML;
             
             addDebugLog('✅ Completion summary displayed', 'success');
         }
@@ -3003,6 +3258,7 @@ function startBusinessSetup() {
             selectedSubcategories = [];
             userProducts = [];
             currentUserId = null;
+            selectedTheme = null;
             pageViews = 1;
             leadScore = 0;
             formProgress = 0;
@@ -3087,6 +3343,7 @@ function startBusinessSetup() {
                         selectedCategories,
                         selectedSubcategories,
                         userProducts,
+                        selectedTheme,
                         leadScore,
                         formProgress,
                         sessionStartTime,
@@ -3107,6 +3364,7 @@ function startBusinessSetup() {
                 selectedCategories,
                 selectedSubcategories,
                 userProducts,
+                selectedTheme,
                 leadScore,
                 formProgress,
                 sessionStartTime,
@@ -3133,7 +3391,7 @@ function startBusinessSetup() {
         console.log('📊 Available functions:', [
             'showScreen()', 'startLeadFlow()', 'selectLanguage()', 'submitGoals()', 
             'submitRegistration()', 'addProduct()', 'completeSetup()', 'testDatabaseSave()',
-            'toggleDebugPanel()', 'calculateLeadScore()', 'showNotification()'
+            'toggleDebugPanel()', 'calculateLeadScore()', 'showNotification()', 'selectTheme()'
         ]);
     </script>
 </body>
