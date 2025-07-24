@@ -145,48 +145,128 @@
         }
 
         /* Stacked button layout */
-        .leads-table td:last-child {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            vertical-align: top;
-            min-width: 120px;
-        }
+ /* Enhanced Action Buttons Layout */
+.leads-table td:last-child {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+    min-width: 140px;
+}
 
-        .assign-btn-container {
-            position: relative;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
+.action-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
 
-        .assign-btn, .view-intelligence-btn {
-            display: block;
-            width: 100%;
-            margin-bottom: 0.3rem;
-        }
+.assign-btn-container {
+    position: relative;
+    display: block;
+}
 
-        .assign-btn {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+.assign-btn, .view-intelligence-btn {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
 
-        .view-intelligence-btn {
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-            color: white;
-            border: none;
-            padding: 0.5rem 0.8rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+.assign-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+}
+
+.assign-btn.reassign {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.assign-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.assign-btn.reassign:hover {
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+
+.view-intelligence-btn {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+}
+
+.view-intelligence-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+/* Collapsible Sections - ADD THESE (completely new) */
+.collapsible-section {
+    margin: 0.5rem 0;
+}
+
+.collapsible-header {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+    transition: all 0.3s ease;
+}
+
+.collapsible-header:hover {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border-color: #cbd5e1;
+}
+
+.collapsible-header.active {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-color: #3b82f6;
+    color: #1d4ed8;
+}
+
+.collapsible-icon {
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
+}
+
+.collapsible-header.active .collapsible-icon {
+    transform: rotate(180deg);
+}
+
+.collapsible-content {
+    display: none;
+    padding: 0.5rem;
+    background: #fefefe;
+    border: 1px solid #e2e8f0;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+}
+
+.collapsible-content.show {
+    display: block;
+}
+
+.section-badge {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    color: #0369a1;
+    padding: 0.15rem 0.4rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-left: 0.3rem;
+}
 
         .sdr-option:hover {
             background: #f8fafc;
@@ -2380,16 +2460,44 @@
                         </div>
                     </td>
                     <td>
-                        <div class="goals-tags">${goalsHTML}</div>
-                        <div class="categories-section">
+    <!-- Collapsible Goals -->
+                    <div class="collapsible-section">
+                        <div class="collapsible-header" id="goals-header-${lead.id}" onclick="toggleCollapsible('${lead.id}', 'goals')">
+                            <span>🎯 Goals <span class="section-badge">${lead.goals_display.length}</span></span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content" id="goals-content-${lead.id}">
+                            <div class="goals-tags">${goalsHTML}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Collapsible Categories -->
+                    <div class="collapsible-section">
+                        <div class="collapsible-header" id="categories-header-${lead.id}" onclick="toggleCollapsible('${lead.id}', 'categories')">
+                            <span>📂 Categories <span class="section-badge">${lead.categories_display.length}</span></span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content" id="categories-content-${lead.id}">
                             <div class="categories-tags">${categoriesHTML}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Collapsible Subcategories -->
+                    <div class="collapsible-section">
+                        <div class="collapsible-header" id="subcategories-header-${lead.id}" onclick="toggleCollapsible('${lead.id}', 'subcategories')">
+                            <span>🏷️ Subcategories <span class="section-badge">${lead.subcategories_display.length}</span></span>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content" id="subcategories-content-${lead.id}">
                             <div class="subcategories-tags">${subcategoriesHTML}${moreSubcategories}</div>
                         </div>
-                        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
-                            📁 ${lead.business_category} • ${lead.business_type}<br>
-                            📦 ${lead.products_count} products • 📂 ${lead.selected_categories.length} categories
-                        </div>
-                    </td>
+                    </div>
+                    
+                    <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.5rem;">
+                        📁 ${lead.business_category} • ${lead.business_type}<br>
+                        📦 ${lead.products_count} products
+                    </div>
+                </td>
                     <td>
                         <div class="lead-score-badge score-${lead.lead_quality.toLowerCase()}">
                             ${lead.lead_score}
@@ -2415,17 +2523,20 @@
                         </div>
                         ${lead.ready_for_sdr_assignment ? '<div style="font-size: 0.7rem; color: #059669; margin-top: 0.2rem;">✅ Ready</div>' : ''}
                     </td>
-                    <td>
-                        <div class="assign-btn-container">
-                            <button class="assign-btn" onclick="showSDRSelector('${lead.id}', event)" ${lead.assigned_sdr_id ? 'disabled' : ''}>
-                                ${lead.assigned_sdr_id ? 'Assigned' : 'Assign SDR'}
-                            </button>
-                            <div class="sdr-select-dropdown" id="sdrDropdown-${lead.id}"></div>
-                        </div>                       
-                        <button class="view-intelligence-btn" onclick="showLeadIntelligence('${lead.id}')">
-                            📊 Intel v4.0
-                        </button>
-                    </td>
+                   <td>
+    <div class="action-buttons-container">
+        <div class="assign-btn-container">
+            <button class="assign-btn ${lead.assigned_sdr_id ? 'reassign' : ''}" 
+                    onclick="showSDRSelector('${lead.id}', event)">
+                ${lead.assigned_sdr_id ? 'Re-assign SDR' : 'Assign SDR'}
+            </button>
+            <div class="sdr-select-dropdown" id="sdrDropdown-${lead.id}"></div>
+        </div>                       
+        <button class="view-intelligence-btn" onclick="showLeadIntelligence('${lead.id}')">
+            📊 Intel v4.0
+        </button>
+    </div>
+</td>
                 `;
                 
                 tableBody.appendChild(row);
@@ -2969,7 +3080,21 @@
             console.log('📊 v4.0 Features: Timeline filtering, Budget qualification, Priority leads, Enhanced intelligence');
             console.log('🔄 Auto-refresh: Every 15 seconds with v4.0 scoring recalculation');
         });
+// Add these new functions
+function toggleCollapsible(leadId, section) {
+    const header = document.getElementById(`${section}-header-${leadId}`);
+    const content = document.getElementById(`${section}-content-${leadId}`);
+    const icon = header.querySelector('.collapsible-icon');
+    
+    header.classList.toggle('active');
+    content.classList.toggle('show');
+}
 
+function showSDRSelectorEnhanced(leadId, event, isReassign = false) {
+    event.stopPropagation();
+    // Same logic as before but handle reassignment
+    showSDRSelector(leadId, event);
+}
         console.log('✅ Enhanced CRM v4.0 JavaScript loaded with updated scoring algorithm');
     </script>
 </body>
