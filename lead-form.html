@@ -1752,6 +1752,7 @@
         let selectedSubcategories = [];
         let userProducts = [];
         let currentUserId = null;
+        let setupButtonClicked = false;
         let createdCategoryIds = [];
         let selectedTheme = null;
         let pageViews = 1;
@@ -2425,81 +2426,67 @@
 
         // 📊 ENHANCED LEAD SCORING ALGORITHM WITH QUALIFYING QUESTIONS
         function calculateLeadScore() {
-            let score = 0;
+           let score = 0;
             
-            // Language Selection (5 points)
-            if (selectedLanguage) score += 5;
+            // 1. LANGUAGE SELECTION (0 points - REMOVED)
+            // No points for language selection anymore
             
-            // Goals Selected (10 points per goal, max 50)
-            score += Math.min(selectedGoals.length * 10, 50);
+            // 2. GOALS SELECTED (5 points per goal)
+            score += selectedGoals.length * 5;
             
-            // Form Progress (0-25 points based on completion)
-            score += Math.floor(formProgress * 0.25);
+            // 3. SIGN UP COMPLETION (20 points)
+            // Check if registration is completed (all required fields filled)
+            const registrationCompleted = checkRegistrationCompletion();
+            if (registrationCompleted) score += 20;
             
-            // Time on Site (0-15 points)
+            // 4. "LET'S DO THIS" BUTTON CLICKED (10 points)
+            // This is tracked when startBusinessSetup() is called
+            if (setupButtonClicked) score += 10;
+            
+            // 5. CATEGORIES AND SUBCATEGORIES (2 points each)
+            score += selectedCategories.length * 2;
+            score += selectedSubcategories.length * 2;
+            
+            // 6. QUALIFYING QUESTIONS SCORING
+            
+            // Budget Question: 5 points if budget is more than 9K
+            if (qualifyingAnswers.budget === '10000-25000' || qualifyingAnswers.budget === '25000+') {
+                score += 5;
+            }
+            
+            // Decision Maker: 5 points if "yes"
+            if (qualifyingAnswers.decision_maker === 'yes') {
+                score += 5;
+            }
+            
+            // 7. PRODUCTS ADDED (5 points per product)
+            score += userProducts.length * 5;
+            
+            // Keep other engagement metrics if needed (optional)
+            // You can comment these out if you don't want them:
+            
+            // Time on Site (optional - remove if not needed)
             const sessionMinutes = (Date.now() - sessionStartTime) / 60000;
-            if (sessionMinutes > 1) score += 5;
-            if (sessionMinutes > 3) score += 5;
-            if (sessionMinutes > 5) score += 5;
+            if (sessionMinutes > 1) score += 2;
+            if (sessionMinutes > 3) score += 2;
+            if (sessionMinutes > 5) score += 2;
             
-            // Page Views (2 points per page, max 10)
-            score += Math.min(pageViews * 2, 10);
+            // Page Views (optional - remove if not needed)
+            score += Math.min(pageViews * 1, 5); // Reduced impact
             
-            // Categories Selected (5 points per category, max 25)
-            score += Math.min(selectedCategories.length * 5, 25);
-            
-            // Subcategories Selected (2 points per subcategory, max 20)
-            score += Math.min(selectedSubcategories.length * 2, 20);
-            
-            // Products Added (3 points per product, max 15)
-            score += Math.min(userProducts.length * 3, 15);
-            
-            // Theme Selected (5 points)
-            if (selectedTheme) score += 5;
-            
-            // 🆕 NEW: Qualifying Questions Scoring (max 25 points)
-            let qualifyingScore = 0;
-            
-            // Online Presence Scoring
-            switch (qualifyingAnswers.online_presence) {
-                case 'none': qualifyingScore += 8; break; // Highest potential
-                case 'whatsapp': qualifyingScore += 6; break;
-                case 'social': qualifyingScore += 4; break;
-                case 'basic_website': qualifyingScore += 3; break;
-                case 'full_website': qualifyingScore += 2; break; // Already established
-            }
-            
-            // Budget Scoring
-            switch (qualifyingAnswers.budget) {
-                case '25000+': qualifyingScore += 8; break; // High budget
-                case '10000-25000': qualifyingScore += 6; break;
-                case '5000-10000': qualifyingScore += 4; break;
-            }
-            
-            // Decision Maker Scoring
-            if (qualifyingAnswers.decision_maker === 'yes') qualifyingScore += 5;
-            if (qualifyingAnswers.decision_maker === 'no') qualifyingScore += 2;
-            
-            // Timeline Scoring
-            switch (qualifyingAnswers.timeline) {
-                case 'immediately': qualifyingScore += 4; break; // Hot lead
-                case 'within_week': qualifyingScore += 3; break;
-                case 'this_month': qualifyingScore += 2; break;
-                case 'just_checking': qualifyingScore += 1; break;
-            }
-            
-            score += Math.min(qualifyingScore, 25);
+            // Theme Selected (optional - remove if not needed)
+            if (selectedTheme) score += 2;
             
             leadScore = Math.min(score, 100);
             updateLeadIntelligenceWidget();
             
-            addDebugLog(`📊 Lead Score Updated: ${leadScore}/100 (Qualifying: ${qualifyingScore}/25)`);
+            addDebugLog(`📊 Lead Score Updated: ${leadScore}/100 (Goals: ${selectedGoals.length * 5}, Signup: ${registrationCompleted ? 20 : 0}, Setup: ${setupButtonClicked ? 10 : 0}, Categories: ${(selectedCategories.length + selectedSubcategories.length) * 2}, Budget: ${(qualifyingAnswers.budget === '10000-25000' || qualifyingAnswers.budget === '25000+') ? 5 : 0}, Decision Maker: ${qualifyingAnswers.decision_maker === 'yes' ? 5 : 0}, Products: ${userProducts.length * 5})`);
             return leadScore;
         }
 
         // 🎯 UPDATE LEAD INTELLIGENCE WIDGET
         function updateLeadIntelligenceWidget() {
-            const scoreValue = document.getElementById('leadScoreValue');
+           const scoreValue = document.getElementById('leadScoreValue');
             const scoreCircle = document.getElementById('leadScoreCircle');
             const leadQuality = document.getElementById('leadQuality');
             const engagementLevel = document.getElementById('engagementLevel');
@@ -2513,17 +2500,17 @@
             const sessionMinutes = Math.round((Date.now() - sessionStartTime) / 60000);
             if (sessionTime) sessionTime.textContent = `${sessionMinutes}m`;
             
-            // Update quality and engagement
+            // UPDATED QUALITY THRESHOLDS
             let quality, engagement, circleClass;
-            if (leadScore >= 70) {
+            if (leadScore > 65) {              // HOT: Over 65
                 quality = 'Hot';
                 engagement = 'High';
                 circleClass = 'hot';
-            } else if (leadScore >= 40) {
+            } else if (leadScore >= 41) {      // WARM: 41-65
                 quality = 'Warm';
                 engagement = 'Medium';
                 circleClass = 'warm';
-            } else {
+            } else {                           // COLD: Less than 40
                 quality = 'Cold';
                 engagement = 'Low';
                 circleClass = 'cold';
@@ -2690,7 +2677,9 @@
 
         // 🚀 START BUSINESS SETUP - NOW GOES TO QUALIFYING QUESTIONS
         function startBusinessSetup() {
-            addDebugLog('🚀 Starting business setup flow - going to qualifying questions');
+          setupButtonClicked = true; // Track that "Let's Do This" was clicked
+            addDebugLog('🚀 Starting business setup flow - "Let\'s Do This" button clicked (+10 points)');
+            calculateLeadScore(); // Recalculate score with the new points
             showNotification('Let\'s gather some more details about your business!', 'success');
             setTimeout(() => showScreen('qualifying-questions'), 1000);
         }
@@ -2767,6 +2756,7 @@
                 showNotification('Please fill in all required fields', 'error');
                 return;
             }
+                calculateLeadScore();
 
             showNotification('Creating your account...', 'info');
             
@@ -3626,6 +3616,7 @@
             leadScore = 0;
             formProgress = 0;
             sessionStartTime = Date.now();
+             setupButtonClicked = false; // Reset the setup button flag
             // 🆕 NEW: Reset qualifying answers
             qualifyingAnswers = {
                 online_presence: '',
