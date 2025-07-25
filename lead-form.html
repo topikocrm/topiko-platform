@@ -915,6 +915,123 @@
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         }
 
+        /* FOMO Notification System */
+        .fomo-notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-left: 4px solid #22c55e;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 8px 40px rgba(34, 197, 94, 0.15);
+            transform: translateX(-400px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1004;
+            max-width: 350px;
+            min-width: 280px;
+        }
+
+        .fomo-notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .fomo-notification.hide {
+            transform: translateX(-400px);
+            opacity: 0;
+        }
+
+        .fomo-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .fomo-icon {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            margin-right: 0.8rem;
+            animation: pulse 2s infinite;
+        }
+
+        .fomo-status {
+            color: #059669;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .fomo-content {
+            color: #1f2937;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .business-name {
+            font-weight: 600;
+            color: #6b46c1;
+        }
+
+        .business-location {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .fomo-time {
+            color: #9ca3af;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* FOMO Counter */
+        .fomo-counter {
+            position: fixed;
+            top: 50%;
+            left: 2rem;
+            transform: translateY(-50%);
+            background: rgba(34, 197, 94, 0.95);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.3);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1005;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .fomo-counter.show {
+            opacity: 1;
+        }
+
+        .counter-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        .counter-text {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
         /* Summary Section */
         .selection-summary {
             background: rgba(139, 111, 205, 0.1);
@@ -978,6 +1095,28 @@
             .features-preview {
                 grid-template-columns: 1fr;
             }
+
+            /* FOMO Mobile Adjustments */
+            .fomo-notification {
+                bottom: 1rem;
+                left: 1rem;
+                right: 1rem;
+                max-width: none;
+                min-width: auto;
+            }
+
+            .fomo-counter {
+                left: 1rem;
+                top: auto;
+                bottom: 8rem;
+                transform: none;
+            }
+
+            .notification {
+                right: 1rem;
+                left: 1rem;
+                max-width: none;
+            }
         }
     </style>
 </head>
@@ -1038,6 +1177,24 @@
     <!-- Notification -->
     <div class="notification" id="notification">
         <div id="notificationContent"></div>
+    </div>
+
+    <!-- FOMO Notification System -->
+    <div class="fomo-notification" id="fomoNotification">
+        <div class="fomo-header">
+            <div class="fomo-icon"></div>
+            <div class="fomo-status">Just Registered</div>
+        </div>
+        <div class="fomo-content" id="fomoContent">
+            <span class="business-name">Vasavi Silks</span> from <span class="business-location">Mysore</span> just set up their online store
+        </div>
+        <div class="fomo-time" id="fomoTime">2 minutes ago</div>
+    </div>
+
+    <!-- FOMO Counter -->
+    <div class="fomo-counter" id="fomoCounter">
+        <span class="counter-number" id="counterNumber">1,247</span>
+        <span class="counter-text">businesses<br>joined today</span>
     </div>
 
     <div class="app-container">
@@ -1752,7 +1909,6 @@
         let selectedSubcategories = [];
         let userProducts = [];
         let currentUserId = null;
-        let setupButtonClicked = false;
         let createdCategoryIds = [];
         let selectedTheme = null;
         let pageViews = 1;
@@ -1776,6 +1932,223 @@
             decision_maker: '',
             timeline: ''
         };
+
+        // 🚀 FOMO NOTIFICATION SYSTEM
+        let fomoActive = true;
+        let fomoTimer = null;
+        let businessCounter = 1247; // Starting counter
+        let lastFomoShow = 0;
+
+        // 🇮🇳 REALISTIC INDIAN BUSINESS DATA
+        const indianBusinessNames = [
+            // Traditional Names
+            'Vasavi Silks', 'Lakshmi Textiles', 'Sree Krishna Stores', 'Ganesh Traders', 'Shiva Electronics',
+            'Rama Jewellers', 'Vishnu Enterprises', 'Durga Fashions', 'Saraswati Books', 'Hanuman Hardware',
+            
+            // Modern Names  
+            'StyleHub Fashion', 'TechPoint Solutions', 'FreshMart Grocery', 'GlowUp Beauty', 'TasteBuds Cafe',
+            'UrbanStyle Boutique', 'SmartTech Electronics', 'PureGold Jewellers', 'FitLife Gym', 'BookWorm Store',
+            
+            // Regional Names
+            'Chennai Silks', 'Mumbai Traders', 'Delhi Fashion Hub', 'Kolkata Sweets', 'Hyderabad Biryani House',
+            'Pune Electronics', 'Jaipur Handicrafts', 'Kochi Spices', 'Ahmedabad Textiles', 'Lucknow Chikankari',
+            
+            // Category Specific
+            'Royal Beauty Salon', 'Spice Garden Restaurant', 'Golden Touch Jewellery', 'Modern Home Furniture',
+            'Fashion Forward Boutique', 'Tech Genius Store', 'Healthy Bites Cafe', 'Elite Fitness Center',
+            'Creative Minds Studio', 'Premium Auto Parts', 'Organic Farms Direct', 'Artisan Craft House'
+        ];
+
+        const indianCities = [
+            // Metro Cities
+            'Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata', 'Hyderabad', 'Pune', 'Ahmedabad',
+            
+            // Tier 2 Cities
+            'Mysore', 'Coimbatore', 'Kochi', 'Jaipur', 'Lucknow', 'Kanpur', 'Nagpur', 'Indore',
+            'Surat', 'Vadodara', 'Visakhapatnam', 'Bhopal', 'Patna', 'Ludhiana', 'Agra', 'Nashik',
+            
+            // Smaller Cities
+            'Madurai', 'Mangalore', 'Trichy', 'Salem', 'Tirunelveli', 'Vellore', 'Erode', 'Thanjavur',
+            'Udaipur', 'Jodhpur', 'Bikaner', 'Ajmer', 'Kota', 'Alwar', 'Siliguri', 'Durgapur',
+            'Hubli', 'Belgaum', 'Gulbarga', 'Shimoga', 'Hassan', 'Tumkur', 'Davangere', 'Ballari'
+        ];
+
+        const fomoMessageTemplates = [
+            {
+                text: '{business} from {city} just set up their online store',
+                icon: '🏪',
+                status: 'Just Registered'
+            },
+            {
+                text: '{business} in {city} started selling online',
+                icon: '🛒',
+                status: 'Now Live'
+            },
+            {
+                text: '{business} from {city} launched their digital presence',
+                icon: '🚀',
+                status: 'Just Launched'
+            },
+            {
+                text: '{business} in {city} joined our platform',
+                icon: '✨',
+                status: 'New Member'
+            },
+            {
+                text: '{business} from {city} completed their business setup',
+                icon: '✅',
+                status: 'Setup Complete'
+            },
+            {
+                text: '{business} in {city} is now accepting online orders',
+                icon: '📦',
+                status: 'Now Taking Orders'
+            },
+            {
+                text: '{business} from {city} went live with their website',
+                icon: '🌐',
+                status: 'Website Live'
+            },
+            {
+                text: '{business} in {city} upgraded their business online',
+                icon: '📈',
+                status: 'Business Upgraded'
+            }
+        ];
+
+        // 🎯 FOMO NOTIFICATION FUNCTIONS
+        function getRandomBusinessData() {
+            const business = indianBusinessNames[Math.floor(Math.random() * indianBusinessNames.length)];
+            const city = indianCities[Math.floor(Math.random() * indianCities.length)];
+            const template = fomoMessageTemplates[Math.floor(Math.random() * fomoMessageTemplates.length)];
+            
+            return {
+                business,
+                city,
+                template,
+                message: template.text.replace('{business}', business).replace('{city}', city)
+            };
+        }
+
+        function getRandomTimeAgo() {
+            const minutes = Math.floor(Math.random() * 15) + 1; // 1-15 minutes ago
+            if (minutes === 1) return '1 minute ago';
+            return `${minutes} minutes ago`;
+        }
+
+        function showFomoNotification() {
+            // Don't show if user is actively interacting (less than 10 seconds since last interaction)
+            if (Date.now() - lastFomoShow < 10000) return;
+            
+            const fomoEl = document.getElementById('fomoNotification');
+            const contentEl = document.getElementById('fomoContent');
+            const timeEl = document.getElementById('fomoTime');
+            const statusEl = document.querySelector('.fomo-status');
+            
+            if (!fomoEl || !contentEl || !timeEl || !statusEl) return;
+            
+            const data = getRandomBusinessData();
+            
+            // Update content
+            contentEl.innerHTML = `<span class="business-name">${data.business}</span> from <span class="business-location">${data.city}</span> ${data.template.text.split('{business}')[1].split('{city}')[1]}`;
+            timeEl.textContent = getRandomTimeAgo();
+            statusEl.textContent = data.template.status;
+            
+            // Show notification
+            fomoEl.classList.add('show');
+            lastFomoShow = Date.now();
+            
+            // Log for debugging
+            addDebugLog(`📢 FOMO: ${data.business} from ${data.city} - ${data.template.status}`);
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                fomoEl.classList.remove('show');
+                fomoEl.classList.add('hide');
+                
+                // Remove hide class after animation
+                setTimeout(() => {
+                    fomoEl.classList.remove('hide');
+                }, 500);
+            }, 5000);
+            
+            // Update counter
+            businessCounter += Math.floor(Math.random() * 3) + 1; // Increase by 1-3
+            updateBusinessCounter();
+        }
+
+        function updateBusinessCounter() {
+            const counterEl = document.getElementById('counterNumber');
+            if (counterEl) {
+                counterEl.textContent = businessCounter.toLocaleString();
+            }
+        }
+
+        function showBusinessCounter() {
+            const counterEl = document.getElementById('fomoCounter');
+            if (counterEl) {
+                counterEl.classList.add('show');
+                
+                // Hide after 4 seconds
+                setTimeout(() => {
+                    counterEl.classList.remove('show');
+                }, 4000);
+            }
+        }
+
+        function startFomoSystem() {
+            if (!fomoActive) return;
+            
+            // Show first notification after 8 seconds
+            setTimeout(() => {
+                if (fomoActive) showFomoNotification();
+            }, 8000);
+            
+            // Show business counter after 15 seconds
+            setTimeout(() => {
+                if (fomoActive) showBusinessCounter();
+            }, 15000);
+            
+            // Show notifications every 25-45 seconds
+            fomoTimer = setInterval(() => {
+                if (fomoActive) {
+                    const randomDelay = Math.random() * 20000 + 25000; // 25-45 seconds
+                    setTimeout(() => {
+                        if (fomoActive) showFomoNotification();
+                    }, randomDelay);
+                }
+            }, 45000);
+            
+            // Show counter every 90 seconds
+            setInterval(() => {
+                if (fomoActive) {
+                    showBusinessCounter();
+                }
+            }, 90000);
+            
+            addDebugLog('📢 FOMO notification system started', 'success');
+        }
+
+        function stopFomoSystem() {
+            fomoActive = false;
+            if (fomoTimer) {
+                clearInterval(fomoTimer);
+                fomoTimer = null;
+            }
+            
+            // Hide any visible FOMO elements
+            const fomoEl = document.getElementById('fomoNotification');
+            const counterEl = document.getElementById('fomoCounter');
+            if (fomoEl) fomoEl.classList.remove('show');
+            if (counterEl) counterEl.classList.remove('show');
+            
+            addDebugLog('📢 FOMO notification system stopped');
+        }
+
+        // Pause FOMO during user interaction
+        function pauseFomoTemporarily() {
+            lastFomoShow = Date.now();
+        }
 
         // 🚀 SUPABASE CONFIGURATION
         const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co'
@@ -2426,68 +2799,81 @@
 
         // 📊 ENHANCED LEAD SCORING ALGORITHM WITH QUALIFYING QUESTIONS
         function calculateLeadScore() {
-           let score = 0;
+            let score = 0;
             
-            // 1. LANGUAGE SELECTION (0 points - REMOVED)
-            // No points for language selection anymore
+            // Language Selection (5 points)
+            if (selectedLanguage) score += 5;
             
-            // 2. GOALS SELECTED (5 points per goal)
-            score += selectedGoals.length * 5;
+            // Goals Selected (10 points per goal, max 50)
+            score += Math.min(selectedGoals.length * 10, 50);
             
-            // 3. SIGN UP COMPLETION (20 points)
-            // Check if registration is completed (all required fields filled)
-           // const registrationCompleted = checkRegistrationCompletion();
-            //if (registrationCompleted) score += 20;
-            if (formProgress === 100) score += 20;
+            // Form Progress (0-25 points based on completion)
+            score += Math.floor(formProgress * 0.25);
             
-            // 4. "LET'S DO THIS" BUTTON CLICKED (10 points)
-            // This is tracked when startBusinessSetup() is called
-            if (setupButtonClicked) score += 10;
-            
-            // 5. CATEGORIES AND SUBCATEGORIES (2 points each)
-            score += selectedCategories.length * 2;
-            score += selectedSubcategories.length * 2;
-            
-            // 6. QUALIFYING QUESTIONS SCORING
-            
-            // Budget Question: 5 points if budget is more than 9K
-            if (qualifyingAnswers.budget === '10000-25000' || qualifyingAnswers.budget === '25000+') {
-                score += 5;
-            }
-            
-            // Decision Maker: 5 points if "yes"
-            if (qualifyingAnswers.decision_maker === 'yes') {
-                score += 5;
-            }
-            
-            // 7. PRODUCTS ADDED (5 points per product)
-            score += userProducts.length * 5;
-            
-            // Keep other engagement metrics if needed (optional)
-            // You can comment these out if you don't want them:
-            
-            // Time on Site (optional - remove if not needed)
+            // Time on Site (0-15 points)
             const sessionMinutes = (Date.now() - sessionStartTime) / 60000;
-            if (sessionMinutes > 1) score += 2;
-            if (sessionMinutes > 3) score += 2;
-            if (sessionMinutes > 5) score += 2;
+            if (sessionMinutes > 1) score += 5;
+            if (sessionMinutes > 3) score += 5;
+            if (sessionMinutes > 5) score += 5;
             
-            // Page Views (optional - remove if not needed)
-            score += Math.min(pageViews * 1, 5); // Reduced impact
+            // Page Views (2 points per page, max 10)
+            score += Math.min(pageViews * 2, 10);
             
-            // Theme Selected (optional - remove if not needed)
-            if (selectedTheme) score += 2;
+            // Categories Selected (5 points per category, max 25)
+            score += Math.min(selectedCategories.length * 5, 25);
+            
+            // Subcategories Selected (2 points per subcategory, max 20)
+            score += Math.min(selectedSubcategories.length * 2, 20);
+            
+            // Products Added (3 points per product, max 15)
+            score += Math.min(userProducts.length * 3, 15);
+            
+            // Theme Selected (5 points)
+            if (selectedTheme) score += 5;
+            
+            // 🆕 NEW: Qualifying Questions Scoring (max 25 points)
+            let qualifyingScore = 0;
+            
+            // Online Presence Scoring
+            switch (qualifyingAnswers.online_presence) {
+                case 'none': qualifyingScore += 8; break; // Highest potential
+                case 'whatsapp': qualifyingScore += 6; break;
+                case 'social': qualifyingScore += 4; break;
+                case 'basic_website': qualifyingScore += 3; break;
+                case 'full_website': qualifyingScore += 2; break; // Already established
+            }
+            
+            // Budget Scoring
+            switch (qualifyingAnswers.budget) {
+                case '25000+': qualifyingScore += 8; break; // High budget
+                case '10000-25000': qualifyingScore += 6; break;
+                case '5000-10000': qualifyingScore += 4; break;
+            }
+            
+            // Decision Maker Scoring
+            if (qualifyingAnswers.decision_maker === 'yes') qualifyingScore += 5;
+            if (qualifyingAnswers.decision_maker === 'no') qualifyingScore += 2;
+            
+            // Timeline Scoring
+            switch (qualifyingAnswers.timeline) {
+                case 'immediately': qualifyingScore += 4; break; // Hot lead
+                case 'within_week': qualifyingScore += 3; break;
+                case 'this_month': qualifyingScore += 2; break;
+                case 'just_checking': qualifyingScore += 1; break;
+            }
+            
+            score += Math.min(qualifyingScore, 25);
             
             leadScore = Math.min(score, 100);
             updateLeadIntelligenceWidget();
             
-           // addDebugLog(`📊 Lead Score Updated: ${leadScore}/100 (Goals: ${selectedGoals.length * 5}, Signup: ${registrationCompleted ? 20 : 0}, Setup: ${setupButtonClicked ? 10 : 0}, Categories: ${(selectedCategories.length + selectedSubcategories.length) * 2}, Budget: ${(qualifyingAnswers.budget === '10000-25000' || qualifyingAnswers.budget === '25000+') ? 5 : 0}, Decision Maker: ${qualifyingAnswers.decision_maker === 'yes' ? 5 : 0}, Products: ${userProducts.length * 5})`);
+            addDebugLog(`📊 Lead Score Updated: ${leadScore}/100 (Qualifying: ${qualifyingScore}/25)`);
             return leadScore;
         }
 
         // 🎯 UPDATE LEAD INTELLIGENCE WIDGET
         function updateLeadIntelligenceWidget() {
-           const scoreValue = document.getElementById('leadScoreValue');
+            const scoreValue = document.getElementById('leadScoreValue');
             const scoreCircle = document.getElementById('leadScoreCircle');
             const leadQuality = document.getElementById('leadQuality');
             const engagementLevel = document.getElementById('engagementLevel');
@@ -2501,17 +2887,17 @@
             const sessionMinutes = Math.round((Date.now() - sessionStartTime) / 60000);
             if (sessionTime) sessionTime.textContent = `${sessionMinutes}m`;
             
-            // UPDATED QUALITY THRESHOLDS
+            // Update quality and engagement
             let quality, engagement, circleClass;
-            if (leadScore > 65) {              // HOT: Over 65
+            if (leadScore >= 70) {
                 quality = 'Hot';
                 engagement = 'High';
                 circleClass = 'hot';
-            } else if (leadScore >= 41) {      // WARM: 41-65
+            } else if (leadScore >= 40) {
                 quality = 'Warm';
                 engagement = 'Medium';
                 circleClass = 'warm';
-            } else {                           // COLD: Less than 40
+            } else {
                 quality = 'Cold';
                 engagement = 'Low';
                 circleClass = 'cold';
@@ -2572,6 +2958,7 @@
         // 🌐 LANGUAGE SELECTION
         function selectLanguage(lang, element) {
             selectedLanguage = lang;
+            pauseFomoTemporarily(); // Pause FOMO during interaction
             
             // Update UI
             document.querySelectorAll('.language-option').forEach(option => {
@@ -2596,6 +2983,7 @@
         function updateGoalsTracking() {
             const checkedGoals = document.querySelectorAll('.goal-checkbox:checked');
             selectedGoals = Array.from(checkedGoals).map(checkbox => checkbox.value);
+            pauseFomoTemporarily(); // Pause FOMO during interaction
             
             addDebugLog(`Goals updated: ${JSON.stringify(selectedGoals)}`);
             calculateLeadScore();
@@ -2678,9 +3066,7 @@
 
         // 🚀 START BUSINESS SETUP - NOW GOES TO QUALIFYING QUESTIONS
         function startBusinessSetup() {
-         setupButtonClicked = true; // Track that "Let's Do This" was clicked
-            addDebugLog('🚀 Starting business setup flow - "Let\'s Do This" button clicked (+10 points)');
-            calculateLeadScore(); // Recalculate score with the new points
+            addDebugLog('🚀 Starting business setup flow - going to qualifying questions');
             showNotification('Let\'s gather some more details about your business!', 'success');
             setTimeout(() => showScreen('qualifying-questions'), 1000);
         }
@@ -2728,6 +3114,7 @@
         function trackFormProgress() {
             const formFields = ['fullName', 'email', 'phoneNumber', 'businessName', 'address', 'businessType', 'category'];
             let completedFields = 0;
+            pauseFomoTemporarily(); // Pause FOMO during form interaction
             
             formFields.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
@@ -2757,7 +3144,6 @@
                 showNotification('Please fill in all required fields', 'error');
                 return;
             }
-                calculateLeadScore();
 
             showNotification('Creating your account...', 'info');
             
@@ -2791,30 +3177,15 @@
                     engagement_level: leadScore >= 70 ? 'High' : leadScore >= 40 ? 'Medium' : 'Low',
                     session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
                     page_views: pageViews,
-                    form_completion_percentage: formProgress,
                     utm_source: utmParams.source,
                     utm_medium: utmParams.medium,
                     utm_campaign: utmParams.campaign,
                     device_type: deviceInfo.type,
                     browser: deviceInfo.browser,
-                    operating_system: deviceInfo.os,
-                    user_language: selectedLanguage,
                     selected_goals: selectedGoals,
                     lead_status: 'New',
-                    ready_for_sdr_assignment: false,
-                    session_start_time: new Date(sessionStartTime).toISOString(),
-                    registration_completed_time: new Date().toISOString()
+                    ready_for_sdr_assignment: false
                 };
-                
-                // Add enhanced fields if schema supports them
-                try {
-                    leadIntelligenceData.selected_categories = selectedCategories;
-                    leadIntelligenceData.selected_subcategories = selectedSubcategories;
-                    leadIntelligenceData.categories_count = selectedCategories.length;
-                    leadIntelligenceData.subcategories_count = selectedSubcategories.length;
-                } catch (e) {
-                    addDebugLog('Enhanced category fields not available, using basic data', 'info');
-                }
                 
                 const intelligenceResult = await saveToSupabase(leadIntelligenceData, 'lead_intelligence');
                 
@@ -2844,6 +3215,7 @@
             qualifyingAnswers.decision_maker = document.querySelector('input[name="decision_maker"]:checked')?.value || '';  
             qualifyingAnswers.timeline = document.querySelector('input[name="timeline"]:checked')?.value || '';
             
+            pauseFomoTemporarily(); // Pause FOMO during interaction
             addDebugLog(`Qualifying answers updated: ${JSON.stringify(qualifyingAnswers)}`);
             
             // Update lead score with new qualifying data
@@ -2879,8 +3251,7 @@
                         annual_budget: qualifyingAnswers.budget,
                         is_decision_maker: qualifyingAnswers.decision_maker === 'yes',
                         timeline_preference: qualifyingAnswers.timeline,
-                        lead_score: calculateLeadScore(),
-                        qualifying_questions_completed: true
+                        lead_score: calculateLeadScore()
                     };
                     
                     const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence?user_id=eq.${currentUserId}`, {
@@ -3111,44 +3482,9 @@
                     } else {
                         const errorText = await response.text();
                         addDebugLog(`⚠️ Category update failed: ${response.status} ${errorText}`, 'error');
-                        // Continue anyway - categories will be saved in localStorage
                     }
                 } catch (error) {
                     addDebugLog(`⚠️ Category update failed: ${error.message}`, 'error');
-                    // Continue anyway - categories will be saved in localStorage
-                }
-                
-                // Try to update lead intelligence
-                try {
-                    const intelligenceUpdateData = {
-                        selected_categories: selectedCategories,
-                        selected_subcategories: selectedSubcategories,
-                        categories_count: selectedCategories.length,
-                        subcategories_count: selectedSubcategories.length,
-                        lead_score: calculateLeadScore()
-                    };
-                    
-                    const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence?user_id=eq.${currentUserId}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'Content-Type': 'application/json',
-                            'Prefer': 'return=representation'
-                        },
-                        body: JSON.stringify(intelligenceUpdateData)
-                    });
-                    
-                    if (response.ok) {
-                        addDebugLog('✅ Lead intelligence categories updated', 'success');
-                    } else {
-                        const errorText = await response.text();
-                        addDebugLog(`⚠️ Intelligence update failed: ${response.status} ${errorText}`, 'error');
-                        // Continue anyway
-                    }
-                } catch (error) {
-                    addDebugLog(`⚠️ Intelligence update failed: ${error.message}`, 'error');
-                    // Continue anyway
                 }
             }
             
@@ -3195,8 +3531,6 @@
                     price: parseFloat(price),
                     description: description,
                     image_url: imageUrl || null
-                    // Note: category_id is FK to categories table, but we'll leave it null for now
-                    // category_key and subcategory_key don't exist in schema, so we skip them
                 };
                 
                 addDebugLog(`💾 Saving product with schema-compliant data: ${JSON.stringify(productDbData, null, 2)}`);
@@ -3208,7 +3542,6 @@
                 } else {
                     addDebugLog(`⚠️ Product database save failed: ${productResult.error}`, 'error');
                     showNotification(`⚠️ Product saved locally (database issue)`, 'warning');
-                    // Continue anyway - product is saved locally and will sync later
                 }
             } else {
                 addDebugLog(`📝 Product saved locally (no user ID yet): ${name}`, 'info');
@@ -3407,59 +3740,6 @@
             existingLeads.push(leadData);
             localStorage.setItem('topiko_local_leads', JSON.stringify(existingLeads));
             
-            // Update lead intelligence with final data if possible
-            if (currentUserId) {
-                try {
-                    // Only use fields that definitely exist in the lead_intelligence schema
-                    const finalIntelligenceData = {
-                        lead_score: finalScore,
-                        lead_quality: finalScore >= 70 ? 'Hot' : finalScore >= 40 ? 'Warm' : 'Cold',
-                        engagement_level: finalScore >= 70 ? 'High' : finalScore >= 40 ? 'Medium' : 'Low',
-                        session_duration_minutes: Math.round((Date.now() - sessionStartTime) / 60000),
-                        page_views: pageViews,
-                        form_completion_percentage: 100,
-                        ready_for_sdr_assignment: true,
-                        // 🆕 NEW: Add qualifying questions data
-                        online_presence: qualifyingAnswers.online_presence,
-                        annual_budget: qualifyingAnswers.budget,
-                        is_decision_maker: qualifyingAnswers.decision_maker === 'yes',
-                        timeline_preference: qualifyingAnswers.timeline,
-                        qualifying_questions_completed: true
-                    };
-                    
-                    addDebugLog(`💾 Updating lead intelligence with final data: ${JSON.stringify(finalIntelligenceData, null, 2)}`);
-                    
-                    // Update the existing lead intelligence record
-                    const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence?user_id=eq.${currentUserId}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'Content-Type': 'application/json',
-                            'Prefer': 'return=representation'
-                        },
-                        body: JSON.stringify(finalIntelligenceData)
-                    });
-                    
-                    if (response.ok) {
-                        addDebugLog('✅ Final lead intelligence updated successfully', 'success');
-                        showNotification('✅ Setup completed and saved to database!', 'success');
-                    } else {
-                        const errorText = await response.text();
-                        addDebugLog(`⚠️ Intelligence final update failed: ${response.status} ${errorText}`, 'error');
-                        showNotification('✅ Setup completed! (Some data saved locally)', 'warning');
-                        // Continue anyway - data is saved in localStorage
-                    }
-                } catch (error) {
-                    addDebugLog(`⚠️ Intelligence final update failed: ${error.message}`, 'error');
-                    showNotification('✅ Setup completed! (Data saved locally)', 'warning');
-                    // Continue anyway - data is saved in localStorage
-                }
-            } else {
-                addDebugLog('⚠️ No user ID available for final database update', 'warning');
-                showNotification('✅ Setup completed! (No database connection)', 'warning');
-            }
-            
             addDebugLog(`✅ Setup completed with qualifying questions! Final score: ${finalScore}/100`, 'success');
             
             // Show completion message
@@ -3539,12 +3819,6 @@
                                 <div style="font-size: 1.8rem; font-weight: bold; color: #059669;">${userProducts.length}</div>
                                 <div style="color: #064e3b; font-size: 0.9rem;">Products Added</div>
                             </div>
-                            
-                            <div style="background: rgba(255, 255, 255, 0.8); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎨</div>
-                                <div style="font-size: ${selectedTheme ? '1.2rem' : '1.8rem'}; font-weight: bold; color: #059669;">${selectedTheme ? selectedTheme.charAt(0).toUpperCase() + selectedTheme.slice(1) : 'None'}</div>
-                                <div style="color: #064e3b; font-size: 0.9rem;">Theme Selected</div>
-                            </div>
                         </div>
 
                         <!-- 🆕 NEW: Qualifying Questions Summary -->
@@ -3617,7 +3891,6 @@
             leadScore = 0;
             formProgress = 0;
             sessionStartTime = Date.now();
-             setupButtonClicked = false; // Reset the setup button flag
             // 🆕 NEW: Reset qualifying answers
             qualifyingAnswers = {
                 online_presence: '',
@@ -3684,6 +3957,11 @@
             // Setup page view tracking
             pageViews = 1;
             sessionStartTime = Date.now();
+            
+            // 🆕 NEW: Start FOMO notification system
+            setTimeout(() => {
+                startFomoSystem();
+            }, 3000); // Start after 3 seconds
             
             addDebugLog('✅ Enhanced application initialized successfully', 'success');
         }
@@ -3759,6 +4037,7 @@
             'showNotification()', 'selectTheme()'
         ]);
         console.log('🆕 NEW: Qualifying questions system with enhanced lead scoring');
+        console.log('📢 NEW: FOMO notification system with Indian business names');
     </script>
 </body>
 </html>
