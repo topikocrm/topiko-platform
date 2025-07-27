@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1351,45 +1351,37 @@
 
     <!-- FOMO Counter -->
     <div class="fomo-counter" id="fomoCounter">
-        <span class="counter-number" id="counterNumber">1,247</span>
-        <span class="counter-text">joined<br>today</span>
+        <span class="counter-number" id="counterNumber">247</span>
+        <span class="counter-text">joined in<br>last 24 hours</span>
     </div>
 
     <div class="app-container">
         <!-- 🆕 CLICKABLE PROGRESS BAR (NO MORE SIDEBAR) -->
         <div class="progress-container">
             <div class="progress-bar" id="progressBar">
-                <div class="progress-step" data-step="welcome" onclick="navigateToStep('welcome')">
-                    <div class="progress-circle">1</div>
-                    <div class="progress-label">Home</div>
-                </div>
-                <div class="progress-step" data-step="language" onclick="navigateToStep('language')">
-                    <div class="progress-circle">2</div>
-                    <div class="progress-label">Language</div>
-                </div>
                 <div class="progress-step" data-step="goals" onclick="navigateToStep('goals')">
-                    <div class="progress-circle">3</div>
-                    <div class="progress-label">Goals</div>
+                    <div class="progress-circle">1</div>
+                    <div class="progress-label">Business Goals</div>
                 </div>
                 <div class="progress-step" data-step="registration" onclick="navigateToStep('registration')">
-                    <div class="progress-circle">4</div>
+                    <div class="progress-circle">2</div>
                     <div class="progress-label">Sign Up</div>
                 </div>
                 <div class="progress-step" data-step="qualifying-questions" onclick="navigateToStep('qualifying-questions')">
-                    <div class="progress-circle">5</div>
-                    <div class="progress-label">Questions</div>
+                    <div class="progress-circle">3</div>
+                    <div class="progress-label">Success Factors</div>
                 </div>
                 <div class="progress-step" data-step="categories" onclick="navigateToStep('categories')">
-                    <div class="progress-circle">6</div>
-                    <div class="progress-label">Categories</div>
+                    <div class="progress-circle">4</div>
+                    <div class="progress-label">Business Live-1</div>
                 </div>
                 <div class="progress-step" data-step="products" onclick="navigateToStep('products')">
-                    <div class="progress-circle">7</div>
-                    <div class="progress-label">Products</div>
+                    <div class="progress-circle">5</div>
+                    <div class="progress-label">Business Live-2</div>
                 </div>
                 <div class="progress-step" data-step="themes" onclick="navigateToStep('themes')">
-                    <div class="progress-circle">8</div>
-                    <div class="progress-label">Themes</div>
+                    <div class="progress-circle">6</div>
+                    <div class="progress-label">Business Live-3</div>
                 </div>
             </div>
         </div>
@@ -1981,6 +1973,9 @@
             'themes'
         ];
 
+        // 🆕 NEW: Progress Steps (only these show in progress bar)
+        const progressSteps = ['goals', 'registration', 'qualifying-questions', 'categories', 'products', 'themes'];
+
         // 🆕 NEW: Qualifying Questions Data
         let qualifyingAnswers = {
             online_presence: '',
@@ -1992,7 +1987,7 @@
         // 🚀 FOMO NOTIFICATION SYSTEM
         let fomoActive = true;
         let fomoTimer = null;
-        let businessCounter = 1247;
+        let businessCounter = 247; // 🆕 NEW: Start from ~247 instead of 1,247
         let lastFomoShow = 0;
 
         // 🇮🇳 BUSINESS DATA
@@ -2087,11 +2082,18 @@
 
         // 🆕 NEW: RESPONSIVE NAVIGATION FUNCTIONS
         function navigateToStep(stepId) {
-            // Only allow navigation to completed or current steps
-            const targetIndex = stepOrder.indexOf(stepId);
-            const currentIndex = stepOrder.indexOf(currentStep);
+            // Check if step is in progress steps (visible in progress bar)
+            if (!progressSteps.includes(stepId)) {
+                addDebugLog(`❌ Navigation blocked: ${stepId} (not in progress steps)`);
+                return;
+            }
             
-            if (targetIndex <= currentIndex || targetIndex === 0) {
+            // Only allow navigation to completed or current steps
+            const targetProgressIndex = progressSteps.indexOf(stepId);
+            const currentProgressIndex = progressSteps.indexOf(currentStep);
+            
+            // Allow navigation if it's a previous step or if we're starting fresh
+            if (targetProgressIndex <= currentProgressIndex || currentStep === 'welcome' || currentStep === 'language') {
                 showScreen(stepId);
                 addDebugLog(`📱 Navigated to: ${stepId} via progress bar`);
             } else {
@@ -2101,24 +2103,27 @@
         }
 
         function updateProgressBar(activeStep) {
-            const progressSteps = document.querySelectorAll('.progress-step');
-            const activeIndex = stepOrder.indexOf(activeStep);
+            const progressElements = document.querySelectorAll('.progress-step');
             
-            progressSteps.forEach((step, index) => {
+            // Map actual step to progress position
+            const activeProgressIndex = progressSteps.indexOf(activeStep);
+            const actualStepIndex = stepOrder.indexOf(activeStep);
+            
+            progressElements.forEach((step, index) => {
                 const stepData = step.getAttribute('data-step');
-                const stepIndex = stepOrder.indexOf(stepData);
+                const stepProgressIndex = progressSteps.indexOf(stepData);
                 
                 // Remove all classes
                 step.classList.remove('completed', 'in-progress');
                 
-                if (stepIndex < activeIndex) {
+                if (stepProgressIndex < activeProgressIndex) {
                     step.classList.add('completed');
-                } else if (stepIndex === activeIndex) {
+                } else if (stepProgressIndex === activeProgressIndex) {
                     step.classList.add('in-progress');
                 }
             });
             
-            addDebugLog(`📊 Progress bar updated: ${activeStep} (${activeIndex + 1}/${stepOrder.length})`);
+            addDebugLog(`📊 Progress bar updated: ${activeStep} (${activeProgressIndex + 1}/${progressSteps.length})`);
         }
 
         // 🔍 ENHANCED DEBUG LOGGING
@@ -2996,7 +3001,7 @@
                 setTimeout(() => fomoEl.classList.remove('hide'), 500);
             }, 5000);
             
-            businessCounter += Math.floor(Math.random() * 3) + 1;
+            businessCounter += Math.floor(Math.random() * 2) + 1; // 🆕 NEW: Smaller increments (1-2)
             updateBusinessCounter();
         }
 
