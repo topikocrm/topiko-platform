@@ -755,3 +755,541 @@ window.TopikoUtils.addDebugLog('📱 Enhanced Topiko Lead Form loaded', 'success
 console.log('📱 Enhanced Topiko Lead Form Ready');
 console.log('🎯 Features: Dynamic messages (3.5s rotation), smart help section, expanded categories, back buttons, OTP verification');
 console.log('🔄 To see dynamic messages: Navigate to Categories screen and watch the green messages rotate');
+
+// ==========================================
+// TOPIKO PRODUCT SELECTOR FUNCTIONS - ADDED
+// ==========================================
+
+// Product Selector State
+let productSelectorState = {
+    allProducts: [],
+    filteredProducts: [],
+    selectedProducts: [],
+    currentFilters: {
+        category: 'all',
+        search: '',
+        minPrice: 0,
+        maxPrice: 5000
+    },
+    sortBy: 'name',
+    currentMode: 'select'
+};
+
+// Initialize Product Selector when products screen is shown
+function initializeProductSelector() {
+    if (document.getElementById('productsGrid')) {
+        try {
+            productSelectorState.allProducts = getAllProducts();
+            productSelectorState.filteredProducts = [...productSelectorState.allProducts];
+            renderProductSelector();
+            bindProductSelectorEvents();
+        } catch (error) {
+            console.error('Error initializing product selector:', error);
+            showProductError('Failed to load products. Please refresh the page.');
+        }
+    }
+}
+
+// Show product error
+function showProductError(message) {
+    const container = document.getElementById('productsGrid');
+    if (container) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">⚠️</div>
+                <h3>Error Loading Products</h3>
+                <p>${message}</p>
+                <button onclick="location.reload()" style="background: #6b46c1; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 15px;">
+                    🔄 Reload Page
+                </button>
+            </div>
+        `;
+    }
+}
+
+// Switch between product selection modes
+function switchProductMode(mode) {
+    productSelectorState.currentMode = mode;
+    
+    // Update toggle buttons
+    const selectBtn = document.getElementById('selectMode');
+    const customBtn = document.getElementById('customMode');
+    
+    if (selectBtn && customBtn) {
+        selectBtn.classList.toggle('active', mode === 'select');
+        customBtn.classList.toggle('active', mode === 'custom');
+    }
+    
+    // Show/hide sections
+    const selectorSection = document.getElementById('productSelectorSection');
+    const customForm = document.getElementById('customProductForm');
+    
+    if (selectorSection) selectorSection.style.display = mode === 'select' ? 'block' : 'none';
+    if (customForm) customForm.style.display = mode === 'custom' ? 'block' : 'none';
+    
+    // Update selected products display
+    updateSelectedProductsDisplay();
+}
+
+// Render product selector interface
+function renderProductSelector() {
+    renderProductGrid();
+    renderQuickFilters();
+    updateProductsCount();
+    updateSelectedProductsDisplay();
+}
+
+// Render product grid
+function renderProductGrid() {
+    const container = document.getElementById('productsGrid');
+    if (!container) return;
+    
+    if (productSelectorState.filteredProducts.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <h3>No products found</h3>
+                <p>Try adjusting your search terms or filters</p>
+            </div>
+        `;
+        return;
+    }
+
+    const productsHTML = productSelectorState.filteredProducts.map(product => `
+        <div class="product-card ${isProductSelected(product.id) ? 'selected' : ''}" 
+             data-product-id="${product.id}"
+             onclick="toggleProductSelection('${product.id}')">
+            <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" 
+                 onerror="this.src='https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=300&h=300&fit=crop'">
+            <div class="product-info">
+                <h3 class="product-name">${product.name}</h3>
+                <div class="product-price">${product.price}</div>
+                <p class="product-description">${product.description}</p>
+                <span class="product-category">${product.subcategory}</span>
+            </div>
+        </div>
+    `).join('');
+
+    container.innerHTML = productsHTML;
+}
+
+// Check if product is selected
+function isProductSelected(productId) {
+    return productSelectorState.selectedProducts.some(p => p.originalId === productId);
+}
+
+// Toggle product selection
+function toggleProductSelection(productId) {
+    const product = productSelectorState.allProducts.find(p => p.id === productId);
+    if (!product) return;
+
+    const existingIndex = productSelectorState.selectedProducts.findIndex(p => p.originalId === productId);
+    
+    if (existingIndex >= 0) {
+        // Remove product
+        productSelectorState.selectedProducts.splice(existingIndex, 1);
+    } else {
+        // Add product (create a copy for editing)
+        productSelectorState.selectedProducts.push({
+            ...product,
+            originalId: product.id,
+            editedName: product.name,
+            editedPrice: product.price,
+            editedDescription: product.description
+        });
+    }
+
+    renderProductGrid();
+    updateSelectedProductsDisplay();
+    updateProductCatalog();
+}
+
+// Update selected products display
+function updateSelectedProductsDisplay() {
+    const container = document.getElementById('selectedProductsList');
+    const section = document.getElementById('selectedProductsSection');
+    const countSpan = document.getElementById('selectedCount');
+    
+    if (!container || !section) return;
+
+    const selectedCount = productSelectorState.selectedProducts.length;
+    if (countSpan) countSpan.textContent = selectedCount;
+    
+    if (selectedCount === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+    
+    const selectedHTML = productSelectorState.selectedProducts.map((product, index) => `
+        <div class="selected-product-item">
+            <img src="${product.image}" alt="${product.name}" class="selected-product-thumb" 
+                 onerror="this.src='https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=60&h=60&fit=crop'">
+            <div class="selected-product-details">
+                <div class="selected-product-name">
+                    <input type="text" 
+                           class="editable-field" 
+                           value="${product.editedName || product.name}"
+                           onchange="updateSelectedProductField(${index}, 'editedName', this.value)"
+                           placeholder="Product name">
+                    <span class="edit-indicator">✏️ Click to edit</span>
+                </div>
+                <div class="selected-product-price">
+                    ₹<input type="number" 
+                            class="editable-field" 
+                            value="${product.editedPrice || product.price}"
+                            onchange="updateSelectedProductField(${index}, 'editedPrice', this.value)"
+                            placeholder="Price"
+                            min="1">
+                </div>
+                <div style="margin-top: 8px; font-size: 0.9rem; color: #718096;">
+                    <input type="text" 
+                           class="editable-field" 
+                           value="${product.editedDescription || product.description}"
+                           onchange="updateSelectedProductField(${index}, 'editedDescription', this.value)"
+                           placeholder="Product description"
+                           style="width: 100%; font-size: 0.9rem;">
+                    <span class="edit-indicator">✏️ Edit description</span>
+                </div>
+            </div>
+            <button class="remove-product" onclick="removeSelectedProduct(${index})">
+                Remove
+            </button>
+        </div>
+    `).join('');
+
+    container.innerHTML = selectedHTML;
+}
+
+// Update individual product field
+function updateSelectedProductField(index, field, value) {
+    if (productSelectorState.selectedProducts[index]) {
+        productSelectorState.selectedProducts[index][field] = value;
+        updateProductCatalog();
+    }
+}
+
+// Remove product from selection
+function removeSelectedProduct(index) {
+    productSelectorState.selectedProducts.splice(index, 1);
+    renderProductGrid();
+    updateSelectedProductsDisplay();
+    updateProductCatalog();
+}
+
+// Update the main product catalog display
+function updateProductCatalog() {
+    const catalogContainer = document.getElementById('productsList');
+    const countElement = document.getElementById('productCount');
+    
+    if (!catalogContainer || !countElement) return;
+
+    // Get all products (selected + custom)
+    const allUserProducts = [...productSelectorState.selectedProducts];
+    
+    // Add any custom products from existing system
+    if (window.productsList && Array.isArray(window.productsList)) {
+        allUserProducts.push(...window.productsList);
+    }
+
+    countElement.textContent = allUserProducts.length;
+
+    if (allUserProducts.length === 0) {
+        catalogContainer.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+                <p>No products selected yet. Choose from 500+ products above or add custom products!</p>
+            </div>
+        `;
+        return;
+    }
+
+    const catalogHTML = allUserProducts.map((product, index) => `
+        <div class="product-card-display" style="background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 15px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="${product.image || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=60&h=60&fit=crop'}" 
+                     alt="${product.editedName || product.name}" 
+                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;"
+                     onerror="this.src='https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=60&h=60&fit=crop'">
+                <div style="flex: 1;">
+                    <h4 style="margin: 0; color: #2d3748; font-size: 1rem;">${product.editedName || product.name}</h4>
+                    <p style="margin: 4px 0; color: #e53e3e; font-weight: 700;">₹${product.editedPrice || product.price}</p>
+                    <p style="margin: 0; color: #718096; font-size: 0.9rem;">${(product.editedDescription || product.description || '').substring(0, 100)}${(product.editedDescription || product.description || '').length > 100 ? '...' : ''}</p>
+                </div>
+                <button onclick="removeProductFromCatalog(${index})" 
+                        style="background: #fed7d7; color: #e53e3e; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">
+                    Remove
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    catalogContainer.innerHTML = catalogHTML;
+}
+
+// Remove product from catalog
+function removeProductFromCatalog(index) {
+    // Check if it's a selected product or custom product
+    if (index < productSelectorState.selectedProducts.length) {
+        // It's a selected product
+        productSelectorState.selectedProducts.splice(index, 1);
+        renderProductGrid();
+        updateSelectedProductsDisplay();
+    } else {
+        // It's a custom product - use existing removeProduct function if available
+        const customIndex = index - productSelectorState.selectedProducts.length;
+        if (window.removeProduct && typeof window.removeProduct === 'function') {
+            window.removeProduct(customIndex);
+        }
+    }
+    updateProductCatalog();
+}
+
+// Apply filters and sorting
+function applyProductFilters() {
+    try {
+        let filtered = [...productSelectorState.allProducts];
+
+        // Category filter
+        if (productSelectorState.currentFilters.category !== 'all') {
+            filtered = filtered.filter(product => product.category === productSelectorState.currentFilters.category);
+        }
+
+        // Search filter
+        if (productSelectorState.currentFilters.search) {
+            const searchTerm = productSelectorState.currentFilters.search.toLowerCase();
+            filtered = filtered.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.description.toLowerCase().includes(searchTerm) ||
+                product.subcategory.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        // Price range filter
+        filtered = filtered.filter(product => 
+            product.price >= productSelectorState.currentFilters.minPrice && 
+            product.price <= productSelectorState.currentFilters.maxPrice
+        );
+
+        // Apply sorting
+        filtered.sort((a, b) => {
+            switch (productSelectorState.sortBy) {
+                case 'price-low':
+                    return a.price - b.price;
+                case 'price-high':
+                    return b.price - a.price;
+                case 'category':
+                    return a.category.localeCompare(b.category) || a.name.localeCompare(b.name);
+                case 'name':
+                default:
+                    return a.name.localeCompare(b.name);
+            }
+        });
+
+        productSelectorState.filteredProducts = filtered;
+        renderProductGrid();
+        updateProductsCount();
+    } catch (error) {
+        console.error('Error applying filters:', error);
+    }
+}
+
+// Update products count display
+function updateProductsCount() {
+    const countElement = document.getElementById('productsCount');
+    if (countElement) {
+        countElement.textContent = productSelectorState.filteredProducts.length;
+    }
+}
+
+// Render quick filters
+function renderQuickFilters() {
+    const container = document.getElementById('quickFilters');
+    if (!container) return;
+
+    const filters = [
+        { key: 'all', label: 'All Products' },
+        { key: 'boutique', label: 'Fashion' },
+        { key: 'homefoods', label: 'Home Foods' },
+        { key: 'grocery', label: 'Grocery' },
+        { key: 'electronics', label: 'Electronics' },
+        { key: 'fitness', label: 'Fitness' },
+        { key: 'restaurant', label: 'Restaurant' }
+    ];
+
+    const filtersHTML = filters.map(filter => `
+        <button class="quick-filter ${productSelectorState.currentFilters.category === filter.key ? 'active' : ''}" 
+                data-category="${filter.key}">
+            ${filter.label}
+        </button>
+    `).join('');
+
+    container.innerHTML = filtersHTML;
+}
+
+// Bind product selector events
+function bindProductSelectorEvents() {
+    // Search input
+    const searchInput = document.getElementById('productSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            productSelectorState.currentFilters.search = e.target.value;
+            applyProductFilters();
+        });
+    }
+
+    // Category filter
+    const categoryFilter = document.getElementById('categoryFilter');
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', (e) => {
+            productSelectorState.currentFilters.category = e.target.value;
+            applyProductFilters();
+            renderQuickFilters();
+        });
+    }
+
+    // Sort dropdown
+    const sortSelect = document.getElementById('sortBy');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+            productSelectorState.sortBy = e.target.value;
+            applyProductFilters();
+        });
+    }
+
+    // Price range inputs
+    const minPriceInput = document.getElementById('minPrice');
+    const maxPriceInput = document.getElementById('maxPrice');
+    
+    if (minPriceInput && maxPriceInput) {
+        const updatePriceRange = () => {
+            productSelectorState.currentFilters.minPrice = parseInt(minPriceInput.value) || 0;
+            productSelectorState.currentFilters.maxPrice = parseInt(maxPriceInput.value) || 5000;
+            const display = document.getElementById('priceRangeDisplay');
+            if (display) {
+                display.textContent = `${productSelectorState.currentFilters.minPrice} - ₹${productSelectorState.currentFilters.maxPrice}`;
+            }
+            applyProductFilters();
+        };
+
+        minPriceInput.addEventListener('change', updatePriceRange);
+        maxPriceInput.addEventListener('change', updatePriceRange);
+    }
+
+    // Quick filter buttons (using event delegation)
+    document.addEventListener('click', (e) => {
+        if (e.target.matches('.quick-filter')) {
+            const category = e.target.dataset.category;
+            productSelectorState.currentFilters.category = category;
+            
+            // Update dropdown
+            const categorySelect = document.getElementById('categoryFilter');
+            if (categorySelect) {
+                categorySelect.value = category;
+            }
+            
+            applyProductFilters();
+            renderQuickFilters();
+        }
+    });
+}
+
+// Helper functions for quick actions
+function selectPopularProducts() {
+    const popularProductIds = ['b001', 'hf001', 'r001', 'e001', 'f001'];
+    
+    popularProductIds.forEach(productId => {
+        const product = productSelectorState.allProducts.find(p => p.id === productId);
+        if (product && !isProductSelected(product.id)) {
+            toggleProductSelection(product.id);
+        }
+    });
+    
+    // Show notification
+    showProductNotification('Added 5 popular products to your selection!', 'success');
+}
+
+function clearAllSelections() {
+    productSelectorState.selectedProducts = [];
+    renderProductGrid();
+    updateSelectedProductsDisplay();
+    updateProductCatalog();
+    showProductNotification('Cleared all selected products', 'info');
+}
+
+// Show notification
+function showProductNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#48bb78' : type === 'error' ? '#e53e3e' : '#6b46c1'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Modified addProduct function to work with existing system
+function addCustomProduct() {
+    // Use existing addProduct functionality but integrate with new system
+    if (window.addProduct && typeof window.addProduct === 'function') {
+        const originalAddProduct = window.addProduct;
+        originalAddProduct();
+        // Update our catalog after adding
+        setTimeout(updateProductCatalog, 100);
+    } else {
+        // Fallback if addProduct doesn't exist
+        showProductNotification('Custom product functionality not available', 'error');
+    }
+}
+
+// Enhanced proceedToProducts function
+function proceedToProducts() {
+    // Call existing function if it exists
+    if (window.originalProceedToProducts && typeof window.originalProceedToProducts === 'function') {
+        window.originalProceedToProducts();
+    }
+    
+    // Initialize our product selector
+    setTimeout(() => {
+        initializeProductSelector();
+        switchProductMode('select'); // Default to selection mode
+    }, 100);
+}
+
+// Override the existing proceedToProducts if it exists
+if (typeof window.proceedToProducts !== 'undefined') {
+    window.originalProceedToProducts = window.proceedToProducts;
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize if we're already on products screen
+    if (document.getElementById('productsGrid')) {
+        setTimeout(initializeProductSelector, 500);
+    }
+});
+
+// Make functions available globally
+window.switchProductMode = switchProductMode;
+window.toggleProductSelection = toggleProductSelection;
+window.updateSelectedProductField = updateSelectedProductField;
+window.removeSelectedProduct = removeSelectedProduct;
+window.removeProductFromCatalog = removeProductFromCatalog;  
+window.selectPopularProducts = selectPopularProducts;
+window.clearAllSelections = clearAllSelections;
+window.addCustomProduct = addCustomProduct;
+window.proceedToProducts = proceedToProducts;
