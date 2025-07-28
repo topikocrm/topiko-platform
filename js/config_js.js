@@ -685,3 +685,137 @@ if (typeof window !== 'undefined') {
         DEFAULTS
     };
 }
+
+// ==========================================
+// TOPIKO PRODUCTS DATABASE - ADDED
+// ==========================================
+
+const TOPIKO_PRODUCTS = {
+  // Boutique & Fashion
+  boutique: [
+    { id: 'b001', name: 'Designer Kurti Set', price: 1299, category: 'boutique', subcategory: 'ethnic-wear', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=300&h=300&fit=crop', description: 'Cotton blend designer kurti with palazzo' },
+    { id: 'b002', name: 'Silk Saree', price: 2499, category: 'boutique', subcategory: 'ethnic-wear', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300&h=300&fit=crop', description: 'Pure silk saree with traditional motifs' },
+    { id: 'b003', name: 'Cotton Dupatta', price: 599, category: 'boutique', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=300&fit=crop', description: 'Hand-block printed cotton duparta' },
+    { id: 'b004', name: 'Lehenga Choli', price: 3499, category: 'boutique', subcategory: 'ethnic-wear', image: 'https://images.unsplash.com/photo-1583391733981-24c9fee3278d?w=300&h=300&fit=crop', description: 'Festive lehenga with embroidery' },
+    { id: 'b005', name: 'Palazzo Pants', price: 899, category: 'boutique', subcategory: 'bottoms', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=300&fit=crop', description: 'Comfortable palazzo pants in cotton' },
+    { id: 'b006', name: 'Ethnic Jacket', price: 1599, category: 'boutique', subcategory: 'tops', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=300&h=300&fit=crop', description: 'Indo-western jacket for men' },
+    { id: 'b007', name: 'Handloom Shirt', price: 1199, category: 'boutique', subcategory: 'tops', image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=300&h=300&fit=crop', description: 'Handwoven cotton shirt' },
+    { id: 'b008', name: 'Designer Blouse', price: 799, category: 'boutique', subcategory: 'tops', image: 'https://images.unsplash.com/photo-1583391733981-24c9fee3278d?w=300&h=300&fit=crop', description: 'Stylish blouse with mirror work' },
+    { id: 'b009', name: 'Khadi Kurta', price: 999, category: 'boutique', subcategory: 'ethnic-wear', image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=300&h=300&fit=crop', description: 'Pure khadi kurta for men' },
+    { id: 'b010', name: 'Bandhani Dupatta', price: 699, category: 'boutique', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=300&fit=crop', description: 'Traditional bandhani print dupatta' },
+    { id: 'b011', name: 'Cotton Salwar', price: 649, category: 'boutique', subcategory: 'bottoms', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=300&h=300&fit=crop', description: 'Comfortable cotton salwar' },
+    { id: 'b012', name: 'Nehru Jacket', price: 1299, category: 'boutique', subcategory: 'ethnic-wear', image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=300&h=300&fit=crop', description: 'Classic Nehru jacket in silk' },
+    { id: 'b013', name: 'Anarkali Suit', price: 1899, category: 'boutique', subcategory: 'ethnic-wear', image: 'https://images.unsplash.com/photo-1583391733981-24c9fee3278d?w=300&h=300&fit=crop', description: 'Flowing anarkali suit set' },
+    { id: 'b014', name: 'Printed Scarf', price: 499, category: 'boutique', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=300&fit=crop', description: 'Silk printed scarf' },
+    { id: 'b015', name: 'Dhoti Pants', price: 799, category: 'boutique', subcategory: 'bottoms', image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=300&h=300&fit=crop', description: 'Modern dhoti style pants' },
+    { id: 'b016', name: 'Chanderi Saree', price: 2199, category: 'boutique', subcategory: 'ethnic-wear', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300&h=300&fit=crop', description: 'Elegant chanderi silk saree' },
+    { id: 'b017', name: 'Block Print Kurta', price: 1099, category: 'boutique', subcategory: 'ethnic-wear', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=300&h=300&fit=crop', description: 'Hand block printed cotton kurta' },
+    { id: 'b018', name: 'Banarasi Dupatta', price: 1499, category: 'boutique', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=300&fit=crop', description: 'Banarasi silk dupatta with gold zari' },
+    { id: 'b019', name: 'Indo Western Dress', price: 1699, category: 'boutique', subcategory: 'western-wear', image: 'https://images.unsplash.com/photo-1583391733981-24c9fee3278d?w=300&h=300&fit=crop', description: 'Fusion indo-western dress' },
+    { id: 'b020', name: 'Chikan Work Kurti', price: 1399, category: 'boutique', subcategory: 'ethnic-wear', image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=300&h=300&fit=crop', description: 'Lucknowi chikan work kurti' }
+  ],
+
+  // Home Foods
+  homefoods: [
+    { id: 'hf001', name: 'Homemade Pickles Combo', price: 899, category: 'homefoods', subcategory: 'pickles', image: 'https://images.unsplash.com/photo-1589621316382-008455b857cd?w=300&h=300&fit=crop', description: 'Mango, lemon & garlic pickle set' },
+    { id: 'hf002', name: 'Ghee (1kg)', price: 1299, category: 'homefoods', subcategory: 'dairy', image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=300&h=300&fit=crop', description: 'Pure cow ghee made at home' },
+    { id: 'hf003', name: 'Masala Powder Set', price: 649, category: 'homefoods', subcategory: 'spices', image: 'https://images.unsplash.com/photo-1596040033229-a292df4856fd?w=300&h=300&fit=crop', description: 'Garam masala, sambar, rasam powder' },
+    { id: 'hf004', name: 'Homemade Sweets Box', price: 799, category: 'homefoods', subcategory: 'sweets', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=300&fit=crop', description: 'Mixed traditional sweets box' },
+    { id: 'hf005', name: 'Organic Honey (500g)', price: 599, category: 'homefoods', subcategory: 'organic', image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&h=300&fit=crop', description: 'Pure forest honey' },
+    { id: 'hf006', name: 'Homemade Papad', price: 299, category: 'homefoods', subcategory: 'snacks', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=300&h=300&fit=crop', description: 'Crispy urad dal papad pack' },
+    { id: 'hf007', name: 'Fresh Paneer (500g)', price: 199, category: 'homefoods', subcategory: 'dairy', image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=300&h=300&fit=crop', description: 'Soft homemade paneer' },
+    { id: 'hf008', name: 'Murukku Variety Pack', price: 449, category: 'homefoods', subcategory: 'snacks', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=300&h=300&fit=crop', description: 'Traditional South Indian murukku' },
+    { id: 'hf009', name: 'Coconut Oil (1L)', price: 399, category: 'homefoods', subcategory: 'oil', image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=300&h=300&fit=crop', description: 'Cold pressed coconut oil' },
+    { id: 'hf010', name: 'Homemade Chutneys', price: 549, category: 'homefoods', subcategory: 'condiments', image: 'https://images.unsplash.com/photo-1589621316382-008455b857cd?w=300&h=300&fit=crop', description: 'Coconut, mint, tomato chutney set' },
+    { id: 'hf011', name: 'Dry Fruits Mix (1kg)', price: 1999, category: 'homefoods', subcategory: 'dry-fruits', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=300&fit=crop', description: 'Premium mixed dry fruits' },
+    { id: 'hf012', name: 'Homemade Jam Set', price: 699, category: 'homefoods', subcategory: 'spreads', image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&h=300&fit=crop', description: 'Mango, strawberry, orange jam' },
+    { id: 'hf013', name: 'Fresh Yogurt (1kg)', price: 149, category: 'homefoods', subcategory: 'dairy', image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=300&h=300&fit=crop', description: 'Thick homemade yogurt' },
+    { id: 'hf014', name: 'Organic Turmeric Powder', price: 299, category: 'homefoods', subcategory: 'spices', image: 'https://images.unsplash.com/photo-1596040033229-a292df4856fd?w=300&h=300&fit=crop', description: 'Pure turmeric powder 500g' },
+    { id: 'hf015', name: 'Homemade Appalam', price: 199, category: 'homefoods', subcategory: 'snacks', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=300&h=300&fit=crop', description: 'Traditional rice appalam pack' },
+    { id: 'hf016', name: 'Sesame Oil (500ml)', price: 349, category: 'homefoods', subcategory: 'oil', image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=300&h=300&fit=crop', description: 'Cold pressed sesame oil' },
+    { id: 'hf017', name: 'Homemade Laddu', price: 599, category: 'homefoods', subcategory: 'sweets', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=300&fit=crop', description: 'Besan and coconut laddu box' },
+    { id: 'hf018', name: 'Organic Jaggery (1kg)', price: 299, category: 'homefoods', subcategory: 'sweeteners', image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&h=300&fit=crop', description: 'Pure organic jaggery blocks' },
+    { id: 'hf019', name: 'Homemade Vadagam', price: 249, category: 'homefoods', subcategory: 'condiments', image: 'https://images.unsplash.com/photo-1589621316382-008455b857cd?w=300&h=300&fit=crop', description: 'Sun-dried vadagam for curries' },
+    { id: 'hf020', name: 'Fresh Butter (500g)', price: 399, category: 'homefoods', subcategory: 'dairy', image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=300&h=300&fit=crop', description: 'Creamy homemade butter' }
+  ],
+
+  // Grocery & Provisions
+  grocery: [
+    { id: 'g001', name: 'Basmati Rice (5kg)', price: 899, category: 'grocery', subcategory: 'grains', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300&h=300&fit=crop', description: 'Premium aged basmati rice' },
+    { id: 'g002', name: 'Atta Whole Wheat (10kg)', price: 649, category: 'grocery', subcategory: 'flour', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=300&h=300&fit=crop', description: 'Fresh ground wheat flour' },
+    { id: 'g003', name: 'Moong Dal (1kg)', price: 199, category: 'grocery', subcategory: 'pulses', image: 'https://images.unsplash.com/photo-1596040033229-a292df4856fd?w=300&h=300&fit=crop', description: 'Premium quality moong dal' },
+    { id: 'g004', name: 'Toor Dal (1kg)', price: 179, category: 'grocery', subcategory: 'pulses', image: 'https://images.unsplash.com/photo-1596040033229-a292df4856fd?w=300&h=300&fit=crop', description: 'Yellow toor dal' },
+    { id: 'g005', name: 'Mustard Oil (1L)', price: 199, category: 'grocery', subcategory: 'oil', image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=300&h=300&fit=crop', description: 'Pure mustard cooking oil' },
+    { id: 'g006', name: 'Refined Sugar (1kg)', price: 59, category: 'grocery', subcategory: 'sweeteners', image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&h=300&fit=crop', description: 'White refined sugar' },
+    { id: 'g007', name: 'Rock Salt (1kg)', price: 49, category: 'grocery', subcategory: 'salt', image: 'https://images.unsplash.com/photo-1596040033229-a292df4856fd?w=300&h=300&fit=crop', description: 'Natural rock salt' },
+    { id: 'g008', name: 'Tea Powder (500g)', price: 299, category: 'grocery', subcategory: 'beverages', image: 'https://images.unsplash.com/photo-1597318130004-412c361b9b00?w=300&h=300&fit=crop', description: 'Premium CTC tea powder' },
+    { id: 'g009', name: 'Coffee Powder (500g)', price: 399, category: 'grocery', subcategory: 'beverages', image: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=300&h=300&fit=crop', description: 'Filter coffee powder blend' },
+    { id: 'g010', name: 'Chana Dal (1kg)', price: 149, category: 'grocery', subcategory: 'pulses', image: 'https://images.unsplash.com/photo-1596040033229-a292df4856fd?w=300&h=300&fit=crop', description: 'Split chickpea lentils' }
+  ],
+
+  // Electronics & Gadgets
+  electronics: [
+    { id: 'e001', name: 'Bluetooth Earphones', price: 1299, category: 'electronics', subcategory: 'audio', image: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=300&h=300&fit=crop', description: 'Wireless bluetooth earphones with mic' },
+    { id: 'e002', name: 'Power Bank 10000mAh', price: 1199, category: 'electronics', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1609592806074-8997bb81d694?w=300&h=300&fit=crop', description: 'Fast charging power bank' },
+    { id: 'e003', name: 'Phone Case & Screen Guard', price: 599, category: 'electronics', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=300&h=300&fit=crop', description: 'Protective case with tempered glass' },
+    { id: 'e004', name: 'USB Cable Set', price: 399, category: 'electronics', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop', description: 'Multi-connector charging cables' },
+    { id: 'e005', name: 'Bluetooth Speaker', price: 1599, category: 'electronics', subcategory: 'audio', image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300&h=300&fit=crop', description: 'Portable wireless speaker' },
+    { id: 'e006', name: 'Smart Watch', price: 2499, category: 'electronics', subcategory: 'wearables', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop', description: 'Fitness tracking smart watch' },
+    { id: 'e007', name: 'Wireless Mouse', price: 899, category: 'electronics', subcategory: 'computer', image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=300&h=300&fit=crop', description: 'Ergonomic wireless mouse' },
+    { id: 'e008', name: 'Keyboard Cover', price: 299, category: 'electronics', subcategory: 'computer', image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=300&h=300&fit=crop', description: 'Silicone keyboard protector' },
+    { id: 'e009', name: 'Phone Stand', price: 199, category: 'electronics', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=300&h=300&fit=crop', description: 'Adjustable mobile phone stand' },
+    { id: 'e010', name: 'Car Charger', price: 499, category: 'electronics', subcategory: 'automotive', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop', description: 'Dual USB car charger' }
+  ],
+
+  // Fitness & Wellness
+  fitness: [
+    { id: 'f001', name: 'Yoga Mat', price: 899, category: 'fitness', subcategory: 'exercise', image: 'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=300&h=300&fit=crop', description: 'Non-slip yoga mat with carry bag' },
+    { id: 'f002', name: 'Resistance Bands Set', price: 699, category: 'fitness', subcategory: 'exercise', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=300&fit=crop', description: 'Multi-resistance exercise bands' },
+    { id: 'f003', name: 'Dumbbells (5kg pair)', price: 1299, category: 'fitness', subcategory: 'weights', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=300&fit=crop', description: 'Rubber coated dumbbells' },
+    { id: 'f004', name: 'Protein Powder (1kg)', price: 2199, category: 'fitness', subcategory: 'nutrition', image: 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=300&h=300&fit=crop', description: 'Whey protein isolate' },
+    { id: 'f005', name: 'Gym Gloves', price: 399, category: 'fitness', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=300&fit=crop', description: 'Breathable workout gloves' },
+    { id: 'f006', name: 'Skipping Rope', price: 299, category: 'fitness', subcategory: 'cardio', image: 'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=300&h=300&fit=crop', description: 'Adjustable speed skipping rope' },
+    { id: 'f007', name: 'Ab Roller', price: 599, category: 'fitness', subcategory: 'exercise', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=300&fit=crop', description: 'Core strengthening ab wheel' },
+    { id: 'f008', name: 'Gym Bag', price: 1199, category: 'fitness', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=300&fit=crop', description: 'Waterproof gym duffle bag' },
+    { id: 'f009', name: 'Sports Water Bottle', price: 449, category: 'fitness', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=300&h=300&fit=crop', description: 'Insulated steel water bottle' },
+    { id: 'f010', name: 'Push-up Bars', price: 499, category: 'fitness', subcategory: 'exercise', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=300&fit=crop', description: 'Ergonomic push-up handles' }
+  ],
+
+  // Restaurant & Food
+  restaurant: [
+    { id: 'r001', name: 'Thali Meal', price: 199, category: 'restaurant', subcategory: 'main-course', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&h=300&fit=crop', description: 'Complete Indian thali with rice, dal, sabzi' },
+    { id: 'r002', name: 'Biryani (Chicken)', price: 299, category: 'restaurant', subcategory: 'main-course', image: 'https://images.unsplash.com/photo-1563379091339-03246963d296?w=300&h=300&fit=crop', description: 'Aromatic chicken biryani with raita' },
+    { id: 'r003', name: 'Masala Dosa', price: 149, category: 'restaurant', subcategory: 'south-indian', image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=300&h=300&fit=crop', description: 'Crispy dosa with potato masala' },
+    { id: 'r004', name: 'Paneer Butter Masala', price: 239, category: 'restaurant', subcategory: 'main-course', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&h=300&fit=crop', description: 'Rich paneer curry with naan' },
+    { id: 'r005', name: 'Chole Bhature', price: 179, category: 'restaurant', subcategory: 'north-indian', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&h=300&fit=crop', description: 'Spicy chickpea curry with bhature' },
+    { id: 'r006', name: 'Idli Sambar (4 pcs)', price: 99, category: 'restaurant', subcategory: 'south-indian', image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=300&h=300&fit=crop', description: 'Steamed rice cakes with sambar' },
+    { id: 'r007', name: 'Chicken Curry', price: 269, category: 'restaurant', subcategory: 'main-course', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&h=300&fit=crop', description: 'Traditional chicken curry with rice' },
+    { id: 'r008', name: 'Vada Pav', price: 49, category: 'restaurant', subcategory: 'street-food', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=300&h=300&fit=crop', description: 'Mumbai style vada pav with chutney' },
+    { id: 'r009', name: 'Pav Bhaji', price: 129, category: 'restaurant', subcategory: 'street-food', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=300&h=300&fit=crop', description: 'Spicy bhaji with buttered pav' },
+    { id: 'r010', name: 'Dal Tadka', price: 159, category: 'restaurant', subcategory: 'main-course', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&h=300&fit=crop', description: 'Tempered yellow lentil curry' }
+  ]
+};
+
+// Product categories for filtering
+const PRODUCT_CATEGORIES = {
+  boutique: { name: 'Boutique & Fashion', subcategories: ['ethnic-wear', 'western-wear', 'accessories', 'tops', 'bottoms'] },
+  homefoods: { name: 'Home Foods', subcategories: ['pickles', 'dairy', 'spices', 'sweets', 'organic', 'snacks', 'condiments'] },
+  grocery: { name: 'Grocery & Provisions', subcategories: ['grains', 'flour', 'pulses', 'oil', 'sweeteners', 'beverages', 'salt'] },
+  electronics: { name: 'Electronics & Gadgets', subcategories: ['audio', 'accessories', 'computer', 'wearables', 'lighting', 'home-appliances'] },
+  fitness: { name: 'Fitness & Wellness', subcategories: ['exercise', 'weights', 'nutrition', 'accessories', 'cardio', 'yoga', 'recovery'] },
+  restaurant: { name: 'Restaurant & Food', subcategories: ['main-course', 'south-indian', 'north-indian', 'street-food', 'snacks', 'breakfast'] }
+};
+
+// Utility functions for product management
+const getAllProducts = () => Object.values(TOPIKO_PRODUCTS).flat();
+const getProductsByCategory = (category) => TOPIKO_PRODUCTS[category] || [];
+const searchProducts = (query) => {
+  const allProducts = getAllProducts();
+  return allProducts.filter(product => 
+    product.name.toLowerCase().includes(query.toLowerCase()) ||
+    product.description.toLowerCase().includes(query.toLowerCase())
+  );
+};
+const filterProductsByPrice = (products, minPrice, maxPrice) => {
+  return products.filter(product => product.price >= minPrice && product.price <= maxPrice);
+};
