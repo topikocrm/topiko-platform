@@ -742,8 +742,9 @@
             text-align: right;
             max-width: 350px;
             position: relative;
-            height: 80px;
+            height: 85px;
             overflow: hidden;
+            border-radius: 12px;
         }
 
         .motivational-message {
@@ -758,9 +759,11 @@
             position: absolute;
             width: 100%;
             top: 50%;
+            right: 0;
             transform: translate(100%, -50%);
             opacity: 0;
-            transition: all 0.5s ease-in-out;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
         }
 
         .motivational-message.active {
@@ -769,7 +772,7 @@
         }
 
         .motivational-message.exit {
-            transform: translate(-100%, -50%);
+            transform: translate(-120%, -50%);
             opacity: 0;
         }
 
@@ -1939,7 +1942,9 @@
                     <!-- 🆕 Category Footer with Dynamic Motivational Messages -->
                     <div class="category-footer">
                         <div class="motivational-messages" id="motivationalMessages">
-                            <!-- Dynamic messages will be populated here -->
+                            <div class="motivational-message active" style="opacity: 0.5; font-style: italic; color: #9ca3af;">
+                                Loading personalized messages...
+                            </div>
                         </div>
                     </div>
 
@@ -2954,21 +2959,28 @@
             if (currentStep !== 'categories') return;
             
             const messagesContainer = document.getElementById('motivationalMessages');
-            if (!messagesContainer) return;
+            if (!messagesContainer) {
+                addDebugLog('❌ Messages container not found', 'error');
+                return;
+            }
             
             // Stop any existing interval
             stopMotivationalMessages();
             
             // Start new message rotation
             currentMessageIndex = 0;
-            showNextMessage();
             
-            // Set interval for automatic rotation
+            // Show first message immediately
+            setTimeout(() => {
+                showNextMessage();
+            }, 500);
+            
+            // Set interval for automatic rotation (3.5 seconds = average of 3-4)
             messageInterval = setInterval(() => {
                 showNextMessage();
-            }, 4000); // 4 second intervals
+            }, 3500);
             
-            addDebugLog('🔄 Dynamic messages started', 'success');
+            addDebugLog('🔄 Dynamic messages started - rotating every 3.5s', 'success');
         }
 
         function showNextMessage() {
@@ -2981,6 +2993,8 @@
             if (!messagesContainer) return;
             
             const message = generatePersonalizedMessage(currentMessageIndex);
+            addDebugLog(`📝 Showing message ${currentMessageIndex + 1}: "${message.substring(0, 30)}..."`, 'info');
+            
             showNewMessage(message, messagesContainer);
             
             currentMessageIndex = (currentMessageIndex + 1) % motivationalMessageTemplates.length;
@@ -2989,35 +3003,37 @@
         function generatePersonalizedMessage(index) {
             const template = motivationalMessageTemplates[index];
             const currentProgressIndex = progressSteps.indexOf(currentStep);
-            const stepsLeft = progressSteps.length - currentProgressIndex - 1;
+            // Calculate remaining steps (categories is index 3, so products=1, themes=2 steps left)
+            const stepsLeft = Math.max(1, progressSteps.length - currentProgressIndex - 1);
             const plural = stepsLeft !== 1 ? 's' : '';
             const businessDisplayName = businessName || 'your business';
             
             // Get category name without emoji
             const categoryDropdown = document.getElementById('category');
             let categoryName = 'your category';
-            if (categoryDropdown && categoryDropdown.value) {
-                const categoryText = categoryDropdown.options[categoryDropdown.selectedIndex].text;
-                categoryName = categoryText.replace(/^[^\w\s]+\s*/, ''); // Remove emoji and spaces
+            if (categoryDropdown && categoryDropdown.value && businessCategories[categoryDropdown.value]) {
+                const categoryData = businessCategories[categoryDropdown.value];
+                categoryName = categoryData.name; // Use clean category name from data
             }
             
-            return template
+            const personalizedMessage = template
                 .replace('{stepsLeft}', stepsLeft.toString())
                 .replace('{plural}', plural)
                 .replace('{businessName}', businessDisplayName)
                 .replace('{category}', categoryName);
+                
+            addDebugLog(`🎯 Message ${index + 1}: steps=${stepsLeft}, business="${businessDisplayName}", category="${categoryName}"`, 'info');
+            return personalizedMessage;
         }
 
         function showNewMessage(messageText, container) {
-            // Remove existing messages
+            // Mark existing messages for exit
             const existingMessages = container.querySelectorAll('.motivational-message');
             existingMessages.forEach(msg => {
-                msg.classList.add('exit');
-                setTimeout(() => {
-                    if (msg.parentNode) {
-                        msg.parentNode.removeChild(msg);
-                    }
-                }, 500);
+                if (!msg.classList.contains('exit')) {
+                    msg.classList.remove('active');
+                    msg.classList.add('exit');
+                }
             });
             
             // Create new message
@@ -3027,10 +3043,20 @@
             
             container.appendChild(messageEl);
             
-            // Trigger animation
+            // Trigger slide-in animation after a short delay
             setTimeout(() => {
                 messageEl.classList.add('active');
-            }, 100);
+            }, 50);
+            
+            // Clean up old messages after animation completes
+            setTimeout(() => {
+                const oldMessages = container.querySelectorAll('.motivational-message.exit');
+                oldMessages.forEach(msg => {
+                    if (msg.parentNode) {
+                        msg.parentNode.removeChild(msg);
+                    }
+                });
+            }, 600);
         }
 
         function stopMotivationalMessages() {
@@ -3120,7 +3146,8 @@
                 
                 if (screenId === 'categories') {
                     loadCategories();
-                    updateMotivationalMessages();
+                    // Start dynamic messages after a short delay to ensure DOM is ready
+                    setTimeout(() => updateMotivationalMessages(), 100);
                 }
                 
                 if (screenId === 'products') {
@@ -4109,7 +4136,8 @@
 
         addDebugLog('📱 Enhanced Topiko Lead Form loaded', 'success');
         console.log('📱 Enhanced Topiko Lead Form Ready');
-        console.log('🎯 Features: Dynamic messages, smart help section, expanded categories, back buttons, OTP verification');
+        console.log('🎯 Features: Dynamic messages (3.5s rotation), smart help section, expanded categories, back buttons, OTP verification');
+        console.log('🔄 To see dynamic messages: Navigate to Categories screen and watch the green messages rotate');
         
     </script>
 
