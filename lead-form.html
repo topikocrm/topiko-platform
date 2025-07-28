@@ -477,13 +477,13 @@
                 </div>
             </section>
 
-            <!-- Products Screen -->
+            <!-- Products Screen - UPDATED WITH PRODUCT SELECTOR -->
             <section class="screen" id="products">
                 <div class="content-card">
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" id="productsTitle">Add Your Products</h2>
-                    <p style="text-align: center; margin-bottom: 2rem;">Build your catalog with products that represent your business</p>
+                    <p style="text-align: center; margin-bottom: 2rem;">Choose from 500+ products or add your own custom products</p>
                     
-                    <!-- Help Section -->
+                    <!-- Help Section - KEEP UNCHANGED -->
                     <div class="products-help-section" id="productsHelpSection" onclick="requestFollowup()">
                         <div class="help-title" id="productsHelpTitle">🎯 Free Professional Setup Available!</div>
                         <div class="help-progress">
@@ -493,10 +493,93 @@
                             Topiko is helping with free setup for 75 businesses every month. <span id="productsClaimedCount">47</span> claimed for <span id="productsCurrentMonth">January</span>. Click here for help!
                         </div>
                     </div>
-                    
-                    <!-- Product Form -->
-                    <div class="product-form">
-                        <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;" id="productFormTitle">Add New Product/Service</h3>
+
+                    <!-- NEW: Product Selection Mode Toggle -->
+                    <div class="product-mode-toggle">
+                        <div class="toggle-options">
+                            <button class="toggle-option active" id="selectMode" onclick="switchProductMode('select')">
+                                <span class="toggle-icon">🛍️</span>
+                                Select from 500+ Products
+                            </button>
+                            <button class="toggle-option" id="customMode" onclick="switchProductMode('custom')">
+                                <span class="toggle-icon">➕</span>
+                                Add Custom Product
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- NEW: Product Selector Section -->
+                    <div class="product-selector-section" id="productSelectorSection">
+                        
+                        <!-- Helper Buttons -->
+                        <div class="product-helpers">
+                            <button onclick="selectPopularProducts()" class="helper-btn">
+                                ✨ Select Popular Items
+                            </button>
+                            <button onclick="clearAllSelections()" class="helper-btn secondary">
+                                🗑️ Clear All
+                            </button>
+                        </div>
+                        
+                        <!-- Quick Filters -->
+                        <div class="quick-filters" id="quickFilters">
+                            <button class="quick-filter active" data-category="all">All Products</button>
+                            <button class="quick-filter" data-category="boutique">Fashion</button>
+                            <button class="quick-filter" data-category="homefoods">Home Foods</button>
+                            <button class="quick-filter" data-category="grocery">Grocery</button>
+                            <button class="quick-filter" data-category="electronics">Electronics</button>
+                            <button class="quick-filter" data-category="fitness">Fitness</button>
+                            <button class="quick-filter" data-category="restaurant">Restaurant</button>
+                        </div>
+                        
+                        <!-- Search & Filter Controls -->
+                        <div class="product-controls">
+                            <div class="search-box">
+                                <input type="text" id="productSearch" placeholder="Search products..." />
+                                <span class="search-icon">🔍</span>
+                            </div>
+                            
+                            <select id="categoryFilter" class="filter-select">
+                                <option value="all">All Categories</option>
+                                <option value="boutique">Boutique & Fashion</option>
+                                <option value="homefoods">Home Foods</option>
+                                <option value="grocery">Grocery & Provisions</option>
+                                <option value="electronics">Electronics & Gadgets</option>
+                                <option value="fitness">Fitness & Wellness</option>
+                                <option value="restaurant">Restaurant & Food</option>
+                            </select>
+                            
+                            <select id="sortBy" class="sort-select">
+                                <option value="name">Sort by Name</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="category">Category</option>
+                            </select>
+                            
+                            <div class="products-count">
+                                <span id="productsCount">500</span> products
+                            </div>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="price-range">
+                            <label>Price Range: ₹<span id="priceRangeDisplay">0 - ₹5000</span></label>
+                            <div class="price-inputs">
+                                <input type="number" id="minPrice" placeholder="Min" value="0" min="0" max="5000">
+                                <span>to</span>
+                                <input type="number" id="maxPrice" placeholder="Max" value="5000" min="0" max="5000">
+                            </div>
+                        </div>
+                        
+                        <!-- Products Grid -->
+                        <div class="products-grid" id="productsGrid">
+                            <div class="loading">Loading products...</div>
+                        </div>
+                    </div>
+
+                    <!-- EXISTING: Custom Product Form (Modified to be toggleable) -->
+                    <div class="product-form" id="customProductForm" style="display: none;">
+                        <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;" id="productFormTitle">Add Custom Product/Service</h3>
                         
                         <div class="form-group">
                             <label for="productName">Product/Service Name</label>
@@ -532,23 +615,33 @@
                             <input type="url" id="productImage" placeholder="https://example.com/image.jpg">
                         </div>
                         
-                        <button type="button" onclick="addProduct()" class="btn-secondary" style="width: auto; margin-top: 1rem;">
-                            ➕ Add Product
+                        <button type="button" onclick="addCustomProduct()" class="btn-secondary" style="width: auto; margin-top: 1rem;">
+                            ➕ Add Custom Product
                         </button>
                     </div>
 
-                    <!-- Products List -->
+                    <!-- NEW: Selected Products Summary -->
+                    <div class="selected-products-summary" id="selectedProductsSection" style="display: none;">
+                        <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;">
+                            <span style="margin-right: 0.5rem;">🎯</span>
+                            Selected Products (<span id="selectedCount">0</span>)
+                        </h3>
+                        <div id="selectedProductsList"></div>
+                    </div>
+
+                    <!-- MODIFIED: Products List (now shows all selected products) -->
                     <div class="products-list">
                         <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;">Your Product Catalog (<span id="productCount">0</span>)</h3>
                         
                         <div class="product-grid" id="productsList">
                             <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
                                 <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
-                                <p>No products added yet. Add your first product above!</p>
+                                <p>No products selected yet. Choose from 500+ products above or add custom products!</p>
                             </div>
                         </div>
                     </div>
 
+                    <!-- KEEP: Navigation buttons unchanged -->
                     <div class="flex-buttons">
                         <button onclick="navigateToStep('categories')" class="btn-secondary">
                             ← Back to Categories
