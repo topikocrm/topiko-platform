@@ -197,6 +197,7 @@ body {
   color: var(--primary-color);
   transition: all var(--transition-base);
   z-index: var(--z-fixed);
+  border: none;
 }
 
 .back-button:hover {
@@ -862,17 +863,20 @@ body {
   border-radius: var(--radius-lg);
   padding: var(--spacing-4);
   margin-bottom: var(--spacing-6);
+  animation: fadeIn var(--transition-base);
 }
 
 .summary-title {
   font-weight: 600;
   color: var(--primary-color);
   margin-bottom: var(--spacing-3);
+  font-size: var(--font-size-base);
 }
 
 .summary-content {
   display: flex;
   gap: var(--spacing-6);
+  flex-wrap: wrap;
 }
 
 .summary-item {
@@ -881,8 +885,9 @@ body {
 }
 
 .summary-count {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--primary-color);
+  font-size: var(--font-size-lg);
 }
 
 .category-footer {
@@ -894,6 +899,7 @@ body {
 .motivational-messages {
   position: relative;
   min-height: 60px;
+  margin-bottom: var(--spacing-4);
 }
 
 .motivational-message {
@@ -907,9 +913,11 @@ body {
   border-radius: var(--radius-lg);
   text-align: center;
   font-weight: 500;
+  font-size: var(--font-size-sm);
   opacity: 0;
   transform: translateY(20px);
   transition: all var(--transition-base);
+  box-shadow: var(--shadow-md);
 }
 
 .motivational-message.active {
@@ -919,6 +927,111 @@ body {
 
 .motivational-message.loading {
   background: var(--info-color);
+}
+
+/* Category Option Container */
+.category-option {
+  margin-bottom: var(--spacing-4);
+}
+
+/* Category Card */
+.category-card {
+  display: flex;
+  align-items: flex-start;
+  padding: var(--spacing-4);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  background: var(--white);
+  position: relative;
+}
+
+.category-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.category-card.selected {
+  border-color: var(--primary-color);
+  background: var(--primary-ultra-light);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Category Icon */
+.category-icon {
+  font-size: var(--font-size-2xl);
+  margin-right: var(--spacing-4);
+  flex-shrink: 0;
+}
+
+/* Category Content */
+.category-content {
+  flex: 1;
+}
+
+.category-content h3 {
+  margin-bottom: var(--spacing-3);
+  color: var(--gray-800);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+/* Subcategories */
+.subcategories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.subcategory {
+  background: var(--gray-100);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: capitalize;
+  border: 1px solid transparent;
+  font-weight: 500;
+}
+
+.subcategory:hover {
+  background: var(--primary-lighter);
+  border-color: var(--primary-color);
+  color: var(--primary-dark);
+}
+
+.subcategory.selected {
+  background: var(--primary-color);
+  color: var(--white);
+  border-color: var(--primary-dark);
+}
+
+/* Category Checkmark */
+.category-checkmark {
+  position: absolute;
+  top: var(--spacing-3);
+  right: var(--spacing-3);
+  width: 24px;
+  height: 24px;  
+  background: var(--primary-color);
+  color: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  opacity: 0;
+  transform: scale(0);
+  transition: all var(--transition-base);
+}
+
+.category-card.selected .category-checkmark {
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* ============================================
@@ -1491,6 +1604,27 @@ body {
   .lead-score-widget {
     right: var(--spacing-2);
   }
+
+  .category-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .category-icon {
+    margin-right: 0;
+    margin-bottom: var(--spacing-2);
+    font-size: var(--font-size-xl);
+  }
+  
+  .subcategories {
+    justify-content: center;
+    margin-top: var(--spacing-3);
+  }
+  
+  .summary-content {
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
 }
 
 /* Mobile */
@@ -1541,6 +1675,20 @@ body {
 
   .quick-filter {
     flex-shrink: 0;
+  }
+
+  .category-card {
+    padding: var(--spacing-3);
+  }
+  
+  .subcategory {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .motivational-message {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-3);
   }
 }
 
@@ -1635,221 +1783,4 @@ textarea:focus-visible,
 .lang-ta textarea,
 .lang-ta select {
   line-height: 1.7;
-}
-
-/* ============================================
-   CATEGORY SELECTION STYLES - ADD TO styles.css
-   ============================================ */
-
-/* Category Option Container */
-.category-option {
-    margin-bottom: var(--spacing-4);
-}
-
-/* Category Card */
-.category-card {
-    display: flex;
-    align-items: flex-start;
-    padding: var(--spacing-4);
-    border: 2px solid var(--gray-200);
-    border-radius: var(--radius-lg);
-    cursor: pointer;
-    transition: all var(--transition-base);
-    background: var(--white);
-    position: relative;
-}
-
-.category-card:hover {
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-}
-
-.category-card.selected {
-    border-color: var(--primary-color);
-    background: var(--primary-ultra-light);
-    box-shadow: var(--shadow-lg);
-}
-
-/* Category Icon */
-.category-icon {
-    font-size: var(--font-size-2xl);
-    margin-right: var(--spacing-4);
-    flex-shrink: 0;
-}
-
-/* Category Content */
-.category-content {
-    flex: 1;
-}
-
-.category-content h3 {
-    margin-bottom: var(--spacing-3);
-    color: var(--gray-800);
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-}
-
-/* Subcategories */
-.subcategories {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-2);
-}
-
-.subcategory {
-    background: var(--gray-100);
-    padding: var(--spacing-1) var(--spacing-3);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-xs);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    text-transform: capitalize;
-    border: 1px solid transparent;
-    font-weight: 500;
-}
-
-.subcategory:hover {
-    background: var(--primary-lighter);
-    border-color: var(--primary-color);
-    color: var(--primary-dark);
-}
-
-.subcategory.selected {
-    background: var(--primary-color);
-    color: var(--white);
-    border-color: var(--primary-dark);
-}
-
-/* Category Checkmark */
-.category-checkmark {
-    position: absolute;
-    top: var(--spacing-3);
-    right: var(--spacing-3);
-    width: 24px;
-    height: 24px;
-    background: var(--primary-color);
-    color: var(--white);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    opacity: 0;
-    transform: scale(0);
-    transition: all var(--transition-base);
-}
-
-.category-card.selected .category-checkmark {
-    opacity: 1;
-    transform: scale(1);
-}
-
-/* Selection Summary Enhancements */
-.selection-summary {
-    background: var(--primary-ultra-light);
-    border: 2px solid var(--primary-lighter);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-4);
-    margin-bottom: var(--spacing-6);
-    animation: fadeIn var(--transition-base);
-}
-
-.summary-title {
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: var(--spacing-3);
-    font-size: var(--font-size-base);
-}
-
-.summary-content {
-    display: flex;
-    gap: var(--spacing-6);
-    flex-wrap: wrap;
-}
-
-.summary-item {
-    font-size: var(--font-size-sm);
-    color: var(--gray-700);
-}
-
-.summary-count {
-    font-weight: 700;
-    color: var(--primary-color);
-    font-size: var(--font-size-lg);
-}
-
-/* Motivational Messages */
-.motivational-messages {
-    position: relative;
-    min-height: 60px;
-    margin-bottom: var(--spacing-4);
-}
-
-.motivational-message {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: var(--spacing-4);
-    background: var(--success-color);
-    color: var(--white);
-    border-radius: var(--radius-lg);
-    text-align: center;
-    font-weight: 500;
-    font-size: var(--font-size-sm);
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all var(--transition-base);
-    box-shadow: var(--shadow-md);
-}
-
-.motivational-message.active {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.motivational-message.loading {
-    background: var(--info-color);
-}
-
-/* Responsive Design for Categories */
-@media (max-width: 768px) {
-    .category-card {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .category-icon {
-        margin-right: 0;
-        margin-bottom: var(--spacing-2);
-        font-size: var(--font-size-xl);
-    }
-    
-    .subcategories {
-        justify-content: center;
-        margin-top: var(--spacing-3);
-    }
-    
-    .summary-content {
-        flex-direction: column;
-        gap: var(--spacing-3);
-    }
-}
-
-@media (max-width: 480px) {
-    .category-card {
-        padding: var(--spacing-3);
-    }
-    
-    .subcategory {
-        font-size: 0.7rem;
-        padding: 0.25rem 0.5rem;
-    }
-    
-    .motivational-message {
-        font-size: var(--font-size-xs);
-        padding: var(--spacing-3);
-    }
 }
