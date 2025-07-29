@@ -1752,13 +1752,13 @@ const INDIAN_CITIES = [
 ];
 
 const FOMO_MESSAGE_TEMPLATES = [
-    { text: '{business} from {city} just set up their online store', status: 'Just Registered' },
-    { text: '{business} in {city} started selling online', status: 'Now Live' },
-    { text: '{business} from {city} launched their digital presence', status: 'Just Launched' },
-    { text: '{business} in {city} joined our platform', status: 'New Member' },
-    { text: '{business} from {city} completed their business setup', status: 'Setup Complete' },
-    { text: '{business} in {city} is now accepting online orders', status: 'Orders Live' },
-    { text: '{business} from {city} went digital today', status: 'Digital Launch' }
+    { text: '{business} from {city} just went live with help of Topiko', status: 'Just Registered' },
+    { text: '{business} in {city} started selling online with Topiko just helped', status: 'Now Live' },
+    { text: '{business} from {city} launched their digital presence — Topiko just helped', status: 'Just Launched' },
+    { text: '{business} in {city} joined our platform with help of Topiko', status: 'New Member' },
+    { text: '{business} from {city} completed their business setup with help of Topiko', status: 'Setup Complete' },
+    { text: '{business} in {city} is now accepting online orders — Topiko just helped', status: 'Orders Live' },
+    { text: '{business} from {city} went digital today with help of Topiko', status: 'Digital Launch' }
 ];
 
 // ========================================

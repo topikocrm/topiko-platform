@@ -1281,6 +1281,13 @@ function startOver() {
 function displayGoalsTransitionModal() {
     const goalNames = window.TopikoConfig.GOAL_NAMES;
 
+    // Populate the goals text with actual selected goals
+    const selectedGoalsText = document.getElementById('selectedGoalsText');
+    if (selectedGoalsText) {
+        const goalsList = window.topikoApp.selectedGoals.map(goal => goalNames[goal] || goal).join(', ');
+        selectedGoalsText.textContent = goalsList;
+    }
+
     const modalGoalsList = document.getElementById('modalGoalsList');
     if (modalGoalsList) {
         modalGoalsList.innerHTML = window.topikoApp.selectedGoals.map(goal => 
@@ -1300,6 +1307,18 @@ function proceedFromGoalsModal() {
 // Setup intro modal
 function displaySetupIntroModal() {
     const goalNames = window.TopikoConfig.GOAL_NAMES;
+
+    // Populate the user name and business name
+    const setupUserName = document.getElementById('setupUserName');
+    const setupBusinessName = document.getElementById('setupBusinessName');
+    
+    if (setupUserName) {
+        setupUserName.textContent = window.topikoApp.userName || 'there';
+    }
+    
+    if (setupBusinessName) {
+        setupBusinessName.textContent = window.topikoApp.businessName || 'business';
+    }
 
     const modalSetupGoalsList = document.getElementById('modalSetupGoalsList');
     if (modalSetupGoalsList) {

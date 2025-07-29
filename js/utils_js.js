@@ -378,7 +378,7 @@ function toggleScoreDetails() {
 }
 
 // ========================================
-// FOMO SYSTEM UTILITIES
+// FOMO SYSTEM UTILITIES (UPDATED)
 // ========================================
 
 function getRandomBusinessData() {
@@ -386,9 +386,14 @@ function getRandomBusinessData() {
     const city = window.TopikoConfig.INDIAN_CITIES[Math.floor(Math.random() * window.TopikoConfig.INDIAN_CITIES.length)];
     const template = window.TopikoConfig.FOMO_MESSAGE_TEMPLATES[Math.floor(Math.random() * window.TopikoConfig.FOMO_MESSAGE_TEMPLATES.length)];
     
+    // Replace placeholders in the template text
+    const message = template.text.replace('{business}', business).replace('{city}', city);
+    
     return {
-        business, city, template,
-        message: template.text.replace('{business}', business).replace('{city}', city)
+        business, 
+        city, 
+        template,
+        message
     };
 }
 
@@ -406,7 +411,9 @@ function showFomoNotification() {
     
     const data = getRandomBusinessData();
     
-    contentEl.innerHTML = `<span class="business-name">${data.business}</span> from <span class="business-location">${data.city}</span> ${data.template.text.split('{business}')[1].split('{city}')[1]}`;
+    // Use the complete message from the template (which already includes "with help of Topiko" etc.)
+    contentEl.innerHTML = `<span class="business-name">${data.business}</span> from <span class="business-location">${data.city}</span> ${data.message.split(`${data.business} from ${data.city} `)[1] || data.message.split(`${data.business} in ${data.city} `)[1] || 'just went live with help of Topiko'}`;
+    
     timeEl.textContent = `${Math.floor(Math.random() * 15) + 1} minutes ago`;
     statusEl.textContent = data.template.status;
     
@@ -474,7 +481,7 @@ function displayProducts() {
         productsList.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
-                <p>No products selected yet. Choose from 500+ products above or add custom products!</p>
+                <p>No products selected yet. Choose products above or add custom products!</p>
             </div>
         `;
         return;
