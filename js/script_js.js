@@ -757,7 +757,7 @@ console.log('🎯 Features: Dynamic messages (3.5s rotation), smart help section
 console.log('🔄 To see dynamic messages: Navigate to Categories screen and watch the green messages rotate');
 
 // ==========================================
-// TOPIKO PRODUCT SELECTOR FUNCTIONS - ADDED
+// TOPIKO PRODUCT SELECTOR FUNCTIONS - FIXED VERSION
 // ==========================================
 
 // Product Selector State
@@ -772,22 +772,73 @@ let productSelectorState = {
         maxPrice: 5000
     },
     sortBy: 'name',
-    currentMode: 'select'
+    currentMode: 'select',
+    isInitialized: false
 };
 
-// Initialize Product Selector when products screen is shown
+// Check if we have the required functions and elements
+function canInitializeProductSelector() {
+    return (
+        document.getElementById('productsGrid') &&
+        typeof window.TopikoConfig !== 'undefined' &&
+        window.TopikoConfig.INDIAN_PRODUCTS_DB
+    );
+}
+
+// Safe initialization function
 function initializeProductSelector() {
-    if (document.getElementById('productsGrid')) {
-        try {
-            productSelectorState.allProducts = getAllProducts();
-            productSelectorState.filteredProducts = [...productSelectorState.allProducts];
-            renderProductSelector();
-            bindProductSelectorEvents();
-        } catch (error) {
-            console.error('Error initializing product selector:', error);
-            showProductError('Failed to load products. Please refresh the page.');
-        }
+    if (!canInitializeProductSelector() || productSelectorState.isInitialized) {
+        console.log('⚠️ Product selector not ready or already initialized');
+        return false;
     }
+
+    try {
+        // Get products from config instead of missing getAllProducts function
+        productSelectorState.allProducts = getProductsFromConfig();
+        productSelectorState.filteredProducts = [...productSelectorState.allProducts];
+        
+        renderProductSelector();
+        bindProductSelectorEvents();
+        switchProductMode('select');
+        
+        productSelectorState.isInitialized = true;
+        console.log('✅ Product selector initialized successfully');
+        return true;
+    } catch (error) {
+        console.error('Error initializing product selector:', error);
+        showProductError('Failed to load products. Please refresh the page.');
+        return false;
+    }
+}
+
+// Get products from your existing config
+function getProductsFromConfig() {
+    const products = [];
+    
+    // Check if the products database exists in your config
+    if (!window.TopikoConfig || !window.TopikoConfig.INDIAN_PRODUCTS_DB) {
+        console.warn('No products database found in config');
+        return [];
+    }
+
+    const db = window.TopikoConfig.INDIAN_PRODUCTS_DB;
+    
+    // Convert your config products to the format we need
+    Object.keys(db).forEach(category => {
+        Object.keys(db[category]).forEach(subcategory => {
+            if (Array.isArray(db[category][subcategory])) {
+                db[category][subcategory].forEach(product => {
+                    products.push({
+                        ...product,
+                        category: category,
+                        subcategory: subcategory
+                    });
+                });
+            }
+        });
+    });
+
+    return products;
 }
 
 // Show product error
@@ -795,11 +846,11 @@ function showProductError(message) {
     const container = document.getElementById('productsGrid');
     if (container) {
         container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">⚠️</div>
-                <h3>Error Loading Products</h3>
-                <p>${message}</p>
-                <button onclick="location.reload()" style="background: #6b46c1; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 15px;">
+            <div class="empty-state" style="text-align: center; padding: 2rem; background: rgba(255, 255, 255, 0.9); border-radius: 12px; margin: 1rem 0;">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">⚠️</div>
+                <h3 style="color: #e53e3e; margin-bottom: 1rem;">Error Loading Products</h3>
+                <p style="color: #64748b; margin-bottom: 1rem;">${message}</p>
+                <button onclick="location.reload()" style="background: #6b46c1; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
                     🔄 Reload Page
                 </button>
             </div>
@@ -846,10 +897,10 @@ function renderProductGrid() {
     
     if (productSelectorState.filteredProducts.length === 0) {
         container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">🔍</div>
-                <h3>No products found</h3>
-                <p>Try adjusting your search terms or filters</p>
+            <div class="empty-state" style="text-align: center; padding: 2rem; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">🔍</div>
+                <h3 style="color: #64748b; margin-bottom: 1rem;">No products found</h3>
+                <p style="color: #64748b;">Try adjusting your search terms or filters</p>
             </div>
         `;
         return;
@@ -858,15 +909,20 @@ function renderProductGrid() {
     const productsHTML = productSelectorState.filteredProducts.map(product => `
         <div class="product-card ${isProductSelected(product.id) ? 'selected' : ''}" 
              data-product-id="${product.id}"
-             onclick="toggleProductSelection('${product.id}')">
-            <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" 
+             onclick="toggleProductSelection('${product.id}')"
+             style="cursor: pointer; border: 2px solid ${isProductSelected(product.id) ? '#6b46c1' : '#e2e8f0'}; border-radius: 12px; overflow: hidden; background: white; transition: all 0.2s;">
+            <img src="${product.image}" 
+                 alt="${product.name}" 
+                 style="width: 100%; height: 150px; object-fit: cover;" 
+                 loading="lazy" 
                  onerror="this.src='https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=300&h=300&fit=crop'">
-            <div class="product-info">
-                <h3 class="product-name">${product.name}</h3>
-                <div class="product-price">${product.price}</div>
-                <p class="product-description">${product.description}</p>
-                <span class="product-category">${product.subcategory}</span>
+            <div style="padding: 1rem;">
+                <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: #2d3748;">${product.name}</h3>
+                <div style="color: #e53e3e; font-weight: 700; margin-bottom: 0.5rem;">₹${product.price}</div>
+                <p style="margin: 0 0 0.5rem 0; color: #64748b; font-size: 0.9rem; line-height: 1.4;">${product.description}</p>
+                <span style="background: rgba(107, 70, 193, 0.1); color: #6b46c1; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">${product.subcategory}</span>
             </div>
+            ${isProductSelected(product.id) ? '<div style="position: absolute; top: 10px; right: 10px; background: #6b46c1; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;">✓</div>' : ''}
         </div>
     `).join('');
 
@@ -880,6 +936,11 @@ function isProductSelected(productId) {
 
 // Toggle product selection
 function toggleProductSelection(productId) {
+    if (!productSelectorState.isInitialized) {
+        console.warn('Product selector not initialized');
+        return;
+    }
+
     const product = productSelectorState.allProducts.find(p => p.id === productId);
     if (!product) return;
 
@@ -888,6 +949,7 @@ function toggleProductSelection(productId) {
     if (existingIndex >= 0) {
         // Remove product
         productSelectorState.selectedProducts.splice(existingIndex, 1);
+        showProductNotification(`Removed "${product.name}" from selection`, 'info');
     } else {
         // Add product (create a copy for editing)
         productSelectorState.selectedProducts.push({
@@ -897,11 +959,12 @@ function toggleProductSelection(productId) {
             editedPrice: product.price,
             editedDescription: product.description
         });
+        showProductNotification(`Added "${product.name}" to selection`, 'success');
     }
 
     renderProductGrid();
     updateSelectedProductsDisplay();
-    updateProductCatalog();
+    safeUpdateProductCatalog();
 }
 
 // Update selected products display
@@ -923,39 +986,38 @@ function updateSelectedProductsDisplay() {
     section.style.display = 'block';
     
     const selectedHTML = productSelectorState.selectedProducts.map((product, index) => `
-        <div class="selected-product-item">
-            <img src="${product.image}" alt="${product.name}" class="selected-product-thumb" 
-                 onerror="this.src='https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=60&h=60&fit=crop'">
-            <div class="selected-product-details">
-                <div class="selected-product-name">
+        <div style="background: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; border: 1px solid #e2e8f0;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <img src="${product.image}" 
+                     alt="${product.name}" 
+                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;" 
+                     onerror="this.src='https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=60&h=60&fit=crop'">
+                <div style="flex: 1;">
                     <input type="text" 
-                           class="editable-field" 
                            value="${product.editedName || product.name}"
                            onchange="updateSelectedProductField(${index}, 'editedName', this.value)"
-                           placeholder="Product name">
-                    <span class="edit-indicator">✏️ Click to edit</span>
-                </div>
-                <div class="selected-product-price">
-                    ₹<input type="number" 
-                            class="editable-field" 
-                            value="${product.editedPrice || product.price}"
-                            onchange="updateSelectedProductField(${index}, 'editedPrice', this.value)"
-                            placeholder="Price"
-                            min="1">
-                </div>
-                <div style="margin-top: 8px; font-size: 0.9rem; color: #718096;">
+                           placeholder="Product name"
+                           style="width: 100%; padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 4px; margin-bottom: 4px;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 4px;">
+                        <span>₹</span>
+                        <input type="number" 
+                               value="${product.editedPrice || product.price}"
+                               onchange="updateSelectedProductField(${index}, 'editedPrice', this.value)"
+                               placeholder="Price"
+                               min="1"
+                               style="width: 100px; padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 4px;">
+                    </div>
                     <input type="text" 
-                           class="editable-field" 
                            value="${product.editedDescription || product.description}"
                            onchange="updateSelectedProductField(${index}, 'editedDescription', this.value)"
                            placeholder="Product description"
-                           style="width: 100%; font-size: 0.9rem;">
-                    <span class="edit-indicator">✏️ Edit description</span>
+                           style="width: 100%; padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.9rem;">
                 </div>
+                <button onclick="removeSelectedProduct(${index})" 
+                        style="background: #fed7d7; color: #e53e3e; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+                    Remove
+                </button>
             </div>
-            <button class="remove-product" onclick="removeSelectedProduct(${index})">
-                Remove
-            </button>
         </div>
     `).join('');
 
@@ -966,88 +1028,90 @@ function updateSelectedProductsDisplay() {
 function updateSelectedProductField(index, field, value) {
     if (productSelectorState.selectedProducts[index]) {
         productSelectorState.selectedProducts[index][field] = value;
-        updateProductCatalog();
+        safeUpdateProductCatalog();
     }
 }
 
 // Remove product from selection
 function removeSelectedProduct(index) {
-    productSelectorState.selectedProducts.splice(index, 1);
-    renderProductGrid();
-    updateSelectedProductsDisplay();
-    updateProductCatalog();
-}
-
-// Update the main product catalog display
-function updateProductCatalog() {
-    const catalogContainer = document.getElementById('productsList');
-    const countElement = document.getElementById('productCount');
-    
-    if (!catalogContainer || !countElement) return;
-
-    // Get all products (selected + custom)
-    const allUserProducts = [...productSelectorState.selectedProducts];
-    
-    // Add any custom products from existing system
-    if (window.productsList && Array.isArray(window.productsList)) {
-        allUserProducts.push(...window.productsList);
-    }
-
-    countElement.textContent = allUserProducts.length;
-
-    if (allUserProducts.length === 0) {
-        catalogContainer.innerHTML = `
-            <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
-                <p>No products selected yet. Choose from 500+ products above or add custom products!</p>
-            </div>
-        `;
-        return;
-    }
-
-    const catalogHTML = allUserProducts.map((product, index) => `
-        <div class="product-card-display" style="background: white; border-radius: 12px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 15px;">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="${product.image || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=60&h=60&fit=crop'}" 
-                     alt="${product.editedName || product.name}" 
-                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;"
-                     onerror="this.src='https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=60&h=60&fit=crop'">
-                <div style="flex: 1;">
-                    <h4 style="margin: 0; color: #2d3748; font-size: 1rem;">${product.editedName || product.name}</h4>
-                    <p style="margin: 4px 0; color: #e53e3e; font-weight: 700;">₹${product.editedPrice || product.price}</p>
-                    <p style="margin: 0; color: #718096; font-size: 0.9rem;">${(product.editedDescription || product.description || '').substring(0, 100)}${(product.editedDescription || product.description || '').length > 100 ? '...' : ''}</p>
-                </div>
-                <button onclick="removeProductFromCatalog(${index})" 
-                        style="background: #fed7d7; color: #e53e3e; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">
-                    Remove
-                </button>
-            </div>
-        </div>
-    `).join('');
-
-    catalogContainer.innerHTML = catalogHTML;
-}
-
-// Remove product from catalog
-function removeProductFromCatalog(index) {
-    // Check if it's a selected product or custom product
-    if (index < productSelectorState.selectedProducts.length) {
-        // It's a selected product
+    const product = productSelectorState.selectedProducts[index];
+    if (product) {
         productSelectorState.selectedProducts.splice(index, 1);
         renderProductGrid();
         updateSelectedProductsDisplay();
-    } else {
-        // It's a custom product - use existing removeProduct function if available
-        const customIndex = index - productSelectorState.selectedProducts.length;
-        if (window.removeProduct && typeof window.removeProduct === 'function') {
-            window.removeProduct(customIndex);
-        }
+        safeUpdateProductCatalog();
+        showProductNotification(`Removed "${product.editedName || product.name}" from selection`, 'info');
     }
-    updateProductCatalog();
+}
+
+// Safe update product catalog - avoid conflicts
+function safeUpdateProductCatalog() {
+    // Update your existing system safely
+    try {
+        // Convert selected products to the format your existing system expects
+        const convertedProducts = productSelectorState.selectedProducts.map(product => ({
+            name: product.editedName || product.name,
+            price: product.editedPrice || product.price,
+            description: product.editedDescription || product.description,
+            categoryKey: product.category,
+            subcategoryKey: product.subcategory,
+            imageUrl: product.image,
+            createdAt: new Date().toISOString()
+        }));
+
+        // Update the main app's product list
+        if (typeof window.topikoApp !== 'undefined') {
+            window.topikoApp.userProducts = [...convertedProducts];
+        }
+
+        // Update display if the function exists
+        if (typeof window.TopikoUtils !== 'undefined' && 
+            typeof window.TopikoUtils.displayProducts === 'function') {
+            window.TopikoUtils.displayProducts();
+        }
+
+        console.log('✅ Synced', convertedProducts.length, 'products with existing system');
+    } catch (error) {
+        console.error('Error syncing products:', error);
+    }
+}
+
+// Show notification
+function showProductNotification(message, type = 'info') {
+    // Use existing notification system if available
+    if (typeof window.TopikoUtils !== 'undefined' && 
+        typeof window.TopikoUtils.showNotification === 'function') {
+        window.TopikoUtils.showNotification(message, type);
+        return;
+    }
+
+    // Fallback notification
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#48bb78' : type === 'error' ? '#e53e3e' : '#6b46c1'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
 }
 
 // Apply filters and sorting
 function applyProductFilters() {
+    if (!productSelectorState.isInitialized) return;
+
     try {
         let filtered = [...productSelectorState.allProducts];
 
@@ -1120,12 +1184,21 @@ function renderQuickFilters() {
 
     const filtersHTML = filters.map(filter => `
         <button class="quick-filter ${productSelectorState.currentFilters.category === filter.key ? 'active' : ''}" 
-                data-category="${filter.key}">
+                data-category="${filter.key}"
+                onclick="filterByCategory('${filter.key}')"
+                style="padding: 8px 16px; margin: 4px; border: 1px solid #e2e8f0; border-radius: 6px; background: ${productSelectorState.currentFilters.category === filter.key ? '#6b46c1' : 'white'}; color: ${productSelectorState.currentFilters.category === filter.key ? 'white' : '#64748b'}; cursor: pointer;">
             ${filter.label}
         </button>
     `).join('');
 
     container.innerHTML = filtersHTML;
+}
+
+// Filter by category
+function filterByCategory(category) {
+    productSelectorState.currentFilters.category = category;
+    applyProductFilters();
+    renderQuickFilters();
 }
 
 // Bind product selector events
@@ -1157,42 +1230,6 @@ function bindProductSelectorEvents() {
             applyProductFilters();
         });
     }
-
-    // Price range inputs
-    const minPriceInput = document.getElementById('minPrice');
-    const maxPriceInput = document.getElementById('maxPrice');
-    
-    if (minPriceInput && maxPriceInput) {
-        const updatePriceRange = () => {
-            productSelectorState.currentFilters.minPrice = parseInt(minPriceInput.value) || 0;
-            productSelectorState.currentFilters.maxPrice = parseInt(maxPriceInput.value) || 5000;
-            const display = document.getElementById('priceRangeDisplay');
-            if (display) {
-                display.textContent = `${productSelectorState.currentFilters.minPrice} - ₹${productSelectorState.currentFilters.maxPrice}`;
-            }
-            applyProductFilters();
-        };
-
-        minPriceInput.addEventListener('change', updatePriceRange);
-        maxPriceInput.addEventListener('change', updatePriceRange);
-    }
-
-    // Quick filter buttons (using event delegation)
-    document.addEventListener('click', (e) => {
-        if (e.target.matches('.quick-filter')) {
-            const category = e.target.dataset.category;
-            productSelectorState.currentFilters.category = category;
-            
-            // Update dropdown
-            const categorySelect = document.getElementById('categoryFilter');
-            if (categorySelect) {
-                categorySelect.value = category;
-            }
-            
-            applyProductFilters();
-            renderQuickFilters();
-        }
-    });
 }
 
 // Helper functions for quick actions
@@ -1206,237 +1243,47 @@ function selectPopularProducts() {
         }
     });
     
-    // Show notification
-    showProductNotification('Added 5 popular products to your selection!', 'success');
+    showProductNotification('Added popular products to your selection!', 'success');
 }
 
 function clearAllSelections() {
     productSelectorState.selectedProducts = [];
     renderProductGrid();
     updateSelectedProductsDisplay();
-    updateProductCatalog();
+    safeUpdateProductCatalog();
     showProductNotification('Cleared all selected products', 'info');
 }
 
-// Show notification
-function showProductNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${type === 'success' ? '#48bb78' : type === 'error' ? '#e53e3e' : '#6b46c1'};
-        color: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        font-weight: 500;
-        z-index: 10000;
-        animation: slideIn 0.3s ease;
-    `;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-}
-
-// Modified addProduct function to work with existing system
-function addCustomProduct() {
-    // Use existing addProduct functionality but integrate with new system
-    if (window.addProduct && typeof window.addProduct === 'function') {
-        const originalAddProduct = window.addProduct;
-        originalAddProduct();
-        // Update our catalog after adding
-        setTimeout(updateProductCatalog, 100);
-    } else {
-        // Fallback if addProduct doesn't exist
-        showProductNotification('Custom product functionality not available', 'error');
-    }
-}
-
-// SAFE VERSION - Initialize manually
-function initTopikoProductSelector() {
-    if (document.getElementById('productsGrid') && typeof getAllProducts === 'function') {
-        try {
-            productSelectorState.allProducts = getAllProducts();
-            productSelectorState.filteredProducts = [...productSelectorState.allProducts];
-            renderProductSelector();
-            bindProductSelectorEvents();
-            switchProductMode('select');
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
-}
-
-// Make it available globally
-window.initTopikoProductSelector = initTopikoProductSelector;
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize if we're already on products screen
-    if (document.getElementById('productsGrid')) {
-        setTimeout(initializeProductSelector, 500);
-    }
-});
-
 // Make functions available globally
+window.initializeProductSelector = initializeProductSelector;
 window.switchProductMode = switchProductMode;
 window.toggleProductSelection = toggleProductSelection;
 window.updateSelectedProductField = updateSelectedProductField;
 window.removeSelectedProduct = removeSelectedProduct;
-window.removeProductFromCatalog = removeProductFromCatalog;  
 window.selectPopularProducts = selectPopularProducts;
 window.clearAllSelections = clearAllSelections;
-window.addCustomProduct = addCustomProduct;
-window.proceedToProducts = proceedToProducts;
+window.filterByCategory = filterByCategory;
 
-// ==========================================
-// PRODUCT SYNC FIX - ADD THIS TO script.js
-// ==========================================
-
-// Sync selected products with existing system
-function syncProductsWithExistingSystem() {
-    // Convert selected products to the format your existing system expects
-    const convertedProducts = productSelectorState.selectedProducts.map(product => ({
-        id: product.originalId,
-        name: product.editedName || product.name,
-        price: product.editedPrice || product.price,
-        description: product.editedDescription || product.description,
-        category: product.category,
-        subcategory: product.subcategory,
-        image: product.image
-    }));
-
-    // Sync with common variable names that might be used
-    if (typeof window.productsList !== 'undefined') {
-        // If your system uses window.productsList
-        window.productsList = [...convertedProducts];
+// Safe initialization when DOM is ready and when products screen is shown
+function tryInitializeProductSelector() {
+    // Only try to initialize if we're on the products screen
+    if (window.topikoApp && window.topikoApp.currentStep === 'products') {
+        initializeProductSelector();
     }
-    
-    if (typeof window.products !== 'undefined') {
-        // If your system uses window.products
-        window.products = [...convertedProducts];
-    }
-    
-    if (typeof window.selectedProducts !== 'undefined') {
-        // If your system uses window.selectedProducts
-        window.selectedProducts = [...convertedProducts];
-    }
-
-    // Update any existing product count displays
-    const productCountElements = document.querySelectorAll('[id*="product"], [class*="product-count"]');
-    productCountElements.forEach(el => {
-        if (el.textContent.match(/\d+/)) {
-            el.textContent = el.textContent.replace(/\d+/, convertedProducts.length);
-        }
-    });
-
-    // Trigger any existing validation functions
-    if (typeof window.validateProducts === 'function') {
-        window.validateProducts();
-    }
-    
-    if (typeof window.checkProductRequirements === 'function') {
-        window.checkProductRequirements();
-    }
-    
-    if (typeof window.updateProductDisplay === 'function') {
-        window.updateProductDisplay();
-    }
-
-    // Force update the themes screen if it exists
-    if (typeof window.updateThemePreview === 'function') {
-        window.updateThemePreview();
-    }
-
-    // Check for theme screen and populate it
-    updateThemePreviews();
-    
-    // Enable the "Choose Theme" button if products exist
-    enableThemeButton();
-
-    console.log('✅ Synced', convertedProducts.length, 'products with existing system');
 }
 
-// Update theme previews with selected products
-function updateThemePreviews() {
-    const themePreviewIds = ['modern-preview', 'vibrant-preview', 'professional-preview', 'traditional-preview', 'creative-preview', 'luxury-preview'];
-    
-    if (productSelectorState.selectedProducts.length > 0) {
-        const sampleProducts = productSelectorState.selectedProducts.slice(0, 3); // Show first 3 products
+// Override the proceedToProducts function to initialize selector when products screen loads
+const originalProceedToProducts = window.proceedToProducts;
+if (originalProceedToProducts) {
+    window.proceedToProducts = function() {
+        // Call original function first
+        originalProceedToProducts();
         
-        themePreviewIds.forEach(previewId => {
-            const previewElement = document.getElementById(previewId);
-            if (previewElement) {
-                const previewHTML = sampleProducts.map(product => `
-                    <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 0.8rem;">
-                        <div style="width: 30px; height: 30px; background: rgba(255,255,255,0.2); border-radius: 4px; display: flex; align-items: center; justify-content: center;">📦</div>
-                        <div>
-                            <div style="font-weight: 600;">${(product.editedName || product.name).substring(0, 15)}...</div>
-                            <div>₹${product.editedPrice || product.price}</div>
-                        </div>
-                    </div>
-                `).join('');
-                
-                previewElement.innerHTML = previewHTML;
-            }
-        });
-    }
+        // Then initialize product selector after a delay
+        setTimeout(() => {
+            tryInitializeProductSelector();
+        }, 1000);
+    };
 }
 
-// Enable theme button when products are selected
-function enableThemeButton() {
-    const themeButton = document.getElementById('themeNextBtn');
-    if (themeButton && productSelectorState.selectedProducts.length > 0) {
-        themeButton.disabled = false;
-        themeButton.style.opacity = '1';
-        themeButton.textContent = 'Complete Setup 🚀';
-    }
-}
-
-// Override the updateProductCatalog function to include syncing
-const originalUpdateProductCatalog = updateProductCatalog;
-updateProductCatalog = function() {
-    // Call the original function
-    originalUpdateProductCatalog();
-    
-    // Add syncing
-    syncProductsWithExistingSystem();
-};
-
-// Also sync when products are selected/deselected
-const originalToggleProductSelection = toggleProductSelection;
-toggleProductSelection = function(productId) {
-    // Call the original function
-    originalToggleProductSelection(productId);
-    
-    // Sync after selection change
-    setTimeout(syncProductsWithExistingSystem, 100);
-};
-
-// Sync when page loads if products are already selected
-setTimeout(() => {
-    if (productSelectorState.selectedProducts.length > 0) {
-        syncProductsWithExistingSystem();
-    }
-}, 1000);
-
-// Debug function to check what your system is looking for
-function debugProductVariables() {
-    console.log('🔍 Debug: Checking product variables...');
-    console.log('window.productsList:', window.productsList);
-    console.log('window.products:', window.products);
-    console.log('window.selectedProducts:', window.selectedProducts);
-    console.log('productSelectorState.selectedProducts:', productSelectorState.selectedProducts);
-    
-    // Check for any variables containing "product"
-    Object.keys(window).filter(key => key.toLowerCase().includes('product')).forEach(key => {
-        console.log(`window.${key}:`, window[key]);
-    });
-}
-
-// Make debug function available
-window.debugProductVariables = debugProductVariables;
+console.log('✅ Enhanced Product Selector loaded (safe version)');
