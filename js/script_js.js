@@ -313,8 +313,8 @@ function loadCategoriesContent(businessCategory, categoriesContainer) {
     
     let categoriesHTML = `
         <div class="category-section">
-            <h3><span style="margin-right: 0.5rem;">${categoryData.icon}</span>${categoryData.name} Categories</h3>
-            <p style="color: #553c9a; margin-bottom: 1.5rem; font-size: 0.9rem;">Select categories that apply to your business (this helps us create your perfect online store):</p>
+            <h3><span style="margin-right: 0.5rem;">${categoryData.icon}</span>${window.i18n.t(`businessCategories.${businessCategory}`)}</h3>
+            <p style="color: #553c9a; margin-bottom: 1.5rem; font-size: 0.9rem;">${window.i18n.t('categories.subtitle')}</p>
             
             <div class="category-grid">
     `;
@@ -364,6 +364,10 @@ function loadCategoriesContent(businessCategory, categoriesContainer) {
     `;
     
     categoriesContainer.innerHTML = categoriesHTML;
+    
+    // Update i18n for the new content
+    window.i18n.updateUI();
+    
     updateProductCategoriesDropdown();
     updateSelectionSummary();
 }
