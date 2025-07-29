@@ -420,30 +420,43 @@ function updateProductCategoriesDropdown() {
     
     if (!productCategorySelect || !productSubcategorySelect) return;
     
+    // Clear existing options
     productCategorySelect.innerHTML = '<option value="">Select from your chosen categories</option>';
     productSubcategorySelect.innerHTML = '<option value="">Select a subcategory</option>';
     
     const businessCategory = document.getElementById('category')?.value;
+    const selectedCategories = window.topikoApp.selectedCategories;
+    
     if (!businessCategory || !window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory]) return;
     
     const categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory];
     
-    window.topikoApp.selectedCategories.forEach(categoryKey => {
+    // Only show selected categories in dropdown
+    selectedCategories.forEach(categoryKey => {
         const category = categoryData.categories[categoryKey];
         if (category) {
             productCategorySelect.innerHTML += `<option value="${categoryKey}">${category.name}</option>`;
         }
     });
     
+    // Update subcategory dropdown based on selection
     productCategorySelect.onchange = function() {
         const selectedCat = this.value;
         productSubcategorySelect.innerHTML = '<option value="">Select a subcategory</option>';
         
         if (selectedCat && categoryData.categories[selectedCat]) {
             const category = categoryData.categories[selectedCat];
+            
+            // Only show subcategories that were selected in previous screen
+            const selectedSubcategories = window.topikoApp.selectedSubcategories;
+            
             category.subcategories.forEach(subcategoryKey => {
-                const subcategoryName = window.TopikoConfig.SUBCATEGORY_NAMES[subcategoryKey] || subcategoryKey.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
-                productSubcategorySelect.innerHTML += `<option value="${subcategoryKey}">${subcategoryName}</option>`;
+                // Only add if this subcategory was selected
+                if (selectedSubcategories.includes(subcategoryKey)) {
+                    const subcategoryName = window.TopikoConfig.SUBCATEGORY_NAMES[subcategoryKey] || 
+                        subcategoryKey.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    productSubcategorySelect.innerHTML += `<option value="${subcategoryKey}">${subcategoryName}</option>`;
+                }
             });
         }
     };
@@ -491,15 +504,90 @@ function switchProductMode(mode) {
 }
 
 function loadProductSelector() {
-    window.TopikoUtils.addDebugLog('🛍️ Loading product selector...');
+    window.TopikoUtils.addDebugLog('🛍️ Loading products for selected categories...');
     
-    // Initialize product selection system
+    // Get selected categories and subcategories from previous screen
+    const selectedCategories = window.topikoApp.selectedCategories;
+    const selectedSubcategories = window.topikoApp.selectedSubcategories;
+    
+    if (selectedCategories.length === 0) {
+        showNotification('Please go back and select categories first', 'warning');
+        return;
+    }
+    
+    // Initialize product selection system with filtered products
     setupProductControls();
     setupQuickFilters();
-    loadProductsGrid();
+    loadFilteredProductsGrid(); // Changed from loadProductsGrid()
     
     window.topikoApp.productsLoaded = true;
-    window.TopikoUtils.addDebugLog('✅ Product selector loaded successfully');
+    window.TopikoUtils.addDebugLog(`✅ Product selector loaded for ${selectedCategories.length} categories`);
+}
+
+function loadFilteredProductsGrid() {
+    // Get business category and selected subcategories
+    const businessCategory = document.getElementById('category')?.value;
+    const selectedSubcategories = window.topikoApp.selectedSubcategories;
+    
+    if (!businessCategory || !window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory]) {
+        showNotification('Business category not found. Please complete registration.', 'error');
+        return;
+    }
+    
+    // Filter products to only selected subcategories
+    const filteredProducts = getProductsForSelectedCategories();
+    
+    // Update products count
+    const productsCount = document.getElementById('productsCount');
+    if (productsCount) {
+        productsCount.textContent = filteredProducts.length;
+    }
+    
+    // Display filtered products
+    displayProductsGrid(filteredProducts);
+    
+    // Update quick filters to only show relevant categories
+    updateQuickFiltersForSelection();
+    
+    window.TopikoUtils.addDebugLog(`🎯 Loaded ${filteredProducts.length} products for selected categories`);
+}
+
+function getProductsForSelectedCategories() {
+    const businessCategory = document.getElementById('category')?.value;
+    const selectedSubcategories = window.topikoApp.selectedSubcategories;
+    
+    if (!businessCategory || !window.TopikoConfig.INDIAN_PRODUCTS_DB[businessCategory]) {
+        return [];
+    }
+    
+    let relevantProducts = [];
+    
+    // Get products from the business category database
+    const categoryData = window.TopikoConfig.INDIAN_PRODUCTS_DB[businessCategory];
+    
+    // If user selected specific subcategories, filter to those
+    if (selectedSubcategories.length > 0) {
+        Object.keys(categoryData).forEach(categoryKey => {
+            const products = categoryData[categoryKey];
+            if (Array.isArray(products)) {
+                // Filter products that match selected subcategories
+                const filteredProducts = products.filter(product => 
+                    selectedSubcategories.includes(product.subcategory)
+                );
+                relevantProducts = [...relevantProducts, ...filteredProducts];
+            }
+        });
+    } else {
+        // If no subcategories selected, show all products from selected main categories
+        const selectedCategories = window.topikoApp.selectedCategories;
+        selectedCategories.forEach(selectedCat => {
+            if (categoryData[selectedCat]) {
+                relevantProducts = [...relevantProducts, ...categoryData[selectedCat]];
+            }
+        });
+    }
+    
+    return relevantProducts;
 }
 
 function setupProductControls() {
@@ -585,8 +673,39 @@ function filterAndDisplayProducts() {
     
     const priceRange = { min: minPrice, max: maxPrice };
     
-    // Get filtered products
-    const filteredProducts = window.TopikoConfig.searchProducts(searchTerm, categoryFilter, sortBy, priceRange);
+    // Get products only from selected categories (not all products)
+    let baseProducts = getProductsForSelectedCategories();
+    
+    // Apply additional filters
+    let filteredProducts = baseProducts.filter(product => {
+        // Search filter
+        if (searchTerm && !product.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
+            !product.description.toLowerCase().includes(searchTerm.toLowerCase())) {
+            return false;
+        }
+        
+        // Category filter
+        if (categoryFilter !== 'all' && product.category !== categoryFilter) {
+            return false;
+        }
+        
+        // Price filter
+        if (product.suggestedPrice < priceRange.min || product.suggestedPrice > priceRange.max) {
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // Sort products
+    filteredProducts.sort((a, b) => {
+        switch (sortBy) {
+            case 'price-low': return a.suggestedPrice - b.suggestedPrice;
+            case 'price-high': return b.suggestedPrice - a.suggestedPrice;
+            case 'category': return (a.category || '').localeCompare(b.category || '');
+            default: return a.name.localeCompare(b.name);
+        }
+    });
     
     // Update products count
     const productsCount = document.getElementById('productsCount');
@@ -597,7 +716,7 @@ function filterAndDisplayProducts() {
     // Display products
     displayProductsGrid(filteredProducts);
     
-    window.TopikoUtils.addDebugLog(`🔍 Filtered products: ${filteredProducts.length} results`);
+    window.TopikoUtils.addDebugLog(`🔍 Filtered to ${filteredProducts.length} products from selected categories`);
 }
 
 function loadProductsGrid() {
