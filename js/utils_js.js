@@ -1,909 +1,914 @@
-/* ========================================
-   TOPIKO LEAD FORM - UTILITY FUNCTIONS
-   ======================================== */
+/**
+ * Topiko Lead Form - Utility Functions and Helpers
+ * Contains all helper functions for form management, data processing, UI updates, and API integration
+ */
 
-// ========================================
-// DEBUG & LOGGING UTILITIES
-// ========================================
-
-let debugLogs = [];
-
-function addDebugLog(message, type = 'info') {
-    const timestamp = new Date().toLocaleTimeString();
-    debugLogs.push({ timestamp, message, type });
+const Utils = {
     
-    console.log(`🔍 DEBUG: ${message}`);
+    // ============================================
+    // FORM MANAGEMENT FUNCTIONS
+    // ============================================
     
-    const debugLogEl = document.getElementById('debugLog');
-    if (debugLogEl) {
-        debugLogEl.innerHTML = debugLogs.slice(-15).map(log => 
-            `<div style="color: ${log.type === 'error' ? '#ff6b6b' : log.type === 'success' ? '#51cf66' : '#74c0fc'}; margin-bottom: 3px; font-size: 0.7rem;">
-                [${log.timestamp.split(':').slice(-2).join(':')}] ${log.message}
-            </div>`
-        ).join('');
-        debugLogEl.scrollTop = debugLogEl.scrollHeight;
-    }
-}
-
-function toggleDebugPanel() {
-    const panel = document.getElementById('debugPanel');
-    panel.classList.toggle('show');
-}
-
-// ========================================
-// NOTIFICATION SYSTEM
-// ========================================
-
-function showNotification(message, type = 'info') {
-    const notification = document.getElementById('notification');
-    const content = document.getElementById('notificationContent');
-    
-    if (!notification || !content) {
-        console.log(`Notification: ${message}`);
-        return;
-    }
-    
-    // If message is a translation key, translate it
-    const translatedMessage = message.startsWith('notifications.') ? window.i18n.t(message) : message;
-    
-    content.textContent = translatedMessage;
-    notification.className = `notification ${type} show`;
-    
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 4000);
-}
-
-// ========================================
-// MODAL UTILITIES
-// ========================================
-
-function showModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('show');
-        addDebugLog(`📱 Modal shown: ${modalId}`);
-    }
-}
-
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.remove('show');
-        addDebugLog(`📱 Modal closed: ${modalId}`);
-    }
-}
-
-// Close modal when clicking outside
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('modal-overlay')) {
-        e.target.classList.remove('show');
-    }
-});
-
-// ========================================
-// DATABASE UTILITIES
-// ========================================
-
-async function saveToSupabase(data, table) {
-    try {
-        addDebugLog(`💾 Saving to ${table}`);
+    /**
+     * Validate form field based on configuration rules
+     * @param {string} fieldName - Name of the field to validate
+     * @param {string} value - Value to validate
+     * @returns {Object} Validation result with isValid and message
+     */
+    validateField(fieldName, value) {
+        const rules = Config.validation;
+        let result = { isValid: true, message: '' };
         
-        const response = await fetch(`${window.TopikoConfig.SUPABASE_CONFIG.URL}/rest/v1/${table}`, {
-            method: 'POST',
-            headers: {
-                'apikey': window.TopikoConfig.SUPABASE_CONFIG.ANON_KEY,
-                'Authorization': `Bearer ${window.TopikoConfig.SUPABASE_CONFIG.ANON_KEY}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation'
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            addDebugLog(`✅ Saved to ${table}`, 'success');
-            return { success: true, data: result };
-        } else {
-            const errorText = await response.text();
-            addDebugLog(`❌ Save failed: ${response.status}`, 'error');
-            return { success: false, error: `${response.status}: ${errorText}` };
+        if (!value || value.trim() === '') {
+            return { isValid: false, message: 'This field is required' };
         }
-    } catch (error) {
-        addDebugLog(`❌ Save error: ${error.message}`, 'error');
-        return { success: false, error: error.message };
-    }
-}
-
-// ========================================
-// SCREEN NAVIGATION UTILITIES
-// ========================================
-
-function showScreen(screenId) {
-    document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.remove('active');
-    });
-    
-    const targetScreen = document.getElementById(screenId);
-    if (targetScreen) {
-        targetScreen.classList.add('active');
         
-        // Update global variables
-        if (typeof window.topikoApp !== 'undefined') {
-            window.topikoApp.pageViews++;
-            
-            // Update navigation history
-            if (window.topikoApp.currentStep !== screenId) {
-                window.topikoApp.currentStep = screenId;
-                if (window.topikoApp.navigationHistory[window.topikoApp.navigationHistory.length - 1] !== screenId) {
-                    window.topikoApp.navigationHistory.push(screenId);
+        switch (fieldName) {
+            case 'email':
+                if (!rules.email.pattern.test(value)) {
+                    result = { isValid: false, message: rules.email.message };
                 }
-            }
-            
-            updateProgressBar(window.topikoApp.currentStep);
-            updateBackButton();
-            
-            // Apply i18n to the new screen
-            window.i18n.updateCurrentScreen(screenId);
-            
-            // Screen-specific logic...
-            if (screenId === 'categories') {
-                loadCategories();
-                setTimeout(() => {
-                    updateMotivationalMessages();
-                }, 200);
-            }
-            
-            // ... other screen logic
-            
-            addPersonalization(screenId);
-            addDebugLog(`📱 Screen: ${screenId} (views: ${window.topikoApp.pageViews})`);
-            calculateLeadScore();
+                break;
+                
+            case 'phoneNumber':
+                const cleanPhone = value.replace(/\D/g, '');
+                if (!rules.phone.pattern.test(cleanPhone)) {
+                    result = { isValid: false, message: rules.phone.message };
+                }
+                break;
+                
+            case 'fullName':
+            case 'businessName':
+                const nameRules = fieldName === 'fullName' ? rules.name : rules.businessName;
+                if (value.length < nameRules.minLength || value.length > nameRules.maxLength) {
+                    result = { isValid: false, message: nameRules.message };
+                }
+                if (fieldName === 'fullName' && nameRules.pattern && !nameRules.pattern.test(value)) {
+                    result = { isValid: false, message: nameRules.message };
+                }
+                break;
+                
+            case 'otp':
+                if (!rules.otp.pattern.test(value)) {
+                    result = { isValid: false, message: rules.otp.message };
+                }
+                break;
         }
-    }
-}
-
-function updateProgressBar(activeStep) {
-    const progressElements = document.querySelectorAll('.progress-step');
-    const activeProgressIndex = window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.indexOf(activeStep);
-    
-    progressElements.forEach((step, index) => {
-        const stepData = step.getAttribute('data-step');
-        const stepProgressIndex = window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.indexOf(stepData);
         
-        step.classList.remove('completed', 'in-progress');
+        return result;
+    },
+
+    /**
+     * Validate complete form data
+     * @param {Object} formData - Form data to validate
+     * @param {string} step - Current step name
+     * @returns {Object} Validation result with errors object
+     */
+    validateForm(formData, step) {
+        const errors = {};
+        const requiredFields = Config.form.requiredFields[step] || [];
         
-        if (stepProgressIndex < activeProgressIndex) {
-            step.classList.add('completed');
-        } else if (stepProgressIndex === activeProgressIndex) {
-            step.classList.add('in-progress');
+        requiredFields.forEach(field => {
+            const value = formData[field];
+            const validation = this.validateField(field, value);
+            if (!validation.isValid) {
+                errors[field] = validation.message;
+            }
+        });
+        
+        return {
+            isValid: Object.keys(errors).length === 0,
+            errors: errors
+        };
+    },
+
+    /**
+     * Collect form data from current step
+     * @param {string} step - Current step name
+     * @returns {Object} Form data object
+     */
+    collectFormData(step) {
+        const data = {};
+        
+        switch (step) {
+            case 'goals':
+                const goalCheckboxes = document.querySelectorAll('.goal-checkbox:checked');
+                data.goals = Array.from(goalCheckboxes).map(cb => cb.value);
+                break;
+                
+            case 'registration':
+                const fields = ['fullName', 'email', 'phoneNumber', 'businessName', 'address', 'businessType', 'category'];
+                fields.forEach(field => {
+                    const element = document.getElementById(field);
+                    if (element) {
+                        data[field] = element.value.trim();
+                    }
+                });
+                break;
+                
+            case 'qualifying-questions':
+                const questions = ['online_presence', 'budget', 'decision_maker', 'timeline'];
+                questions.forEach(question => {
+                    const selected = document.querySelector(`input[name="${question}"]:checked`);
+                    if (selected) {
+                        data[question] = selected.value;
+                    }
+                });
+                break;
+                
+            case 'categories':
+                data.categories = this.getSelectedCategories();
+                break;
+                
+            case 'products':
+                data.products = this.getSelectedProducts();
+                break;
+                
+            case 'themes':
+                data.theme = this.getSelectedTheme();
+                break;
         }
-    });
-    
-    addDebugLog(`📊 Progress bar updated: ${activeStep} (${activeProgressIndex + 1}/${window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.length})`);
-}
+        
+        return data;
+    },
 
-function updateBackButton() {
-    const backButton = document.getElementById('backButton');
-    if (!window.topikoApp) return;
-    
-    const canGoBack = window.topikoApp.navigationHistory.length > 1 && window.topikoApp.currentStep !== 'welcome';
-    
-    if (canGoBack) {
-        backButton.classList.remove('hidden');
-    } else {
-        backButton.classList.add('hidden');
-    }
-}
+    /**
+     * Save form data to localStorage
+     * @param {Object} data - Data to save
+     * @param {string} step - Current step
+     */
+    saveFormData(data, step) {
+        if (!Config.form.autoSave) return;
+        
+        try {
+            const existingData = this.getStoredFormData();
+            const updatedData = { ...existingData, ...data };
+            updatedData.currentStep = step;
+            updatedData.lastSaved = new Date().toISOString();
+            
+            localStorage.setItem('topiko-lead-data', JSON.stringify(updatedData));
+            this.debugLog('Form data saved to localStorage', { step, data });
+        } catch (error) {
+            this.debugLog('Error saving form data', error, 'error');
+        }
+    },
 
-function goBack() {
-    if (!window.topikoApp) return;
-    
-    if (window.topikoApp.navigationHistory.length > 1) {
-        // Remove current step from history
-        window.topikoApp.navigationHistory.pop();
-        // Get previous step
-        const previousStep = window.topikoApp.navigationHistory[window.topikoApp.navigationHistory.length - 1];
-        window.topikoApp.currentStep = previousStep;
-        showScreen(previousStep);
-        updateBackButton();
-        addDebugLog(`🔙 Navigated back to: ${previousStep}`);
-    }
-}
+    /**
+     * Retrieve stored form data from localStorage
+     * @returns {Object} Stored form data
+     */
+    getStoredFormData() {
+        try {
+            const stored = localStorage.getItem('topiko-lead-data');
+            return stored ? JSON.parse(stored) : {};
+        } catch (error) {
+            this.debugLog('Error retrieving stored form data', error, 'error');
+            return {};
+        }
+    },
 
-function navigateToStep(stepId) {
-    if (!window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.includes(stepId)) {
-        addDebugLog(`❌ Navigation blocked: ${stepId} (not in progress steps)`);
-        return;
-    }
-    
-    if (!window.topikoApp) return;
-    
-    const targetProgressIndex = window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.indexOf(stepId);
-    const currentProgressIndex = window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.indexOf(window.topikoApp.currentStep);
-    
-    if (targetProgressIndex <= currentProgressIndex || window.topikoApp.currentStep === 'welcome' || window.topikoApp.currentStep === 'language') {
-        showScreen(stepId);
-        addDebugLog(`📱 Navigated to: ${stepId} via progress bar`);
-    } else {
-        showNotification('Complete current step first', 'warning');
-        addDebugLog(`❌ Navigation blocked: ${stepId} (step not available yet)`);
-    }
-}
+    /**
+     * Clear stored form data
+     */
+    clearStoredFormData() {
+        try {
+            localStorage.removeItem('topiko-lead-data');
+            this.debugLog('Stored form data cleared');
+        } catch (error) {
+            this.debugLog('Error clearing stored form data', error, 'error');
+        }
+    },
 
-// ========================================
-// PERSONALIZATION UTILITIES
-// ========================================
+    // ============================================
+    // DATA PROCESSING FUNCTIONS
+    // ============================================
 
-function addPersonalization(screenId) {
-    if (!window.topikoApp) return;
-    
-    const name = window.topikoApp.userName || document.getElementById('fullName')?.value || '';
-    const business = window.topikoApp.businessName || document.getElementById('businessName')?.value || '';
-    
-    if (screenId === 'qualifying-questions' && name) {
-        const titleEl = document.getElementById('qualifyingTitle');
-        if (titleEl) {
-            titleEl.innerHTML = `Hi ${name}! Let's setup things for you`;
+    /**
+     * Calculate lead score based on current form data
+     * @param {Object} formData - Complete form data
+     * @returns {number} Lead score (0-100)
+     */
+    calculateLeadScore(formData) {
+        let score = 0;
+        const weights = Config.leadScoring.weights;
+        const goalPoints = Config.leadScoring.goalPoints;
+        const qualifyingPoints = Config.leadScoring.qualifyingPoints;
+        
+        // Goals scoring (max 20 points)
+        if (formData.goals && formData.goals.length > 0) {
+            const goalsScore = formData.goals.reduce((sum, goal) => {
+                return sum + (goalPoints[goal] || 0);
+            }, 0);
+            score += Math.min(goalsScore, weights.goals);
+        }
+        
+        // Registration completion (25 points)
+        const requiredRegistrationFields = Config.form.requiredFields.registration || [];
+        const completedFields = requiredRegistrationFields.filter(field => 
+            formData[field] && formData[field].trim() !== ''
+        );
+        if (completedFields.length === requiredRegistrationFields.length) {
+            score += weights.registration;
+        } else {
+            score += (completedFields.length / requiredRegistrationFields.length) * weights.registration;
+        }
+        
+        // Qualifying questions scoring (max 30 points)
+        let qualifyingScore = 0;
+        if (formData.online_presence) {
+            qualifyingScore += qualifyingPoints.online_presence[formData.online_presence] || 0;
+        }
+        if (formData.budget) {
+            qualifyingScore += qualifyingPoints.budget[formData.budget] || 0;
+        }
+        if (formData.decision_maker) {
+            qualifyingScore += qualifyingPoints.decision_maker[formData.decision_maker] || 0;
+        }
+        if (formData.timeline) {
+            qualifyingScore += qualifyingPoints.timeline[formData.timeline] || 0;
+        }
+        score += Math.min(qualifyingScore, weights.qualifying);
+        
+        // Categories selection (10 points)
+        if (formData.categories && formData.categories.length > 0) {
+            score += weights.categories;
+        }
+        
+        // Products selection (10 points)
+        if (formData.products && formData.products.length > 0) {
+            score += weights.products;
+        }
+        
+        // Theme selection (5 points)
+        if (formData.theme) {
+            score += weights.theme;
+        }
+        
+        return Math.min(Math.round(score), 100);
+    },
+
+    /**
+     * Get lead score category based on score
+     * @param {number} score - Lead score
+     * @returns {string} Score category: 'cold', 'warm', or 'hot'
+     */
+    getLeadScoreCategory(score) {
+        const thresholds = Config.leadScoring.thresholds;
+        if (score >= thresholds.hot) return 'hot';
+        if (score >= thresholds.warm) return 'warm';
+        return 'cold';
+    },
+
+    /**
+     * Filter products based on search and filter criteria
+     * @param {Array} products - Products array
+     * @param {Object} filters - Filter criteria
+     * @returns {Array} Filtered products
+     */
+    filterProducts(products, filters = {}) {
+        let filtered = [...products];
+        
+        // Text search
+        if (filters.search && filters.search.trim()) {
+            const searchTerm = filters.search.toLowerCase().trim();
+            filtered = filtered.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.category.toLowerCase().includes(searchTerm) ||
+                (product.subcategory && product.subcategory.toLowerCase().includes(searchTerm))
+            );
+        }
+        
+        // Category filter
+        if (filters.category && filters.category !== 'all') {
+            filtered = filtered.filter(product => product.category === filters.category);
+        }
+        
+        // Price range filter
+        if (filters.minPrice !== undefined && filters.maxPrice !== undefined) {
+            filtered = filtered.filter(product => 
+                product.price >= filters.minPrice && product.price <= filters.maxPrice
+            );
+        }
+        
+        // Sort products
+        if (filters.sortBy) {
+            filtered = this.sortProducts(filtered, filters.sortBy);
+        }
+        
+        return filtered;
+    },
+
+    /**
+     * Sort products based on criteria
+     * @param {Array} products - Products to sort
+     * @param {string} sortBy - Sort criteria
+     * @returns {Array} Sorted products
+     */
+    sortProducts(products, sortBy) {
+        const sorted = [...products];
+        
+        switch (sortBy) {
+            case 'name':
+                return sorted.sort((a, b) => a.name.localeCompare(b.name));
+            case 'price-low':
+                return sorted.sort((a, b) => a.price - b.price);
+            case 'price-high':
+                return sorted.sort((a, b) => b.price - a.price);
+            case 'category':
+                return sorted.sort((a, b) => a.category.localeCompare(b.category));
+            case 'popularity':
+                return sorted.sort((a, b) => b.popularity - a.popularity);
+            default:
+                return sorted;
+        }
+    },
+
+    /**
+     * Get popular products across all categories
+     * @param {number} limit - Number of products to return
+     * @returns {Array} Popular products
+     */
+    getPopularProducts(limit = 20) {
+        const allProducts = Config.getAllProducts();
+        return allProducts
+            .filter(product => product.popularity >= 85)
+            .sort((a, b) => b.popularity - a.popularity)
+            .slice(0, limit);
+    },
+
+    // ============================================
+    // UI HELPER FUNCTIONS
+    // ============================================
+
+    /**
+     * Show notification to user
+     * @param {string} message - Notification message
+     * @param {string} type - Notification type: 'success', 'error', 'info', 'warning'
+     * @param {number} duration - Duration in milliseconds
+     */
+    showNotification(message, type = 'info', duration = 3000) {
+        const notification = document.getElementById('notification');
+        const content = document.getElementById('notificationContent');
+        
+        if (!notification || !content) return;
+        
+        // Set content and styling based on type
+        content.textContent = message;
+        notification.style.display = 'block';
+        notification.className = `notification ${type}`;
+        
+        // Apply type-specific styling
+        switch (type) {
+            case 'success':
+                notification.style.background = '#059669';
+                notification.style.color = 'white';
+                break;
+            case 'error':
+                notification.style.background = '#dc2626';
+                notification.style.color = 'white';
+                break;
+            case 'warning':
+                notification.style.background = '#f59e0b';
+                notification.style.color = 'white';
+                break;
+            default:
+                notification.style.background = '#0284c7';
+                notification.style.color = 'white';
+        }
+        
+        // Auto-hide notification
+        setTimeout(() => {
+            this.hideNotification();
+        }, duration);
+        
+        this.debugLog(`Notification shown: ${message}`, { type, duration });
+    },
+
+    /**
+     * Hide notification
+     */
+    hideNotification() {
+        const notification = document.getElementById('notification');
+        if (notification) {
+            notification.style.display = 'none';
+        }
+    },
+
+    /**
+     * Show loading state for an element
+     * @param {HTMLElement|string} element - Element or element ID
+     * @param {string} message - Loading message
+     */
+    showLoading(element, message = 'Loading...') {
+        const el = typeof element === 'string' ? document.getElementById(element) : element;
+        if (!el) return;
+        
+        el.style.opacity = '0.6';
+        el.style.pointerEvents = 'none';
+        
+        // Add loading class if it exists in CSS
+        el.classList.add('loading');
+        
+        // Update text content for buttons
+        if (el.tagName === 'BUTTON') {
+            el.dataset.originalText = el.textContent;
+            el.textContent = message;
+        }
+    },
+
+    /**
+     * Hide loading state for an element
+     * @param {HTMLElement|string} element - Element or element ID
+     */
+    hideLoading(element) {
+        const el = typeof element === 'string' ? document.getElementById(element) : element;
+        if (!el) return;
+        
+        el.style.opacity = '1';
+        el.style.pointerEvents = 'auto';
+        el.classList.remove('loading');
+        
+        // Restore original text for buttons
+        if (el.tagName === 'BUTTON' && el.dataset.originalText) {
+            el.textContent = el.dataset.originalText;
+            delete el.dataset.originalText;
+        }
+    },
+
+    /**
+     * Show modal
+     * @param {string} modalId - Modal element ID
+     */
+    showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            this.debugLog(`Modal shown: ${modalId}`);
+        }
+    },
+
+    /**
+     * Hide modal
+     * @param {string} modalId - Modal element ID
+     */
+    hideModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scrolling
+            this.debugLog(`Modal hidden: ${modalId}`);
+        }
+    },
+
+    /**
+     * Update progress bar
+     * @param {string} currentStep - Current step name
+     */
+    updateProgressBar(currentStep) {
+        const steps = document.querySelectorAll('.progress-step');
+        const stepNames = ['goals', 'registration', 'qualifying-questions', 'categories', 'products', 'themes'];
+        const currentIndex = stepNames.indexOf(currentStep);
+        
+        steps.forEach((step, index) => {
+            const circle = step.querySelector('.progress-circle');
+            
+            if (index < currentIndex) {
+                step.classList.add('completed');
+                step.classList.remove('active');
+                circle.innerHTML = '✓';
+            } else if (index === currentIndex) {
+                step.classList.add('active');
+                step.classList.remove('completed');
+                circle.innerHTML = index + 1;
+            } else {
+                step.classList.remove('active', 'completed');
+                circle.innerHTML = index + 1;
+            }
+        });
+        
+        this.debugLog(`Progress bar updated: ${currentStep}`);
+    },
+
+    /**
+     * Update lead score widget
+     * @param {number} score - Current lead score
+     */
+    updateLeadScoreWidget(score) {
+        const scoreValue = document.getElementById('leadScoreValue');
+        const scoreCircle = document.getElementById('leadScoreCircle');
+        
+        if (scoreValue && scoreCircle) {
+            scoreValue.textContent = score;
+            
+            // Update styling based on score category
+            const category = this.getLeadScoreCategory(score);
+            scoreCircle.className = `score-circle ${category}`;
+            
+            this.debugLog(`Lead score updated: ${score} (${category})`);
+        }
+    },
+
+    // ============================================
+    // API INTEGRATION HELPERS
+    // ============================================
+
+    /**
+     * Make HTTP request with retry logic
+     * @param {string} url - Request URL
+     * @param {Object} options - Request options
+     * @returns {Promise} Response promise
+     */
+    async makeRequest(url, options = {}) {
+        const config = Config.api;
+        const fullUrl = url.startsWith('http') ? url : `${config.baseUrl}${url}`;
+        
+        const defaultOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            timeout: config.timeout
+        };
+        
+        const requestOptions = { ...defaultOptions, ...options };
+        
+        // Add request timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), requestOptions.timeout);
+        requestOptions.signal = controller.signal;
+        
+        let lastError;
+        
+        // Retry logic
+        for (let attempt = 1; attempt <= config.retryAttempts; attempt++) {
+            try {
+                this.debugLog(`Making request (attempt ${attempt}): ${fullUrl}`, requestOptions);
+                
+                const response = await fetch(fullUrl, requestOptions);
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                this.debugLog(`Request successful: ${fullUrl}`, data);
+                return data;
+                
+            } catch (error) {
+                lastError = error;
+                this.debugLog(`Request failed (attempt ${attempt}): ${error.message}`, error, 'error');
+                
+                if (attempt === config.retryAttempts) {
+                    break;
+                }
+                
+                // Wait before retry (exponential backoff)
+                await this.delay(Math.pow(2, attempt) * 1000);
+            }
+        }
+        
+        clearTimeout(timeoutId);
+        throw lastError;
+    },
+
+    /**
+     * Submit lead data to API
+     * @param {Object} leadData - Complete lead data
+     * @returns {Promise} Submission result
+     */
+    async submitLead(leadData) {
+        try {
+            const response = await this.makeRequest(Config.api.endpoints.leadSubmission, {
+                method: 'POST',
+                body: JSON.stringify({
+                    ...leadData,
+                    score: this.calculateLeadScore(leadData),
+                    submittedAt: new Date().toISOString(),
+                    language: i18n.getCurrentLanguage()
+                })
+            });
+            
+            this.debugLog('Lead submitted successfully', response);
+            return response;
+            
+        } catch (error) {
+            this.debugLog('Lead submission failed', error, 'error');
+            throw error;
+        }
+    },
+
+    /**
+     * Verify OTP
+     * @param {string} phone - Phone number
+     * @param {string} otp - OTP code
+     * @returns {Promise} Verification result
+     */
+    async verifyOTP(phone, otp) {
+        try {
+            const response = await this.makeRequest(Config.api.endpoints.otpVerification, {
+                method: 'POST',
+                body: JSON.stringify({ phone, otp })
+            });
+            
+            this.debugLog('OTP verified successfully', response);
+            return response;
+            
+        } catch (error) {
+            this.debugLog('OTP verification failed', error, 'error');
+            throw error;
+        }
+    },
+
+    // ============================================
+    // PERFORMANCE HELPERS
+    // ============================================
+
+    /**
+     * Debounce function calls
+     * @param {Function} func - Function to debounce
+     * @param {number} delay - Delay in milliseconds
+     * @returns {Function} Debounced function
+     */
+    debounce(func, delay = Config.performance.debounceDelay) {
+        let timeoutId;
+        return function (...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func.apply(this, args), delay);
+        };
+    },
+
+    /**
+     * Throttle function calls
+     * @param {Function} func - Function to throttle
+     * @param {number} delay - Delay in milliseconds
+     * @returns {Function} Throttled function
+     */
+    throttle(func, delay = Config.performance.throttleDelay) {
+        let lastCall = 0;
+        return function (...args) {
+            const now = Date.now();
+            if (now - lastCall >= delay) {
+                lastCall = now;
+                return func.apply(this, args);
+            }
+        };
+    },
+
+    /**
+     * Lazy load images
+     * @param {HTMLElement} container - Container element
+     */
+    lazyLoadImages(container = document) {
+        if (!Config.performance.lazyLoadImages) return;
+        
+        const images = container.querySelectorAll('img[data-src]');
+        const imageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.classList.remove('lazy');
+                    imageObserver.unobserve(img);
+                }
+            });
+        });
+        
+        images.forEach(img => imageObserver.observe(img));
+    },
+
+    /**
+     * Delay execution
+     * @param {number} ms - Delay in milliseconds
+     * @returns {Promise} Promise that resolves after delay
+     */
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    },
+
+    // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
+
+    /**
+     * Get selected categories
+     * @returns {Array} Selected categories
+     */
+    getSelectedCategories() {
+        // This will be implemented based on category selection UI
+        const selected = [];
+        const checkboxes = document.querySelectorAll('input[name="category"]:checked');
+        checkboxes.forEach(cb => selected.push(cb.value));
+        return selected;
+    },
+
+    /**
+     * Get selected products
+     * @returns {Array} Selected products
+     */
+    getSelectedProducts() {
+        // This will return the selected products from the UI
+        if (window.selectedProducts) {
+            return Array.from(window.selectedProducts);
+        }
+        return [];
+    },
+
+    /**
+     * Get selected theme
+     * @returns {string} Selected theme
+     */
+    getSelectedTheme() {
+        const selectedTheme = document.querySelector('.theme-option.selected');
+        return selectedTheme ? selectedTheme.dataset.theme : null;
+    },
+
+    /**
+     * Format currency amount
+     * @param {number} amount - Amount to format
+     * @returns {string} Formatted currency
+     */
+    formatCurrency(amount) {
+        return Config.formatCurrency(amount);
+    },
+
+    /**
+     * Format number
+     * @param {number} number - Number to format
+     * @returns {string} Formatted number
+     */
+    formatNumber(number) {
+        return Config.formatNumber(number);
+    },
+
+    /**
+     * Get current timestamp
+     * @returns {string} ISO timestamp
+     */
+    getCurrentTimestamp() {
+        return new Date().toISOString();
+    },
+
+    /**
+     * Generate unique ID
+     * @returns {string} Unique ID
+     */
+    generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    },
+
+    // ============================================
+    // DEBUG AND LOGGING
+    // ============================================
+
+    /**
+     * Debug logging
+     * @param {string} message - Log message
+     * @param {*} data - Additional data
+     * @param {string} level - Log level
+     */
+    debugLog(message, data = null, level = 'info') {
+        if (!Config.debug.enabled) return;
+        
+        const timestamp = new Date().toISOString();
+        const logEntry = {
+            timestamp,
+            level,
+            message,
+            data
+        };
+        
+        // Console logging
+        const consoleMethod = level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'log';
+        console[consoleMethod](`[${timestamp}] ${message}`, data || '');
+        
+        // Debug panel logging
+        this.addToDebugPanel(logEntry);
+        
+        // Store in debug history
+        if (!window.debugHistory) window.debugHistory = [];
+        window.debugHistory.push(logEntry);
+        
+        // Limit history size
+        if (window.debugHistory.length > Config.debug.maxLogEntries) {
+            window.debugHistory = window.debugHistory.slice(-Config.debug.maxLogEntries);
+        }
+    },
+
+    /**
+     * Add entry to debug panel
+     * @param {Object} logEntry - Log entry object
+     */
+    addToDebugPanel(logEntry) {
+        const debugLog = document.getElementById('debugLog');
+        if (!debugLog) return;
+        
+        const logElement = document.createElement('div');
+        logElement.style.marginBottom = '5px';
+        logElement.style.fontSize = '11px';
+        logElement.style.color = this.getLogColor(logEntry.level);
+        logElement.innerHTML = `
+            <strong>${logEntry.timestamp.split('T')[1].split('.')[0]}</strong>
+            <span style="color: #999">[${logEntry.level.toUpperCase()}]</span>
+            ${logEntry.message}
+        `;
+        
+        if (logEntry.data) {
+            const dataElement = document.createElement('pre');
+            dataElement.style.fontSize = '10px';
+            dataElement.style.color = '#888';
+            dataElement.style.margin = '2px 0';
+            dataElement.textContent = JSON.stringify(logEntry.data, null, 2);
+            logElement.appendChild(dataElement);
+        }
+        
+        debugLog.appendChild(logElement);
+        debugLog.scrollTop = debugLog.scrollHeight;
+    },
+
+    /**
+     * Get color for log level
+     * @param {string} level - Log level
+     * @returns {string} CSS color
+     */
+    getLogColor(level) {
+        switch (level) {
+            case 'error': return '#ff6b6b';
+            case 'warn': return '#ffa726';
+            case 'info': return '#42a5f5';
+            case 'debug': return '#ab47bc';
+            default: return '#ffffff';
+        }
+    },
+
+    /**
+     * Track analytics event
+     * @param {string} event - Event name
+     * @param {Object} data - Event data
+     */
+    trackEvent(event, data = {}) {
+        if (!Config.analytics.enabled) return;
+        
+        const eventData = {
+            event,
+            timestamp: this.getCurrentTimestamp(),
+            language: i18n.getCurrentLanguage(),
+            ...data
+        };
+        
+        this.debugLog(`Analytics event: ${event}`, eventData);
+        
+        // Store events for batch sending
+        if (!window.analyticsQueue) window.analyticsQueue = [];
+        window.analyticsQueue.push(eventData);
+        
+        // Send events in batches (implement based on analytics service)
+        if (window.analyticsQueue.length >= 10) {
+            this.flushAnalytics();
+        }
+    },
+
+    /**
+     * Flush analytics queue
+     */
+    async flushAnalytics() {
+        if (!window.analyticsQueue || window.analyticsQueue.length === 0) return;
+        
+        try {
+            const events = [...window.analyticsQueue];
+            window.analyticsQueue = [];
+            
+            await this.makeRequest(Config.api.endpoints.analytics, {
+                method: 'POST',
+                body: JSON.stringify({ events })
+            });
+            
+            this.debugLog('Analytics events sent', { count: events.length });
+        } catch (error) {
+            this.debugLog('Failed to send analytics events', error, 'error');
+            // Re-add events to queue for retry
+            window.analyticsQueue = [...(window.analyticsQueue || []), ...events];
         }
     }
-    
-    if (screenId === 'categories' && business) {
-        const titleEl = document.getElementById('categoriesTitle');
-        if (titleEl) {
-            titleEl.innerHTML = `Select Categories for ${business}`;
-        }
-    }
-    
-    if (screenId === 'products' && business) {
-        const titleEl = document.getElementById('productsTitle');
-        const formTitleEl = document.getElementById('productFormTitle');
-        if (titleEl) {
-            titleEl.innerHTML = `Add Products for ${business}`;
-        }
-        if (formTitleEl) {
-            formTitleEl.innerHTML = `Add ${business}'s Products/Services`;
-        }
-    }
-    
-    if (screenId === 'themes' && business) {
-        const titleEl = document.getElementById('themesTitle');
-        if (titleEl) {
-            titleEl.innerHTML = `Choose ${business}'s Theme`;
-        }
-    }
-}
+};
 
-// ========================================
-// LEAD SCORING UTILITIES
-// ========================================
-
-function calculateLeadScore() {
-    if (!window.topikoApp) return 0;
+// Initialize performance optimizations
+document.addEventListener('DOMContentLoaded', () => {
+    // Lazy load images
+    Utils.lazyLoadImages();
     
-    let score = 0;
-    
-    if (window.topikoApp.selectedLanguage) score += 5;
-    score += Math.min(window.topikoApp.selectedGoals.length * 10, 50);
-    score += Math.floor(window.topikoApp.formProgress * 0.25);
-    
-    const sessionMinutes = (Date.now() - window.topikoApp.sessionStartTime) / 60000;
-    if (sessionMinutes > 1) score += 5;
-    if (sessionMinutes > 3) score += 5;
-    
-    score += Math.min(window.topikoApp.pageViews * 2, 10);
-    score += Math.min(window.topikoApp.selectedCategories.length * 5, 25);
-    score += Math.min(window.topikoApp.userProducts.length * 3, 15);
-    if (window.topikoApp.selectedTheme) score += 5;
-    
-    // Qualifying questions scoring
-    let qualifyingScore = 0;
-    
-    switch (window.topikoApp.qualifyingAnswers.online_presence) {
-        case 'none': qualifyingScore += 8; break;
-        case 'whatsapp': qualifyingScore += 6; break;
-        case 'social': qualifyingScore += 4; break;
-        case 'basic_website': qualifyingScore += 3; break;
-        case 'full_website': qualifyingScore += 2; break;
-    }
-    
-    switch (window.topikoApp.qualifyingAnswers.budget) {
-        case '25000+': qualifyingScore += 8; break;
-        case '10000-25000': qualifyingScore += 6; break;
-        case '5000-10000': qualifyingScore += 4; break;
-    }
-    
-    if (window.topikoApp.qualifyingAnswers.decision_maker === 'yes') qualifyingScore += 5;
-    
-    switch (window.topikoApp.qualifyingAnswers.timeline) {
-        case 'immediately': qualifyingScore += 4; break;
-        case 'within_week': qualifyingScore += 3; break;
-        case 'this_month': qualifyingScore += 2; break;
-        case 'just_checking': qualifyingScore += 1; break;
-    }
-    
-    score += Math.min(qualifyingScore, 25);
-    window.topikoApp.leadScore = Math.min(score, 100);
-    
-    updateLeadScoreWidget();
-    addDebugLog(`📊 Lead Score: ${window.topikoApp.leadScore}/100`);
-    return window.topikoApp.leadScore;
-}
-
-function updateLeadScoreWidget() {
-    if (!window.topikoApp) return;
-    
-    const scoreValue = document.getElementById('leadScoreValue');
-    const scoreCircle = document.getElementById('leadScoreCircle');
-    const scoreLabel = document.getElementById('scoreLabel');
-    
-    if (scoreValue) scoreValue.textContent = window.topikoApp.leadScore;
-    
-    let quality, circleClass;
-    if (window.topikoApp.leadScore >= 70) {
-        quality = 'Hot';
-        circleClass = 'hot';
-    } else if (window.topikoApp.leadScore >= 40) {
-        quality = 'Warm';
-        circleClass = 'warm';
-    } else {
-        quality = 'Cold';
-        circleClass = 'cold';
-    }
-    
-    if (scoreLabel) scoreLabel.textContent = quality;
-    if (scoreCircle) {
-        scoreCircle.className = `score-circle ${circleClass}`;
-    }
-}
-
-function toggleScoreDetails() {
-    if (!window.topikoApp) return;
-    
-    const sessionMinutes = Math.round((Date.now() - window.topikoApp.sessionStartTime) / 60000);
-    showNotification(`Score: ${window.topikoApp.leadScore}/100 | Quality: ${window.topikoApp.leadScore >= 70 ? 'Hot' : window.topikoApp.leadScore >= 40 ? 'Warm' : 'Cold'} | Session: ${sessionMinutes}m | Views: ${window.topikoApp.pageViews}`, 'info');
-}
-
-// ========================================
-// FOMO SYSTEM UTILITIES
-// ========================================
-
-function getRandomBusinessData() {
-    const business = window.TopikoConfig.INDIAN_BUSINESS_NAMES[Math.floor(Math.random() * window.TopikoConfig.INDIAN_BUSINESS_NAMES.length)];
-    const city = window.TopikoConfig.INDIAN_CITIES[Math.floor(Math.random() * window.TopikoConfig.INDIAN_CITIES.length)];
-    const template = window.TopikoConfig.FOMO_MESSAGE_TEMPLATES[Math.floor(Math.random() * window.TopikoConfig.FOMO_MESSAGE_TEMPLATES.length)];
-    
-    return {
-        business, city, template,
-        message: template.text.replace('{business}', business).replace('{city}', city)
-    };
-}
-
-function showFomoNotification() {
-    if (!window.topikoApp) return;
-    
-    if (Date.now() - window.topikoApp.lastFomoShow < 10000) return;
-    
-    const fomoEl = document.getElementById('fomoNotification');
-    const contentEl = document.getElementById('fomoContent');
-    const timeEl = document.getElementById('fomoTime');
-    const statusEl = document.querySelector('.fomo-status');
-    
-    if (!fomoEl || !contentEl || !timeEl || !statusEl) return;
-    
-    const data = getRandomBusinessData();
-    
-    contentEl.innerHTML = `<span class="business-name">${data.business}</span> from <span class="business-location">${data.city}</span> ${data.template.text.split('{business}')[1].split('{city}')[1]}`;
-    timeEl.textContent = `${Math.floor(Math.random() * 15) + 1} minutes ago`;
-    statusEl.textContent = data.template.status;
-    
-    fomoEl.classList.add('show');
-    window.topikoApp.lastFomoShow = Date.now();
-    
-    setTimeout(() => {
-        fomoEl.classList.remove('show');
-        fomoEl.classList.add('hide');
-        setTimeout(() => fomoEl.classList.remove('hide'), 500);
-    }, 5000);
-    
-    window.topikoApp.businessCounter += Math.floor(Math.random() * 2) + 1;
-    updateBusinessCounter();
-}
-
-function updateBusinessCounter() {
-    if (!window.topikoApp) return;
-    
-    const counterEl = document.getElementById('counterNumber');
-    if (counterEl) {
-        counterEl.textContent = window.topikoApp.businessCounter.toLocaleString();
-    }
-}
-
-function showBusinessCounter() {
-    const counterEl = document.getElementById('fomoCounter');
-    if (counterEl) {
-        counterEl.classList.add('show');
-        setTimeout(() => counterEl.classList.remove('show'), 4000);
-    }
-}
-
-function startFomoSystem() {
-    setTimeout(() => showFomoNotification(), 8000);
-    setTimeout(() => showBusinessCounter(), 15000);
-    
+    // Flush analytics periodically
     setInterval(() => {
-        const randomDelay = Math.random() * 20000 + 25000;
-        setTimeout(() => showFomoNotification(), randomDelay);
-    }, 45000);
-    
-    setInterval(() => showBusinessCounter(), 90000);
-}
-
-// ========================================
-// PRODUCT UTILITIES
-// ========================================
-
-function getDefaultProductImage() {
-    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjFmNWY5Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjM2NjcwIiBmb250LWZhbWlseT0iYXJpYWwiIGZvbnQtc2l6ZT0iNDAiPvCfk6Y8L3RleHQ+PC9zdmc+';
-}
-
-function displayProducts() {
-    if (!window.topikoApp) return;
-    
-    const productsList = document.getElementById('productsList');
-    const productCount = document.getElementById('productCount');
-    
-    if (!productsList || !productCount) return;
-    
-    productCount.textContent = window.topikoApp.userProducts.length;
-    
-    if (window.topikoApp.userProducts.length === 0) {
-        productsList.innerHTML = `
-            <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
-                <p>No products selected yet. Choose from 500+ products above or add custom products!</p>
-            </div>
-        `;
-        return;
-    }
-    
-    const businessCategory = document.getElementById('category')?.value;
-    const categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory];
-    
-    productsList.innerHTML = window.topikoApp.userProducts.map(product => {
-        const categoryName = categoryData?.categories[product.categoryKey]?.name || product.categoryKey;
-        const subcategoryName = product.subcategoryKey ? 
-            (window.TopikoConfig.SUBCATEGORY_NAMES[product.subcategoryKey] || product.subcategoryKey) : '';
-        
-        return `
-            <div class="product-card">
-                <div class="product-image" style="background-image: url('${product.imageUrl}');">
-                    <div class="product-price">₹${product.price.toLocaleString()}</div>
-                </div>
-                <div class="product-content">
-                    <div class="product-name">${product.name}</div>
-                    <div class="product-description">${product.description}</div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #64748b; margin-top: 0.5rem;">
-                        <span>📁 ${categoryName}</span>
-                        ${subcategoryName ? `<span>🏷️ ${subcategoryName}</span>` : ''}
-                    </div>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-// ========================================
-// THEME UTILITIES
-// ========================================
-
-function populateThemePreviews() {
-    if (!window.topikoApp) return;
-    
-    const themePreviewIds = ['modern-preview', 'vibrant-preview', 'professional-preview', 'traditional-preview', 'creative-preview', 'luxury-preview'];
-    
-    if (window.topikoApp.userProducts.length === 0) {
-        themePreviewIds.forEach(previewId => {
-            const previewEl = document.getElementById(previewId);
-            if (previewEl) {
-                previewEl.innerHTML = `
-                    <div class="theme-preview-item">Sample Product</div>
-                    <div class="theme-preview-item">₹999</div>
-                `;
-            }
-        });
-        return;
-    }
-    
-    const previewProducts = window.topikoApp.userProducts.slice(0, 2);
-    
-    themePreviewIds.forEach(previewId => {
-        const previewEl = document.getElementById(previewId);
-        if (previewEl) {
-            previewEl.innerHTML = previewProducts.map(product => 
-                `<div class="theme-preview-item">
-                    <div style="font-weight: 600; margin-bottom: 2px; font-size: 0.7rem;">${product.name.substring(0, 15)}${product.name.length > 15 ? '...' : ''}</div>
-                    <div style="color: #059669; font-weight: bold; font-size: 0.7rem;">₹${product.price.toLocaleString()}</div>
-                </div>`
-            ).join('');
-        }
-    });
-}
-
-// ========================================
-// MOTIVATIONAL MESSAGES UTILITIES
-// ========================================
-
-let currentMessageIndex = 0;
-let messageInterval = null;
-
-function updateMotivationalMessages() {
-    if (!window.topikoApp) return;
-    
-    console.log('🔄 updateMotivationalMessages called, currentStep:', window.topikoApp.currentStep);
-    
-    if (window.topikoApp.currentStep !== 'categories') {
-        console.log('❌ Not on categories screen, skipping messages');
-        return;
-    }
-    
-    const messagesContainer = document.getElementById('motivationalMessages');
-    if (!messagesContainer) {
-        console.error('❌ Messages container not found!');
-        addDebugLog('❌ Messages container not found', 'error');
-        return;
-    }
-    
-    console.log('✅ Messages container found:', messagesContainer);
-    
-    // Stop any existing interval
-    stopMotivationalMessages();
-    
-    // Clear any existing messages
-    messagesContainer.innerHTML = '';
-    
-    // Start new message rotation
-    currentMessageIndex = 0;
-    
-    // Show first message immediately
-    console.log('🚀 Starting dynamic messages...');
-    showNextMessage();
-    
-    // Set interval for automatic rotation (3.5 seconds = average of 3-4)
-    messageInterval = setInterval(() => {
-        console.log('⏰ Message interval triggered');
-        showNextMessage();
-    }, 3500);
-    
-    addDebugLog('🔄 Dynamic messages started - rotating every 3.5s', 'success');
-    console.log('✅ Dynamic messaging system initialized');
-}
-
-function showNextMessage() {
-    if (!window.topikoApp) return;
-    
-    console.log('📝 showNextMessage called, index:', currentMessageIndex);
-    
-    if (window.topikoApp.currentStep !== 'categories') {
-        console.log('❌ Not on categories screen, stopping messages');
-        stopMotivationalMessages();
-        return;
-    }
-    
-    const messagesContainer = document.getElementById('motivationalMessages');
-    if (!messagesContainer) {
-        console.error('❌ Messages container not found in showNextMessage!');
-        return;
-    }
-    
-    const message = generatePersonalizedMessage(currentMessageIndex);
-    console.log('💬 Generated message:', message);
-    
-    addDebugLog(`📝 Showing message ${currentMessageIndex + 1}: "${message.substring(0, 30)}..."`, 'info');
-    
-    showNewMessage(message, messagesContainer);
-    
-    currentMessageIndex = (currentMessageIndex + 1) % window.TopikoConfig.MOTIVATIONAL_MESSAGE_TEMPLATES.length;
-    console.log('➡️ Next message index will be:', currentMessageIndex);
-}
-
-function generatePersonalizedMessage(index) {
-    if (!window.topikoApp) return '';
-    
-    console.log('🎯 generatePersonalizedMessage called with index:', index);
-    
-    const template = window.TopikoConfig.MOTIVATIONAL_MESSAGE_TEMPLATES[index];
-    const currentProgressIndex = window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.indexOf(window.topikoApp.currentStep);
-    // Calculate remaining steps (categories is index 3, so products=1, themes=2 steps left)
-    const stepsLeft = Math.max(1, window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.length - currentProgressIndex - 1);
-    const plural = stepsLeft !== 1 ? 's' : '';
-    const businessDisplayName = window.topikoApp.businessName || 'your business';
-    
-    // Get category name without emoji
-    const categoryDropdown = document.getElementById('category');
-    let categoryName = 'your category';
-    if (categoryDropdown && categoryDropdown.value && window.TopikoConfig.BUSINESS_CATEGORIES[categoryDropdown.value]) {
-        const categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[categoryDropdown.value];
-        categoryName = categoryData.name; // Use clean category name from data
-    }
-    
-    const personalizedMessage = template
-        .replace('{stepsLeft}', stepsLeft.toString())
-        .replace('{plural}', plural)
-        .replace('{businessName}', businessDisplayName)
-        .replace('{category}', categoryName);
-        
-    console.log(`🎯 Personalization: steps=${stepsLeft}, business="${businessDisplayName}", category="${categoryName}"`);
-    addDebugLog(`🎯 Message ${index + 1}: steps=${stepsLeft}, business="${businessDisplayName}", category="${categoryName}"`, 'info');
-    return personalizedMessage;
-}
-
-function showNewMessage(messageText, container) {
-    console.log('🎬 showNewMessage called with:', messageText.substring(0, 50) + '...');
-    
-    // Mark existing messages for exit
-    const existingMessages = container.querySelectorAll('.motivational-message');
-    console.log('🗑️ Found', existingMessages.length, 'existing messages to remove');
-    
-    existingMessages.forEach((msg, i) => {
-        if (!msg.classList.contains('exit')) {
-            console.log(`🚪 Marking message ${i} for exit`);
-            msg.classList.remove('active');
-            msg.classList.add('exit');
-        }
-    });
-    
-    // Create new message
-    const messageEl = document.createElement('div');
-    messageEl.className = 'motivational-message';
-    messageEl.textContent = messageText;
-    
-    console.log('➕ Created new message element');
-    container.appendChild(messageEl);
-    
-    // Trigger slide-in animation after a short delay
-    setTimeout(() => {
-        console.log('🎞️ Triggering slide-in animation');
-        messageEl.classList.add('active');
-    }, 100);
-    
-    // Clean up old messages after animation completes
-    setTimeout(() => {
-        const oldMessages = container.querySelectorAll('.motivational-message.exit');
-        console.log('🧹 Cleaning up', oldMessages.length, 'old messages');
-        oldMessages.forEach(msg => {
-            if (msg.parentNode) {
-                msg.parentNode.removeChild(msg);
-            }
-        });
-    }, 700);
-}
-
-function stopMotivationalMessages() {
-    if (messageInterval) {
-        clearInterval(messageInterval);
-        messageInterval = null;
-        console.log('⏹️ Dynamic messages stopped');
-        addDebugLog('🔄 Dynamic messages stopped', 'info');
-    }
-}
-
-// ========================================
-// PRODUCTS HELP SECTION UTILITIES
-// ========================================
-
-function updateProductsHelpSection() {
-    if (!window.topikoApp) return;
-    
-    const dayOfMonth = new Date().getDate();
-    const totalDaysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-    
-    // Calculate claimed percentage based on day (30-90%)
-    const minPercentage = 30;
-    const maxPercentage = 90;
-    const dailyIncrease = (maxPercentage - minPercentage) / totalDaysInMonth;
-    const currentPercentage = Math.min(minPercentage + (dailyIncrease * dayOfMonth), maxPercentage);
-    
-    const claimedCount = Math.floor((currentPercentage / 100) * 75);
-    const remainingSlots = 75 - claimedCount;
-    const isUrgent = remainingSlots <= 15;
-    
-    // Update DOM elements
-    const helpSection = document.getElementById('productsHelpSection');
-    const titleEl = document.getElementById('productsHelpTitle');
-    const progressFillEl = document.getElementById('productsHelpProgressFill');
-    const textEl = document.getElementById('productsHelpText');
-    const claimedCountEl = document.getElementById('productsClaimedCount');
-    const monthEl = document.getElementById('productsCurrentMonth');
-    
-    if (helpSection && titleEl && progressFillEl && textEl && claimedCountEl && monthEl) {
-        // Update urgency styling
-        if (isUrgent) {
-            helpSection.classList.add('urgent');
-            titleEl.innerHTML = `🚨 Free Professional Setup Available! <span class="urgent-text">Only ${remainingSlots} spots left!</span>`;
-        } else {
-            helpSection.classList.remove('urgent');
-            titleEl.textContent = '🎯 Free Professional Setup Available!';
-        }
-        
-        // Update progress bar
-        progressFillEl.style.width = `${currentPercentage}%`;
-        
-        // Update text content
-        claimedCountEl.textContent = claimedCount;
-        monthEl.textContent = new Date().toLocaleString('en-US', { month: 'long' });
-        
-        if (isUrgent) {
-            textEl.innerHTML = `Topiko is helping with free setup for 75 businesses every month. <span class="urgent-text">${claimedCount} claimed for ${monthEl.textContent}. Only ${remainingSlots} spots left!</span> Click here for help!`;
-        } else {
-            textEl.innerHTML = `Topiko is helping with free setup for 75 businesses every month. ${claimedCount} claimed for ${monthEl.textContent}. Click here for help!`;
-        }
-        
-        addDebugLog(`📊 Help section updated: ${claimedCount}/75 claimed (${currentPercentage.toFixed(1)}%)`, 'info');
-    }
-}
-
-// ========================================
-// SESSION MANAGEMENT UTILITIES
-// ========================================
-
-function saveSessionData() {
-    if (!window.topikoApp) return;
-    
-    const currentData = {
-        selectedGoals: window.topikoApp.selectedGoals,
-        selectedLanguage: window.topikoApp.selectedLanguage,
-        selectedCategories: window.topikoApp.selectedCategories,
-        selectedSubcategories: window.topikoApp.selectedSubcategories,
-        userProducts: window.topikoApp.userProducts,
-        selectedProductIds: window.topikoApp.selectedProductIds || [],
-        selectedTheme: window.topikoApp.selectedTheme,
-        qualifyingAnswers: window.topikoApp.qualifyingAnswers,
-        leadScore: window.topikoApp.leadScore,
-        formProgress: window.topikoApp.formProgress,
-        sessionStartTime: window.topikoApp.sessionStartTime,
-        currentStep: window.topikoApp.currentStep,
-        navigationHistory: window.topikoApp.navigationHistory,
-        userName: window.topikoApp.userName,
-        businessName: window.topikoApp.businessName,
-        productsLoaded: window.topikoApp.productsLoaded,
-        lastSaved: Date.now()
-    };
-    localStorage.setItem('topiko_current_session', JSON.stringify(currentData));
-}
-
-function loadSessionData() {
-    try {
-        const savedData = localStorage.getItem('topiko_current_session');
-        if (savedData) {
-            return JSON.parse(savedData);
-        }
-    } catch (error) {
-        addDebugLog(`❌ Error loading session data: ${error.message}`, 'error');
-    }
-    return null;
-}
-
-// ========================================
-// INITIALIZATION UTILITIES
-// ========================================
-
-function initializeTopikoApp() {
-    // Initialize global app state
-    window.topikoApp = {
-        // Core variables
-        sessionStartTime: Date.now(),
-        selectedGoals: [],
-        selectedLanguage: 'en',
-        selectedCategories: [],
-        selectedSubcategories: [],
-        userProducts: [],
-        currentUserId: null,
-        selectedTheme: null,
-        pageViews: 1,
-        leadScore: 0,
-        formProgress: 0,
-        userName: '',
-        businessName: '',
-
-        // Navigation tracking
-        currentStep: 'welcome',
-        navigationHistory: ['welcome'],
-
-        // Qualifying Questions Data
-        qualifyingAnswers: {
-            online_presence: '',
-            budget: '',
-            decision_maker: '',
-            timeline: ''
-        },
-
-        // NEW: Product Selection System
-        selectedProductIds: [],
-        productsLoaded: false,
-
-        // FOMO system
-        fomoActive: true,
-        fomoTimer: null,
-        businessCounter: window.TopikoConfig.DEFAULTS.BUSINESS_COUNTER,
-        lastFomoShow: 0,
-        helpClaimedCount: window.TopikoConfig.DEFAULTS.HELP_CLAIMED_COUNT
-    };
-
-    addDebugLog('🚀 Topiko App State initialized with Product Selection System', 'success');
-}
-
-// ========================================
-// ERROR HANDLING
-// ========================================
-
-window.addEventListener('error', function(e) {
-    addDebugLog(`❌ Error: ${e.error?.message || e.message}`, 'error');
+        Utils.flushAnalytics();
+    }, 30000); // Every 30 seconds
 });
 
-// ========================================
-// EXPORT UTILITIES
-// ========================================
+// Export utilities for global access
+window.Utils = Utils;
 
-// Attach utilities to window for global access
-if (typeof window !== 'undefined') {
-    window.TopikoUtils = {
-        // Debug & Logging
-        addDebugLog,
-        toggleDebugPanel,
-        
-        // Notifications & Modals
-        showNotification,
-        showModal,
-        closeModal,
-        
-        // Database
-        saveToSupabase,
-        
-        // Navigation
-        showScreen,
-        updateProgressBar,
-        updateBackButton,
-        goBack,
-        navigateToStep,
-        
-        // Personalization
-        addPersonalization,
-        
-        // Lead Scoring
-        calculateLeadScore,
-        updateLeadScoreWidget,
-        toggleScoreDetails,
-        
-        // FOMO System
-        getRandomBusinessData,
-        showFomoNotification,
-        updateBusinessCounter,
-        showBusinessCounter,
-        startFomoSystem,
-        
-        // Products
-        getDefaultProductImage,
-        displayProducts,
-        
-        // Themes
-        populateThemePreviews,
-        
-        // Motivational Messages
-        updateMotivationalMessages,
-        showNextMessage,
-        generatePersonalizedMessage,
-        showNewMessage,
-        stopMotivationalMessages,
-        
-        // Products Help
-        updateProductsHelpSection,
-        
-        // Session Management
-        saveSessionData,
-        loadSessionData,
-        
-        // Initialization
-        initializeTopikoApp
-    };
+// Debug initialization
+if (Config.debug.enabled) {
+    Utils.debugLog('🛠️ Topiko Lead Form Utilities Loaded');
 }

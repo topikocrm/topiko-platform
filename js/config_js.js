@@ -1,1923 +1,583 @@
-/* ========================================
-   TOPIKO LEAD FORM - CONFIGURATION & DATA
-   ======================================== */
+/**
+ * Topiko Lead Form - Configuration and Constants
+ * Contains all application configuration, product catalog, business categories, and settings
+ */
 
-// ========================================
-// API CONFIGURATION
-// ========================================
-
-const SUPABASE_CONFIG = {
-    URL: 'https://xssbtsfjtwjholygdbqo.supabase.co',
-    ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k'
-};
-
-// ========================================
-// STEP CONFIGURATION
-// ========================================
-
-const STEP_CONFIG = {
-    ORDER: [
-        'welcome',
-        'language', 
-        'goals',
-        'registration',
-        'qualifying-questions',
-        'categories',
-        'products',
-        'themes'
-    ],
-    PROGRESS_STEPS: ['goals', 'registration', 'qualifying-questions', 'categories', 'products', 'themes']
-};
-
-// Add to config.js
-
-// Enhanced language configuration with RTL support
-const LANGUAGE_CONFIG = {
-    'en': {
-        name: 'English',
-        nativeName: 'English',
-        direction: 'ltr',
-        flag: '🇬🇧'
+// Core Application Configuration
+const Config = {
+    // API Endpoints
+    api: {
+        baseUrl: 'https://api.topiko.com/v1',
+        endpoints: {
+            leadSubmission: '/leads/submit',
+            otpVerification: '/auth/verify-otp',
+            otpResend: '/auth/resend-otp',
+            productData: '/products/catalog',
+            businessCategories: '/categories/list',
+            themePreview: '/themes/preview',
+            analytics: '/analytics/track'
+        },
+        timeout: 10000, // 10 seconds
+        retryAttempts: 3
     },
-    'hi': {
-        name: 'Hindi',
-        nativeName: 'हिन्दी',
-        direction: 'ltr',
-        flag: '🇮🇳'
+
+    // Form Validation Rules
+    validation: {
+        email: {
+            pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            message: 'Please enter a valid email address'
+        },
+        phone: {
+            pattern: /^[6-9]\d{9}$/,
+            message: 'Please enter a valid 10-digit Indian mobile number'
+        },
+        name: {
+            minLength: 2,
+            maxLength: 50,
+            pattern: /^[a-zA-Z\s\u0900-\u097F\u0C00-\u0C7F\u0B80-\u0BFF]+$/,
+            message: 'Name must contain only letters and spaces'
+        },
+        businessName: {
+            minLength: 2,
+            maxLength: 100,
+            message: 'Business name must be between 2-100 characters'
+        },
+        otp: {
+            length: 4,
+            pattern: /^\d{4}$/,
+            message: 'Please enter a valid 4-digit OTP'
+        }
     },
-    'te': {
-        name: 'Telugu',
-        nativeName: 'తెలుగు',
-        direction: 'ltr',
-        flag: '🇮🇳'
+
+    // Lead Scoring Algorithm Configuration
+    leadScoring: {
+        weights: {
+            goals: 20,           // Max 20 points for goals (4 points per goal, max 5 goals)
+            registration: 25,    // 25 points for complete registration
+            qualifying: 30,      // 30 points for qualifying questions
+            categories: 10,      // 10 points for category selection
+            products: 10,        // 10 points for product selection
+            theme: 5             // 5 points for theme selection
+        },
+        thresholds: {
+            cold: 0,    // 0-35 points
+            warm: 36,   // 36-70 points
+            hot: 71     // 71-100 points
+        },
+        goalPoints: {
+            ecommerce: 5,        // High value goal
+            customers: 4,        // High value goal
+            manage: 3,           // Medium value goal
+            search: 4,           // High value goal
+            brand: 4             // High value goal
+        },
+        qualifyingPoints: {
+            online_presence: {
+                none: 8,                    // Highest potential
+                whatsapp: 6,               // Good potential
+                social: 4,                 // Medium potential
+                basic_website: 3,          // Lower potential
+                full_website: 2            // Lowest potential (already established)
+            },
+            budget: {
+                'high': 10,        // ₹25,000+
+                'medium': 7,       // ₹10,000-25,000
+                'low': 5           // ₹5,000-10,000
+            },
+            decision_maker: {
+                yes: 8,
+                no: 3
+            },
+            timeline: {
+                immediately: 4,
+                within_week: 3,
+                this_month: 2,
+                just_checking: 1
+            }
+        }
     },
-    'ta': {
-        name: 'Tamil',
-        nativeName: 'தமிழ்',
-        direction: 'ltr',
-        flag: '🇮🇳'
+
+    // FOMO Notification Configuration
+    fomo: {
+        enabled: true,
+        interval: 8000, // 8 seconds between notifications
+        counterUpdateInterval: 15000, // Update counter every 15 seconds
+        baseCounter: 247,
+        counterIncrement: [1, 2, 3], // Random increment values
+        businesses: [
+            { name: 'Vasavi Silks', location: 'Mysore', type: 'boutique' },
+            { name: 'Annapurna Foods', location: 'Bangalore', type: 'restaurant' },
+            { name: 'Tech Solutions Pro', location: 'Hyderabad', type: 'electronics' },
+            { name: 'Fitness First Gym', location: 'Chennai', type: 'fitness' },
+            { name: 'Golden Jewellers', location: 'Mumbai', type: 'jewellery' },
+            { name: 'Fresh Mart Grocery', location: 'Pune', type: 'grocery' },
+            { name: 'Beauty Palace Salon', location: 'Delhi', type: 'salon' },
+            { name: 'Modern Furniture Hub', location: 'Kochi', type: 'furniture' },
+            { name: 'Spice Garden Restaurant', location: 'Mangalore', type: 'restaurant' },
+            { name: 'Smart Electronics', location: 'Coimbatore', type: 'electronics' },
+            { name: 'Yoga Wellness Center', location: 'Rishikesh', type: 'fitness' },
+            { name: 'Traditional Crafts', location: 'Jaipur', type: 'arts' },
+            { name: 'Organic Farm Store', location: 'Nashik', type: 'agriculture' },
+            { name: 'Auto Care Services', location: 'Indore', type: 'automotive' },
+            { name: 'Little Angels School', location: 'Lucknow', type: 'education' }
+        ],
+        actions: [
+            'just set up their online store',
+            'completed their business registration',
+            'launched their website',
+            'started selling online',
+            'added their product catalog',
+            'chose their business theme',
+            'activated their online presence'
+        ],
+        timeRanges: ['1-3', '2-5', '3-7', '5-10'] // minutes ago
+    },
+
+    // Product Catalog (500+ products organized by categories)
+    productCatalog: {
+        // Boutique & Fashion
+        boutique: [
+            { id: 1, name: 'Cotton Kurta', price: 899, category: 'boutique', subcategory: 'ethnic-wear', image: 'https://images.unsplash.com/photo-1583743089695-4b816a340f82?w=200', popularity: 95 },
+            { id: 2, name: 'Silk Saree', price: 2499, category: 'boutique', subcategory: 'ethnic-wear', image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=200', popularity: 92 },
+            { id: 3, name: 'Designer Lehenga', price: 4999, category: 'boutique', subcategory: 'ethnic-wear', image: 'https://images.unsplash.com/photo-1594736797933-d0d09370906e?w=200', popularity: 88 },
+            { id: 4, name: 'Casual T-Shirt', price: 599, category: 'boutique', subcategory: 'casual-wear', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200', popularity: 90 },
+            { id: 5, name: 'Formal Shirt', price: 1299, category: 'boutique', subcategory: 'formal-wear', image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=200', popularity: 85 },
+            { id: 6, name: 'Jeans', price: 1599, category: 'boutique', subcategory: 'casual-wear', image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=200', popularity: 93 },
+            { id: 7, name: 'Party Dress', price: 2299, category: 'boutique', subcategory: 'party-wear', image: 'https://images.unsplash.com/photo-1566479179817-3d44b1b66fa6?w=200', popularity: 87 },
+            { id: 8, name: 'Winter Jacket', price: 2799, category: 'boutique', subcategory: 'winter-wear', image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=200', popularity: 82 },
+            { id: 9, name: 'Palazzo Pants', price: 899, category: 'boutique', subcategory: 'ethnic-wear', image: 'https://images.unsplash.com/photo-1594633313593-bab3825d0caf?w=200', popularity: 89 },
+            { id: 10, name: 'Blazer', price: 3299, category: 'boutique', subcategory: 'formal-wear', image: 'https://images.unsplash.com/photo-1594938292005-46abf0dea202?w=200', popularity: 84 }
+        ],
+
+        // Home Foods & Catering
+        homefoods: [
+            { id: 11, name: 'Homemade Samosas (10 pieces)', price: 150, category: 'homefoods', subcategory: 'snacks', image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=200', popularity: 96 },
+            { id: 12, name: 'Biriyani (1 serving)', price: 250, category: 'homefoods', subcategory: 'main-course', image: 'https://images.unsplash.com/photo-1563379091339-03246963d51a?w=200', popularity: 98 },
+            { id: 13, name: 'Masala Dosa', price: 80, category: 'homefoods', subcategory: 'breakfast', image: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=200', popularity: 94 },
+            { id: 14, name: 'Homemade Sweets (1 kg)', price: 800, category: 'homefoods', subcategory: 'sweets', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200', popularity: 91 },
+            { id: 15, name: 'Tiffin Service (Monthly)', price: 3500, category: 'homefoods', subcategory: 'tiffin', image: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=200', popularity: 89 },
+            { id: 16, name: 'Party Catering (per plate)', price: 180, category: 'homefoods', subcategory: 'catering', image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200', popularity: 87 },
+            { id: 17, name: 'Homemade Pickles (500g)', price: 299, category: 'homefoods', subcategory: 'pickles', image: 'https://images.unsplash.com/photo-1599908452434-c8e95edcc48b?w=200', popularity: 85 },
+            { id: 18, name: 'Fresh Chapati (20 pieces)', price: 100, category: 'homefoods', subcategory: 'bread', image: 'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=200', popularity: 92 },
+            { id: 19, name: 'Homemade Lassi (500ml)', price: 60, category: 'homefoods', subcategory: 'beverages', image: 'https://images.unsplash.com/photo-1553787568-6bb6d0eeaf8a?w=200', popularity: 88 },
+            { id: 20, name: 'Special Thali', price: 120, category: 'homefoods', subcategory: 'main-course', image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=200', popularity: 95 }
+        ],
+
+        // Grocery & Provisions
+        grocery: [
+            { id: 21, name: 'Basmati Rice (5kg)', price: 650, category: 'grocery', subcategory: 'grains', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=200', popularity: 97 },
+            { id: 22, name: 'Atta Flour (10kg)', price: 450, category: 'grocery', subcategory: 'grains', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=200', popularity: 96 },
+            { id: 23, name: 'Organic Vegetables (5kg mix)', price: 350, category: 'grocery', subcategory: 'vegetables', image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=200', popularity: 94 },
+            { id: 24, name: 'Fresh Fruits (3kg mix)', price: 400, category: 'grocery', subcategory: 'fruits', image: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=200', popularity: 93 },
+            { id: 25, name: 'Cooking Oil (1L)', price: 180, category: 'grocery', subcategory: 'oils', image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=200', popularity: 95 },
+            { id: 26, name: 'Spices Set (20 items)', price: 800, category: 'grocery', subcategory: 'spices', image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=200', popularity: 92 },
+            { id: 27, name: 'Dairy Products (weekly)', price: 500, category: 'grocery', subcategory: 'dairy', image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=200', popularity: 91 },
+            { id: 28, name: 'Pulses & Lentils (2kg)', price: 300, category: 'grocery', subcategory: 'pulses', image: 'https://images.unsplash.com/photo-1574078220392-5e3a1b4f4420?w=200', popularity: 89 },
+            { id: 29, name: 'Cleaning Supplies', price: 250, category: 'grocery', subcategory: 'household', image: 'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=200', popularity: 86 },
+            { id: 30, name: 'Snacks & Biscuits', price: 200, category: 'grocery', subcategory: 'snacks', image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=200', popularity: 88 }
+        ],
+
+        // Electronics & Gadgets
+        electronics: [
+            { id: 31, name: 'Smartphone', price: 15999, category: 'electronics', subcategory: 'mobile', image: 'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=200', popularity: 98 },
+            { id: 32, name: 'Laptop', price: 45999, category: 'electronics', subcategory: 'computers', image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200', popularity: 95 },
+            { id: 33, name: 'Bluetooth Headphones', price: 2999, category: 'electronics', subcategory: 'audio', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200', popularity: 94 },
+            { id: 34, name: 'Smart Watch', price: 8999, category: 'electronics', subcategory: 'wearables', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200', popularity: 92 },
+            { id: 35, name: 'Power Bank', price: 1499, category: 'electronics', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1609792858868-4d2a15b8d1be?w=200', popularity: 90 },
+            { id: 36, name: 'Bluetooth Speaker', price: 3499, category: 'electronics', subcategory: 'audio', image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=200', popularity: 89 },
+            { id: 37, name: 'Phone Case', price: 599, category: 'electronics', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1601593346740-925612772716?w=200', popularity: 87 },
+            { id: 38, name: 'USB Cable', price: 299, category: 'electronics', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200', popularity: 85 },
+            { id: 39, name: 'Tablet', price: 22999, category: 'electronics', subcategory: 'tablets', image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=200', popularity: 88 },
+            { id: 40, name: 'Wireless Charger', price: 1999, category: 'electronics', subcategory: 'accessories', image: 'https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=200', popularity: 86 }
+        ],
+
+        // Fitness & Wellness
+        fitness: [
+            { id: 41, name: 'Gym Membership (Monthly)', price: 2500, category: 'fitness', subcategory: 'membership', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200', popularity: 94 },
+            { id: 42, name: 'Personal Training (1 session)', price: 800, category: 'fitness', subcategory: 'training', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200', popularity: 92 },
+            { id: 43, name: 'Yoga Classes (Monthly)', price: 1800, category: 'fitness', subcategory: 'classes', image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=200', popularity: 90 },
+            { id: 44, name: 'Protein Supplement', price: 2999, category: 'fitness', subcategory: 'supplements', image: 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=200', popularity: 89 },
+            { id: 45, name: 'Dumbbells Set', price: 3500, category: 'fitness', subcategory: 'equipment', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=200', popularity: 87 },
+            { id: 46, name: 'Yoga Mat', price: 899, category: 'fitness', subcategory: 'equipment', image: 'https://images.unsplash.com/photo-1506629905607-b5f0d4ea5edb?w=200', popularity: 91 },
+            { id: 47, name: 'Sports Shoes', price: 4999, category: 'fitness', subcategory: 'footwear', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200', popularity: 93 },
+            { id: 48, name: 'Fitness Tracker', price: 5999, category: 'fitness', subcategory: 'wearables', image: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d7a?w=200', popularity: 88 },
+            { id: 49, name: 'Resistance Bands', price: 599, category: 'fitness', subcategory: 'equipment', image: 'https://images.unsplash.com/photo-1571731956672-f2b94d7dd0cb?w=200', popularity: 85 },
+            { id: 50, name: 'Diet Consultation', price: 1500, category: 'fitness', subcategory: 'consultation', image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=200', popularity: 86 }
+        ],
+
+        // Restaurants & Cafes
+        restaurant: [
+            { id: 51, name: 'Margherita Pizza', price: 350, category: 'restaurant', subcategory: 'pizza', image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=200', popularity: 96 },
+            { id: 52, name: 'Chicken Burger', price: 280, category: 'restaurant', subcategory: 'burgers', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200', popularity: 94 },
+            { id: 53, name: 'Pasta Alfredo', price: 320, category: 'restaurant', subcategory: 'pasta', image: 'https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?w=200', popularity: 92 },
+            { id: 54, name: 'Cold Coffee', price: 150, category: 'restaurant', subcategory: 'beverages', image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=200', popularity: 95 },
+            { id: 55, name: 'Caesar Salad', price: 250, category: 'restaurant', subcategory: 'salads', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200', popularity: 88 },
+            { id: 56, name: 'Fish Curry', price: 400, category: 'restaurant', subcategory: 'indian', image: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=200', popularity: 91 },
+            { id: 57, name: 'Chocolate Cake', price: 200, category: 'restaurant', subcategory: 'desserts', image: 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=200', popularity: 89 },
+            { id: 58, name: 'Sandwich', price: 180, category: 'restaurant', subcategory: 'snacks', image: 'https://images.unsplash.com/photo-1553909489-cd47e0ef937f?w=200', popularity: 90 },
+            { id: 59, name: 'Fresh Juice', price: 120, category: 'restaurant', subcategory: 'beverages', image: 'https://images.unsplash.com/photo-1619096252214-ef06c45683e3?w=200', popularity: 93 },
+            { id: 60, name: 'Momos (8 pieces)', price: 150, category: 'restaurant', subcategory: 'snacks', image: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=200', popularity: 87 }
+        ]
+    },
+
+    // Business Categories and Subcategories
+    businessCategories: {
+        boutique: {
+            name: 'Boutique & Fashion',
+            icon: '🏪',
+            subcategories: ['ethnic-wear', 'casual-wear', 'formal-wear', 'party-wear', 'winter-wear', 'accessories'],
+            motivationalMessages: [
+                'Fashion businesses see 300% growth online!',
+                'Your designs deserve a global audience!',
+                'Online fashion stores earn 5x more!',
+                'Style meets success online!'
+            ]
+        },
+        homefoods: {
+            name: 'Home Foods & Catering',
+            icon: '🍛',
+            subcategories: ['snacks', 'main-course', 'breakfast', 'sweets', 'tiffin', 'catering', 'pickles', 'bread', 'beverages'],
+            motivationalMessages: [
+                'Home chefs earn ₹50,000+ monthly online!',
+                'Your recipes can feed the world!',
+                'Food businesses thrive online!',
+                'Turn your kitchen into a goldmine!'
+            ]
+        },
+        salons: {
+            name: 'Salons & Beauty',
+            icon: '💄',
+            subcategories: ['haircut', 'facial', 'makeup', 'spa', 'nail-art', 'bridal-makeup', 'massage'],
+            motivationalMessages: [
+                'Beauty businesses book 10x more online!',
+                'Your talent deserves recognition!',
+                'Online bookings increase revenue by 400%!',
+                'Beauty meets technology!'
+            ]
+        },
+        grocery: {
+            name: 'Grocery & Provisions',
+            icon: '🛒',
+            subcategories: ['grains', 'vegetables', 'fruits', 'oils', 'spices', 'dairy', 'pulses', 'household', 'snacks'],
+            motivationalMessages: [
+                'Grocery stores save 20+ hours weekly online!',
+                'Digital grocery is the future!',
+                'Online grocery grows 500% faster!',
+                'Your community needs you online!'
+            ]
+        },
+        furniture: {
+            name: 'Furniture & Home Decor',
+            icon: '🛋️',
+            subcategories: ['living-room', 'bedroom', 'kitchen', 'office', 'decor', 'lighting', 'storage'],
+            motivationalMessages: [
+                'Furniture sales double online!',
+                'Your craftsmanship deserves a showcase!',
+                'Home decor businesses boom online!',
+                'Design beautiful futures!'
+            ]
+        },
+        electronics: {
+            name: 'Electronics & Gadgets',
+            icon: '📱',
+            subcategories: ['mobile', 'computers', 'audio', 'wearables', 'accessories', 'tablets'],
+            motivationalMessages: [
+                'Tech stores see 400% growth online!',
+                'Electronics sell faster online!',
+                'Your gadgets reach tech enthusiasts!',
+                'Innovation meets opportunity!'
+            ]
+        },
+        jewellery: {
+            name: 'Jewellery & Accessories',
+            icon: '💍',
+            subcategories: ['gold', 'silver', 'diamond', 'fashion-jewelry', 'watches', 'custom-design'],
+            motivationalMessages: [
+                'Jewelry businesses shine online!',
+                'Your creations deserve spotlight!',
+                'Online jewelry sales sparkle!',
+                'Precious metals, precious opportunities!'
+            ]
+        },
+        restaurants: {
+            name: 'Restaurants & Cafes',
+            icon: '🍽️',
+            subcategories: ['pizza', 'burgers', 'pasta', 'beverages', 'salads', 'indian', 'desserts', 'snacks'],
+            motivationalMessages: [
+                'Restaurants earn 60% more with online orders!',
+                'Your flavors can reach every doorstep!',
+                'Food delivery is booming!',
+                'Taste meets technology!'
+            ]
+        },
+        fitness: {
+            name: 'Fitness & Wellness',
+            icon: '💪',
+            subcategories: ['membership', 'training', 'classes', 'supplements', 'equipment', 'footwear', 'wearables', 'consultation'],
+            motivationalMessages: [
+                'Fitness businesses grow stronger online!',
+                'Health is wealth - share yours!',
+                'Online fitness coaching pays 3x more!',
+                'Build bodies, build businesses!'
+            ]
+        },
+        education: {
+            name: 'Education & Training',
+            icon: '📚',
+            subcategories: ['academic', 'professional', 'skills', 'languages', 'music', 'arts', 'technology'],
+            motivationalMessages: [
+                'Education businesses reach millions online!',
+                'Share knowledge, change lives!',
+                'Online learning never stops growing!',
+                'Teach the world your expertise!'
+            ]
+        }
+    },
+
+    // Theme System Configuration
+    themes: {
+        modern: {
+            name: 'Modern & Minimalist',
+            description: 'Clean, simple design that focuses on your products',
+            icon: '✨',
+            preview: {
+                colors: {
+                    primary: '#000000',
+                    secondary: '#ffffff',
+                    accent: '#f3f4f6'
+                },
+                layout: 'grid',
+                typography: 'sans-serif'
+            }
+        },
+        vibrant: {
+            name: 'Colorful & Vibrant',
+            description: 'Bold colors and energetic design to attract customers',
+            icon: '🌈',
+            preview: {
+                colors: {
+                    primary: '#ef4444',
+                    secondary: '#3b82f6',
+                    accent: '#fbbf24'
+                },
+                layout: 'dynamic',
+                typography: 'playful'
+            }
+        },
+        professional: {
+            name: 'Professional & Corporate',
+            description: 'Sophisticated design that builds trust and credibility',
+            icon: '💼',
+            preview: {
+                colors: {
+                    primary: '#1e40af',
+                    secondary: '#374151',
+                    accent: '#d1d5db'
+                },
+                layout: 'structured',
+                typography: 'formal'
+            }
+        },
+        traditional: {
+            name: 'Traditional & Classic',
+            description: 'Timeless design with warm, welcoming feel',
+            icon: '🏛️',
+            preview: {
+                colors: {
+                    primary: '#92400e',
+                    secondary: '#fbbf24',
+                    accent: '#fef3c7'
+                },
+                layout: 'classic',
+                typography: 'serif'
+            }
+        },
+        creative: {
+            name: 'Creative & Artistic',
+            description: 'Unique, artistic design that showcases creativity',
+            icon: '🎨',
+            preview: {
+                colors: {
+                    primary: '#7c3aed',
+                    secondary: '#ec4899',
+                    accent: '#a78bfa'
+                },
+                layout: 'artistic',
+                typography: 'creative'
+            }
+        },
+        luxury: {
+            name: 'Elegant & Luxury',
+            description: 'Premium design for high-end products and services',
+            icon: '💎',
+            preview: {
+                colors: {
+                    primary: '#000000',
+                    secondary: '#d4af37',
+                    accent: '#1c1917'
+                },
+                layout: 'premium',
+                typography: 'elegant'
+            }
+        }
+    },
+
+    // Localization Configuration
+    localization: {
+        defaultLanguage: 'en',
+        supportedLanguages: ['en', 'hi', 'te', 'ta'],
+        currency: {
+            symbol: '₹',
+            code: 'INR',
+            locale: 'en-IN'
+        },
+        numberFormat: {
+            locale: 'en-IN',
+            options: {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }
+        },
+        dateFormat: {
+            locale: 'en-IN',
+            options: {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }
+        }
+    },
+
+    // Form Configuration
+    form: {
+        autoSave: true,
+        autoSaveInterval: 5000, // 5 seconds
+        maxSteps: 6,
+        requiredFields: {
+            registration: ['fullName', 'email', 'phoneNumber', 'businessName'],
+            qualifying: ['online_presence', 'budget', 'decision_maker', 'timeline']
+        },
+        progressPersistence: true,
+        sessionTimeout: 30 * 60 * 1000 // 30 minutes
+    },
+
+    // Debug Configuration
+    debug: {
+        enabled: true,
+        logLevel: 'info', // 'error', 'warn', 'info', 'debug'
+        trackUserActions: true,
+        showLeadScore: true,
+        maxLogEntries: 100
+    },
+
+    // Performance Configuration
+    performance: {
+        lazyLoadImages: true,
+        debounceDelay: 300,
+        throttleDelay: 100,
+        cacheTimeout: 5 * 60 * 1000, // 5 minutes
+        maxProductsPerPage: 20
+    },
+
+    // Analytics Configuration
+    analytics: {
+        enabled: true,
+        events: [
+            'page_view',
+            'step_completed',
+            'goal_selected',
+            'registration_completed',
+            'qualifying_completed',
+            'category_selected',
+            'product_added',
+            'theme_selected',
+            'form_submitted',
+            'error_occurred'
+        ],
+        sessionTracking: true
     }
 };
 
-// Localized business category names
-const LOCALIZED_BUSINESS_CATEGORIES = {
-    en: {
-        boutique: "🏪 Boutique & Fashion",
-        'home-foods': "🍛 Home Foods & Catering",
-        salons: "💄 Salons & Beauty",
-        grocery: "🛒 Grocery & Provisions",
-        // ... add all categories
-    },
-    hi: {
-        boutique: "🏪 बुटीक और फैशन",
-        'home-foods': "🍛 घरेलू भोजन और कैटरिंग",
-        salons: "💄 सैलून और सौंदर्य",
-        grocery: "🛒 किराना और प्रावधान",
-        // ... add all categories
-    },
-    te: {
-        boutique: "🏪 బुటీక్ మరియు ఫ్యాషన్",
-        'home-foods': "🍛 ఇంటి ఆహారం మరియు క్యాటరింగ్",
-        salons: "💄 సెలూన్లు మరియు అందం",
-        grocery: "🛒 కిరాణా మరియు ఏర్పాట్లు",
-        // ... add all categories
-    },
-    ta: {
-        boutique: "🏪 பூட்டிக் மற்றும் ஃபேஷன்",
-        'home-foods': "🍛 வீட்டு உணவு மற்றும் கேட்டரிங்",
-        salons: "💄 சலூன்கள் மற்றும் அழகு",
-        grocery: "🛒 மளிகை மற்றும் ஏற்பாடுகள்",
-        // ... add all categories
+// Extend product catalog with more products for each category to reach 500+
+const extendedProducts = [];
+let productId = 61;
+
+// Generate more products for each category
+Object.keys(Config.productCatalog).forEach(category => {
+    const baseProducts = Config.productCatalog[category];
+    const categoryConfig = Config.businessCategories[category];
+    
+    if (categoryConfig && categoryConfig.subcategories) {
+        categoryConfig.subcategories.forEach(subcategory => {
+            // Add more products for each subcategory
+            for (let i = 0; i < 8; i++) {
+                extendedProducts.push({
+                    id: productId++,
+                    name: `${subcategory.replace('-', ' ')} item ${i + 1}`,
+                    price: Math.floor(Math.random() * 5000) + 100,
+                    category: category,
+                    subcategory: subcategory,
+                    image: `https://images.unsplash.com/photo-${1500000000000 + Math.floor(Math.random() * 100000000)}?w=200`,
+                    popularity: Math.floor(Math.random() * 40) + 60
+                });
+            }
+        });
     }
+});
+
+// Add extended products to the catalog
+Object.keys(Config.productCatalog).forEach(category => {
+    const categoryProducts = extendedProducts.filter(p => p.category === category);
+    Config.productCatalog[category] = [...Config.productCatalog[category], ...categoryProducts];
+});
+
+// Utility functions for config access
+Config.getProductsByCategory = function(category) {
+    return this.productCatalog[category] || [];
 };
 
-// ========================================
-// BUSINESS CATEGORIES DATA
-// ========================================
-
-const BUSINESS_CATEGORIES = {
-    boutique: {
-        id: 'boutique',
-        name: 'Boutique & Fashion',
-        icon: '🏪',
-        categories: {
-            'mens-wear': {
-                name: "Men's Wear",
-                icon: '👔',
-                subcategories: ['shirts', 'pants', 'suits', 'ethnic-wear', 'casual-wear', 'formal-wear', 'kurtas', 'sherwanis']
-            },
-            'womens-wear': {
-                name: "Women's Wear",
-                icon: '👗',
-                subcategories: ['dresses', 'tops', 'bottoms', 'sarees', 'lehengas', 'salwar-suits', 'western-wear', 'ethnic-wear', 'kurtis']
-            },
-            'accessories': {
-                name: 'Fashion Accessories',
-                icon: '👜',
-                subcategories: ['bags', 'belts', 'wallets', 'scarves', 'hats', 'sunglasses', 'watches', 'jewelry']
-            },
-            'footwear': {
-                name: 'Footwear',
-                icon: '👠',
-                subcategories: ['mens-shoes', 'womens-shoes', 'sandals', 'boots', 'sneakers', 'ethnic-footwear']
-            }
-        }
-    },
-    'home-foods': {
-        id: 'home-foods',
-        name: 'Home Foods & Catering',
-        icon: '🍛',
-        categories: {
-            'north-indian': {
-                name: 'North Indian Cuisine',
-                icon: '🍛',
-                subcategories: ['rotis-parathas', 'curries', 'dal-preparations', 'rice-dishes', 'snacks', 'biryanis', 'tandoor-items']
-            },
-            'south-indian': {
-                name: 'South Indian Cuisine',
-                icon: '🥥',
-                subcategories: ['dosas', 'idlis', 'vadas', 'uttapam', 'sambar', 'rasam', 'chutneys', 'appams']
-            },
-            'sweets-desserts': {
-                name: 'Sweets & Desserts',
-                icon: '🧁',
-                subcategories: ['traditional-sweets', 'cakes', 'pastries', 'ice-creams', 'mithai', 'cookies']
-            },
-            'beverages': {
-                name: 'Beverages',
-                icon: '☕',
-                subcategories: ['tea', 'coffee', 'fresh-juices', 'smoothies', 'traditional-drinks', 'lassi']
-            }
-        }
-    },
-    salons: {
-        id: 'salons',
-        name: 'Salons & Beauty',
-        icon: '💄',
-        categories: {
-            'hair-services': {
-                name: 'Hair Services',
-                icon: '💇',
-                subcategories: ['haircuts', 'hair-coloring', 'hair-styling', 'hair-treatments', 'keratin', 'rebonding']
-            },
-            'beauty-services': {
-                name: 'Beauty Services',
-                icon: '✨',
-                subcategories: ['facials', 'makeup', 'eyebrow-threading', 'manicure', 'pedicure', 'waxing']
-            },
-            'spa-wellness': {
-                name: 'Spa & Wellness',
-                icon: '🧘',
-                subcategories: ['massages', 'body-treatments', 'aromatherapy', 'reflexology', 'steam-baths']
-            }
-        }
-    },
-    grocery: {
-        id: 'grocery',
-        name: 'Grocery & Provisions',
-        icon: '🛒',
-        categories: {
-            'fresh-produce': {
-                name: 'Fresh Produce',
-                icon: '🥬',
-                subcategories: ['vegetables', 'fruits', 'herbs', 'organic-produce', 'seasonal-items']
-            },
-            'staples': {
-                name: 'Staples & Grains',
-                icon: '🍚',
-                subcategories: ['rice', 'wheat', 'pulses', 'spices', 'oils', 'flour']
-            },
-            'packaged-foods': {
-                name: 'Packaged Foods',
-                icon: '📦',
-                subcategories: ['snacks', 'beverages', 'dairy', 'frozen-foods', 'ready-to-eat']
-            }
-        }
-    },
-    furniture: {
-        id: 'furniture',
-        name: 'Furniture & Home Decor',
-        icon: '🛋️',
-        categories: {
-            'living-room': {
-                name: 'Living Room',
-                icon: '🛋️',
-                subcategories: ['sofas', 'coffee-tables', 'tv-units', 'recliners', 'bean-bags']
-            },
-            'bedroom': {
-                name: 'Bedroom',
-                icon: '🛏️',
-                subcategories: ['beds', 'wardrobes', 'mattresses', 'dressing-tables', 'bedside-tables']
-            },
-            'home-decor': {
-                name: 'Home Decor',
-                icon: '🎨',
-                subcategories: ['wall-art', 'curtains', 'lighting', 'plants', 'mirrors', 'rugs']
-            }
-        }
-    },
-    electronics: {
-        id: 'electronics',
-        name: 'Electronics & Gadgets',
-        icon: '📱',
-        categories: {
-            'mobile-devices': {
-                name: 'Mobile Devices',
-                icon: '📱',
-                subcategories: ['smartphones', 'tablets', 'accessories', 'chargers', 'cases', 'headphones']
-            },
-            'computers': {
-                name: 'Computers & Laptops',
-                icon: '💻',
-                subcategories: ['laptops', 'desktops', 'monitors', 'keyboards', 'mice', 'printers']
-            },
-            'home-appliances': {
-                name: 'Home Appliances',
-                icon: '🏠',
-                subcategories: ['refrigerators', 'washing-machines', 'air-conditioners', 'fans', 'heaters']
-            }
-        }
-    },
-    jewellery: {
-        id: 'jewellery',
-        name: 'Jewellery & Accessories',
-        icon: '💍',
-        categories: {
-            'gold-jewelry': {
-                name: 'Gold Jewellery',
-                icon: '👑',
-                subcategories: ['necklaces', 'earrings', 'bangles', 'rings', 'chains', 'pendants']
-            },
-            'silver-jewelry': {
-                name: 'Silver Jewellery',
-                icon: '✨',
-                subcategories: ['rings', 'bracelets', 'anklets', 'nose-pins', 'toe-rings']
-            },
-            'fashion-jewelry': {
-                name: 'Fashion Jewellery',
-                icon: '💎',
-                subcategories: ['artificial-jewelry', 'costume-jewelry', 'beaded-jewelry', 'oxidized-jewelry']
-            }
-        }
-    },
-    restaurants: {
-        id: 'restaurants',
-        name: 'Restaurants & Cafes',
-        icon: '🍽️',
-        categories: {
-            'fine-dining': {
-                name: 'Fine Dining',
-                icon: '🍽️',
-                subcategories: ['multi-cuisine', 'continental', 'italian', 'chinese', 'thai', 'mexican']
-            },
-            'casual-dining': {
-                name: 'Casual Dining',
-                icon: '🍕',
-                subcategories: ['pizza', 'burgers', 'sandwiches', 'wraps', 'pasta', 'grilled-items']
-            },
-            'cafes': {
-                name: 'Cafes & Bakeries',
-                icon: '☕',
-                subcategories: ['coffee', 'tea', 'pastries', 'cakes', 'cookies', 'breakfast-items']
-            }
-        }
-    },
-    fitness: {
-        id: 'fitness',
-        name: 'Fitness & Wellness',
-        icon: '💪',
-        categories: {
-            'gym-fitness': {
-                name: 'Gym & Fitness',
-                icon: '🏋️',
-                subcategories: ['weight-training', 'cardio', 'group-classes', 'personal-training', 'crossfit']
-            },
-            'yoga-meditation': {
-                name: 'Yoga & Meditation',
-                icon: '🧘',
-                subcategories: ['hatha-yoga', 'vinyasa', 'meditation', 'pranayama', 'therapeutic-yoga']
-            },
-            'sports': {
-                name: 'Sports Activities',
-                icon: '⚽',
-                subcategories: ['badminton', 'tennis', 'swimming', 'cricket', 'football', 'basketball']
-            }
-        }
-    },
-    education: {
-        id: 'education',
-        name: 'Education & Training',
-        icon: '📚',
-        categories: {
-            'academic-coaching': {
-                name: 'Academic Coaching',
-                icon: '🎓',
-                subcategories: ['math-tutoring', 'science-coaching', 'language-classes', 'exam-prep', 'homework-help']
-            },
-            'skill-development': {
-                name: 'Skill Development',
-                icon: '💻',
-                subcategories: ['computer-courses', 'programming', 'digital-marketing', 'graphic-design', 'photography']
-            },
-            'arts-music': {
-                name: 'Arts & Music',
-                icon: '🎵',
-                subcategories: ['music-lessons', 'dance-classes', 'art-classes', 'crafts', 'singing']
-            }
-        }
-    },
-    automotive: {
-        id: 'automotive',
-        name: 'Automotive Services',
-        icon: '🚗',
-        categories: {
-            'repair-maintenance': {
-                name: 'Repair & Maintenance',
-                icon: '🔧',
-                subcategories: ['engine-repair', 'brake-service', 'oil-change', 'tire-service', 'battery-replacement']
-            },
-            'car-accessories': {
-                name: 'Car Accessories',
-                icon: '🚙',
-                subcategories: ['seat-covers', 'floor-mats', 'audio-systems', 'navigation', 'car-care-products']
-            }
-        }
-    },
-    healthcare: {
-        id: 'healthcare',
-        name: 'Healthcare Services',
-        icon: '🏥',
-        categories: {
-            'general-medicine': {
-                name: 'General Medicine',
-                icon: '👨‍⚕️',
-                subcategories: ['consultations', 'health-checkups', 'vaccinations', 'prescriptions', 'diagnostics']
-            },
-            'specialty-care': {
-                name: 'Specialty Care',
-                icon: '🩺',
-                subcategories: ['dentistry', 'orthopedics', 'cardiology', 'dermatology', 'ophthalmology']
-            }
-        }
-    },
-    professional: {
-        id: 'professional',
-        name: 'Professional Services',
-        icon: '💼',
-        categories: {
-            'legal-services': {
-                name: 'Legal Services',
-                icon: '⚖️',
-                subcategories: ['legal-consultation', 'documentation', 'court-representation', 'contract-drafting']
-            },
-            'financial-services': {
-                name: 'Financial Services',
-                icon: '💰',
-                subcategories: ['tax-filing', 'accounting', 'investment-advice', 'loan-assistance', 'insurance']
-            }
-        }
-    },
-    'arts-crafts': {
-        id: 'arts-crafts',
-        name: 'Arts & Crafts',
-        icon: '🎨',
-        categories: {
-            'handmade-items': {
-                name: 'Handmade Items',
-                icon: '✋',
-                subcategories: ['pottery', 'woodwork', 'textiles', 'paintings', 'sculptures', 'decorative-items']
-            },
-            'craft-supplies': {
-                name: 'Craft Supplies',
-                icon: '🖌️',
-                subcategories: ['paints', 'brushes', 'canvas', 'clay', 'fabrics', 'beads']
-            }
-        }
-    },
-    travel: {
-        id: 'travel',
-        name: 'Travel & Tourism',
-        icon: '✈️',
-        categories: {
-            'travel-planning': {
-                name: 'Travel Planning',
-                icon: '🗺️',
-                subcategories: ['tour-packages', 'hotel-booking', 'flight-booking', 'visa-assistance', 'travel-insurance']
-            },
-            'local-tours': {
-                name: 'Local Tours',
-                icon: '🚌',
-                subcategories: ['city-tours', 'adventure-tours', 'cultural-tours', 'food-tours', 'nature-walks']
-            }
-        }
-    },
-    'pet-services': {
-        id: 'pet-services',
-        name: 'Pet Services & Supplies',
-        icon: '🐾',
-        categories: {
-            'pet-grooming': {
-                name: 'Pet Grooming',
-                icon: '✂️',
-                subcategories: ['dog-grooming', 'cat-grooming', 'nail-trimming', 'pet-bathing', 'fur-styling']
-            },
-            'pet-supplies': {
-                name: 'Pet Supplies', 
-                icon: '🦴',
-                subcategories: ['pet-food', 'toys', 'leashes-collars', 'pet-beds', 'pet-accessories']
-            },
-            'veterinary': {
-                name: 'Veterinary Services',
-                icon: '🩺', 
-                subcategories: ['health-checkups', 'vaccinations', 'pet-surgery', 'emergency-care']
-            }
-        }
-    },
-    'real-estate': {
-        id: 'real-estate',
-        name: 'Real Estate Services',
-        icon: '🏠',
-        categories: {
-            'property-sales': {
-                name: 'Property Sales',
-                icon: '🏘️',
-                subcategories: ['residential-sales', 'commercial-sales', 'plot-sales', 'investment-properties']
-            },
-            'rentals': {
-                name: 'Property Rentals',
-                icon: '🔑',
-                subcategories: ['house-rentals', 'apartment-rentals', 'commercial-rentals', 'pg-hostels']
-            },
-            'property-management': {
-                name: 'Property Management',
-                icon: '📋',
-                subcategories: ['maintenance', 'tenant-management', 'property-valuation', 'legal-services']
-            }
-        }
-    },
-    'event-services': {
-        id: 'event-services', 
-        name: 'Event & Wedding Services',
-        icon: '🎉',
-        categories: {
-            'wedding-planning': {
-                name: 'Wedding Planning',
-                icon: '💒',
-                subcategories: ['wedding-decor', 'catering', 'photography', 'venue-booking', 'invitation-cards']
-            },
-            'event-management': {
-                name: 'Event Management', 
-                icon: '🎪',
-                subcategories: ['corporate-events', 'birthday-parties', 'cultural-events', 'exhibitions']
-            },
-            'entertainment': {
-                name: 'Entertainment Services',
-                icon: '🎵',
-                subcategories: ['dj-services', 'live-music', 'dance-performances', 'anchor-services']
-            }
-        }
-    },
-    'agriculture': {
-        id: 'agriculture',
-        name: 'Agriculture & Farming', 
-        icon: '🌾',
-        categories: {
-            'crop-farming': {
-                name: 'Crop Farming',
-                icon: '🌱',
-                subcategories: ['organic-vegetables', 'fruits', 'grains', 'spices', 'medicinal-plants']
-            },
-            'dairy-farming': {
-                name: 'Dairy & Livestock',
-                icon: '🐄', 
-                subcategories: ['fresh-milk', 'dairy-products', 'poultry', 'goat-farming', 'fish-farming']
-            },
-            'farm-equipment': {
-                name: 'Farm Equipment',
-                icon: '🚜',
-                subcategories: ['tractors', 'farming-tools', 'irrigation-systems', 'seeds-fertilizers']
-            }
-        }
-    },
-    'others': {
-        id: 'others',
-        name: 'Other Services',
-        icon: '🔧', 
-        categories: {
-            'general-services': {
-                name: 'General Services',
-                icon: '⚙️',
-                subcategories: ['consulting', 'maintenance', 'repairs', 'installations', 'custom-services']
-            },
-            'specialty-products': {
-                name: 'Specialty Products',
-                icon: '🎁',
-                subcategories: ['custom-products', 'handmade-items', 'imported-goods', 'unique-services']
-            }
-        }
-    }
-};
-
-// ========================================
-// SUBCATEGORY NAMES MAPPING
-// ========================================
-
-const SUBCATEGORY_NAMES = {
-    // Fashion & Boutique
-    'shirts': 'Shirts', 'pants': 'Pants', 'suits': 'Suits', 'ethnic-wear': 'Ethnic Wear',
-    'casual-wear': 'Casual Wear', 'formal-wear': 'Formal Wear', 'kurtas': 'Kurtas', 'sherwanis': 'Sherwanis',
-    'dresses': 'Dresses', 'tops': 'Tops', 'bottoms': 'Bottoms', 'sarees': 'Sarees',
-    'lehengas': 'Lehengas', 'salwar-suits': 'Salwar Suits', 'western-wear': 'Western Wear', 'kurtis': 'Kurtis',
-    'bags': 'Bags', 'belts': 'Belts', 'wallets': 'Wallets', 'scarves': 'Scarves',
-    'hats': 'Hats', 'sunglasses': 'Sunglasses', 'watches': 'Watches', 'jewelry': 'Jewelry',
-    'mens-shoes': "Men's Shoes", 'womens-shoes': "Women's Shoes", 'sandals': 'Sandals',
-    'boots': 'Boots', 'sneakers': 'Sneakers', 'ethnic-footwear': 'Ethnic Footwear',
-
-    // Food & Catering
-    'rotis-parathas': 'Rotis & Parathas', 'curries': 'Curries', 'dal-preparations': 'Dal',
-    'rice-dishes': 'Rice Dishes', 'snacks': 'Snacks', 'biryanis': 'Biryanis', 'tandoor-items': 'Tandoor Items',
-    'dosas': 'Dosas', 'idlis': 'Idlis', 'vadas': 'Vadas', 'uttapam': 'Uttapam',
-    'sambar': 'Sambar', 'rasam': 'Rasam', 'chutneys': 'Chutneys', 'appams': 'Appams',
-    'traditional-sweets': 'Traditional Sweets', 'cakes': 'Cakes', 'pastries': 'Pastries',
-    'ice-creams': 'Ice Creams', 'mithai': 'Mithai', 'cookies': 'Cookies',
-
-    // Salon & Beauty
-    'haircuts': 'Haircuts', 'hair-coloring': 'Hair Coloring', 'hair-styling': 'Hair Styling',
-    'hair-treatments': 'Hair Treatments', 'keratin': 'Keratin Treatment', 'rebonding': 'Rebonding',
-    'facials': 'Facials', 'makeup': 'Makeup', 'eyebrow-threading': 'Eyebrow Threading',
-    'manicure': 'Manicure', 'pedicure': 'Pedicure', 'waxing': 'Waxing',
-
-    // Electronics
-    'smartphones': 'Smartphones', 'tablets': 'Tablets', 'accessories': 'Accessories',
-    'chargers': 'Chargers', 'cases': 'Cases', 'headphones': 'Headphones',
-    'laptops': 'Laptops', 'desktops': 'Desktops', 'monitors': 'Monitors',
-
-    // Pet Services
-    'dog-grooming': 'Dog Grooming', 'cat-grooming': 'Cat Grooming', 'nail-trimming': 'Nail Trimming',
-    'pet-bathing': 'Pet Bathing', 'fur-styling': 'Fur Styling', 'pet-food': 'Pet Food', 'toys': 'Pet Toys',
-    'leashes-collars': 'Leashes & Collars', 'pet-beds': 'Pet Beds', 'pet-accessories': 'Pet Accessories',
-    'health-checkups': 'Health Checkups', 'vaccinations': 'Vaccinations', 'pet-surgery': 'Pet Surgery', 
-    'emergency-care': 'Emergency Care',
-
-    // Real Estate  
-    'residential-sales': 'Residential Sales', 'commercial-sales': 'Commercial Sales', 'plot-sales': 'Plot Sales',
-    'investment-properties': 'Investment Properties', 'house-rentals': 'House Rentals', 
-    'apartment-rentals': 'Apartment Rentals', 'commercial-rentals': 'Commercial Rentals', 'pg-hostels': 'PG & Hostels',
-    'tenant-management': 'Tenant Management', 'property-valuation': 'Property Valuation',
-
-    // Events & Weddings
-    'wedding-decor': 'Wedding Decoration', 'catering': 'Catering Services', 'photography': 'Photography & Videography',
-    'venue-booking': 'Venue Booking', 'invitation-cards': 'Invitation Cards', 'corporate-events': 'Corporate Events',
-    'birthday-parties': 'Birthday Parties', 'cultural-events': 'Cultural Events', 'exhibitions': 'Exhibitions',
-    'dj-services': 'DJ Services', 'live-music': 'Live Music', 'dance-performances': 'Dance Performances',
-    'anchor-services': 'Anchor Services',
-
-    // Agriculture
-    'organic-vegetables': 'Organic Vegetables', 'fruits': 'Fresh Fruits', 'grains': 'Grains & Cereals',
-    'spices': 'Spices & Herbs', 'medicinal-plants': 'Medicinal Plants', 'fresh-milk': 'Fresh Milk',
-    'dairy-products': 'Dairy Products', 'poultry': 'Poultry & Eggs', 'goat-farming': 'Goat Farming',
-    'fish-farming': 'Fish Farming', 'tractors': 'Tractors', 'farming-tools': 'Farming Tools',
-    'irrigation-systems': 'Irrigation Systems', 'seeds-fertilizers': 'Seeds & Fertilizers',
-
-    // Others
-    'consulting': 'Consulting Services', 'maintenance': 'Maintenance Services', 'repairs': 'Repair Services',
-    'installations': 'Installation Services', 'custom-services': 'Custom Services', 'custom-products': 'Custom Products',
-    'handmade-items': 'Handmade Items', 'imported-goods': 'Imported Goods', 'unique-services': 'Unique Services'
-};
-
-// ========================================
-// INDIAN PRODUCTS DATABASE (500+ Products)
-// ========================================
-
-const INDIAN_PRODUCTS_DB = {
-    boutique: {
-        'mens-wear': [
-            {
-                id: 'kurta-cotton-001',
-                name: 'Premium Cotton Kurta',
-                image: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=300',
-                description: 'Comfortable daily wear cotton kurta with traditional design',
-                suggestedPrice: 899,
-                category: 'mens-wear',
-                subcategory: 'kurtas',
-                variants: ['S', 'M', 'L', 'XL'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'shirt-formal-001',
-                name: 'Formal Cotton Shirt',
-                image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=300',
-                description: 'Classic formal shirt for office wear',
-                suggestedPrice: 1299,
-                category: 'mens-wear',
-                subcategory: 'shirts',
-                variants: ['S', 'M', 'L', 'XL', 'XXL'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'sherwani-wedding-001',
-                name: 'Royal Wedding Sherwani',
-                image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300',
-                description: 'Elegant sherwani for weddings and special occasions',
-                suggestedPrice: 4999,
-                category: 'mens-wear',
-                subcategory: 'sherwanis',
-                variants: ['S', 'M', 'L', 'XL'],
-                isSelected: false,
-                isPopular: false
-            },
-            {
-                id: 'jeans-casual-001',
-                name: 'Denim Casual Jeans',
-                image: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=300',
-                description: 'Comfortable casual jeans for everyday wear',
-                suggestedPrice: 1599,
-                category: 'mens-wear',
-                subcategory: 'pants',
-                variants: ['28', '30', '32', '34', '36'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'blazer-formal-001',
-                name: 'Business Formal Blazer',
-                image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300',
-                description: 'Professional blazer for business meetings',
-                suggestedPrice: 3499,
-                category: 'mens-wear',
-                subcategory: 'formal-wear',
-                variants: ['S', 'M', 'L', 'XL'],
-                isSelected: false,
-                isPopular: false
-            },
-            {
-                id: 'dhoti-traditional-001',
-                name: 'Traditional Cotton Dhoti',
-                image: 'https://images.unsplash.com/photo-1566479179817-c0efeb382d13?w=300',
-                description: 'Pure cotton dhoti for traditional occasions',
-                suggestedPrice: 599,
-                category: 'mens-wear',
-                subcategory: 'ethnic-wear',
-                variants: ['Free Size'],
-                isSelected: false,
-                isPopular: false
-            },
-            {
-                id: 'tshirt-casual-001',
-                name: 'Cotton Casual T-Shirt',
-                image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300',
-                description: 'Comfortable cotton t-shirt for daily wear',
-                suggestedPrice: 499,
-                category: 'mens-wear',
-                subcategory: 'casual-wear',
-                variants: ['S', 'M', 'L', 'XL', 'XXL'],
-                isSelected: false,
-                isPopular: true
-            }
-        ],
-        'womens-wear': [
-            {
-                id: 'saree-silk-001',
-                name: 'Silk Banarasi Saree',
-                image: 'https://images.unsplash.com/photo-1583391733975-4770270d3c5e?w=300',
-                description: 'Traditional Banarasi silk saree with gold border',
-                suggestedPrice: 6999,
-                category: 'womens-wear',
-                subcategory: 'sarees',
-                variants: ['One Size'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'lehenga-wedding-001',
-                name: 'Designer Wedding Lehenga',
-                image: 'https://images.unsplash.com/photo-1594736797933-d0ea8baa3b9a?w=300',
-                description: 'Heavy embroidered lehenga for weddings',
-                suggestedPrice: 12999,
-                category: 'womens-wear',
-                subcategory: 'lehengas',
-                variants: ['S', 'M', 'L', 'XL'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'kurti-cotton-001',
-                name: 'Printed Cotton Kurti',
-                image: 'https://images.unsplash.com/photo-1594736797933-d0ea8baa3b9a?w=300',
-                description: 'Comfortable printed kurti for daily wear',
-                suggestedPrice: 799,
-                category: 'womens-wear',
-                subcategory: 'kurtis',
-                variants: ['S', 'M', 'L', 'XL'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'dress-western-001',
-                name: 'Western Maxi Dress',
-                image: 'https://images.unsplash.com/photo-1566479179817-c0efeb382d13?w=300',
-                description: 'Elegant western maxi dress for parties',
-                suggestedPrice: 1899,
-                category: 'womens-wear',
-                subcategory: 'western-wear',
-                variants: ['XS', 'S', 'M', 'L', 'XL'],
-                isSelected: false,
-                isPopular: false
-            },
-            {
-                id: 'salwar-suit-001',
-                name: 'Designer Salwar Suit',
-                image: 'https://images.unsplash.com/photo-1583391733975-4770270d3c5e?w=300',
-                description: 'Beautiful designer salwar suit with dupatta',
-                suggestedPrice: 2499,
-                category: 'womens-wear',
-                subcategory: 'salwar-suits',
-                variants: ['S', 'M', 'L', 'XL'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'saree-cotton-001',
-                name: 'Cotton Handloom Saree',
-                image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300',
-                description: 'Handwoven cotton saree with traditional motifs',
-                suggestedPrice: 1299,
-                category: 'womens-wear',
-                subcategory: 'sarees',
-                variants: ['One Size'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'blouse-silk-001',
-                name: 'Silk Designer Blouse',
-                image: 'https://images.unsplash.com/photo-1594736797933-d0ea8baa3b9a?w=300',
-                description: 'Elegant silk blouse with embroidery',
-                suggestedPrice: 899,
-                category: 'womens-wear',
-                subcategory: 'tops',
-                variants: ['S', 'M', 'L', 'XL'],
-                isSelected: false,
-                isPopular: false
-            }
-        ],
-        'accessories': [
-            {
-                id: 'handbag-leather-001',
-                name: 'Leather Handbag',
-                image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300',
-                description: 'Premium leather handbag for women',
-                suggestedPrice: 2299,
-                category: 'accessories',
-                subcategory: 'bags',
-                variants: ['Brown', 'Black', 'Tan'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'watch-analog-001',
-                name: 'Analog Wrist Watch',
-                image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300',
-                description: 'Stylish analog watch for everyday use',
-                suggestedPrice: 1599,
-                category: 'accessories',
-                subcategory: 'watches',
-                variants: ['Silver', 'Gold', 'Black'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'sunglasses-uv-001',
-                name: 'UV Protection Sunglasses',
-                image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=300',
-                description: 'Stylish sunglasses with UV protection',
-                suggestedPrice: 899,
-                category: 'accessories',
-                subcategory: 'sunglasses',
-                variants: ['Black', 'Brown', 'Blue'],
-                isSelected: false,
-                isPopular: false
-            },
-            {
-                id: 'wallet-leather-001',
-                name: 'Genuine Leather Wallet',
-                image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=300',
-                description: 'Premium leather wallet with multiple card slots',
-                suggestedPrice: 799,
-                category: 'accessories',
-                subcategory: 'wallets',
-                variants: ['Brown', 'Black', 'Navy'],
-                isSelected: false,
-                isPopular: true
-            }
-        ],
-        'footwear': [
-            {
-                id: 'shoes-formal-001',
-                name: 'Formal Leather Shoes',
-                image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300',
-                description: 'Premium leather formal shoes for men',
-                suggestedPrice: 2999,
-                category: 'footwear',
-                subcategory: 'mens-shoes',
-                variants: ['6', '7', '8', '9', '10', '11'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'sandals-women-001',
-                name: 'Designer Women Sandals',
-                image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=300',
-                description: 'Comfortable designer sandals for women',
-                suggestedPrice: 1499,
-                category: 'footwear',
-                subcategory: 'womens-shoes',
-                variants: ['5', '6', '7', '8', '9'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'sneakers-sports-001',
-                name: 'Sports Sneakers',
-                image: 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=300',
-                description: 'Comfortable sports sneakers for running',
-                suggestedPrice: 3499,
-                category: 'footwear',
-                subcategory: 'sneakers',
-                variants: ['6', '7', '8', '9', '10', '11'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'chappals-leather-001',
-                name: 'Traditional Leather Chappals',
-                image: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=300',
-                description: 'Handcrafted leather chappals',
-                suggestedPrice: 899,
-                category: 'footwear',
-                subcategory: 'ethnic-footwear',
-                variants: ['6', '7', '8', '9', '10'],
-                isSelected: false,
-                isPopular: false
-            }
-        ]
-    },
-
-    'home-foods': {
-        'north-indian': [
-            {
-                id: 'butter-chicken-001',
-                name: 'Butter Chicken',
-                image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300',
-                description: 'Creamy and delicious butter chicken curry',
-                suggestedPrice: 320,
-                category: 'north-indian',
-                subcategory: 'curries',
-                variants: ['Regular', 'Large'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'dal-makhani-001',
-                name: 'Dal Makhani',
-                image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=300',
-                description: 'Rich and creamy black lentil curry',
-                suggestedPrice: 280,
-                category: 'north-indian',
-                subcategory: 'dal-preparations',
-                variants: ['Regular', 'Large'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'biryani-chicken-001',
-                name: 'Chicken Biryani',
-                image: 'https://images.unsplash.com/photo-1563379091339-03246963d999?w=300',
-                description: 'Aromatic basmati rice with tender chicken',
-                suggestedPrice: 350,
-                category: 'north-indian',
-                subcategory: 'biryanis',
-                variants: ['Half', 'Full'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'naan-butter-001',
-                name: 'Butter Naan',
-                image: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=300',
-                description: 'Soft and fluffy butter naan bread',
-                suggestedPrice: 60,
-                category: 'north-indian',
-                subcategory: 'rotis-parathas',
-                variants: ['Single', 'Pair'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'tandoori-chicken-001',
-                name: 'Tandoori Chicken',
-                image: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=300',
-                description: 'Marinated chicken cooked in tandoor',
-                suggestedPrice: 420,
-                category: 'north-indian',
-                subcategory: 'tandoor-items',
-                variants: ['Half', 'Full'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'rajma-chawal-001',
-                name: 'Rajma Chawal',
-                image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=300',
-                description: 'Kidney bean curry with steamed rice',
-                suggestedPrice: 220,
-                category: 'north-indian',
-                subcategory: 'rice-dishes',
-                variants: ['Regular', 'Large'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'chole-bhature-001',
-                name: 'Chole Bhature',
-                image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300',
-                description: 'Spicy chickpea curry with fried bread',
-                suggestedPrice: 180,
-                category: 'north-indian',
-                subcategory: 'snacks',
-                variants: ['Single', 'Double'],
-                isSelected: false,
-                isPopular: true
-            }
-        ],
-        'south-indian': [
-            {
-                id: 'masala-dosa-001',
-                name: 'Masala Dosa',
-                image: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=300',
-                description: 'Crispy dosa with spiced potato filling',
-                suggestedPrice: 120,
-                category: 'south-indian',
-                subcategory: 'dosas',
-                variants: ['Regular', 'Large'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'idli-sambar-001',
-                name: 'Idli with Sambar',
-                image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=300',
-                description: 'Steamed rice cakes with lentil curry',
-                suggestedPrice: 80,
-                category: 'south-indian',
-                subcategory: 'idlis',
-                variants: ['2 Pieces', '4 Pieces'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'vada-sambar-001',
-                name: 'Medu Vada',
-                image: 'https://images.unsplash.com/photo-1611270629569-8b357cb88da6?w=300',
-                description: 'Crispy lentil donuts with sambar',
-                suggestedPrice: 90,
-                category: 'south-indian',
-                subcategory: 'vadas',
-                variants: ['2 Pieces', '4 Pieces'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'uttapam-onion-001',
-                name: 'Onion Uttapam',
-                image: 'https://images.unsplash.com/photo-1630383249896-424e482df921?w=300',
-                description: 'Thick pancake with onion toppings',
-                suggestedPrice: 110,
-                category: 'south-indian',
-                subcategory: 'uttapam',
-                variants: ['Regular', 'Large'],
-                isSelected: false,
-                isPopular: false
-            },
-            {
-                id: 'coconut-chutney-001',
-                name: 'Coconut Chutney',
-                image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=300',
-                description: 'Fresh coconut chutney with spices',
-                suggestedPrice: 40,
-                category: 'south-indian',
-                subcategory: 'chutneys',
-                variants: ['Small', 'Medium'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'rava-upma-001',
-                name: 'Rava Upma',
-                image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=300',
-                description: 'Traditional semolina breakfast dish',
-                suggestedPrice: 70,
-                category: 'south-indian',
-                subcategory: 'dosas',
-                variants: ['Regular', 'Large'],
-                isSelected: false,
-                isPopular: false
-            }
-        ],
-        'sweets-desserts': [
-            {
-                id: 'gulab-jamun-001',
-                name: 'Gulab Jamun',
-                image: 'https://images.unsplash.com/photo-1571877277200-a0d98ea607e9?w=300',
-                description: 'Soft milk dumplings in sugar syrup',
-                suggestedPrice: 60,
-                category: 'sweets-desserts',
-                subcategory: 'traditional-sweets',
-                variants: ['2 Pieces', '4 Pieces', '1 Kg'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'rasmalai-001',
-                name: 'Rasmalai',
-                image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300',
-                description: 'Soft cheese dumplings in flavored milk',
-                suggestedPrice: 80,
-                category: 'sweets-desserts',
-                subcategory: 'traditional-sweets',
-                variants: ['2 Pieces', '4 Pieces'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'chocolate-cake-001',
-                name: 'Chocolate Cake',
-                image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300',
-                description: 'Rich chocolate cake with ganache',
-                suggestedPrice: 450,
-                category: 'sweets-desserts',
-                subcategory: 'cakes',
-                variants: ['Slice', 'Half Kg', '1 Kg'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'kulfi-malai-001',
-                name: 'Malai Kulfi',
-                image: 'https://images.unsplash.com/photo-1571877277200-a0d98ea607e9?w=300',
-                description: 'Traditional Indian ice cream',
-                suggestedPrice: 50,
-                category: 'sweets-desserts',
-                subcategory: 'ice-creams',
-                variants: ['Single', 'Double'],
-                isSelected: false,
-                isPopular: true
-            }
-        ],
-        'beverages': [
-            {
-                id: 'masala-chai-001',
-                name: 'Masala Chai',
-                image: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=300',
-                description: 'Traditional spiced tea with milk',
-                suggestedPrice: 25,
-                category: 'beverages',
-                subcategory: 'tea',
-                variants: ['Regular', 'Large'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'fresh-lime-001',
-                name: 'Fresh Lime Water',
-                image: 'https://images.unsplash.com/photo-1546173159-315724a31696?w=300',
-                description: 'Refreshing lime water with mint',
-                suggestedPrice: 40,
-                category: 'beverages',
-                subcategory: 'fresh-juices',
-                variants: ['Sweet', 'Salt', 'Soda'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'mango-lassi-001',
-                name: 'Mango Lassi',
-                image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433a?w=300',
-                description: 'Creamy mango yogurt drink',
-                suggestedPrice: 80,
-                category: 'beverages',
-                subcategory: 'lassi',
-                variants: ['Regular', 'Large'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'filter-coffee-001',
-                name: 'South Indian Filter Coffee',
-                image: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=300',
-                description: 'Authentic filter coffee with chicory',
-                suggestedPrice: 35,
-                category: 'beverages',
-                subcategory: 'coffee',
-                variants: ['Regular', 'Strong'],
-                isSelected: false,
-                isPopular: true
-            }
-        ]
-    },
-
-    salons: {
-        'hair-services': [
-            {
-                id: 'haircut-men-001',
-                name: 'Men\'s Haircut & Styling',
-                image: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=300',
-                description: 'Professional haircut with styling',
-                suggestedPrice: 300,
-                category: 'hair-services',
-                subcategory: 'haircuts',
-                variants: ['Basic', 'Premium'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'haircut-women-001',
-                name: 'Women\'s Haircut & Blow Dry',
-                image: 'https://images.unsplash.com/photo-1562004760-acb5685654e8?w=300',
-                description: 'Stylish haircut with professional blow dry',
-                suggestedPrice: 800,
-                category: 'hair-services',
-                subcategory: 'haircuts',
-                variants: ['Basic', 'Styled', 'Premium'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'hair-color-001',
-                name: 'Hair Coloring Service',
-                image: 'https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?w=300',
-                description: 'Professional hair coloring with premium products',
-                suggestedPrice: 2500,
-                category: 'hair-services',
-                subcategory: 'hair-coloring',
-                variants: ['Highlights', 'Full Color', 'Root Touch-up'],
-                isSelected: false,
-                isPopular: false
-            },
-            {
-                id: 'keratin-treatment-001',
-                name: 'Keratin Hair Treatment',
-                image: 'https://images.unsplash.com/photo-1560869713-7d0954d92f5b?w=300',
-                description: 'Smoothing keratin treatment for frizzy hair',
-                suggestedPrice: 5000,
-                category: 'hair-services',
-                subcategory: 'keratin',
-                variants: ['Basic', 'Premium'],
-                isSelected: false,
-                isPopular: false
-            }
-        ],
-        'beauty-services': [
-            {
-                id: 'facial-basic-001',
-                name: 'Deep Cleansing Facial',
-                image: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=300',
-                description: 'Deep cleansing facial for glowing skin',
-                suggestedPrice: 1200,
-                category: 'beauty-services',
-                subcategory: 'facials',
-                variants: ['Basic', 'Deluxe', 'Premium'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'bridal-makeup-001',
-                name: 'Bridal Makeup Package',
-                image: 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=300',
-                description: 'Complete bridal makeup with hair styling',
-                suggestedPrice: 8000,
-                category: 'beauty-services',
-                subcategory: 'makeup',
-                variants: ['Traditional', 'Modern', 'Premium'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'eyebrow-threading-001',
-                name: 'Eyebrow Threading & Shaping',
-                image: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?w=300',
-                description: 'Professional eyebrow threading and shaping',
-                suggestedPrice: 150,
-                category: 'beauty-services',
-                subcategory: 'eyebrow-threading',
-                variants: ['Basic', 'Styled'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'manicure-pedicure-001',
-                name: 'Manicure & Pedicure',
-                image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=300',
-                description: 'Complete nail care with polish',
-                suggestedPrice: 800,
-                category: 'beauty-services',
-                subcategory: 'manicure',
-                variants: ['Basic', 'Gel Polish', 'French'],
-                isSelected: false,
-                isPopular: true
-            }
-        ],
-        'spa-wellness': [
-            {
-                id: 'full-body-massage-001',
-                name: 'Full Body Relaxation Massage',
-                image: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=300',
-                description: 'Complete body massage for stress relief',
-                suggestedPrice: 2500,
-                category: 'spa-wellness',
-                subcategory: 'massages',
-                variants: ['60 min', '90 min', '120 min'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'aromatherapy-session-001',
-                name: 'Aromatherapy Session',
-                image: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=300',
-                description: 'Relaxing aromatherapy with essential oils',
-                suggestedPrice: 1800,
-                category: 'spa-wellness',
-                subcategory: 'aromatherapy',
-                variants: ['45 min', '60 min'],
-                isSelected: false,
-                isPopular: false
-            }
-        ]
-    },
-
-    grocery: {
-        'fresh-produce': [
-            {
-                id: 'tomatoes-fresh-001',
-                name: 'Fresh Tomatoes',
-                image: 'https://images.unsplash.com/photo-1546470427-e1295e888100?w=300',
-                description: 'Farm fresh red tomatoes',
-                suggestedPrice: 40,
-                category: 'fresh-produce',
-                subcategory: 'vegetables',
-                variants: ['500g', '1kg', '2kg'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'onions-red-001',
-                name: 'Red Onions',
-                image: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=300',
-                description: 'Fresh red onions from local farms',
-                suggestedPrice: 30,
-                category: 'fresh-produce',
-                subcategory: 'vegetables',
-                variants: ['500g', '1kg', '2kg'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'bananas-fresh-001',
-                name: 'Fresh Bananas',
-                image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300',
-                description: 'Sweet and ripe bananas',
-                suggestedPrice: 60,
-                category: 'fresh-produce',
-                subcategory: 'fruits',
-                variants: ['500g', '1kg'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'apples-kashmiri-001',
-                name: 'Kashmiri Apples',
-                image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=300',
-                description: 'Premium Kashmiri red apples',
-                suggestedPrice: 180,
-                category: 'fresh-produce',
-                subcategory: 'fruits',
-                variants: ['500g', '1kg'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'potatoes-fresh-001',
-                name: 'Fresh Potatoes',
-                image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=300',
-                description: 'Farm fresh potatoes for daily cooking',
-                suggestedPrice: 25,
-                category: 'fresh-produce',
-                subcategory: 'vegetables',
-                variants: ['1kg', '2kg', '5kg'],
-                isSelected: false,
-                isPopular: true
-            }
-        ],
-        'staples': [
-            {
-                id: 'rice-basmati-001',
-                name: 'Basmati Rice',
-                image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300',
-                description: 'Premium long grain basmati rice',
-                suggestedPrice: 200,
-                category: 'staples',
-                subcategory: 'rice',
-                variants: ['1kg', '5kg', '10kg'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'dal-toor-001',
-                name: 'Toor Dal (Arhar)',
-                image: 'https://images.unsplash.com/photo-1596097900113-bdf6c7ffaba6?w=300',
-                description: 'High quality toor dal lentils',
-                suggestedPrice: 140,
-                category: 'staples',
-                subcategory: 'pulses',
-                variants: ['500g', '1kg', '2kg'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'oil-mustard-001',
-                name: 'Mustard Oil',
-                image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=300',
-                description: 'Pure mustard oil for cooking',
-                suggestedPrice: 180,
-                category: 'staples',
-                subcategory: 'oils',
-                variants: ['500ml', '1L', '2L'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'wheat-flour-001',
-                name: 'Whole Wheat Flour',
-                image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=300',
-                description: 'Fresh ground whole wheat flour',
-                suggestedPrice: 50,
-                category: 'staples',
-                subcategory: 'flour',
-                variants: ['1kg', '2kg', '5kg'],
-                isSelected: false,
-                isPopular: true
-            }
-        ],
-        'packaged-foods': [
-            {
-                id: 'biscuits-tea-001',
-                name: 'Tea Time Biscuits',
-                image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=300',
-                description: 'Crispy biscuits perfect with tea',
-                suggestedPrice: 40,
-                category: 'packaged-foods',
-                subcategory: 'snacks',
-                variants: ['200g', '400g'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'milk-packets-001',
-                name: 'Fresh Milk Packets',
-                image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=300',
-                description: 'Fresh full cream milk',
-                suggestedPrice: 60,
-                category: 'packaged-foods',
-                subcategory: 'dairy',
-                variants: ['500ml', '1L'],
-                isSelected: false,
-                isPopular: true
-            }
-        ]
-    },
-
-    electronics: {
-        'mobile-devices': [
-            {
-                id: 'smartphone-android-001',
-                name: 'Android Smartphone',
-                image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300',
-                description: 'Latest Android smartphone with dual camera',
-                suggestedPrice: 15999,
-                category: 'mobile-devices',
-                subcategory: 'smartphones',
-                variants: ['64GB', '128GB', '256GB'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'earphones-wireless-001',
-                name: 'Wireless Earphones',
-                image: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=300',
-                description: 'Bluetooth wireless earphones with charging case',
-                suggestedPrice: 2999,
-                category: 'mobile-devices',
-                subcategory: 'headphones',
-                variants: ['Black', 'White', 'Blue'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'power-bank-001',
-                name: '10000mAh Power Bank',
-                image: 'https://images.unsplash.com/photo-1609592707680-9d9b9f1e7bf9?w=300',
-                description: 'Fast charging power bank with dual USB ports',
-                suggestedPrice: 1299,
-                category: 'mobile-devices',
-                subcategory: 'accessories',
-                variants: ['10000mAh', '20000mAh'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'phone-case-001',
-                name: 'Protective Phone Case',
-                image: 'https://images.unsplash.com/photo-1601593346740-925612772716?w=300',
-                description: 'Durable protective case for smartphones',
-                suggestedPrice: 399,
-                category: 'mobile-devices',
-                subcategory: 'cases',
-                variants: ['Clear', 'Black', 'Blue'],
-                isSelected: false,
-                isPopular: true
-            }
-        ],
-        'computers': [
-            {
-                id: 'laptop-business-001',
-                name: 'Business Laptop',
-                image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300',
-                description: 'Professional laptop for business use',
-                suggestedPrice: 45000,
-                category: 'computers',
-                subcategory: 'laptops',
-                variants: ['i3/4GB', 'i5/8GB', 'i7/16GB'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'keyboard-wireless-001',
-                name: 'Wireless Keyboard',
-                image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=300',
-                description: 'Ergonomic wireless keyboard',
-                suggestedPrice: 1800,
-                category: 'computers',
-                subcategory: 'keyboards',
-                variants: ['Black', 'White'],
-                isSelected: false,
-                isPopular: false
-            },
-            {
-                id: 'mouse-wireless-001',
-                name: 'Wireless Mouse',
-                image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=300',
-                description: 'Ergonomic wireless mouse with precision tracking',
-                suggestedPrice: 899,
-                category: 'computers',
-                subcategory: 'mice',
-                variants: ['Black', 'Silver'],
-                isSelected: false,
-                isPopular: true
-            }
-        ],
-        'home-appliances': [
-            {
-                id: 'fan-ceiling-001',
-                name: 'Ceiling Fan',
-                image: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=300',
-                description: 'Energy efficient ceiling fan with remote',
-                suggestedPrice: 3500,
-                category: 'home-appliances',
-                subcategory: 'fans',
-                variants: ['48 inch', '52 inch'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'iron-steam-001',
-                name: 'Steam Iron',
-                image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300',
-                description: 'Automatic steam iron with ceramic coating',
-                suggestedPrice: 1800,
-                category: 'home-appliances',
-                subcategory: 'irons',
-                variants: ['1200W', '1500W'],
-                isSelected: false,
-                isPopular: true
-            }
-        ]
-    },
-
-    fitness: {
-        'gym-fitness': [
-            {
-                id: 'gym-membership-001',
-                name: 'Monthly Gym Membership',
-                image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300',
-                description: 'Full access gym membership with trainer',
-                suggestedPrice: 2000,
-                category: 'gym-fitness',
-                subcategory: 'weight-training',
-                variants: ['Basic', 'Premium', 'VIP'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'personal-training-001',
-                name: 'Personal Training Session',
-                image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300',
-                description: 'One-on-one personal training session',
-                suggestedPrice: 800,
-                category: 'gym-fitness',
-                subcategory: 'personal-training',
-                variants: ['45 min', '60 min'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'protein-powder-001',
-                name: 'Whey Protein Powder',
-                image: 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=300',
-                description: 'High quality whey protein for muscle building',
-                suggestedPrice: 2500,
-                category: 'gym-fitness',
-                subcategory: 'supplements',
-                variants: ['1kg', '2kg', '5kg'],
-                isSelected: false,
-                isPopular: true
-            }
-        ],
-        'yoga-meditation': [
-            {
-                id: 'yoga-class-001',
-                name: 'Hatha Yoga Class',
-                image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=300',
-                description: 'Traditional Hatha yoga class for beginners',
-                suggestedPrice: 500,
-                category: 'yoga-meditation',
-                subcategory: 'hatha-yoga',
-                variants: ['Drop-in', 'Monthly', 'Quarterly'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'meditation-session-001',
-                name: 'Guided Meditation',
-                image: 'https://images.unsplash.com/photo-1593811167562-9cef47bfc4a7?w=300',
-                description: 'Guided meditation for stress relief',
-                suggestedPrice: 300,
-                category: 'yoga-meditation',
-                subcategory: 'meditation',
-                variants: ['30 min', '45 min', '60 min'],
-                isSelected: false,
-                isPopular: false
-            },
-            {
-                id: 'yoga-mat-001',
-                name: 'Premium Yoga Mat',
-                image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=300',
-                description: 'Non-slip yoga mat with carrying strap',
-                suggestedPrice: 1200,
-                category: 'yoga-meditation',
-                subcategory: 'equipment',
-                variants: ['6mm', '8mm', '10mm'],
-                isSelected: false,
-                isPopular: true
-            }
-        ]
-    },
-
-    restaurants: {
-        'fine-dining': [
-            {
-                id: 'pasta-italian-001',
-                name: 'Italian Pasta Primavera',
-                image: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=300',
-                description: 'Fresh pasta with seasonal vegetables',
-                suggestedPrice: 450,
-                category: 'fine-dining',
-                subcategory: 'italian',
-                variants: ['Regular', 'Large'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'chicken-continental-001',
-                name: 'Grilled Chicken Continental',
-                image: 'https://images.unsplash.com/photo-1532636618209-8da5c4bf2c5a?w=300',
-                description: 'Herb-grilled chicken with vegetables',
-                suggestedPrice: 680,
-                category: 'fine-dining',
-                subcategory: 'continental',
-                variants: ['Half', 'Full'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'fish-curry-001',
-                name: 'Goan Fish Curry',
-                image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300',
-                description: 'Authentic Goan fish curry with coconut',
-                suggestedPrice: 550,
-                category: 'fine-dining',
-                subcategory: 'indian',
-                variants: ['Regular', 'Large'],
-                isSelected: false,
-                isPopular: true
-            }
-        ],
-        'casual-dining': [
-            {
-                id: 'pizza-margherita-001',
-                name: 'Margherita Pizza',
-                image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300',
-                description: 'Classic margherita with fresh basil',
-                suggestedPrice: 320,
-                category: 'casual-dining',
-                subcategory: 'pizza',
-                variants: ['Small', 'Medium', 'Large'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'burger-chicken-001',
-                name: 'Chicken Burger',
-                image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300',
-                description: 'Juicy chicken burger with fries',
-                suggestedPrice: 280,
-                category: 'casual-dining',
-                subcategory: 'burgers',
-                variants: ['Regular', 'Large', 'Combo'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'sandwich-club-001',
-                name: 'Club Sandwich',
-                image: 'https://images.unsplash.com/photo-1509722747041-616f39b57569?w=300',
-                description: 'Triple layer club sandwich with fries',
-                suggestedPrice: 220,
-                category: 'casual-dining',
-                subcategory: 'sandwiches',
-                variants: ['Veg', 'Chicken', 'Turkey'],
-                isSelected: false,
-                isPopular: true
-            }
-        ],
-        'cafes': [
-            {
-                id: 'cappuccino-001',
-                name: 'Cappuccino',
-                image: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=300',
-                description: 'Rich cappuccino with perfect foam art',
-                suggestedPrice: 120,
-                category: 'cafes',
-                subcategory: 'coffee',
-                variants: ['Regular', 'Large', 'Decaf'],
-                isSelected: false,
-                isPopular: true
-            },
-            {
-                id: 'croissant-001',
-                name: 'Butter Croissant',
-                image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300',
-                description: 'Flaky butter croissant, freshly baked',
-                suggestedPrice: 80,
-                category: 'cafes',
-                subcategory: 'pastries',
-                variants: ['Plain', 'Chocolate', 'Almond'],
-                isSelected: false,
-                isPopular: true
-            }
-        ]
-    }
-};
-
-// Helper function to get products by category
-function getProductsByCategory(categoryId) {
-    return INDIAN_PRODUCTS_DB[categoryId] || {};
-}
-
-// Helper function to get all products with search/filter
-function searchProducts(searchTerm = '', categoryFilter = 'all', sortBy = 'name', priceRange = { min: 0, max: 10000 }) {
+Config.getAllProducts = function() {
     let allProducts = [];
-    
-    // Collect all products
-    Object.keys(INDIAN_PRODUCTS_DB).forEach(categoryKey => {
-        Object.keys(INDIAN_PRODUCTS_DB[categoryKey]).forEach(subcategoryKey => {
-            const products = INDIAN_PRODUCTS_DB[categoryKey][subcategoryKey];
-            products.forEach(product => {
-                if (categoryFilter === 'all' || product.category.includes(categoryFilter) || categoryKey === categoryFilter) {
-                    if (product.suggestedPrice >= priceRange.min && product.suggestedPrice <= priceRange.max) {
-                        if (!searchTerm || product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                            product.description.toLowerCase().includes(searchTerm.toLowerCase())) {
-                            allProducts.push({...product, parentCategory: categoryKey});
-                        }
-                    }
-                }
-            });
-        });
+    Object.values(this.productCatalog).forEach(categoryProducts => {
+        allProducts = allProducts.concat(categoryProducts);
     });
-    
-    // Sort products
-    switch(sortBy) {
-        case 'price-low':
-            allProducts.sort((a, b) => a.suggestedPrice - b.suggestedPrice);
-            break;
-        case 'price-high':
-            allProducts.sort((a, b) => b.suggestedPrice - a.suggestedPrice);
-            break;
-        case 'category':
-            allProducts.sort((a, b) => a.parentCategory.localeCompare(b.parentCategory));
-            break;
-        default: // name
-            allProducts.sort((a, b) => a.name.localeCompare(b.name));
-    }
-    
     return allProducts;
-}
-
-// Helper function to get popular products
-function getPopularProducts(limit = 20) {
-    let popularProducts = [];
-    
-    Object.keys(INDIAN_PRODUCTS_DB).forEach(categoryKey => {
-        Object.keys(INDIAN_PRODUCTS_DB[categoryKey]).forEach(subcategoryKey => {
-            const products = INDIAN_PRODUCTS_DB[categoryKey][subcategoryKey];
-            products.forEach(product => {
-                if (product.isPopular) {
-                    popularProducts.push({...product, parentCategory: categoryKey});
-                }
-            });
-        });
-    });
-    
-    return popularProducts.slice(0, limit);
-}
-
-// ========================================
-// MOTIVATIONAL MESSAGE TEMPLATES
-// ========================================
-
-const MOTIVATIONAL_MESSAGE_TEMPLATES = [
-    "Just {stepsLeft} more step{plural} to see {businessName} live online.",
-    "You're almost there. See how your customers will see {businessName}.",
-    "Businesses like {businessName} got 43% more customers after going online. Want to see how?",
-    "Your products are almost ready to be seen online – don't miss your next customer.",
-    "Thousands of businesses in your {category} are already online. Don't be the last."
-];
-
-// ========================================
-// FOMO SYSTEM DATA
-// ========================================
-
-const INDIAN_BUSINESS_NAMES = [
-    // Traditional/Regional Names
-    'Vasavi Silks', 'Lakshmi Textiles', 'Sree Krishna Stores', 'Ganesh Traders', 'Shiva Electronics',
-    'Rama Jewellers', 'Vishnu Enterprises', 'Durga Fashions', 'Saraswati Boutique', 'Hanuman Hardware',
-    'Ganesha Sweets', 'Murugan Stores', 'Balaji Textiles', 'Venkateswara Mills', 'Karthik Garments',
-    
-    // Modern Business Names
-    'StyleHub Fashion', 'TechPoint Solutions', 'FreshMart Grocery', 'GlowUp Beauty', 'TasteBuds Cafe',
-    'UrbanStyle Boutique', 'SmartTech Electronics', 'PureVibe Wellness', 'CreativeMinds Studio', 'EcoLife Products',
-    'TrendyWear Collection', 'DigitalCraft Solutions', 'HealthFirst Pharmacy', 'SparkleClean Services', 'FlavorTown Restaurant',
-    
-    // Category-Specific Names
-    'Royal Beauty Salon', 'Spice Garden Restaurant', 'Golden Touch Jewellery', 'Modern Home Furniture',
-    'QuickFix Electronics', 'Fresh & Natural Foods', 'Elite Fashion House', 'Comfort Zone Interiors',
-    'Wellness Plus Clinic', 'TechSavvy Computers', 'Artisan Craft Studio', 'Green Valley Organic',
-    
-    // Regional Variations
-    'Mumbai Masala House', 'Delhi Darbar Restaurant', 'Bangalore IT Solutions', 'Chennai Silks Emporium',
-    'Kolkata Sweet Corner', 'Hyderabad Biryani House', 'Pune Fashion Gallery', 'Jaipur Handicrafts',
-    'Kochi Spice Mart', 'Mysore Silk Palace', 'Coimbatore Cotton Mills', 'Indore Jewelry Bazaar',
-    
-    // Contemporary Names
-    'The Style Studio', 'Pixel Perfect Designs', 'Organic Harvest', 'Fitness First Gym',
-    'Coffee Culture Cafe', 'Digital Dreams Agency', 'Wellness Warriors', 'Flavor Junction',
-    'Style Statements', 'Tech Titans', 'Healthy Habits Store', 'Creative Canvas Studio'
-];
-
-const INDIAN_CITIES = [
-    'Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata', 'Hyderabad', 'Pune', 'Ahmedabad',
-    'Mysore', 'Coimbatore', 'Kochi', 'Jaipur', 'Lucknow', 'Kanpur', 'Nagpur', 'Indore',
-    'Surat', 'Vadodara', 'Visakhapatnam', 'Bhopal', 'Patna', 'Ludhiana', 'Agra', 'Nashik',
-    'Faridabad', 'Ghaziabad', 'Rajkot', 'Meerut', 'Jabalpur', 'Thane', 'Howrah', 'Ranchi',
-    'Allahabad', 'Vijayawada', 'Jodhpur', 'Madurai', 'Raipur', 'Kota', 'Guwahati', 'Chandigarh'
-];
-
-const FOMO_MESSAGE_TEMPLATES = [
-    { text: '{business} from {city} just set up their online store', status: 'Just Registered' },
-    { text: '{business} in {city} started selling online', status: 'Now Live' },
-    { text: '{business} from {city} launched their digital presence', status: 'Just Launched' },
-    { text: '{business} in {city} joined our platform', status: 'New Member' },
-    { text: '{business} from {city} completed their business setup', status: 'Setup Complete' },
-    { text: '{business} in {city} is now accepting online orders', status: 'Orders Live' },
-    { text: '{business} from {city} went digital today', status: 'Digital Launch' }
-];
-
-// ========================================
-// THEME CONFIGURATION
-// ========================================
-
-const THEME_CONFIG = {
-    'modern': {
-        name: 'Modern & Minimalist',
-        icon: '✨',
-        description: 'Clean, simple design that focuses on your products'
-    },
-    'vibrant': {
-        name: 'Colorful & Vibrant',
-        icon: '🌈', 
-        description: 'Bold colors and energetic design to attract customers'
-    },
-    'professional': {
-        name: 'Professional & Corporate',
-        icon: '💼',
-        description: 'Sophisticated design that builds trust and credibility'
-    },
-    'traditional': {
-        name: 'Traditional & Classic',
-        icon: '🏛️',
-        description: 'Timeless design with warm, welcoming feel'
-    },
-    'creative': {
-        name: 'Creative & Artistic',
-        icon: '🎨',
-        description: 'Unique, artistic design that showcases creativity'
-    },
-    'luxury': {
-        name: 'Elegant & Luxury',
-        icon: '💎',
-        description: 'Premium design for high-end products and services'
-    }
 };
 
-// ========================================
-// GOAL NAMES MAPPING
-// ========================================
-
-const GOAL_NAMES = {
-    ecommerce: '🛒 Sell Online',
-    customers: '📈 Reach More Customers', 
-    manage: '👥 Manage Customers',
-    search: '🔍 Appear in Search Results',
-    brand: '⭐ Establish Brand'
+Config.getProductById = function(id) {
+    const allProducts = this.getAllProducts();
+    return allProducts.find(product => product.id === parseInt(id));
 };
 
-// ========================================
-// LANGUAGE CONFIGURATION
-// ========================================
-
-const LANGUAGE_CONFIG = {
-    'en': 'English',
-    'hi': 'हिन्दी', 
-    'te': 'తెలుగు',
-    'ta': 'தமிழ்'
+Config.getCategoryConfig = function(category) {
+    return this.businessCategories[category];
 };
 
-// ========================================
-// DEFAULT VALUES
-// ========================================
-
-const DEFAULTS = {
-    BUSINESS_COUNTER: 247,
-    HELP_CLAIMED_COUNT: 47,
-    LEAD_SCORE: 0,
-    SESSION_START_TIME: Date.now(),
-    PAGE_VIEWS: 1,
-    OTP_DEFAULT: '1111'
+Config.getThemeConfig = function(theme) {
+    return this.themes[theme];
 };
 
-// ========================================
-// EXPORTS (for module systems)
-// ========================================
+Config.formatCurrency = function(amount) {
+    return new Intl.NumberFormat(this.localization.currency.locale, {
+        style: 'currency',
+        currency: this.localization.currency.code
+    }).format(amount);
+};
 
-// For browser compatibility, attach to window object
-if (typeof window !== 'undefined') {
-    window.TopikoConfig = {
-        SUPABASE_CONFIG,
-        STEP_CONFIG,
-        BUSINESS_CATEGORIES,
-        SUBCATEGORY_NAMES,
-        INDIAN_PRODUCTS_DB,
-        getProductsByCategory,
-        searchProducts,
-        getPopularProducts,
-        MOTIVATIONAL_MESSAGE_TEMPLATES,
-        INDIAN_BUSINESS_NAMES,
-        INDIAN_CITIES,
-        FOMO_MESSAGE_TEMPLATES,
-        THEME_CONFIG,
-        GOAL_NAMES,
-        LANGUAGE_CONFIG,
-        DEFAULTS
-    };
+Config.formatNumber = function(number) {
+    return new Intl.NumberFormat(
+        this.localization.numberFormat.locale,
+        this.localization.numberFormat.options
+    ).format(number);
+};
+
+// Export configuration for global access
+window.Config = Config;
+
+// Debug logging
+if (Config.debug.enabled) {
+    console.log('🚀 Topiko Lead Form Configuration Loaded');
+    console.log(`📊 Total Products: ${Config.getAllProducts().length}`);
+    console.log(`🏢 Business Categories: ${Object.keys(Config.businessCategories).length}`);
+    console.log(`🎨 Available Themes: ${Object.keys(Config.themes).length}`);
 }
