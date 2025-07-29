@@ -30,6 +30,78 @@ const STEP_CONFIG = {
 };
 
 // ========================================
+// SPECIAL OFFERS CONFIGURATION - NEW
+// ========================================
+
+const SPECIAL_OFFERS = [
+    {
+        id: 'free_logo_design',
+        title: 'Free Logo Design',
+        description: 'Professional logo design worth ₹5,000 absolutely free'
+    },
+    {
+        id: 'free_onboarding_setup',
+        title: 'Free Onboarding Setup',
+        description: 'Complete business setup and onboarding assistance'
+    },
+    {
+        id: 'free_meta_campaign',
+        title: 'Free Meta Campaign Setup',
+        description: 'Facebook & Instagram advertising setup worth ₹8,000'
+    },
+    {
+        id: 'extra_seo_keywords',
+        title: '2 Extra SEO Keywords',
+        description: 'Additional keyword optimization for better search ranking'
+    },
+    {
+        id: 'digital_visiting_card',
+        title: 'Free Digital Visiting Card',
+        description: 'Modern digital business card with QR code'
+    },
+    {
+        id: 'social_media_templates',
+        title: 'Free Social Media Post Template',
+        description: 'Professional social media post templates for your brand'
+    },
+    {
+        id: 'whatsapp_business_setup',
+        title: 'Free WhatsApp Business Setup',
+        description: 'Complete WhatsApp Business configuration and automation'
+    },
+    {
+        id: 'google_my_business',
+        title: 'Free Google My Business Listing',
+        description: 'Professional Google Business profile setup and optimization'
+    },
+    {
+        id: 'payment_gateway_setup',
+        title: 'Free Payment Gateway Setup',
+        description: 'Secure payment gateway integration worth ₹3,000'
+    },
+    {
+        id: 'custom_domain',
+        title: 'Free Custom Domain (.in) for 1 Year',
+        description: 'Professional .in domain name registration worth ₹1,500'
+    },
+    {
+        id: 'analytics_report_setup',
+        title: 'Free Analytics Report Setup',
+        description: 'Google Analytics and performance tracking setup'
+    },
+    {
+        id: 'priority_support',
+        title: 'Priority Support for 1st Month',
+        description: 'Dedicated support and faster response times'
+    },
+    {
+        id: 'custom_website_change',
+        title: 'One custom change to website',
+        description: 'Free website customization and modification'
+    }
+];
+
+// ========================================
 // BUSINESS CATEGORIES DATA
 // ========================================
 
@@ -1843,6 +1915,7 @@ if (typeof window !== 'undefined') {
     window.TopikoConfig = {
         SUPABASE_CONFIG,
         STEP_CONFIG,
+        SPECIAL_OFFERS,
         BUSINESS_CATEGORIES,
         SUBCATEGORY_NAMES,
         INDIAN_PRODUCTS_DB,
