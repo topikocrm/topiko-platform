@@ -216,7 +216,112 @@
                     </button>
                 </div>
             </section>
+<!-- Welcome Screen -->
+<section class="screen active" id="welcome">
+    <div class="welcome-screen">
+        <h1 class="topiko-logo" data-i18n="welcome.title">Topiko</h1>
+        <p data-i18n="welcome.subtitle" style="font-size: 1.1rem; color: #6b46c1; margin-bottom: 2rem;">Complete Business Platform for Indian SMBs</p>
+        <button class="try-free-button" onclick="startLeadFlow()" data-i18n="welcome.button">
+            Try for Free
+        </button>
+    </div>
+</section>
 
+<!-- Language Selection Screen -->
+<section class="screen" id="language">
+    <div class="content-card">
+        <h2 data-i18n="language.title" style="text-align: center; margin-bottom: 0.5rem;">Choose Your Language</h2>
+        <p data-i18n="language.subtitle" style="text-align: center; margin-bottom: 2rem; font-size: 0.9rem;">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்</p>
+        
+        <div class="language-grid">
+            <div class="language-option" onclick="selectLanguage('en', this)">
+                <div class="language-flag">🇬🇧</div>
+                <div class="language-content">
+                    <h3>English</h3>
+                    <p data-i18n="language.english">Continue in English</p>
+                </div>
+            </div>
+
+            <div class="language-option" onclick="selectLanguage('hi', this)">
+                <div class="language-flag">🇮🇳</div>
+                <div class="language-content">
+                    <h3>हिन्दी</h3>
+                    <p data-i18n="language.hindi">हिन्दी में जारी रखें</p>
+                </div>
+            </div>
+
+            <div class="language-option" onclick="selectLanguage('te', this)">
+                <div class="language-flag">🇮🇳</div>
+                <div class="language-content">
+                    <h3>తెలుగు</h3>
+                    <p data-i18n="language.telugu">తెలుగులో కొనసాగించండి</p>
+                </div>
+            </div>
+
+            <div class="language-option" onclick="selectLanguage('ta', this)">
+                <div class="language-flag">🇮🇳</div>
+                <div class="language-content">
+                    <h3>தமிழ்</h3>
+                    <p data-i18n="language.tamil">தமிழில் தொடரவும்</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Goals Selection Screen -->
+<section class="screen" id="goals">
+    <div class="content-card">
+        <h2 data-i18n="goals.title" style="text-align: center; margin-bottom: 0.5rem;">Select Your Goals</h2>
+        <p data-i18n="goals.subtitle" style="text-align: center; margin-bottom: 2rem;">Choose what you want to achieve with Topiko (select all that apply)</p>
+        
+        <div class="goals-grid">
+            <div class="goal-option">
+                <input type="checkbox" id="goal-ecommerce" value="ecommerce" class="goal-checkbox" onchange="updateGoalsTracking()">
+                <label for="goal-ecommerce" class="goal-card">
+                    <div class="goal-icon">🛒</div>
+                    <div class="goal-content">
+                        <h3 data-i18n="goals.ecommerce.title">Sell Online (E-commerce)</h3>
+                        <p data-i18n="goals.ecommerce.description">Start selling your products online with a complete e-commerce solution</p>
+                    </div>
+                    <div class="goal-checkmark">✓</div>
+                </label>
+            </div>
+
+            <!-- Repeat for other goals... -->
+        </div>
+
+        <button class="submit-button" onclick="submitGoals()" data-i18n="goals.button">
+            Next Step
+        </button>
+    </div>
+</section>
+
+<!-- Registration Screen -->
+<section class="screen" id="registration">
+    <div class="content-card">
+        <h2 data-i18n="registration.title" style="text-align: center; margin-bottom: 0.5rem;">Get Started with Topiko</h2>
+        <p data-i18n="registration.subtitle" style="text-align: center; margin-bottom: 2rem;">Tell us about your business to create your free account</p>
+        
+        <div class="form-group">
+            <label for="fullName" data-i18n="registration.fields.name">Your Name</label>
+            <input type="text" id="fullName" data-i18n="registration.fields.namePlaceholder" placeholder="Enter your full name" oninput="trackFormProgress()">
+        </div>
+
+        <div class="form-group">
+            <label for="email" data-i18n="registration.fields.email">Email Address</label>
+            <input type="email" id="email" data-i18n="registration.fields.emailPlaceholder" placeholder="Enter your email address" oninput="trackFormProgress()">
+        </div>
+
+        <!-- Continue for other fields... -->
+
+        <button class="submit-button" onclick="submitRegistration()" data-i18n="registration.button">
+            Create Free Account
+        </button>
+    </div>
+</section>
+
+<!-- Add data-i18n attributes to all other screens... -->
             <!-- Registration Screen -->
             <section class="screen" id="registration">
                 <div class="content-card">
