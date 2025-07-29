@@ -128,7 +128,7 @@ function showScreen(screenId) {
     if (targetScreen) {
         targetScreen.classList.add('active');
         
-        // Update global variables (these will be defined in script.js)
+        // Update global variables
         if (typeof window.topikoApp !== 'undefined') {
             window.topikoApp.pageViews++;
             
@@ -143,36 +143,20 @@ function showScreen(screenId) {
             updateProgressBar(window.topikoApp.currentStep);
             updateBackButton();
             
-            // Stop motivational messages when leaving categories
-            if (screenId !== 'categories') {
-                stopMotivationalMessages();
-            }
+            // Apply i18n to the new screen
+            window.i18n.updateCurrentScreen(screenId);
             
+            // Screen-specific logic...
             if (screenId === 'categories') {
                 loadCategories();
-                // Start dynamic messages after a short delay to ensure DOM is ready
                 setTimeout(() => {
                     updateMotivationalMessages();
                 }, 200);
             }
             
-            if (screenId === 'products') {
-                updateProductsHelpSection();
-                // Initialize product selector if not already done
-                setTimeout(() => {
-                    if (!window.topikoApp.productsLoaded && typeof window.switchProductMode === 'function') {
-                        window.switchProductMode('select');
-                    }
-                }, 300);
-            }
+            // ... other screen logic
             
-            if (screenId === 'themes') {
-                populateThemePreviews();
-            }
-
-            // Add personalization
             addPersonalization(screenId);
-            
             addDebugLog(`📱 Screen: ${screenId} (views: ${window.topikoApp.pageViews})`);
             calculateLeadScore();
         }
