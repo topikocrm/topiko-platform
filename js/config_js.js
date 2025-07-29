@@ -658,8 +658,8 @@ const SUBCATEGORY_NAMES = {
 // ========================================
 
 const SUPABASE_CONFIG = {
-    URL: 'https://your-project-id.supabase.co',
-    ANON_KEY: 'your-anon-key-here',
+    URL: 'https://xssbtsfjtwjholygdbqo.supabase.co',
+    ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k',
     // Database table names
     TABLES: {
         USERS: 'users',
