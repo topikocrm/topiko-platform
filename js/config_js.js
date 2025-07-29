@@ -29,6 +29,68 @@ const STEP_CONFIG = {
     PROGRESS_STEPS: ['goals', 'registration', 'qualifying-questions', 'categories', 'products', 'themes']
 };
 
+// Add to config.js
+
+// Enhanced language configuration with RTL support
+const LANGUAGE_CONFIG = {
+    'en': {
+        name: 'English',
+        nativeName: 'English',
+        direction: 'ltr',
+        flag: '🇬🇧'
+    },
+    'hi': {
+        name: 'Hindi',
+        nativeName: 'हिन्दी',
+        direction: 'ltr',
+        flag: '🇮🇳'
+    },
+    'te': {
+        name: 'Telugu',
+        nativeName: 'తెలుగు',
+        direction: 'ltr',
+        flag: '🇮🇳'
+    },
+    'ta': {
+        name: 'Tamil',
+        nativeName: 'தமிழ்',
+        direction: 'ltr',
+        flag: '🇮🇳'
+    }
+};
+
+// Localized business category names
+const LOCALIZED_BUSINESS_CATEGORIES = {
+    en: {
+        boutique: "🏪 Boutique & Fashion",
+        'home-foods': "🍛 Home Foods & Catering",
+        salons: "💄 Salons & Beauty",
+        grocery: "🛒 Grocery & Provisions",
+        // ... add all categories
+    },
+    hi: {
+        boutique: "🏪 बुटीक और फैशन",
+        'home-foods': "🍛 घरेलू भोजन और कैटरिंग",
+        salons: "💄 सैलून और सौंदर्य",
+        grocery: "🛒 किराना और प्रावधान",
+        // ... add all categories
+    },
+    te: {
+        boutique: "🏪 బुటీక్ మరియు ఫ్యాషన్",
+        'home-foods': "🍛 ఇంటి ఆహారం మరియు క్యాటరింగ్",
+        salons: "💄 సెలూన్లు మరియు అందం",
+        grocery: "🛒 కిరాణా మరియు ఏర్పాట్లు",
+        // ... add all categories
+    },
+    ta: {
+        boutique: "🏪 பூட்டிக் மற்றும் ஃபேஷன்",
+        'home-foods': "🍛 வீட்டு உணவு மற்றும் கேட்டரிங்",
+        salons: "💄 சலூன்கள் மற்றும் அழகு",
+        grocery: "🛒 மளிகை மற்றும் ஏற்பாடுகள்",
+        // ... add all categories
+    }
+};
+
 // ========================================
 // BUSINESS CATEGORIES DATA
 // ========================================
