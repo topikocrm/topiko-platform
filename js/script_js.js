@@ -1292,3 +1292,151 @@ window.selectPopularProducts = selectPopularProducts;
 window.clearAllSelections = clearAllSelections;
 window.addCustomProduct = addCustomProduct;
 window.proceedToProducts = proceedToProducts;
+
+// ==========================================
+// PRODUCT SYNC FIX - ADD THIS TO script.js
+// ==========================================
+
+// Sync selected products with existing system
+function syncProductsWithExistingSystem() {
+    // Convert selected products to the format your existing system expects
+    const convertedProducts = productSelectorState.selectedProducts.map(product => ({
+        id: product.originalId,
+        name: product.editedName || product.name,
+        price: product.editedPrice || product.price,
+        description: product.editedDescription || product.description,
+        category: product.category,
+        subcategory: product.subcategory,
+        image: product.image
+    }));
+
+    // Sync with common variable names that might be used
+    if (typeof window.productsList !== 'undefined') {
+        // If your system uses window.productsList
+        window.productsList = [...convertedProducts];
+    }
+    
+    if (typeof window.products !== 'undefined') {
+        // If your system uses window.products
+        window.products = [...convertedProducts];
+    }
+    
+    if (typeof window.selectedProducts !== 'undefined') {
+        // If your system uses window.selectedProducts
+        window.selectedProducts = [...convertedProducts];
+    }
+
+    // Update any existing product count displays
+    const productCountElements = document.querySelectorAll('[id*="product"], [class*="product-count"]');
+    productCountElements.forEach(el => {
+        if (el.textContent.match(/\d+/)) {
+            el.textContent = el.textContent.replace(/\d+/, convertedProducts.length);
+        }
+    });
+
+    // Trigger any existing validation functions
+    if (typeof window.validateProducts === 'function') {
+        window.validateProducts();
+    }
+    
+    if (typeof window.checkProductRequirements === 'function') {
+        window.checkProductRequirements();
+    }
+    
+    if (typeof window.updateProductDisplay === 'function') {
+        window.updateProductDisplay();
+    }
+
+    // Force update the themes screen if it exists
+    if (typeof window.updateThemePreview === 'function') {
+        window.updateThemePreview();
+    }
+
+    // Check for theme screen and populate it
+    updateThemePreviews();
+    
+    // Enable the "Choose Theme" button if products exist
+    enableThemeButton();
+
+    console.log('✅ Synced', convertedProducts.length, 'products with existing system');
+}
+
+// Update theme previews with selected products
+function updateThemePreviews() {
+    const themePreviewIds = ['modern-preview', 'vibrant-preview', 'professional-preview', 'traditional-preview', 'creative-preview', 'luxury-preview'];
+    
+    if (productSelectorState.selectedProducts.length > 0) {
+        const sampleProducts = productSelectorState.selectedProducts.slice(0, 3); // Show first 3 products
+        
+        themePreviewIds.forEach(previewId => {
+            const previewElement = document.getElementById(previewId);
+            if (previewElement) {
+                const previewHTML = sampleProducts.map(product => `
+                    <div style="display: flex; align-items: center; gap: 8px; margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 0.8rem;">
+                        <div style="width: 30px; height: 30px; background: rgba(255,255,255,0.2); border-radius: 4px; display: flex; align-items: center; justify-content: center;">📦</div>
+                        <div>
+                            <div style="font-weight: 600;">${(product.editedName || product.name).substring(0, 15)}...</div>
+                            <div>₹${product.editedPrice || product.price}</div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                previewElement.innerHTML = previewHTML;
+            }
+        });
+    }
+}
+
+// Enable theme button when products are selected
+function enableThemeButton() {
+    const themeButton = document.getElementById('themeNextBtn');
+    if (themeButton && productSelectorState.selectedProducts.length > 0) {
+        themeButton.disabled = false;
+        themeButton.style.opacity = '1';
+        themeButton.textContent = 'Complete Setup 🚀';
+    }
+}
+
+// Override the updateProductCatalog function to include syncing
+const originalUpdateProductCatalog = updateProductCatalog;
+updateProductCatalog = function() {
+    // Call the original function
+    originalUpdateProductCatalog();
+    
+    // Add syncing
+    syncProductsWithExistingSystem();
+};
+
+// Also sync when products are selected/deselected
+const originalToggleProductSelection = toggleProductSelection;
+toggleProductSelection = function(productId) {
+    // Call the original function
+    originalToggleProductSelection(productId);
+    
+    // Sync after selection change
+    setTimeout(syncProductsWithExistingSystem, 100);
+};
+
+// Sync when page loads if products are already selected
+setTimeout(() => {
+    if (productSelectorState.selectedProducts.length > 0) {
+        syncProductsWithExistingSystem();
+    }
+}, 1000);
+
+// Debug function to check what your system is looking for
+function debugProductVariables() {
+    console.log('🔍 Debug: Checking product variables...');
+    console.log('window.productsList:', window.productsList);
+    console.log('window.products:', window.products);
+    console.log('window.selectedProducts:', window.selectedProducts);
+    console.log('productSelectorState.selectedProducts:', productSelectorState.selectedProducts);
+    
+    // Check for any variables containing "product"
+    Object.keys(window).filter(key => key.toLowerCase().includes('product')).forEach(key => {
+        console.log(`window.${key}:`, window[key]);
+    });
+}
+
+// Make debug function available
+window.debugProductVariables = debugProductVariables;
