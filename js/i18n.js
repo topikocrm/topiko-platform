@@ -494,16 +494,27 @@ class TopikoI18n {
     }
 
     // Set current language
-    setLanguage(languageCode) {
-        if (this.translations[languageCode]) {
-            this.currentLanguage = languageCode;
-            this.updateUI();
-            this.saveLanguagePreference();
-            console.log(`🌐 Language set to: ${languageCode}`);
-        } else {
-            console.warn(`⚠️ Language ${languageCode} not supported`);
+setLanguage(languageCode) {
+    if (this.translations[languageCode]) {
+        this.currentLanguage = languageCode;
+        
+        // Update HTML attributes
+        document.body.setAttribute('data-lang', languageCode);
+        document.body.setAttribute('lang', languageCode);
+        
+        // Set direction (for future RTL languages)
+        const languageConfig = window.TopikoConfig.LANGUAGE_CONFIG[languageCode];
+        if (languageConfig && languageConfig.direction) {
+            document.body.setAttribute('dir', languageConfig.direction);
         }
+        
+        this.updateUI();
+        this.saveLanguagePreference();
+        console.log(`🌐 Language set to: ${languageCode}`);
+    } else {
+        console.warn(`⚠️ Language ${languageCode} not supported`);
     }
+}
 
     // Get translation for a key
     t(key, replacements = {}) {
