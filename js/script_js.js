@@ -53,13 +53,16 @@ function startLeadFlow() {
 function selectLanguage(lang, element) {
     window.topikoApp.selectedLanguage = lang;
     
+    // Set language in i18n system
+    window.i18n.setLanguage(lang);
+    
     document.querySelectorAll('.language-option').forEach(option => {
         option.classList.remove('selected');
     });
     element.classList.add('selected');
     
-    const languageNames = window.TopikoConfig.LANGUAGE_CONFIG;
-    window.TopikoUtils.showNotification(`Language: ${languageNames[lang]}`, 'success');
+    const languageName = window.i18n.getLanguageName(lang);
+    window.TopikoUtils.showNotification(window.i18n.t('notifications.languageSelected', { language: languageName }), 'success');
     window.TopikoUtils.calculateLeadScore();
     
     setTimeout(() => window.TopikoUtils.showScreen('goals'), 1500);
