@@ -2179,6 +2179,193 @@ body {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 1rem;
     }
+
+   /* ========================================
+   19. INTERNATIONALIZATION (i18n) SUPPORT
+   ======================================== */
+
+/* RTL Support for future languages */
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+[dir="rtl"] .language-flag {
+    margin-left: 1rem;
+    margin-right: 0;
+}
+
+[dir="rtl"] .goal-icon {
+    margin-left: 1rem;
+    margin-right: 0;
+}
+
+[dir="rtl"] .goal-checkmark {
+    margin-right: auto;
+    margin-left: 0;
+}
+
+[dir="rtl"] .category-icon {
+    margin-left: 0.6rem;
+    margin-right: 0;
+}
+
+[dir="rtl"] .category-checkmark {
+    margin-right: auto;
+    margin-left: 0;
+}
+
+[dir="rtl"] .subcategory-checkmark {
+    margin-right: auto;
+    margin-left: 0;
+}
+
+[dir="rtl"] .radio-icon {
+    margin-left: 0.8rem;
+    margin-right: 0;
+}
+
+[dir="rtl"] .back-button {
+    left: auto;
+    right: 1rem;
+}
+
+[dir="rtl"] .lead-score-widget {
+    right: auto;
+    left: 1rem;
+}
+
+[dir="rtl"] .notification {
+    right: auto;
+    left: 1rem;
+}
+
+[dir="rtl"] .fomo-notification {
+    right: auto;
+    left: 1rem;
+}
+
+[dir="rtl"] .fomo-counter {
+    left: auto;
+    right: 1rem;
+}
+
+/* Language-specific fonts for better rendering */
+[lang="hi"] {
+    font-family: 'Noto Sans Devanagari', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+}
+
+[lang="te"] {
+    font-family: 'Noto Sans Telugu', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+}
+
+[lang="ta"] {
+    font-family: 'Noto Sans Tamil', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+}
+
+[lang="hi"], [lang="te"], [lang="ta"] {
+    line-height: 1.6; /* Better line height for Indic scripts */
+}
+
+/* Language-specific text sizes for better readability */
+[lang="hi"] .content-card h2,
+[lang="te"] .content-card h2,
+[lang="ta"] .content-card h2 {
+    font-size: 1.8rem; /* Slightly smaller for longer translated text */
+}
+
+[lang="hi"] .goal-content h3,
+[lang="te"] .goal-content h3,
+[lang="ta"] .goal-content h3 {
+    font-size: 1rem; /* Adjust for longer translated titles */
+}
+
+/* Button text adjustments for translated content */
+[lang="hi"] .submit-button,
+[lang="te"] .submit-button,
+[lang="ta"] .submit-button {
+    padding: 1rem 1.5rem; /* More padding for longer text */
+    font-size: 0.95rem; /* Slightly smaller to fit longer translations */
+}
+
+/* Form label adjustments */
+[lang="hi"] .form-group label,
+[lang="te"] .form-group label,
+[lang="ta"] .form-group label {
+    font-size: 0.85rem; /* Smaller labels for longer translated text */
+}
+
+/* Progress bar label adjustments */
+[lang="hi"] .progress-label,
+[lang="te"] .progress-label,
+[lang="ta"] .progress-label {
+    font-size: 0.65rem; /* Smaller text for longer translations */
+}
+
+/* Mobile adjustments for translated content */
+@media (max-width: 767px) {
+    [lang="hi"] .content-card h2,
+    [lang="te"] .content-card h2,
+    [lang="ta"] .content-card h2 {
+        font-size: 1.4rem;
+    }
+    
+    [lang="hi"] .submit-button,
+    [lang="te"] .submit-button,
+    [lang="ta"] .submit-button {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    [dir="rtl"] .back-button {
+        right: 0.5rem;
+        left: auto;
+    }
+    
+    [dir="rtl"] .lead-score-widget {
+        left: 0.5rem;
+        right: auto;
+    }
+}
+
+/* Special handling for mixed script content */
+.language-option h3 {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.language-option[data-lang="hi"] h3,
+.language-option[data-lang="te"] h3,
+.language-option[data-lang="ta"] h3 {
+    font-size: 1.2rem; /* Larger for better visibility of Indic scripts */
+}
+
+/* Ensure proper text wrapping for longer translations */
+.goal-content h3,
+.qualifying-question h3,
+.category-label,
+.subcategory-label {
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+/* Specific adjustments for Hindi text */
+[lang="hi"] .radio-card,
+[lang="hi"] .goal-card {
+    min-height: 60px; /* More height for longer Hindi text */
+}
+
+/* Specific adjustments for Telugu text */
+[lang="te"] .radio-card,
+[lang="te"] .goal-card {
+    min-height: 65px; /* More height for Telugu script */
+}
+
+/* Specific adjustments for Tamil text */
+[lang="ta"] .radio-card,
+[lang="ta"] .goal-card {
+    min-height: 65px; /* More height for Tamil script */
+}
     
     .helper-btn {
         padding: 0.6rem 1rem;
