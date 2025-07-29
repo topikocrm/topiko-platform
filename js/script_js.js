@@ -7,7 +7,10 @@
 // ========================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    window.TopikoUtils.addDebugLog('📱 DOM loaded - starting enhanced app');
+    // Initialize i18n first
+    window.i18n.loadLanguagePreference();
+    
+    window.TopikoUtils.addDebugLog('📱 DOM loaded - starting enhanced app with i18n');
     initializeApp();
     
     // Auto-save session data every 30 seconds
@@ -17,10 +20,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
-    window.TopikoUtils.addDebugLog('🚀 Enhanced Topiko Lead Form initializing', 'info');
+    window.TopikoUtils.addDebugLog('🚀 Enhanced Topiko Lead Form initializing with i18n', 'info');
     
     // Initialize app state
     window.TopikoUtils.initializeTopikoApp();
+    
+    // Apply current language
+    window.i18n.updateUI();
     
     // Initialize widgets and UI
     window.TopikoUtils.updateLeadScoreWidget();
@@ -30,7 +36,7 @@ function initializeApp() {
     // Start FOMO system after delay
     setTimeout(() => window.TopikoUtils.startFomoSystem(), 3000);
     
-    window.TopikoUtils.addDebugLog('✅ Enhanced app initialized successfully', 'success');
+    window.TopikoUtils.addDebugLog('✅ Enhanced app initialized successfully with i18n support', 'success');
 }
 
 // Save data on page unload
