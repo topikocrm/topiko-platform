@@ -155,6 +155,12 @@ function showScreen(screenId) {
             
             if (screenId === 'products') {
                 updateProductsHelpSection();
+                // Initialize product selector if not already done
+                setTimeout(() => {
+                    if (!window.topikoApp.productsLoaded && typeof window.switchProductMode === 'function') {
+                        window.switchProductMode('select');
+                    }
+                }, 300);
             }
             
             if (screenId === 'themes') {
@@ -468,7 +474,7 @@ function displayProducts() {
         productsList.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
-                <p>Add your first product to see how it will look online!</p>
+                <p>No products selected yet. Choose from 500+ products above or add custom products!</p>
             </div>
         `;
         return;
@@ -763,6 +769,7 @@ function saveSessionData() {
         selectedCategories: window.topikoApp.selectedCategories,
         selectedSubcategories: window.topikoApp.selectedSubcategories,
         userProducts: window.topikoApp.userProducts,
+        selectedProductIds: window.topikoApp.selectedProductIds || [],
         selectedTheme: window.topikoApp.selectedTheme,
         qualifyingAnswers: window.topikoApp.qualifyingAnswers,
         leadScore: window.topikoApp.leadScore,
@@ -772,6 +779,7 @@ function saveSessionData() {
         navigationHistory: window.topikoApp.navigationHistory,
         userName: window.topikoApp.userName,
         businessName: window.topikoApp.businessName,
+        productsLoaded: window.topikoApp.productsLoaded,
         lastSaved: Date.now()
     };
     localStorage.setItem('topiko_current_session', JSON.stringify(currentData));
@@ -823,6 +831,10 @@ function initializeTopikoApp() {
             timeline: ''
         },
 
+        // NEW: Product Selection System
+        selectedProductIds: [],
+        productsLoaded: false,
+
         // FOMO system
         fomoActive: true,
         fomoTimer: null,
@@ -831,7 +843,7 @@ function initializeTopikoApp() {
         helpClaimedCount: window.TopikoConfig.DEFAULTS.HELP_CLAIMED_COUNT
     };
 
-    addDebugLog('🚀 Topiko App State initialized', 'success');
+    addDebugLog('🚀 Topiko App State initialized with Product Selection System', 'success');
 }
 
 // ========================================
