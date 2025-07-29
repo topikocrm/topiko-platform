@@ -1256,24 +1256,23 @@ function addCustomProduct() {
     }
 }
 
-// Enhanced proceedToProducts function
-function proceedToProducts() {
-    // Call existing function if it exists
-    if (window.originalProceedToProducts && typeof window.originalProceedToProducts === 'function') {
-        window.originalProceedToProducts();
+// SAFE VERSION - Initialize manually
+function initTopikoProductSelector() {
+    if (document.getElementById('productsGrid') && typeof getAllProducts === 'function') {
+        try {
+            productSelectorState.allProducts = getAllProducts();
+            productSelectorState.filteredProducts = [...productSelectorState.allProducts];
+            renderProductSelector();
+            bindProductSelectorEvents();
+            switchProductMode('select');
+        } catch (error) {
+            console.error('Error:', error);
+        }
     }
-    
-    // Initialize our product selector
-    setTimeout(() => {
-        initializeProductSelector();
-        switchProductMode('select'); // Default to selection mode
-    }, 100);
 }
 
-// Override the existing proceedToProducts if it exists
-if (typeof window.proceedToProducts !== 'undefined') {
-    window.originalProceedToProducts = window.proceedToProducts;
-}
+// Make it available globally
+window.initTopikoProductSelector = initTopikoProductSelector;
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
