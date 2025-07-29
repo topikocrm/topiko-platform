@@ -43,7 +43,10 @@ function showNotification(message, type = 'info') {
         return;
     }
     
-    content.textContent = message;
+    // If message is a translation key, translate it
+    const translatedMessage = message.startsWith('notifications.') ? window.i18n.t(message) : message;
+    
+    content.textContent = translatedMessage;
     notification.className = `notification ${type} show`;
     
     setTimeout(() => {
