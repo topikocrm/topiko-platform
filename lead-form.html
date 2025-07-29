@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" id="htmlRoot">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="page.title">Topiko - Complete Business Platform</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Topiko - Complete Business Platform</title>
+    <link rel="stylesheet" href="css/styles_css.css">
 </head>
 <body>
     <!-- Back Button -->
@@ -31,7 +31,7 @@
         <div class="score-circle cold" id="leadScoreCircle">
             <span id="leadScoreValue">0</span>
         </div>
-        <div class="score-label" id="scoreLabel" data-i18n="widget.score">Score</div>
+        <div class="score-label" id="scoreLabel">Score</div>
     </div>
 
     <!-- Notification -->
@@ -43,18 +43,18 @@
     <div class="fomo-notification" id="fomoNotification">
         <div class="fomo-header">
             <div class="fomo-icon"></div>
-            <div class="fomo-status" data-i18n="fomo.status.just_registered">Just Registered</div>
+            <div class="fomo-status">Just Registered</div>
         </div>
         <div class="fomo-content" id="fomoContent">
-            <span class="business-name">Vasavi Silks</span> <span data-i18n="fomo.from">from</span> <span class="business-location">Mysore</span> <span data-i18n="fomo.action.setup_store">just set up their online store</span>
+            <span class="business-name">Vasavi Silks</span> from <span class="business-location">Mysore</span> just set up their online store
         </div>
-        <div class="fomo-time" id="fomoTime">2 <span data-i18n="fomo.time.minutes_ago">minutes ago</span></div>
+        <div class="fomo-time" id="fomoTime">2 minutes ago</div>
     </div>
 
     <!-- FOMO Counter -->
     <div class="fomo-counter" id="fomoCounter">
         <span class="counter-number" id="counterNumber">247</span>
-        <span class="counter-text" data-i18n="fomo.counter.joined">joined in<br>last 24 hours</span>
+        <span class="counter-text">joined in<br>last 24 hours</span>
     </div>
 
     <div class="app-container">
@@ -63,27 +63,27 @@
             <div class="progress-bar" id="progressBar">
                 <div class="progress-step" data-step="goals" onclick="navigateToStep('goals')">
                     <div class="progress-circle">1</div>
-                    <div class="progress-label" data-i18n="progress.goals">Business Goals</div>
+                    <div class="progress-label">Business Goals</div>
                 </div>
                 <div class="progress-step" data-step="registration" onclick="navigateToStep('registration')">
                     <div class="progress-circle">2</div>
-                    <div class="progress-label" data-i18n="progress.signup">Sign Up</div>
+                    <div class="progress-label">Sign Up</div>
                 </div>
                 <div class="progress-step" data-step="qualifying-questions" onclick="navigateToStep('qualifying-questions')">
                     <div class="progress-circle">3</div>
-                    <div class="progress-label" data-i18n="progress.success_factors">Success Factors</div>
+                    <div class="progress-label">Success Factors</div>
                 </div>
                 <div class="progress-step" data-step="categories" onclick="navigateToStep('categories')">
                     <div class="progress-circle">4</div>
-                    <div class="progress-label" data-i18n="progress.business_live1">Business Live-1</div>
+                    <div class="progress-label">Business Live-1</div>
                 </div>
                 <div class="progress-step" data-step="products" onclick="navigateToStep('products')">
                     <div class="progress-circle">5</div>
-                    <div class="progress-label" data-i18n="progress.business_live2">Business Live-2</div>
+                    <div class="progress-label">Business Live-2</div>
                 </div>
                 <div class="progress-step" data-step="themes" onclick="navigateToStep('themes')">
                     <div class="progress-circle">6</div>
-                    <div class="progress-label" data-i18n="progress.business_live3">Business Live-3</div>
+                    <div class="progress-label">Business Live-3</div>
                 </div>
             </div>
         </div>
@@ -94,8 +94,8 @@
             <section class="screen active" id="welcome">
                 <div class="welcome-screen">
                     <h1 class="topiko-logo">Topiko</h1>
-                    <p style="font-size: 1.1rem; color: #6b46c1; margin-bottom: 2rem;" data-i18n="welcome.tagline">Complete Business Platform for Indian SMBs</p>
-                    <button class="try-free-button" onclick="startLeadFlow()" data-i18n="welcome.try_free">
+                    <p style="font-size: 1.1rem; color: #6b46c1; margin-bottom: 2rem;">Complete Business Platform for Indian SMBs</p>
+                    <button class="try-free-button" onclick="startLeadFlow()">
                         Try for Free
                     </button>
                 </div>
@@ -104,39 +104,39 @@
             <!-- Language Selection Screen -->
             <section class="screen" id="language">
                 <div class="content-card">
-                    <h2 style="text-align: center; margin-bottom: 0.5rem;" data-i18n="language.title">Choose Your Language</h2>
-                    <p style="text-align: center; margin-bottom: 2rem; font-size: 0.9rem;" data-i18n="language.subtitle">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்</p>
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Choose Your Language</h2>
+                    <p style="text-align: center; margin-bottom: 2rem; font-size: 0.9rem;">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்</p>
                     
                     <div class="language-grid">
                         <div class="language-option" onclick="selectLanguage('en', this)">
                             <div class="language-flag">🇬🇧</div>
                             <div class="language-content">
-                                <h3 data-i18n="language.english.name">English</h3>
-                                <p data-i18n="language.english.continue">Continue in English</p>
+                                <h3>English</h3>
+                                <p>Continue in English</p>
                             </div>
                         </div>
 
                         <div class="language-option" onclick="selectLanguage('hi', this)">
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
-                                <h3 data-i18n="language.hindi.name">हिन्दी</h3>
-                                <p data-i18n="language.hindi.continue">हिन्दी में जारी रखें</p>
+                                <h3>हिन्दी</h3>
+                                <p>हिन्दी में जारी रखें</p>
                             </div>
                         </div>
 
                         <div class="language-option" onclick="selectLanguage('te', this)">
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
-                                <h3 data-i18n="language.telugu.name">తెలుగు</h3>
-                                <p data-i18n="language.telugu.continue">తెలుగులో కొనసాగించండి</p>
+                                <h3>తెలుగు</h3>
+                                <p>తెలుగులో కొనసాగించండి</p>
                             </div>
                         </div>
 
                         <div class="language-option" onclick="selectLanguage('ta', this)">
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
-                                <h3 data-i18n="language.tamil.name">தமிழ்</h3>
-                                <p data-i18n="language.tamil.continue">தமிழில் தொடரவும்</p>
+                                <h3>தமிழ்</h3>
+                                <p>தமிழில் தொடரவும்</p>
                             </div>
                         </div>
                     </div>
@@ -146,8 +146,8 @@
             <!-- Goals Selection Screen -->
             <section class="screen" id="goals">
                 <div class="content-card">
-                    <h2 style="text-align: center; margin-bottom: 0.5rem;" data-i18n="goals.title">Select Your Goals</h2>
-                    <p style="text-align: center; margin-bottom: 2rem;" data-i18n="goals.subtitle">Choose what you want to achieve with Topiko (select all that apply)</p>
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Select Your Goals</h2>
+                    <p style="text-align: center; margin-bottom: 2rem;">Choose what you want to achieve with Topiko (select all that apply)</p>
                     
                     <div class="goals-grid">
                         <div class="goal-option">
@@ -155,8 +155,8 @@
                             <label for="goal-ecommerce" class="goal-card">
                                 <div class="goal-icon">🛒</div>
                                 <div class="goal-content">
-                                    <h3 data-i18n="goals.ecommerce.title">Sell Online (E-commerce)</h3>
-                                    <p data-i18n="goals.ecommerce.description">Start selling your products online with a complete e-commerce solution</p>
+                                    <h3>Sell Online (E-commerce)</h3>
+                                    <p>Start selling your products online with a complete e-commerce solution</p>
                                 </div>
                                 <div class="goal-checkmark">✓</div>
                             </label>
@@ -167,8 +167,8 @@
                             <label for="goal-customers" class="goal-card">
                                 <div class="goal-icon">📈</div>
                                 <div class="goal-content">
-                                    <h3 data-i18n="goals.customers.title">Reach More Customers</h3>
-                                    <p data-i18n="goals.customers.description">Expand your customer base and grow your market reach</p>
+                                    <h3>Reach More Customers</h3>
+                                    <p>Expand your customer base and grow your market reach</p>
                                 </div>
                                 <div class="goal-checkmark">✓</div>
                             </label>
@@ -179,8 +179,8 @@
                             <label for="goal-manage" class="goal-card">
                                 <div class="goal-icon">👥</div>
                                 <div class="goal-content">
-                                    <h3 data-i18n="goals.manage.title">Manage Customers</h3>
-                                    <p data-i18n="goals.manage.description">Keep track of your customers and build lasting relationships</p>
+                                    <h3>Manage Customers</h3>
+                                    <p>Keep track of your customers and build lasting relationships</p>
                                 </div>
                                 <div class="goal-checkmark">✓</div>
                             </label>
@@ -191,8 +191,8 @@
                             <label for="goal-search" class="goal-card">
                                 <div class="goal-icon">🔍</div>
                                 <div class="goal-content">
-                                    <h3 data-i18n="goals.search.title">Appear in Search Results</h3>
-                                    <p data-i18n="goals.search.description">Improve your online visibility and get found by potential customers</p>
+                                    <h3>Appear in Search Results</h3>
+                                    <p>Improve your online visibility and get found by potential customers</p>
                                 </div>
                                 <div class="goal-checkmark">✓</div>
                             </label>
@@ -203,15 +203,15 @@
                             <label for="goal-brand" class="goal-card">
                                 <div class="goal-icon">⭐</div>
                                 <div class="goal-content">
-                                    <h3 data-i18n="goals.brand.title">Establish my Brand</h3>
-                                    <p data-i18n="goals.brand.description">Build a strong brand presence and professional image online</p>
+                                    <h3>Establish my Brand</h3>
+                                    <p>Build a strong brand presence and professional image online</p>
                                 </div>
                                 <div class="goal-checkmark">✓</div>
                             </label>
                         </div>
                     </div>
 
-                    <button class="submit-button" onclick="submitGoals()" data-i18n="common.next_step">
+                    <button class="submit-button" onclick="submitGoals()">
                         Next Step
                     </button>
                 </div>
@@ -220,74 +220,74 @@
             <!-- Registration Screen -->
             <section class="screen" id="registration">
                 <div class="content-card">
-                    <h2 style="text-align: center; margin-bottom: 0.5rem;" data-i18n="registration.title">Get Started with Topiko</h2>
-                    <p style="text-align: center; margin-bottom: 2rem;" data-i18n="registration.subtitle">Tell us about your business to create your free account</p>
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Get Started with Topiko</h2>
+                    <p style="text-align: center; margin-bottom: 2rem;">Tell us about your business to create your free account</p>
                     
                     <div class="form-group">
-                        <label for="fullName" data-i18n="registration.fields.name.label">Your Name</label>
-                        <input type="text" id="fullName" data-i18n-placeholder="registration.fields.name.placeholder" placeholder="Enter your full name" oninput="trackFormProgress()">
+                        <label for="fullName">Your Name</label>
+                        <input type="text" id="fullName" placeholder="Enter your full name" oninput="trackFormProgress()">
                     </div>
 
                     <div class="form-group">
-                        <label for="email" data-i18n="registration.fields.email.label">Email Address</label>
-                        <input type="email" id="email" data-i18n-placeholder="registration.fields.email.placeholder" placeholder="Enter your email address" oninput="trackFormProgress()">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="Enter your email address" oninput="trackFormProgress()">
                     </div>
 
                     <div class="form-group">
-                        <label for="phoneNumber" data-i18n="registration.fields.phone.label">Phone Number</label>
-                        <input type="tel" id="phoneNumber" data-i18n-placeholder="registration.fields.phone.placeholder" placeholder="Enter your phone number" oninput="trackFormProgress()">
+                        <label for="phoneNumber">Phone Number</label>
+                        <input type="tel" id="phoneNumber" placeholder="Enter your phone number" oninput="trackFormProgress()">
                     </div>
 
                     <div class="form-group">
-                        <label for="businessName" data-i18n="registration.fields.business_name.label">Business Name</label>
-                        <input type="text" id="businessName" data-i18n-placeholder="registration.fields.business_name.placeholder" placeholder="Enter your business name" oninput="trackFormProgress()">
+                        <label for="businessName">Business Name</label>
+                        <input type="text" id="businessName" placeholder="Enter your business name" oninput="trackFormProgress()">
                     </div>
 
                     <div class="form-group">
-                        <label for="address" data-i18n="registration.fields.address.label">Address</label>
-                        <textarea id="address" rows="3" data-i18n-placeholder="registration.fields.address.placeholder" placeholder="Enter your business address" oninput="trackFormProgress()"></textarea>
+                        <label for="address">Address</label>
+                        <textarea id="address" rows="3" placeholder="Enter your business address" oninput="trackFormProgress()"></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="businessType" data-i18n="registration.fields.business_type.label">Business Type</label>
+                        <label for="businessType">Business Type</label>
                         <select id="businessType" onchange="trackFormProgress()">
-                            <option value="" data-i18n="registration.fields.business_type.placeholder">Select your business type</option>
-                            <option value="startup" data-i18n="registration.fields.business_type.options.startup">Startup</option>
-                            <option value="small-business" data-i18n="registration.fields.business_type.options.small_business">Small Business</option>
-                            <option value="medium-enterprise" data-i18n="registration.fields.business_type.options.medium_enterprise">Medium Enterprise</option>
-                            <option value="large-enterprise" data-i18n="registration.fields.business_type.options.large_enterprise">Large Enterprise</option>
-                            <option value="freelancer" data-i18n="registration.fields.business_type.options.freelancer">Freelancer</option>
+                            <option value="">Select your business type</option>
+                            <option value="startup">Startup</option>
+                            <option value="small-business">Small Business</option>
+                            <option value="medium-enterprise">Medium Enterprise</option>
+                            <option value="large-enterprise">Large Enterprise</option>
+                            <option value="freelancer">Freelancer</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="category" data-i18n="registration.fields.category.label">Business Category</label>
+                        <label for="category">Business Category</label>
                         <select id="category" onchange="trackFormProgress()">
-                            <option value="" data-i18n="registration.fields.category.placeholder">Select your business category</option>
-                            <option value="boutique" data-i18n="categories.boutique">🏪 Boutique & Fashion</option>
-                            <option value="home-foods" data-i18n="categories.home_foods">🍛 Home Foods & Catering</option>
-                            <option value="salons" data-i18n="categories.salons">💄 Salons & Beauty</option>
-                            <option value="grocery" data-i18n="categories.grocery">🛒 Grocery & Provisions</option>
-                            <option value="furniture" data-i18n="categories.furniture">🛋️ Furniture & Home Decor</option>
-                            <option value="electronics" data-i18n="categories.electronics">📱 Electronics & Gadgets</option>
-                            <option value="jewellery" data-i18n="categories.jewellery">💍 Jewellery & Accessories</option>
-                            <option value="restaurants" data-i18n="categories.restaurants">🍽️ Restaurants & Cafes</option>
-                            <option value="fitness" data-i18n="categories.fitness">💪 Fitness & Wellness</option>
-                            <option value="education" data-i18n="categories.education">📚 Education & Training</option>
-                            <option value="automotive" data-i18n="categories.automotive">🚗 Automotive Services</option>
-                            <option value="healthcare" data-i18n="categories.healthcare">🏥 Healthcare Services</option>
-                            <option value="professional" data-i18n="categories.professional">💼 Professional Services</option>
-                            <option value="arts-crafts" data-i18n="categories.arts_crafts">🎨 Arts & Crafts</option>
-                            <option value="travel" data-i18n="categories.travel">✈️ Travel & Tourism</option>
-                            <option value="pet-services" data-i18n="categories.pet_services">🐾 Pet Services & Supplies</option>
-                            <option value="real-estate" data-i18n="categories.real_estate">🏠 Real Estate Services</option>
-                            <option value="event-services" data-i18n="categories.event_services">🎉 Event & Wedding Services</option>
-                            <option value="agriculture" data-i18n="categories.agriculture">🌾 Agriculture & Farming</option>
-                            <option value="others" data-i18n="categories.others">🔧 Others</option>
+                            <option value="">Select your business category</option>
+                            <option value="boutique">🏪 Boutique & Fashion</option>
+                            <option value="home-foods">🍛 Home Foods & Catering</option>
+                            <option value="salons">💄 Salons & Beauty</option>
+                            <option value="grocery">🛒 Grocery & Provisions</option>
+                            <option value="furniture">🛋️ Furniture & Home Decor</option>
+                            <option value="electronics">📱 Electronics & Gadgets</option>
+                            <option value="jewellery">💍 Jewellery & Accessories</option>
+                            <option value="restaurants">🍽️ Restaurants & Cafes</option>
+                            <option value="fitness">💪 Fitness & Wellness</option>
+                            <option value="education">📚 Education & Training</option>
+                            <option value="automotive">🚗 Automotive Services</option>
+                            <option value="healthcare">🏥 Healthcare Services</option>
+                            <option value="professional">💼 Professional Services</option>
+                            <option value="arts-crafts">🎨 Arts & Crafts</option>
+                            <option value="travel">✈️ Travel & Tourism</option>
+                            <option value="pet-services">🐾 Pet Services & Supplies</option>
+                            <option value="real-estate">🏠 Real Estate Services</option>
+                            <option value="event-services">🎉 Event & Wedding Services</option>
+                            <option value="agriculture">🌾 Agriculture & Farming</option>
+                            <option value="others">🔧 Others</option>
                         </select>
                     </div>
 
-                    <button class="submit-button" onclick="submitRegistration()" data-i18n="registration.create_account">
+                    <button class="submit-button" onclick="submitRegistration()">
                         Create Free Account
                     </button>
                 </div>
@@ -297,51 +297,51 @@
             <section class="screen" id="qualifying-questions">
                 <div class="content-card">
                     <div style="text-align: center; margin-bottom: 2rem;">
-                        <h2 style="color: #6b46c1; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;" id="qualifyingTitle" data-i18n="qualifying.title">
+                        <h2 style="color: #6b46c1; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;" id="qualifyingTitle">
                             Let's setup things for you
                         </h2>
-                        <p style="color: #553c9a; font-size: 1rem; font-weight: 500;" data-i18n="qualifying.subtitle">
+                        <p style="color: #553c9a; font-size: 1rem; font-weight: 500;">
                             Just need a couple of details about your business
                         </p>
                     </div>
 
                     <!-- Question 1: Online Presence -->
                     <div class="qualifying-question">
-                        <h3 data-i18n="qualifying.online_presence.question">Do you currently have any online presence?</h3>
+                        <h3>Do you currently have any online presence?</h3>
                         <div class="radio-options">
                             <div class="radio-option">
                                 <input type="radio" id="presence-none" name="online_presence" value="none" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="presence-none" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="qualifying.online_presence.options.none">No online presence at all</span>
+                                    No online presence at all
                                 </label>
                             </div>
                             <div class="radio-option">
                                 <input type="radio" id="presence-whatsapp" name="online_presence" value="whatsapp" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="presence-whatsapp" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="qualifying.online_presence.options.whatsapp">Only WhatsApp Business</span>
+                                    Only WhatsApp Business
                                 </label>
                             </div>
                             <div class="radio-option">
                                 <input type="radio" id="presence-social" name="online_presence" value="social" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="presence-social" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="qualifying.online_presence.options.social">Social media pages (Facebook/Instagram)</span>
+                                    Social media pages (Facebook/Instagram)
                                 </label>
                             </div>
                             <div class="radio-option">
                                 <input type="radio" id="presence-basic" name="online_presence" value="basic_website" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="presence-basic" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="qualifying.online_presence.options.basic_website">Basic website</span>
+                                    Basic website
                                 </label>
                             </div>
                             <div class="radio-option">
                                 <input type="radio" id="presence-full" name="online_presence" value="full_website" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="presence-full" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="qualifying.online_presence.options.full_website">Full website with online ordering</span>
+                                    Full website with online ordering
                                 </label>
                             </div>
                         </div>
@@ -349,27 +349,27 @@
 
                     <!-- Question 2: Budget -->
                     <div class="qualifying-question">
-                        <h3 data-i18n="qualifying.budget.question">To meet your business goals, how much budget can you allocate per year?</h3>
+                        <h3>To meet your business goals, how much budget can you allocate per year?</h3>
                         <div class="radio-options">
                             <div class="radio-option">
                                 <input type="radio" id="budget-low" name="budget" value="5000-10000" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="budget-low" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="qualifying.budget.options.low">₹5,000 to ₹10,000</span>
+                                    ₹5,000 to ₹10,000
                                 </label>
                             </div>
                             <div class="radio-option">
                                 <input type="radio" id="budget-medium" name="budget" value="10000-25000" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="budget-medium" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="qualifying.budget.options.medium">₹10,000 to ₹25,000</span>
+                                    ₹10,000 to ₹25,000
                                 </label>
                             </div>
                             <div class="radio-option">
                                 <input type="radio" id="budget-high" name="budget" value="25000+" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="budget-high" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="qualifying.budget.options.high">More than ₹25,000</span>
+                                    More than ₹25,000
                                 </label>
                             </div>
                         </div>
@@ -377,20 +377,20 @@
 
                     <!-- Question 3: Decision Maker -->
                     <div class="qualifying-question">
-                        <h3 data-i18n="qualifying.decision_maker.question">Are you the decision maker for your business?</h3>
+                        <h3>Are you the decision maker for your business?</h3>
                         <div class="radio-options">
                             <div class="radio-option">
                                 <input type="radio" id="decision-yes" name="decision_maker" value="yes" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="decision-yes" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="common.yes">Yes</span>
+                                    Yes
                                 </label>
                             </div>
                             <div class="radio-option">
                                 <input type="radio" id="decision-no" name="decision_maker" value="no" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="decision-no" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="common.no">No</span>
+                                    No
                                 </label>
                             </div>
                         </div>
@@ -398,40 +398,40 @@
 
                     <!-- Question 4: Timeline -->
                     <div class="qualifying-question">
-                        <h3 data-i18n="qualifying.timeline.question">How soon do you want to get started?</h3>
+                        <h3>How soon do you want to get started?</h3>
                         <div class="radio-options">
                             <div class="radio-option">
                                 <input type="radio" id="timeline-immediate" name="timeline" value="immediately" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="timeline-immediate" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="qualifying.timeline.options.immediately">Immediately</span>
+                                    Immediately
                                 </label>
                             </div>
                             <div class="radio-option">
                                 <input type="radio" id="timeline-week" name="timeline" value="within_week" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="timeline-week" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="qualifying.timeline.options.within_week">Within a week</span>
+                                    Within a week
                                 </label>
                             </div>
                             <div class="radio-option">
                                 <input type="radio" id="timeline-month" name="timeline" value="this_month" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="timeline-month" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="qualifying.timeline.options.this_month">This month</span>
+                                    This month
                                 </label>
                             </div>
                             <div class="radio-option">
                                 <input type="radio" id="timeline-checking" name="timeline" value="just_checking" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="timeline-checking" class="radio-card">
                                     <div class="radio-icon"></div>
-                                    <span data-i18n="qualifying.timeline.options.just_checking">Just checking</span>
+                                    Just checking
                                 </label>
                             </div>
                         </div>
                     </div>
 
-                    <button class="submit-button" onclick="proceedToCategories()" id="qualifyingNextBtn" disabled style="opacity: 0.5;" data-i18n="qualifying.create_business">
+                    <button class="submit-button" onclick="proceedToCategories()" id="qualifyingNextBtn" disabled style="opacity: 0.5;">
                         Create my Business 🚀
                     </button>
                 </div>
@@ -440,19 +440,19 @@
             <!-- Categories Screen -->
             <section class="screen" id="categories">
                 <div class="content-card">
-                    <h2 style="text-align: center; margin-bottom: 0.5rem;" id="categoriesTitle" data-i18n="categories.title">Select Your Business Categories</h2>
-                    <p style="text-align: center; margin-bottom: 2rem;" data-i18n="categories.subtitle">Choose specific categories and subcategories that best describe your business</p>
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;" id="categoriesTitle">Select Your Business Categories</h2>
+                    <p style="text-align: center; margin-bottom: 2rem;">Choose specific categories and subcategories that best describe your business</p>
                     
                     <!-- Selection Summary -->
                     <div class="selection-summary" id="selectionSummary" style="display: none;">
-                        <div class="summary-title" data-i18n="categories.summary.title">📊 Your Selection Summary</div>
+                        <div class="summary-title">📊 Your Selection Summary</div>
                         <div class="summary-content">
                             <div class="summary-item">
-                                <span data-i18n="categories.summary.categories">Categories: </span>
+                                <span>Categories: </span>
                                 <span class="summary-count" id="categoriesCount">0</span>
                             </div>
                             <div class="summary-item">
-                                <span data-i18n="categories.summary.subcategories">Subcategories: </span>
+                                <span>Subcategories: </span>
                                 <span class="summary-count" id="subcategoriesCount">0</span>
                             </div>
                         </div>
@@ -465,188 +465,188 @@
                     <!-- Category Footer with Dynamic Motivational Messages -->
                     <div class="category-footer">
                         <div class="motivational-messages" id="motivationalMessages">
-                            <div class="motivational-message active loading" data-i18n="categories.loading_messages">
+                            <div class="motivational-message active loading">
                                 🔄 Loading personalized messages for Perfect...
                             </div>
                         </div>
                     </div>
 
-                    <button class="submit-button" onclick="proceedToProducts()" id="categoryNextBtn" disabled data-i18n="categories.continue_products">
+                    <button class="submit-button" onclick="proceedToProducts()" id="categoryNextBtn" disabled>
                         Continue to Add Products
                     </button>
                 </div>
             </section>
 
-            <!-- Products Screen -->
+            <!-- Products Screen - UPDATED WITH PRODUCT SELECTOR -->
             <section class="screen" id="products">
                 <div class="content-card">
-                    <h2 style="text-align: center; margin-bottom: 0.5rem;" id="productsTitle" data-i18n="products.title">Add Your Products</h2>
-                    <p style="text-align: center; margin-bottom: 2rem;" data-i18n="products.subtitle">Choose from 500+ products or add your own custom products</p>
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;" id="productsTitle">Add Your Products</h2>
+                    <p style="text-align: center; margin-bottom: 2rem;">Choose from 500+ products or add your own custom products</p>
                     
-                    <!-- Help Section -->
+                    <!-- Help Section - KEEP UNCHANGED -->
                     <div class="products-help-section" id="productsHelpSection" onclick="requestFollowup()">
-                        <div class="help-title" id="productsHelpTitle" data-i18n="products.help.title">🎯 Free Professional Setup Available!</div>
+                        <div class="help-title" id="productsHelpTitle">🎯 Free Professional Setup Available!</div>
                         <div class="help-progress">
                             <div class="help-progress-fill" id="productsHelpProgressFill"></div>
                         </div>
-                        <div class="help-text" id="productsHelpText" data-i18n="products.help.text">
+                        <div class="help-text" id="productsHelpText">
                             Topiko is helping with free setup for 75 businesses every month. <span id="productsClaimedCount">47</span> claimed for <span id="productsCurrentMonth">January</span>. Click here for help!
                         </div>
                     </div>
 
-                    <!-- Product Selection Mode Toggle -->
+                    <!-- NEW: Product Selection Mode Toggle -->
                     <div class="product-mode-toggle">
                         <div class="toggle-options">
                             <button class="toggle-option active" id="selectMode" onclick="switchProductMode('select')">
                                 <span class="toggle-icon">🛍️</span>
-                                <span data-i18n="products.mode.select">Select from 500+ Products</span>
+                                Select from 500+ Products
                             </button>
                             <button class="toggle-option" id="customMode" onclick="switchProductMode('custom')">
                                 <span class="toggle-icon">➕</span>
-                                <span data-i18n="products.mode.custom">Add Custom Product</span>
+                                Add Custom Product
                             </button>
                         </div>
                     </div>
 
-                    <!-- Product Selector Section -->
+                    <!-- NEW: Product Selector Section -->
                     <div class="product-selector-section" id="productSelectorSection">
                         
                         <!-- Helper Buttons -->
                         <div class="product-helpers">
-                            <button onclick="selectPopularProducts()" class="helper-btn" data-i18n="products.helpers.popular">
+                            <button onclick="selectPopularProducts()" class="helper-btn">
                                 ✨ Select Popular Items
                             </button>
-                            <button onclick="clearAllSelections()" class="helper-btn secondary" data-i18n="products.helpers.clear">
+                            <button onclick="clearAllSelections()" class="helper-btn secondary">
                                 🗑️ Clear All
                             </button>
                         </div>
                         
                         <!-- Quick Filters -->
                         <div class="quick-filters" id="quickFilters">
-                            <button class="quick-filter active" data-category="all" data-i18n="products.filters.all">All Products</button>
-                            <button class="quick-filter" data-category="boutique" data-i18n="products.filters.fashion">Fashion</button>
-                            <button class="quick-filter" data-category="homefoods" data-i18n="products.filters.foods">Home Foods</button>
-                            <button class="quick-filter" data-category="grocery" data-i18n="products.filters.grocery">Grocery</button>
-                            <button class="quick-filter" data-category="electronics" data-i18n="products.filters.electronics">Electronics</button>
-                            <button class="quick-filter" data-category="fitness" data-i18n="products.filters.fitness">Fitness</button>
-                            <button class="quick-filter" data-category="restaurant" data-i18n="products.filters.restaurant">Restaurant</button>
+                            <button class="quick-filter active" data-category="all">All Products</button>
+                            <button class="quick-filter" data-category="boutique">Fashion</button>
+                            <button class="quick-filter" data-category="homefoods">Home Foods</button>
+                            <button class="quick-filter" data-category="grocery">Grocery</button>
+                            <button class="quick-filter" data-category="electronics">Electronics</button>
+                            <button class="quick-filter" data-category="fitness">Fitness</button>
+                            <button class="quick-filter" data-category="restaurant">Restaurant</button>
                         </div>
                         
                         <!-- Search & Filter Controls -->
                         <div class="product-controls">
                             <div class="search-box">
-                                <input type="text" id="productSearch" data-i18n-placeholder="products.search.placeholder" placeholder="Search products..." />
+                                <input type="text" id="productSearch" placeholder="Search products..." />
                                 <span class="search-icon">🔍</span>
                             </div>
                             
                             <select id="categoryFilter" class="filter-select">
-                                <option value="all" data-i18n="products.category_filter.all">All Categories</option>
-                                <option value="boutique" data-i18n="categories.boutique">Boutique & Fashion</option>
-                                <option value="homefoods" data-i18n="categories.home_foods">Home Foods</option>
-                                <option value="grocery" data-i18n="categories.grocery">Grocery & Provisions</option>
-                                <option value="electronics" data-i18n="categories.electronics">Electronics & Gadgets</option>
-                                <option value="fitness" data-i18n="categories.fitness">Fitness & Wellness</option>
-                                <option value="restaurant" data-i18n="categories.restaurants">Restaurant & Food</option>
+                                <option value="all">All Categories</option>
+                                <option value="boutique">Boutique & Fashion</option>
+                                <option value="homefoods">Home Foods</option>
+                                <option value="grocery">Grocery & Provisions</option>
+                                <option value="electronics">Electronics & Gadgets</option>
+                                <option value="fitness">Fitness & Wellness</option>
+                                <option value="restaurant">Restaurant & Food</option>
                             </select>
                             
                             <select id="sortBy" class="sort-select">
-                                <option value="name" data-i18n="products.sort.name">Sort by Name</option>
-                                <option value="price-low" data-i18n="products.sort.price_low">Price: Low to High</option>
-                                <option value="price-high" data-i18n="products.sort.price_high">Price: High to Low</option>
-                                <option value="category" data-i18n="products.sort.category">Category</option>
+                                <option value="name">Sort by Name</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="category">Category</option>
                             </select>
                             
                             <div class="products-count">
-                                <span id="productsCount">500</span> <span data-i18n="products.count.products">products</span>
+                                <span id="productsCount">500</span> products
                             </div>
                         </div>
 
                         <!-- Price Range -->
                         <div class="price-range">
-                            <label data-i18n="products.price_range.label">Price Range: ₹<span id="priceRangeDisplay">0 - ₹5000</span></label>
+                            <label>Price Range: ₹<span id="priceRangeDisplay">0 - ₹5000</span></label>
                             <div class="price-inputs">
-                                <input type="number" id="minPrice" data-i18n-placeholder="products.price_range.min" placeholder="Min" value="0" min="0" max="5000">
-                                <span data-i18n="products.price_range.to">to</span>
-                                <input type="number" id="maxPrice" data-i18n-placeholder="products.price_range.max" placeholder="Max" value="5000" min="0" max="5000">
+                                <input type="number" id="minPrice" placeholder="Min" value="0" min="0" max="5000">
+                                <span>to</span>
+                                <input type="number" id="maxPrice" placeholder="Max" value="5000" min="0" max="5000">
                             </div>
                         </div>
                         
                         <!-- Products Grid -->
                         <div class="products-grid" id="productsGrid">
-                            <div class="loading" data-i18n="products.loading">Loading products...</div>
+                            <div class="loading">Loading products...</div>
                         </div>
                     </div>
 
-                    <!-- Custom Product Form -->
+                    <!-- EXISTING: Custom Product Form (Modified to be toggleable) -->
                     <div class="product-form" id="customProductForm" style="display: none;">
-                        <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;" id="productFormTitle" data-i18n="products.custom.title">Add Custom Product/Service</h3>
+                        <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;" id="productFormTitle">Add Custom Product/Service</h3>
                         
                         <div class="form-group">
-                            <label for="productName" data-i18n="products.custom.fields.name.label">Product/Service Name</label>
-                            <input type="text" id="productName" data-i18n-placeholder="products.custom.fields.name.placeholder" placeholder="e.g., Cotton Kurta, Masala Dosa, Haircut">
+                            <label for="productName">Product/Service Name</label>
+                            <input type="text" id="productName" placeholder="e.g., Cotton Kurta, Masala Dosa, Haircut">
                         </div>
                         
                         <div class="form-group">
-                            <label for="productPrice" data-i18n="products.custom.fields.price.label">Price (₹)</label>
-                            <input type="number" id="productPrice" data-i18n-placeholder="products.custom.fields.price.placeholder" placeholder="e.g., 899">
+                            <label for="productPrice">Price (₹)</label>
+                            <input type="number" id="productPrice" placeholder="e.g., 899">
                         </div>
 
                         <div class="form-group">
-                            <label for="productCategory" data-i18n="products.custom.fields.category.label">Category</label>
+                            <label for="productCategory">Category</label>
                             <select id="productCategory">
-                                <option value="" data-i18n="products.custom.fields.category.placeholder">Select from your chosen categories</option>
+                                <option value="">Select from your chosen categories</option>
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label for="productSubcategory" data-i18n="products.custom.fields.subcategory.label">Subcategory (Optional)</label>
+                            <label for="productSubcategory">Subcategory (Optional)</label>
                             <select id="productSubcategory">
-                                <option value="" data-i18n="products.custom.fields.subcategory.placeholder">Select a subcategory</option>
+                                <option value="">Select a subcategory</option>
                             </select>
                         </div>
                         
                         <div class="form-group">
-                            <label for="productDescription" data-i18n="products.custom.fields.description.label">Description</label>
-                            <textarea id="productDescription" rows="3" data-i18n-placeholder="products.custom.fields.description.placeholder" placeholder="Brief description of your product or service"></textarea>
+                            <label for="productDescription">Description</label>
+                            <textarea id="productDescription" rows="3" placeholder="Brief description of your product or service"></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label for="productImage" data-i18n="products.custom.fields.image.label">Product Image URL (optional)</label>
-                            <input type="url" id="productImage" data-i18n-placeholder="products.custom.fields.image.placeholder" placeholder="https://example.com/image.jpg">
+                            <label for="productImage">Product Image URL (optional)</label>
+                            <input type="url" id="productImage" placeholder="https://example.com/image.jpg">
                         </div>
                         
-                        <button type="button" onclick="addCustomProduct()" class="btn-secondary" style="width: auto; margin-top: 1rem;" data-i18n="products.custom.add_button">
+                        <button type="button" onclick="addCustomProduct()" class="btn-secondary" style="width: auto; margin-top: 1rem;">
                             ➕ Add Custom Product
                         </button>
                     </div>
 
-                    <!-- Selected Products Summary -->
+                    <!-- NEW: Selected Products Summary -->
                     <div class="selected-products-summary" id="selectedProductsSection" style="display: none;">
                         <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;">
                             <span style="margin-right: 0.5rem;">🎯</span>
-                            <span data-i18n="products.selected.title">Selected Products</span> (<span id="selectedCount">0</span>)
+                            Selected Products (<span id="selectedCount">0</span>)
                         </h3>
                         <div id="selectedProductsList"></div>
                     </div>
 
-                    <!-- Products List -->
+                    <!-- MODIFIED: Products List (now shows all selected products) -->
                     <div class="products-list">
-                        <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;" data-i18n="products.catalog.title">Your Product Catalog (<span id="productCount">0</span>)</h3>
+                        <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;">Your Product Catalog (<span id="productCount">0</span>)</h3>
                         
                         <div class="product-grid" id="productsList">
                             <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
                                 <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
-                                <p data-i18n="products.catalog.empty">No products selected yet. Choose from 500+ products above or add custom products!</p>
+                                <p>No products selected yet. Choose from 500+ products above or add custom products!</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Navigation buttons -->
+                    <!-- KEEP: Navigation buttons unchanged -->
                     <div class="flex-buttons">
-                        <button onclick="navigateToStep('categories')" class="btn-secondary" data-i18n="products.back_categories">
+                        <button onclick="navigateToStep('categories')" class="btn-secondary">
                             ← Back to Categories
                         </button>
-                        <button onclick="proceedToThemes()" class="submit-button" data-i18n="products.choose_theme">
+                        <button onclick="proceedToThemes()" class="submit-button">
                             Choose Theme 🎨
                         </button>
                     </div>
@@ -656,8 +656,8 @@
             <!-- Theme Selection Screen -->
             <section class="screen" id="themes">
                 <div class="content-card">
-                    <h2 style="text-align: center; margin-bottom: 0.5rem;" id="themesTitle" data-i18n="themes.title">Choose Your Business Theme</h2>
-                    <p style="text-align: center; margin-bottom: 2rem;" data-i18n="themes.subtitle">Select a theme that represents your business style. See how your products will look!</p>
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;" id="themesTitle">Choose Your Business Theme</h2>
+                    <p style="text-align: center; margin-bottom: 2rem;">Select a theme that represents your business style. See how your products will look!</p>
                     
                     <div class="theme-grid">
                         <!-- Modern & Minimalist Theme -->
@@ -665,9 +665,9 @@
                             <div class="theme-header">
                                 <h3>
                                     <span style="margin-right: 0.5rem;">✨</span>
-                                    <span data-i18n="themes.modern.name">Modern & Minimalist</span>
+                                    Modern & Minimalist
                                 </h3>
-                                <p data-i18n="themes.modern.description">Clean, simple design that focuses on your products</p>
+                                <p>Clean, simple design that focuses on your products</p>
                             </div>
                             <div class="theme-preview" id="modern-preview">
                                 <!-- Products preview will be populated here -->
@@ -679,9 +679,9 @@
                             <div class="theme-header">
                                 <h3>
                                     <span style="margin-right: 0.5rem;">🌈</span>
-                                    <span data-i18n="themes.vibrant.name">Colorful & Vibrant</span>
+                                    Colorful & Vibrant
                                 </h3>
-                                <p data-i18n="themes.vibrant.description">Bold colors and energetic design to attract customers</p>
+                                <p>Bold colors and energetic design to attract customers</p>
                             </div>
                             <div class="theme-preview" style="background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 50%, #fecaca 100%);" id="vibrant-preview">
                                 <!-- Products preview will be populated here -->
@@ -693,9 +693,9 @@
                             <div class="theme-header">
                                 <h3>
                                     <span style="margin-right: 0.5rem;">💼</span>
-                                    <span data-i18n="themes.professional.name">Professional & Corporate</span>
+                                    Professional & Corporate
                                 </h3>
-                                <p data-i18n="themes.professional.description">Sophisticated design that builds trust and credibility</p>
+                                <p>Sophisticated design that builds trust and credibility</p>
                             </div>
                             <div class="theme-preview" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: white;" id="professional-preview">
                                 <!-- Products preview will be populated here -->
@@ -707,9 +707,9 @@
                             <div class="theme-header">
                                 <h3>
                                     <span style="margin-right: 0.5rem;">🏛️</span>
-                                    <span data-i18n="themes.traditional.name">Traditional & Classic</span>
+                                    Traditional & Classic
                                 </h3>
-                                <p data-i18n="themes.traditional.description">Timeless design with warm, welcoming feel</p>
+                                <p>Timeless design with warm, welcoming feel</p>
                             </div>
                             <div class="theme-preview" style="background: linear-gradient(135deg, #fef7cd 0%, #fde68a 100%);" id="traditional-preview">
                                 <!-- Products preview will be populated here -->
@@ -721,9 +721,9 @@
                             <div class="theme-header">
                                 <h3>
                                     <span style="margin-right: 0.5rem;">🎨</span>
-                                    <span data-i18n="themes.creative.name">Creative & Artistic</span>
+                                    Creative & Artistic
                                 </h3>
-                                <p data-i18n="themes.creative.description">Unique, artistic design that showcases creativity</p>
+                                <p>Unique, artistic design that showcases creativity</p>
                             </div>
                             <div class="theme-preview" style="background: linear-gradient(135deg, #ddd6fe 0%, #c7d2fe 50%, #bfdbfe 100%);" id="creative-preview">
                                 <!-- Products preview will be populated here -->
@@ -735,9 +735,9 @@
                             <div class="theme-header">
                                 <h3>
                                     <span style="margin-right: 0.5rem;">💎</span>
-                                    <span data-i18n="themes.luxury.name">Elegant & Luxury</span>
+                                    Elegant & Luxury
                                 </h3>
-                                <p data-i18n="themes.luxury.description">Premium design for high-end products and services</p>
+                                <p>Premium design for high-end products and services</p>
                             </div>
                             <div class="theme-preview" style="background: linear-gradient(135deg, #1c1917 0%, #292524 100%); color: #d6d3d1;" id="luxury-preview">
                                 <!-- Products preview will be populated here -->
@@ -747,15 +747,15 @@
 
                     <div style="text-align: center; margin: 1.5rem 0;">
                         <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 1rem;">
-                            <span id="selectedThemeName" data-i18n="themes.no_theme_selected">No theme selected</span> | <span data-i18n="themes.change_later">You can change this anytime later</span>
+                            <span id="selectedThemeName">No theme selected</span> | You can change this anytime later
                         </p>
                     </div>
 
                     <div class="flex-buttons">
-                        <button onclick="navigateToStep('products')" class="btn-secondary" data-i18n="themes.back_products">
+                        <button onclick="navigateToStep('products')" class="btn-secondary">
                             ← Back to Products
                         </button>
-                        <button onclick="completeSetup()" id="themeNextBtn" disabled style="opacity: 0.5;" data-i18n="themes.complete_setup">
+                        <button onclick="completeSetup()" id="themeNextBtn" disabled style="opacity: 0.5;">
                             Complete Setup 🚀
                         </button>
                     </div>
@@ -774,26 +774,26 @@
             <div style="text-align: center;">
                 <div style="font-size: 3rem; margin-bottom: 1rem; animation: bounce 2s infinite;">🎯</div>
                 
-                <h2 style="color: #6b46c1; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.3;" data-i18n="modals.goals_transition.title">
+                <h2 style="color: #6b46c1; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.3;">
                     Perfect! You've chosen the most important goals for business growth
                 </h2>
                 
-                <p style="color: #553c9a; font-size: 1rem; font-weight: 500; margin-bottom: 1.5rem; line-height: 1.4;" data-i18n="modals.goals_transition.subtitle">
+                <p style="color: #553c9a; font-size: 1rem; font-weight: 500; margin-bottom: 1.5rem; line-height: 1.4;">
                     These strategic choices will help us create the perfect online presence for your business!
                 </p>
 
                 <div style="background: rgba(139, 111, 205, 0.1); border: 2px solid rgba(139, 111, 205, 0.2); border-radius: 12px; padding: 1rem; margin: 1rem 0;">
-                    <h3 style="color: #6b46c1; font-size: 1rem; font-weight: 600; margin-bottom: 1rem;" data-i18n="modals.goals_transition.selected_goals">🎯 Your Selected Goals:</h3>
+                    <h3 style="color: #6b46c1; font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">🎯 Your Selected Goals:</h3>
                     <div style="text-align: center;" id="modalGoalsList">
                         <!-- Goals will be populated here -->
                     </div>
                 </div>
 
-                <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: center;" data-i18n="modals.goals_transition.stats">
+                <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: center;">
                     🚀 Over 5,200 businesses launched this month with our free setup!
                 </div>
 
-                <button class="submit-button" onclick="proceedFromGoalsModal()" style="animation: pulse 2s infinite; margin-top: 1rem;" data-i18n="modals.goals_transition.get_setup">
+                <button class="submit-button" onclick="proceedFromGoalsModal()" style="animation: pulse 2s infinite; margin-top: 1rem;">
                     Get My Free Setup! 🚀
                 </button>
             </div>
@@ -808,15 +808,15 @@
             <div style="text-align: center;">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
                 
-                <h2 style="color: #059669; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;" data-i18n="modals.setup_intro.title">
+                <h2 style="color: #059669; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;">
                     Excellent! We have everything we need to get started
                 </h2>
                 
                 <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.2); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0;">
-                    <p style="color: #059669; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;" data-i18n="modals.setup_intro.steps_message">
+                    <p style="color: #059669; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
                         Just 3 more quick steps and we'll show you exactly how your business will look online!
                     </p>
-                    <p style="color: #064e3b; font-size: 0.95rem; margin-bottom: 1rem;" data-i18n="modals.setup_intro.features">
+                    <p style="color: #064e3b; font-size: 0.95rem; margin-bottom: 1rem;">
                         💯 Completely free setup • ⚡ No technical knowledge needed • 🎯 Professional results guaranteed
                     </p>
                     
@@ -825,7 +825,7 @@
                     </div>
                 </div>
 
-                <button class="submit-button" onclick="proceedFromSetupModal()" style="animation: pulse 2s infinite; font-size: 1.1rem;" data-i18n="modals.setup_intro.create_amazing">
+                <button class="submit-button" onclick="proceedFromSetupModal()" style="animation: pulse 2s infinite; font-size: 1.1rem;">
                     Let's Create Something Amazing! 🎯
                 </button>
             </div>
@@ -840,11 +840,11 @@
             <div style="text-align: center;">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">📱</div>
                 
-                <h2 style="color: #6b46c1; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;" data-i18n="modals.otp.title">
+                <h2 style="color: #6b46c1; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;">
                     Verify Your Phone Number
                 </h2>
                 
-                <p style="color: #553c9a; font-size: 1rem; margin-bottom: 1.5rem;" data-i18n="modals.otp.subtitle">
+                <p style="color: #553c9a; font-size: 1rem; margin-bottom: 1.5rem;">
                     We've sent a 4-digit code to your phone. Enter it below to secure your account.
                 </p>
 
@@ -856,10 +856,10 @@
                 </div>
 
                 <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 1.5rem;">
-                    <span data-i18n="modals.otp.no_code">Didn't receive the code?</span> <a href="#" style="color: #6b46c1; text-decoration: none;" onclick="showNotification('Code resent!', 'info')" data-i18n="modals.otp.resend">Resend OTP</a>
+                    Didn't receive the code? <a href="#" style="color: #6b46c1; text-decoration: none;" onclick="showNotification('Code resent!', 'info')">Resend OTP</a>
                 </p>
 
-                <button class="submit-button" id="verifyOtpBtn" onclick="verifyOtp()" disabled style="opacity: 0.5;" data-i18n="modals.otp.verify_continue">
+                <button class="submit-button" id="verifyOtpBtn" onclick="verifyOtp()" disabled style="opacity: 0.5;">
                     Verify & Continue
                 </button>
             </div>
@@ -867,9 +867,8 @@
     </div>
 
     <!-- Load JavaScript Files -->
-    <script src="js/config.js"></script>
-    <script src="js/i18n.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/script.js"></script>
+    <script src="js/config_js.js"></script>
+    <script src="js/utils_js.js"></script>
+    <script src="js/script_js.js"></script>
 </body>
 </html>
