@@ -8,7 +8,6 @@
 </head>
 <body>
     <!-- Back Button -->
-    
     <div class="back-button hidden" id="backButton" onclick="goBack()">
         ←
     </div>
@@ -147,7 +146,7 @@
             <!-- Goals Selection Screen -->
             <section class="screen" id="goals">
                 <div class="content-card">
-                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Select your Business Goals</h2>
+                    <h2 style="text-align: center; margin-bottom: 0.5rem;">Select Your Goals</h2>
                     <p style="text-align: center; margin-bottom: 2rem;">Choose what you want to achieve with Topiko (select all that apply)</p>
                     
                     <div class="goals-grid">
@@ -230,7 +229,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="email">Email Address</label>
+                        <label for="email">Email Address (Optional)</label>
                         <input type="email" id="email" placeholder="Enter your email address" oninput="trackFormProgress()">
                     </div>
 
@@ -289,7 +288,7 @@
                     </div>
 
                     <button class="submit-button" onclick="submitRegistration()">
-                        Create Free Account
+                        Show my Business Online
                     </button>
                 </div>
             </section>
@@ -478,13 +477,13 @@
                 </div>
             </section>
 
-            <!-- Products Screen - UPDATED WITH PRODUCT SELECTOR -->
+            <!-- Products Screen - SIMPLIFIED -->
             <section class="screen" id="products">
                 <div class="content-card">
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" id="productsTitle">Add Your Products</h2>
-                    <p style="text-align: center; margin-bottom: 2rem;">Choose from 500+ products or add your own custom products</p>
+                    <p style="text-align: center; margin-bottom: 2rem;">Add your custom products or services to showcase online</p>
                     
-                    <!-- Help Section - KEEP UNCHANGED -->
+                    <!-- Help Section -->
                     <div class="products-help-section" id="productsHelpSection" onclick="requestFollowup()">
                         <div class="help-title" id="productsHelpTitle">🎯 Free Professional Setup Available!</div>
                         <div class="help-progress">
@@ -495,91 +494,8 @@
                         </div>
                     </div>
 
-                    <!-- NEW: Product Selection Mode Toggle -->
-                    <div class="product-mode-toggle">
-                        <div class="toggle-options">
-                            <button class="toggle-option active" id="selectMode" onclick="switchProductMode('select')">
-                                <span class="toggle-icon">🛍️</span>
-                                Select from 500+ Products
-                            </button>
-                            <button class="toggle-option" id="customMode" onclick="switchProductMode('custom')">
-                                <span class="toggle-icon">➕</span>
-                                Add Custom Product
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- NEW: Product Selector Section -->
-                    <div class="product-selector-section" id="productSelectorSection">
-                        
-                        <!-- Helper Buttons -->
-                        <div class="product-helpers">
-                            <button onclick="selectPopularProducts()" class="helper-btn">
-                                ✨ Select Popular Items
-                            </button>
-                            <button onclick="clearAllSelections()" class="helper-btn secondary">
-                                🗑️ Clear All
-                            </button>
-                        </div>
-                        
-                        <!-- Quick Filters -->
-                        <div class="quick-filters" id="quickFilters">
-                            <button class="quick-filter active" data-category="all">All Products</button>
-                            <button class="quick-filter" data-category="boutique">Fashion</button>
-                            <button class="quick-filter" data-category="homefoods">Home Foods</button>
-                            <button class="quick-filter" data-category="grocery">Grocery</button>
-                            <button class="quick-filter" data-category="electronics">Electronics</button>
-                            <button class="quick-filter" data-category="fitness">Fitness</button>
-                            <button class="quick-filter" data-category="restaurant">Restaurant</button>
-                        </div>
-                        
-                        <!-- Search & Filter Controls -->
-                        <div class="product-controls">
-                            <div class="search-box">
-                                <input type="text" id="productSearch" placeholder="Search products..." />
-                                <span class="search-icon">🔍</span>
-                            </div>
-                            
-                            <select id="categoryFilter" class="filter-select">
-                                <option value="all">All Categories</option>
-                                <option value="boutique">Boutique & Fashion</option>
-                                <option value="homefoods">Home Foods</option>
-                                <option value="grocery">Grocery & Provisions</option>
-                                <option value="electronics">Electronics & Gadgets</option>
-                                <option value="fitness">Fitness & Wellness</option>
-                                <option value="restaurant">Restaurant & Food</option>
-                            </select>
-                            
-                            <select id="sortBy" class="sort-select">
-                                <option value="name">Sort by Name</option>
-                                <option value="price-low">Price: Low to High</option>
-                                <option value="price-high">Price: High to Low</option>
-                                <option value="category">Category</option>
-                            </select>
-                            
-                            <div class="products-count">
-                                <span id="productsCount">500</span> products
-                            </div>
-                        </div>
-
-                        <!-- Price Range -->
-                        <div class="price-range">
-                            <label>Price Range: ₹<span id="priceRangeDisplay">0 - ₹5000</span></label>
-                            <div class="price-inputs">
-                                <input type="number" id="minPrice" placeholder="Min" value="0" min="0" max="5000">
-                                <span>to</span>
-                                <input type="number" id="maxPrice" placeholder="Max" value="5000" min="0" max="5000">
-                            </div>
-                        </div>
-                        
-                        <!-- Products Grid -->
-                        <div class="products-grid" id="productsGrid">
-                            <div class="loading">Loading products...</div>
-                        </div>
-                    </div>
-
-                    <!-- EXISTING: Custom Product Form (Modified to be toggleable) -->
-                    <div class="product-form" id="customProductForm" style="display: none;">
+                    <!-- Custom Product Form (Now shown by default) -->
+                    <div class="product-form" id="customProductForm">
                         <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;" id="productFormTitle">Add Custom Product/Service</h3>
                         
                         <div class="form-group">
@@ -621,28 +537,19 @@
                         </button>
                     </div>
 
-                    <!-- NEW: Selected Products Summary -->
-                    <div class="selected-products-summary" id="selectedProductsSection" style="display: none;">
-                        <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;">
-                            <span style="margin-right: 0.5rem;">🎯</span>
-                            Selected Products (<span id="selectedCount">0</span>)
-                        </h3>
-                        <div id="selectedProductsList"></div>
-                    </div>
-
-                    <!-- MODIFIED: Products List (now shows all selected products) -->
+                    <!-- Products List -->
                     <div class="products-list">
                         <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;">Your Product Catalog (<span id="productCount">0</span>)</h3>
                         
                         <div class="product-grid" id="productsList">
                             <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
                                 <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
-                                <p>No products selected yet. Choose from 500+ products above or add custom products!</p>
+                                <p>No products added yet. Add your first product above!</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- KEEP: Navigation buttons unchanged -->
+                    <!-- Navigation buttons -->
                     <div class="flex-buttons">
                         <button onclick="navigateToStep('categories')" class="btn-secondary">
                             ← Back to Categories
@@ -776,11 +683,11 @@
                 <div style="font-size: 3rem; margin-bottom: 1rem; animation: bounce 2s infinite;">🎯</div>
                 
                 <h2 style="color: #6b46c1; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.3;">
-                    Perfect! You've chosen the most important goals for business growth
+                    Great! Your goals are set.
                 </h2>
                 
                 <p style="color: #553c9a; font-size: 1rem; font-weight: 500; margin-bottom: 1.5rem; line-height: 1.4;">
-                    These strategic choices will help us create the perfect online presence for your business!
+                    Now let's show you how Topiko can help with <span id="modalSelectedGoals"></span> for your business — one step at a time
                 </p>
 
                 <div style="background: rgba(139, 111, 205, 0.1); border: 2px solid rgba(139, 111, 205, 0.2); border-radius: 12px; padding: 1rem; margin: 1rem 0;">
@@ -791,7 +698,8 @@
                 </div>
 
                 <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: center;">
-                    🚀 Over 5,200 businesses launched this month with our free setup!
+                    🚀 Topiko helped 5,500+ businesses reach their goals last month — let's do the same for yours!<br>
+                    ✨ No technical knowledge needed ✅ Zero obligation to continue 🧪 Try before you decide
                 </div>
 
                 <button class="submit-button" onclick="proceedFromGoalsModal()" style="animation: pulse 2s infinite; margin-top: 1rem;">
@@ -809,13 +717,16 @@
             <div style="text-align: center;">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
                 
-                <h2 style="color: #059669; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;">
-                    Excellent! We have everything we need to get started
+                <h2 style="color: #059669; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;" id="setupModalTitle">
+                    Excellent! 🎉
                 </h2>
                 
                 <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.2); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0;">
-                    <p style="color: #059669; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
-                        Just 3 more quick steps and we'll show you exactly how your business will look online!
+                    <p style="color: #059669; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;" id="setupModalContent">
+                        In just 3 simple steps, we'll show you exactly how your business can look and work online — the Topiko way!
+                    </p>
+                    <p style="color: #064e3b; font-size: 0.95rem; margin-bottom: 1rem;">
+                        🔥 Businesses like yours are going live every hour — don't miss the momentum!
                     </p>
                     <p style="color: #064e3b; font-size: 0.95rem; margin-bottom: 1rem;">
                         💯 Completely free setup • ⚡ No technical knowledge needed • 🎯 Professional results guaranteed
