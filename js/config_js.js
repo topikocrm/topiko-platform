@@ -1,6 +1,45 @@
 /* ========================================
-   TOPIKO LEAD FORM - CONFIGURATION
+   TOPIKO LEAD FORM - COMPLETE CONFIGURATION
    ======================================== */
+
+// ========================================
+// SUPABASE DATABASE CONFIGURATION
+// ========================================
+
+const SUPABASE_CONFIG = {
+    URL: 'https://your-project-id.supabase.co',
+    ANON_KEY: 'your-anon-key-here',
+    // Database table names
+    TABLES: {
+        USERS: 'users',
+        PRODUCTS: 'products', 
+        LEAD_INTELLIGENCE: 'lead_intelligence',
+        COMPLETED_SETUPS: 'completed_setups',
+        FOLLOWUP_REQUESTS: 'followup_requests',
+        SCHEDULED_CALLS: 'scheduled_calls',
+        HESITATION_FEEDBACK: 'hesitation_feedback',
+        CATEGORY_SELECTIONS: 'category_selections',
+        QUALIFYING_RESPONSES: 'qualifying_responses',
+        THEME_SELECTIONS: 'theme_selections',
+        OFFER_CONFIRMATIONS: 'offer_confirmations'
+    }
+};
+
+// ========================================
+// STEP CONFIGURATION - RESTORED
+// ========================================
+
+const STEP_CONFIG = {
+    PROGRESS_STEPS: [
+        { id: 'goals', label: 'Business Goals', number: 1 },
+        { id: 'registration', label: 'Sign Up', number: 2 },
+        { id: 'qualifying-questions', label: 'Success Factors', number: 3 },
+        { id: 'categories', label: 'Business Live-1', number: 4 },
+        { id: 'products', label: 'Business Live-2', number: 5 },
+        { id: 'themes', label: 'Business Live-3', number: 6 }
+    ],
+    STEP_ORDER: ['welcome', 'language', 'goals', 'registration', 'qualifying-questions', 'categories', 'products', 'themes']
+};
 
 // ========================================
 // FOMO SYSTEM CONFIGURATION - UPDATED WITH TOPIKO REFERENCES
@@ -647,33 +686,9 @@ const SUBCATEGORY_NAMES = {
     'aromatherapy': 'Aromatherapy',
     'body-scrub': 'Body Scrub',
     'body-wrap': 'Body Wrap',
-    'relaxation-therapy': 'Relaxation Therapy',
+    'relaxation-therapy': 'Relaxation Therapy'
     
     // Add more subcategory mappings as needed...
-    // (continuing with other categories in a similar pattern)
-};
-
-// ========================================
-// SUPABASE DATABASE CONFIGURATION
-// ========================================
-
-const SUPABASE_CONFIG = {
-    URL: 'https://xssbtsfjtwjholygdbqo.supabase.co',
-    ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k',
-    // Database table names
-    TABLES: {
-        USERS: 'users',
-        PRODUCTS: 'products', 
-        LEAD_INTELLIGENCE: 'lead_intelligence',
-        COMPLETED_SETUPS: 'completed_setups',
-        FOLLOWUP_REQUESTS: 'followup_requests',
-        SCHEDULED_CALLS: 'scheduled_calls',
-        HESITATION_FEEDBACK: 'hesitation_feedback',
-        CATEGORY_SELECTIONS: 'category_selections',
-        QUALIFYING_RESPONSES: 'qualifying_responses',
-        THEME_SELECTIONS: 'theme_selections',
-        OFFER_CONFIRMATIONS: 'offer_confirmations'
-    }
 };
 
 // ========================================
@@ -727,12 +742,30 @@ const SCORING_CONFIG = {
 };
 
 // ========================================
+// MOTIVATIONAL MESSAGES CONFIGURATION - RESTORED
+// ========================================
+
+const MOTIVATIONAL_MESSAGE_TEMPLATES = [
+    "{userName}, your {businessName} is shaping up perfectly!",
+    "Great progress, {userName}! {businessName} is almost ready to go live!",
+    "{businessName} is going to be amazing, {userName}!",
+    "You're doing great, {userName}! {businessName} will love the online experience!",
+    "Perfect choices, {userName}! {businessName} is ready for digital success!",
+    "{userName}, {businessName} is just moments away from going online!",
+    "Excellent work, {userName}! {businessName} is building something special!",
+    "{businessName} is getting the perfect setup, {userName}!",
+    "Almost there, {userName}! {businessName} is about to shine online!",
+    "You're creating something beautiful for {businessName}, {userName}!"
+];
+
+// ========================================
 // EXPORT CONFIGURATION
 // ========================================
 
 if (typeof window !== 'undefined') {
     window.TopikoConfig = {
         SUPABASE_CONFIG,
+        STEP_CONFIG,
         FOMO_MESSAGE_TEMPLATES,
         FOMO_BUSINESSES,
         SPECIAL_OFFERS,
@@ -743,8 +776,9 @@ if (typeof window !== 'undefined') {
         BUSINESS_CATEGORIES,
         SUBCATEGORY_NAMES,
         DEFAULTS,
-        SCORING_CONFIG
+        SCORING_CONFIG,
+        MOTIVATIONAL_MESSAGE_TEMPLATES
     };
 }
 
-console.log('🔧 Enhanced Topiko Configuration loaded with Special Offers');
+console.log('🔧 Complete Topiko Configuration loaded with all features restored');
