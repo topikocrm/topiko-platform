@@ -654,6 +654,29 @@ const SUBCATEGORY_NAMES = {
 };
 
 // ========================================
+// SUPABASE DATABASE CONFIGURATION
+// ========================================
+
+const SUPABASE_CONFIG = {
+    URL: 'https://your-project-id.supabase.co',
+    ANON_KEY: 'your-anon-key-here',
+    // Database table names
+    TABLES: {
+        USERS: 'users',
+        PRODUCTS: 'products', 
+        LEAD_INTELLIGENCE: 'lead_intelligence',
+        COMPLETED_SETUPS: 'completed_setups',
+        FOLLOWUP_REQUESTS: 'followup_requests',
+        SCHEDULED_CALLS: 'scheduled_calls',
+        HESITATION_FEEDBACK: 'hesitation_feedback',
+        CATEGORY_SELECTIONS: 'category_selections',
+        QUALIFYING_RESPONSES: 'qualifying_responses',
+        THEME_SELECTIONS: 'theme_selections',
+        OFFER_CONFIRMATIONS: 'offer_confirmations'
+    }
+};
+
+// ========================================
 // DEFAULT VALUES
 // ========================================
 
@@ -709,6 +732,7 @@ const SCORING_CONFIG = {
 
 if (typeof window !== 'undefined') {
     window.TopikoConfig = {
+        SUPABASE_CONFIG,
         FOMO_MESSAGE_TEMPLATES,
         FOMO_BUSINESSES,
         SPECIAL_OFFERS,
