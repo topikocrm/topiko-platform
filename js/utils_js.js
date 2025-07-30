@@ -110,9 +110,8 @@ document.addEventListener('click', function(e) {
 // DATABASE UTILITIES
 // ========================================
 
-async function saveToSupabase(data, table) {
-    // 🔍 DEBUG LOGGING
-    addDebugLog(`🔍 DEBUGGING ${table.toUpperCase()} INSERTION`, 'info');
+async function saveToSupabase(data, table, operation = 'insert', userId = null) {
+    addDebugLog(`🔍 DEBUGGING ${table.toUpperCase()} ${operation.toUpperCase()}`, 'info');
     addDebugLog(`📤 Data: ${JSON.stringify(data, null, 2)}`, 'info');
     
     if (!supabase) {
@@ -121,10 +120,26 @@ async function saveToSupabase(data, table) {
     }
     
     try {
-        const { data: result, error } = await supabase
-            .from(table)
-            .insert([data])
-            .select();
+        let result, error;
+        
+        if (operation === 'update' && userId) {
+            // 🔥 ADD UPDATE OPERATION
+            const response = await supabase
+                .from(table)
+                .update(data)
+                .eq('id', userId)
+                .select();
+            result = response.data;
+            error = response.error;
+        } else {
+            // INSERT OPERATION
+            const response = await supabase
+                .from(table)
+                .insert([data])
+                .select();
+            result = response.data;
+            error = response.error;
+        }
         
         if (error) {
             addDebugLog(`❌ Supabase error: ${error.message}`, 'error');
@@ -132,7 +147,7 @@ async function saveToSupabase(data, table) {
             return { success: false, error };
         }
         
-        addDebugLog(`✅ Data saved to ${table}: ${result[0]?.id}`, 'success');
+        addDebugLog(`✅ Data ${operation}d in ${table}: ${result[0]?.id}`, 'success');
         return { success: true, data: result };
         
     } catch (networkError) {
