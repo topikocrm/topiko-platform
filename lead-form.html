@@ -767,47 +767,72 @@
             </section>
 
             <!-- COMPLETION SCREEN - ENHANCED -->
-            <section class="screen" id="completion">
-                <div class="content-card">
-                    <div style="text-align: center;">
-                        <div style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 2s infinite;">🎉</div>
-                        
-                        <h2 style="color: #059669; font-size: 2.2rem; font-weight: 700; margin-bottom: 1rem;">
-                            Congratulations, <span id="completionBusinessName">Your Business</span> is all set for the final touches!
-                        </h2>
-                        
-                        <p style="color: #064e3b; font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.6;">
-                            Your business setup is complete! Our team will now create your professional online presence.
-                        </p>
+           <!-- COMPLETION SCREEN - ENHANCED WITH SPECIAL OFFERS -->
+<section class="screen" id="completion">
+    <div class="content-card">
+        <div style="text-align: center;">
+            <div style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 2s infinite;">🎉</div>
+            
+            <h2 style="color: #059669; font-size: 2.2rem; font-weight: 700; margin-bottom: 1rem;">
+                Congratulations, <span id="completionBusinessName">Your Business</span> is all set for the final touches!
+            </h2>
+            
+            <p style="color: #064e3b; font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.6;">
+                Your business setup is complete! Our team will now create your professional online presence.
+            </p>
 
-                        <!-- OFFER SELECTION -->
-                        <div style="background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%); border: 2px solid #f59e0b; border-radius: 16px; padding: 2rem; margin: 2rem 0;">
-                            <h3 style="color: #d97706; font-size: 1.3rem; margin-bottom: 1rem;">🎯 Choose Your Next Step:</h3>
-                            
-                            <div style="display: grid; gap: 1rem; margin-bottom: 1.5rem;">
-                                <div class="offer-option" onclick="selectOffer('talk_team', this)">
-                                    <label style="cursor: pointer; display: block; padding: 1rem; background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 165, 0, 0.2); border-radius: 12px; font-weight: 600; color: #92400e; text-align: center;">
-                                        <input type="radio" name="completion_offer" value="talk_team" style="display: none;">
-                                        📞 I want to talk to Topiko Team
-                                    </label>
-                                </div>
-                                
-                                <div class="offer-option" onclick="selectOffer('self_explore', this)">
-                                    <label style="cursor: pointer; display: block; padding: 1rem; background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 165, 0, 0.2); border-radius: 12px; font-weight: 600; color: #92400e; text-align: center;">
-                                        <input type="radio" name="completion_offer" value="self_explore" style="display: none;">
-                                        🚀 I want to explore by myself
-                                    </label>
-                                </div>
-                            </div>
-
-                            <button onclick="handleCompletionChoice()" id="completionChoiceBtn" disabled 
-                                    style="background: #f59e0b; color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem; opacity: 0.5; width: 100%;">
-                                Continue
-                            </button>
+            <!-- TODAY'S SPECIAL OFFERS SECTION -->
+            <div class="offers-section-background">
+                <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+                    <div style="font-size: 2rem; margin-right: 0.5rem;">🎁</div>
+                    <h3 style="color: #d97706; font-size: 1.4rem; margin: 0; font-weight: 700;">Today's Exclusive Offers for You!</h3>
+                </div>
+                
+                <!-- Random Offers Container -->
+                <div id="specialOffersContainer">
+                    <!-- Offers will be populated here by JavaScript -->
+                    <div class="special-offer-item">
+                        <div class="offer-title">
+                            🎁 Loading Special Offers...
+                            <span class="offer-value">FREE</span>
                         </div>
+                        <div class="offer-description">Preparing personalized offers for your business</div>
                     </div>
                 </div>
-            </section>
+                
+                <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: center;">
+                    🔥 Limited Time: These offers expire in <span id="offerTimer" style="color: #dc2626; font-weight: 700;">23:45:12</span>
+                </div>
+            </div>
+
+            <!-- CHOICE SELECTION -->
+            <div style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); border: 2px solid #6366f1; border-radius: 16px; padding: 2rem; margin: 2rem 0;">
+                <h3 style="color: #4338ca; font-size: 1.3rem; margin-bottom: 1rem;">🎯 Choose Your Next Step:</h3>
+                
+                <div style="display: grid; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="offer-option" onclick="selectOffer('talk_team', this)">
+                        <label style="cursor: pointer; display: block; padding: 1rem; background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(99, 102, 241, 0.2); border-radius: 12px; font-weight: 600; color: #4338ca; text-align: center;">
+                            <input type="radio" name="completion_offer" value="talk_team" style="display: none;">
+                            📞 I want to talk to Topiko Team & Claim Offers!
+                        </label>
+                    </div>
+                    
+                    <div class="offer-option" onclick="selectOffer('self_explore', this)">
+                        <label style="cursor: pointer; display: block; padding: 1rem; background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(99, 102, 241, 0.2); border-radius: 12px; font-weight: 600; color: #4338ca; text-align: center;">
+                            <input type="radio" name="completion_offer" value="self_explore" style="display: none;">
+                            🚀 I want to explore by myself (Skip Offers)
+                        </label>
+                    </div>
+                </div>
+
+                <button onclick="handleCompletionChoice()" id="completionChoiceBtn" disabled 
+                        style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem; opacity: 0.5; width: 100%;">
+                    Continue
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
         </main>
     </div>
 
