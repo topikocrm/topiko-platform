@@ -1,6 +1,12 @@
 /* ========================================
-   TOPIKO LEAD FORM - MAIN APPLICATION LOGIC - FIXED VERSION
+   TOPIKO LEAD FORM - MAIN APPLICATION LOGIC - COMPLETE FIXED VERSION
    ======================================== */
+
+// ========================================
+// GLOBAL VARIABLES FOR COMPLETION SCREEN
+// ========================================
+
+let selectedOffer = null;
 
 // ========================================
 // APPLICATION INITIALIZATION
@@ -72,18 +78,26 @@ function updateGoalsTracking() {
     window.TopikoUtils.calculateLeadScore();
 }
 
-function submitGoals() {
+function showGoalsTransitionModal() {
     if (window.topikoApp.selectedGoals.length === 0) {
         window.TopikoUtils.showNotification('Please select at least one goal', 'error');
         return;
     }
     
+    // Update goals modal with selected goals
+    updateGoalsModal(window.topikoApp.selectedGoals);
+    
     window.TopikoUtils.showNotification(`Perfect! ${window.topikoApp.selectedGoals.length} goal${window.topikoApp.selectedGoals.length > 1 ? 's' : ''} selected!`, 'success');
     window.TopikoUtils.calculateLeadScore();
     
+    // Show the goals transition modal
     setTimeout(() => {
         displayGoalsTransitionModal();
     }, 1500);
+}
+
+function submitGoals() {
+    showGoalsTransitionModal();
 }
 
 // ========================================
@@ -204,7 +218,7 @@ async function completeRegistration() {
 
     window.TopikoUtils.showNotification('Creating your free account...', 'info');
     
-    // FIXED: Complete user data with all new fields
+    // Complete user data with all new fields
     const userData = {
         name, email, phone,
         business_name: business,
@@ -228,7 +242,7 @@ async function completeRegistration() {
         window.topikoApp.currentUserId = userResult.data[0].id;
         window.TopikoUtils.addDebugLog(`✅ User created: ${window.topikoApp.currentUserId}`, 'success');
         
-        // FIXED: Complete lead intelligence data with all new fields
+        // Complete lead intelligence data with all new fields
         const leadData = {
             user_id: window.topikoApp.currentUserId,
             lead_score: window.topikoApp.leadScore,
@@ -488,11 +502,11 @@ async function proceedToProducts() {
 }
 
 // ========================================
-// PRODUCT SELECTION SYSTEM - FIXED FUNCTIONS
+// PRODUCT SELECTION SYSTEM - FUNCTIONS
 // ========================================
 
 function switchProductMode(mode) {
-    // ENHANCED: Emergency initialization with better error handling
+    // Emergency initialization with better error handling
     if (!window.topikoApp) {
         console.warn('⚠️ Emergency TopikoApp initialization in switchProductMode');
         window.TopikoUtils.initializeTopikoApp();
@@ -549,7 +563,7 @@ function loadProductSelector() {
     // Initialize product selection system with filtered products
     setupProductControls();
     setupQuickFilters();
-    loadFilteredProductsGrid(); // Changed from loadProductsGrid()
+    loadFilteredProductsGrid();
     
     window.topikoApp.productsLoaded = true;
     window.TopikoUtils.addDebugLog(`✅ Product selector loaded for ${selectedCategories.length} categories`);
@@ -577,7 +591,7 @@ function loadFilteredProductsGrid() {
     // Display filtered products
     displayProductsGrid(filteredProducts);
     
-    // FIXED: Update quick filters to only show relevant categories
+    // Update quick filters to only show relevant categories
     updateQuickFiltersForSelection();
     
     window.TopikoUtils.addDebugLog(`🎯 Loaded ${filteredProducts.length} products for selected categories`);
@@ -695,9 +709,7 @@ function updatePriceRangeDisplay() {
     }
 }
 
-// FIXED: Missing updateQuickFiltersForSelection function
 function updateQuickFiltersForSelection() {
-    // FIXED: Look for both .quick-filters-container and .quick-filters for compatibility
     let quickFiltersContainer = document.querySelector('.quick-filters-container');
     if (!quickFiltersContainer) {
         quickFiltersContainer = document.querySelector('.quick-filters');
@@ -815,11 +827,6 @@ function filterAndDisplayProducts() {
     displayProductsGrid(filteredProducts);
     
     window.TopikoUtils.addDebugLog(`🔍 Filtered to ${filteredProducts.length} products from selected categories`);
-}
-
-function loadProductsGrid() {
-    // Load all products initially
-    filterAndDisplayProducts();
 }
 
 function displayProductsGrid(products) {
@@ -1264,13 +1271,318 @@ function selectTheme(themeName, element) {
 }
 
 // ========================================
-// COMPLETION FUNCTIONS (UPDATED)
+// COMPLETION SCREEN FUNCTIONS - COMPLETE SET
 // ========================================
 
+// Function to open call scheduler modal
+function openCallScheduler() {
+    if (!selectedOffer) {
+        window.TopikoUtils.showNotification('Please select an offer first', 'warning');
+        return;
+    }
+    
+    // Update scheduler modal with selected offer
+    const schedulerOfferName = document.getElementById('schedulerOfferName');
+    if (schedulerOfferName && selectedOffer) {
+        schedulerOfferName.textContent = selectedOffer.title;
+    }
+    
+    window.TopikoUtils.showModal('dateTimeModal');
+    window.TopikoUtils.addDebugLog('📅 Call scheduler opened', 'info');
+}
+
+// Function to open explore form modal
+function openExploreForm() {
+    window.TopikoUtils.showModal('reasonModal');
+    window.TopikoUtils.addDebugLog('💭 Explore form opened', 'info');
+}
+
+// Function to select an offer
+function selectOffer(offerId, element) {
+    // Remove selected class from all offers
+    document.querySelectorAll('.special-offer-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    
+    // Add selected class to clicked offer
+    element.classList.add('selected');
+    
+    // Find the offer data
+    if (window.TopikoConfig && window.TopikoConfig.SPECIAL_OFFERS) {
+        selectedOffer = window.TopikoConfig.SPECIAL_OFFERS.find(offer => offer.id === offerId);
+    }
+    
+    // Show selected offer display
+    const selectedDisplay = document.getElementById('selectedOfferDisplay');
+    const selectedOfferName = document.getElementById('selectedOfferName');
+    
+    if (selectedDisplay && selectedOfferName && selectedOffer) {
+        selectedOfferName.textContent = selectedOffer.title;
+        selectedDisplay.style.display = 'block';
+    }
+    
+    window.TopikoUtils.addDebugLog(`🎁 Offer selected: ${selectedOffer?.title}`, 'info');
+}
+
+// Enhanced displayRandomOffers function
+function displayRandomOffers() {
+    if (!window.TopikoConfig || !window.TopikoConfig.SPECIAL_OFFERS) {
+        console.warn('Special offers configuration not found');
+        return;
+    }
+    
+    const offersContainer = document.getElementById('specialOffersContainer');
+    if (!offersContainer) return;
+    
+    // Select 3-4 random offers
+    const allOffers = window.TopikoConfig.SPECIAL_OFFERS;
+    const numberOfOffers = Math.min(4, allOffers.length);
+    const selectedOffers = getRandomOffers(allOffers, numberOfOffers);
+    
+    // Display the offers as selectable items
+    offersContainer.innerHTML = selectedOffers.map(offer => `
+        <div class="special-offer-item" onclick="selectOffer('${offer.id}', this)">
+            <div class="offer-title">
+                🎁 ${offer.title}
+                <span class="offer-value">FREE</span>
+            </div>
+            <div class="offer-description">${offer.description}</div>
+        </div>
+    `).join('');
+    
+    // Start the timer
+    startOfferTimer();
+    
+    window.TopikoUtils.addDebugLog(`✅ Special offers displayed: ${selectedOffers.length} offers`);
+}
+
+// Function to get random offers
+function getRandomOffers(offers, count) {
+    const shuffled = offers.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+}
+
+// Function to start offer timer
+function startOfferTimer() {
+    const timerElement = document.getElementById('offerTimer');
+    if (!timerElement) return;
+    
+    // Set initial time (23 hours, 45 minutes, random seconds)
+    let totalSeconds = (23 * 3600) + (45 * 60) + Math.floor(Math.random() * 60);
+    
+    const timerInterval = setInterval(() => {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        
+        timerElement.textContent = 
+            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        totalSeconds--;
+        
+        if (totalSeconds < 0) {
+            clearInterval(timerInterval);
+            timerElement.textContent = "00:00:00";
+            timerElement.style.color = "#dc2626";
+        }
+    }, 1000);
+}
+
+// Enhanced initializeCompletionScreen function
+function initializeCompletionScreen() {
+    console.log('🎉 Initializing completion screen...');
+    
+    // Set business name
+    const completionBusinessName = document.getElementById('completionBusinessName');
+    if (completionBusinessName && window.topikoApp && window.topikoApp.businessName) {
+        completionBusinessName.textContent = window.topikoApp.businessName;
+    }
+    
+    // Display random selectable offers
+    displayRandomOffers();
+    
+    // Reset selections
+    selectedOffer = null;
+    window.selectedTimeSlot = null;
+    window.selectedReason = null;
+    
+    // Hide selected offer display initially
+    const selectedDisplay = document.getElementById('selectedOfferDisplay');
+    if (selectedDisplay) {
+        selectedDisplay.style.display = 'none';
+    }
+    
+    window.TopikoUtils.addDebugLog('✅ Interactive completion screen initialized');
+}
+
+// Enhanced Time Slot Selection
+function selectTimeSlot(element, slotId) {
+    // Remove selected class from all slots
+    document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
+    
+    // Add selected class to clicked slot
+    element.classList.add('selected');
+    
+    // Enable confirm button
+    const confirmBtn = document.getElementById('confirmScheduleBtn');
+    if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.style.opacity = '1';
+    }
+    
+    // Store selected slot
+    window.selectedTimeSlot = slotId;
+    
+    window.TopikoUtils.addDebugLog(`⏰ Time slot selected: ${slotId}`);
+}
+
+// Confirm Schedule and Complete
+function confirmScheduleAndComplete() {
+    const selectedSlot = window.selectedTimeSlot;
+    const offer = selectedOffer;
+    
+    if (!selectedSlot) {
+        window.TopikoUtils.showNotification('Please select a time slot', 'error');
+        return;
+    }
+    
+    if (!offer) {
+        window.TopikoUtils.showNotification('Please select an offer first', 'error');
+        return;
+    }
+    
+    // Save scheduling data
+    const schedulingData = {
+        user_id: window.topikoApp?.currentUserId,
+        business_name: window.topikoApp?.businessName,
+        selected_offer: offer.title,
+        offer_id: offer.id,
+        scheduled_slot: selectedSlot,
+        action_type: 'schedule_call',
+        completion_choice: 'talk_team',
+        scheduled_at: new Date().toISOString()
+    };
+    
+    // Save to database
+    if (window.topikoApp?.currentUserId) {
+        window.TopikoUtils.saveToSupabase(schedulingData, 'completion_actions');
+    }
+    
+    // Close modal and show success
+    window.TopikoUtils.closeModal('dateTimeModal');
+    
+    // Show completion message
+    window.TopikoUtils.showNotification(`🎉 Perfect! Call scheduled to claim "${offer.title}". Our team will contact you at the selected time.`, 'success');
+    
+    // Update completion screen to show success state
+    showCompletionSuccess('call_scheduled', offer.title, selectedSlot);
+    
+    window.TopikoUtils.addDebugLog(`✅ Call scheduled successfully: ${offer.title} at ${selectedSlot}`);
+}
+
+// Enhanced Reason Selection
+function selectReason(reasonType, element) {
+    // Remove selected class from all reasons
+    document.querySelectorAll('.reason-option').forEach(opt => opt.classList.remove('selected'));
+    
+    // Add selected class to clicked reason
+    element.classList.add('selected');
+    
+    // Store selected reason
+    window.selectedReason = reasonType;
+    
+    window.TopikoUtils.addDebugLog(`💭 Reason selected: ${reasonType}`);
+}
+
+// Submit Reason and Complete
+function submitReasonAndComplete() {
+    const reasonType = window.selectedReason;
+    const comment = document.getElementById('reasonText')?.value || '';
+    
+    // Save exploration data
+    const explorationData = {
+        user_id: window.topikoApp?.currentUserId,
+        business_name: window.topikoApp?.businessName,
+        selected_offer: selectedOffer?.title || 'none',
+        reason_type: reasonType || 'no_reason',
+        comments: comment,
+        action_type: 'self_explore',
+        completion_choice: 'explore_self',
+        submitted_at: new Date().toISOString()
+    };
+    
+    // Save to database
+    if (window.topikoApp?.currentUserId) {
+        window.TopikoUtils.saveToSupabase(explorationData, 'completion_actions');
+    }
+    
+    // Close modal and show success
+    window.TopikoUtils.closeModal('reasonModal');
+    
+    // Show completion message
+    window.TopikoUtils.showNotification('🚀 Thank you for your feedback! We\'ll use this to improve our service.', 'success');
+    
+    // Update completion screen to show success state
+    showCompletionSuccess('self_explore', reasonType, comment);
+    
+    window.TopikoUtils.addDebugLog(`✅ Exploration form submitted: ${reasonType}`);
+}
+
+// Show Completion Success State
+function showCompletionSuccess(actionType, primaryData, secondaryData) {
+    const completionContent = document.querySelector('#completion .content-card');
+    if (!completionContent) return;
+    
+    let successMessage = '';
+    let actionDetails = '';
+    
+    if (actionType === 'call_scheduled') {
+        successMessage = '📞 Call Scheduled Successfully!';
+        actionDetails = `
+            <div style="background: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
+                <h4 style="color: #047857; margin-bottom: 1rem;">✅ What happens next:</h4>
+                <ul style="text-align: left; color: #065f46; line-height: 1.6;">
+                    <li>Our team will call you at your selected time: <strong>${secondaryData}</strong></li>
+                    <li>We'll help you claim: <strong>${primaryData}</strong></li>
+                    <li>Complete setup of your online business presence</li>
+                    <li>Get your business live within 24-48 hours</li>
+                </ul>
+            </div>
+        `;
+    } else {
+        successMessage = '🚀 Thank You for Your Interest!';
+        actionDetails = `
+            <div style="background: rgba(99, 102, 241, 0.1); border: 2px solid #6366f1; border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
+                <h4 style="color: #4338ca; margin-bottom: 1rem;">✅ We've noted your preferences:</h4>
+                <div style="text-align: left; color: #3730a3; line-height: 1.6;">
+                    <p><strong>Your feedback:</strong> ${primaryData}</p>
+                    ${secondaryData ? `<p><strong>Additional details:</strong> ${secondaryData}</p>` : ''}
+                    <p>We'll use this information to better serve businesses like yours.</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    completionContent.innerHTML = `
+        <div style="text-align: center;" class="completion-success-enter">
+            <div style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 2s infinite;">🎉</div>
+            <h2 style="color: #059669; font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">${successMessage}</h2>
+            ${actionDetails}
+            <div style="background: rgba(156, 163, 175, 0.1); border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
+                <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">
+                    If you have any questions, feel free to reach out to us at<br>
+                    <strong style="color: #374151;">support@topiko.com</strong> or call <strong style="color: #374151;">+91-XXX-XXX-XXXX</strong>
+                </p>
+            </div>
+        </div>
+    `;
+}
+
+// MAIN COMPLETION FUNCTION - ENHANCED
 async function completeSetup() {
     const finalScore = window.TopikoUtils.calculateLeadScore() + 10;
     
-    // ENHANCED: Complete setup data with all new fields
+    // Save completion data
     const leadData = {
         user_id: window.topikoApp.currentUserId,
         name: window.topikoApp.userName,
@@ -1379,6 +1691,24 @@ function proceedFromSetupModal() {
     setTimeout(() => window.TopikoUtils.showScreen('qualifying-questions'), 500);
 }
 
+// Helper function for modal goals update
+function updateGoalsModal(selectedGoals) {
+    const goalsInlineText = document.getElementById('selectedGoalsInlineText');
+    if (goalsInlineText && selectedGoals && selectedGoals.length > 0) {
+        const goalIcons = {
+            'ecommerce': '🛒 Sell Online',
+            'customers': '📈 Reach More Customers', 
+            'manage': '👥 Manage Customers',
+            'search': '🔍 Appear in Search Results',
+            'brand': '⭐ Establish Brand'
+        };
+        
+        // Create goals with line breaks
+        const goalsText = selectedGoals.map(goal => goalIcons[goal] || goal).join('<br>');
+        goalsInlineText.innerHTML = goalsText;
+    }
+}
+
 // ========================================
 // GLOBAL INITIALIZATION
 // ========================================
@@ -1393,7 +1723,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
 });
 
-// Make product functions globally available
+// ========================================
+// MAKE ALL FUNCTIONS GLOBALLY AVAILABLE
+// ========================================
+
 if (typeof window !== 'undefined') {
     // Product Selection Functions
     window.switchProductMode = switchProductMode;
@@ -1404,12 +1737,14 @@ if (typeof window !== 'undefined') {
     window.saveProductEdit = saveProductEdit;
     window.cancelProductEdit = cancelProductEdit;
     window.addCustomProduct = addCustomProduct;
-    window.updateQuickFiltersForSelection = updateQuickFiltersForSelection; // FIXED: Make globally available
-    window.applyQuickFilter = applyQuickFilter; // FIXED: Make globally available
+    window.updateQuickFiltersForSelection = updateQuickFiltersForSelection;
+    window.applyQuickFilter = applyQuickFilter;
     
-    // Existing Functions (keep as they are)
+    // Lead Flow Functions
+    window.startLeadFlow = startLeadFlow;
     window.selectLanguage = selectLanguage;
     window.updateGoalsTracking = updateGoalsTracking;
+    window.showGoalsTransitionModal = showGoalsTransitionModal;
     window.submitGoals = submitGoals;
     window.trackFormProgress = trackFormProgress;
     window.submitRegistration = submitRegistration;
@@ -1424,352 +1759,37 @@ if (typeof window !== 'undefined') {
     window.proceedToThemes = proceedToThemes;
     window.selectTheme = selectTheme;
     window.completeSetup = completeSetup;
+    
+    // Modal Functions
     window.displayGoalsTransitionModal = displayGoalsTransitionModal;
     window.proceedFromGoalsModal = proceedFromGoalsModal;
     window.displaySetupIntroModal = displaySetupIntroModal;
     window.proceedFromSetupModal = proceedFromSetupModal;
-}
-// ========================================
-// COMPLETION SCREEN FUNCTIONS - ADD TO script_js.js
-// ========================================
-
-// Special Offers Display Functions
-function displayRandomOffers() {
-    if (!window.TopikoConfig || !window.TopikoConfig.SPECIAL_OFFERS) {
-        console.warn('Special offers configuration not found');
-        return;
-    }
+    window.updateGoalsModal = updateGoalsModal;
     
-    const offersContainer = document.getElementById('specialOffersContainer');
-    if (!offersContainer) return;
-    
-    // Select 3-4 random offers
-    const allOffers = window.TopikoConfig.SPECIAL_OFFERS;
-    const numberOfOffers = Math.min(4, allOffers.length);
-    const selectedOffers = getRandomOffers(allOffers, numberOfOffers);
-    
-    // Display the offers
-    offersContainer.innerHTML = selectedOffers.map(offer => `
-        <div class="special-offer-item">
-            <div class="offer-title">
-                🎁 ${offer.title}
-                <span class="offer-value">FREE</span>
-            </div>
-            <div class="offer-description">${offer.description}</div>
-        </div>
-    `).join('');
-    
-    // Start the timer
-    startOfferTimer();
-    
-    window.TopikoUtils.addDebugLog(`✅ Special offers displayed: ${selectedOffers.length} offers`);
-}
-
-function getRandomOffers(offers, count) {
-    const shuffled = offers.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
-}
-
-function startOfferTimer() {
-    const timerElement = document.getElementById('offerTimer');
-    if (!timerElement) return;
-    
-    // Set initial time (23 hours, 45 minutes, random seconds)
-    let totalSeconds = (23 * 3600) + (45 * 60) + Math.floor(Math.random() * 60);
-    
-    const timerInterval = setInterval(() => {
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        
-        timerElement.textContent = 
-            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        
-        totalSeconds--;
-        
-        if (totalSeconds < 0) {
-            clearInterval(timerInterval);
-            timerElement.textContent = "00:00:00";
-            timerElement.style.color = "#dc2626";
-        }
-    }, 1000);
-}
-
-function initializeCompletionScreen() {
-    // Set business name
-    const completionBusinessName = document.getElementById('completionBusinessName');
-    if (completionBusinessName && window.topikoApp && window.topikoApp.businessName) {
-        completionBusinessName.textContent = window.topikoApp.businessName;
-    }
-    
-    // Display random selectable offers
-    displayRandomOffers();
-    
-    // Reset selections
-    selectedOffer = null;
-    window.selectedTimeSlot = null;
-    window.selectedReason = null;
-    
-    window.TopikoUtils.addDebugLog('✅ Interactive completion screen initialized');
-}
-
-// ENHANCED: Update the existing completeSetup function
-async function completeSetup() {
-    const finalScore = window.TopikoUtils.calculateLeadScore() + 10;
-    
-    // ENHANCED: Complete setup data with all new fields
-    const leadData = {
-        user_id: window.topikoApp.currentUserId,
-        name: window.topikoApp.userName,
-        email: document.getElementById('email')?.value,
-        phone: document.getElementById('phoneNumber')?.value,
-        business_name: window.topikoApp.businessName,
-        selected_goals: window.topikoApp.selectedGoals,
-        selected_categories: window.topikoApp.selectedCategories,
-        selected_subcategories: window.topikoApp.selectedSubcategories || [],
-        products_count: window.topikoApp.userProducts.length,
-        selected_theme: window.topikoApp.selectedTheme,
-        qualifying_answers: window.topikoApp.qualifyingAnswers,
-        timeline: window.topikoApp.qualifyingAnswers.timeline,
-        budget_range: window.topikoApp.qualifyingAnswers.budget,
-        decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes',
-        online_presence: window.topikoApp.qualifyingAnswers.online_presence,
-        lead_score: finalScore,
-        lead_quality: finalScore >= 70 ? 'Hot' : finalScore >= 40 ? 'Warm' : 'Cold',
-        setup_completed: true,
-        completed_at: new Date().toISOString()
-    };
-    
-    // Save to database
-    if (window.topikoApp.currentUserId) {
-        await window.TopikoUtils.saveToSupabase(leadData, 'completed_setups');
-    }
-    
-    // Save locally as backup
-    const existingLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
-    existingLeads.push(leadData);
-    localStorage.setItem('topiko_local_leads', JSON.stringify(existingLeads));
-    
-    window.TopikoUtils.showNotification(`🎉 Congratulations ${window.topikoApp.userName}! Your business is ready for final touches!`, 'success');
-    
-    setTimeout(() => {
-        window.TopikoUtils.showScreen('completion');
-        // Initialize completion screen with offers after a short delay
-        setTimeout(() => {
-            initializeCompletionScreen();
-        }, 500);
-    }, 2000);
-}
-
-// ENHANCED: Update handleCompletionChoice function
-function handleCompletionChoice() {
-    const selectedOffer = window.selectedCompletionOffer;
-    
-    if (selectedOffer === 'talk_team') {
-        // Show date/time selection modal with offers context
-        window.TopikoUtils.showModal('dateTimeModal');
-        
-        // Update modal text to mention offers
-        const modalContent = document.querySelector('#dateTimeModal .modal-content h3');
-        if (modalContent) {
-            modalContent.innerHTML = '📅 Schedule Your Call to Claim Special Offers';
-        }
-        
-        window.TopikoUtils.addDebugLog('User selected to talk to team - showing scheduler with offers');
-    } else if (selectedOffer === 'self_explore') {
-        // Show reason modal
-        window.TopikoUtils.showModal('reasonModal');
-        window.TopikoUtils.addDebugLog('User selected to explore by themselves - showing reason modal');
-    }
-}
-
-// Add to global window object
-if (typeof window !== 'undefined') {
-    // Add new completion functions to globals
+    // Completion Screen Functions
+    window.openCallScheduler = openCallScheduler;
+    window.openExploreForm = openExploreForm;
+    window.selectOffer = selectOffer;
     window.displayRandomOffers = displayRandomOffers;
     window.getRandomOffers = getRandomOffers;
     window.startOfferTimer = startOfferTimer;
-    window.handleCompletionChoice = handleCompletionChoice;
-    
-   window.selectOffer = selectOffer;
-    window.openCallScheduler = openCallScheduler;
-    window.openExploreForm = openExploreForm;
+    window.initializeCompletionScreen = initializeCompletionScreen;
     window.selectTimeSlot = selectTimeSlot;
     window.confirmScheduleAndComplete = confirmScheduleAndComplete;
     window.selectReason = selectReason;
     window.submitReasonAndComplete = submitReasonAndComplete;
     window.showCompletionSuccess = showCompletionSuccess;
-    window.initializeCompletionScreen = initializeCompletionScreen;
-    // Override existing if needed
-    window.completeSetup = completeSetup;
+    
+    // Navigation Functions
+    window.goBack = goBack;
+    window.navigateToStep = navigateToStep;
+    window.toggleScoreDetails = toggleScoreDetails;
+    window.toggleDebugPanel = toggleDebugPanel;
 }
 
-console.log('✅ Completion screen functions with special offers loaded');
-// ========================================
-// GLOBAL CONSOLE LOGGING
-// ========================================
-
-
-// Enhanced Time Slot Selection (REPLACE if exists, otherwise ADD)
-function selectTimeSlot(element, slotId) {
-    // Remove selected class from all slots
-    document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
-    
-    // Add selected class to clicked slot
-    element.classList.add('selected');
-    
-    // Enable confirm button
-    const confirmBtn = document.getElementById('confirmScheduleBtn');
-    if (confirmBtn) {
-        confirmBtn.disabled = false;
-        confirmBtn.style.opacity = '1';
-    }
-    
-    // Store selected slot
-    window.selectedTimeSlot = slotId;
-    
-    window.TopikoUtils.addDebugLog(`⏰ Time slot selected: ${slotId}`);
-}
-
-// Confirm Schedule and Complete
-async function confirmScheduleAndComplete() {
-    const selectedSlot = window.selectedTimeSlot;
-    const offer = selectedOffer;
-    
-    if (!selectedSlot || !offer) {
-        window.TopikoUtils.showNotification('Please select a time slot', 'error');
-        return;
-    }
-    
-    // Save scheduling data
-    const schedulingData = {
-        user_id: window.topikoApp?.currentUserId,
-        business_name: window.topikoApp?.businessName,
-        selected_offer: offer.title,
-        offer_id: offer.id,
-        scheduled_slot: selectedSlot,
-        action_type: 'schedule_call',
-        completion_choice: 'talk_team',
-        scheduled_at: new Date().toISOString()
-    };
-    
-    // Save to database
-    if (window.topikoApp?.currentUserId) {
-        await window.TopikoUtils.saveToSupabase(schedulingData, 'completion_actions');
-    }
-    
-    // Close modal and show success
-    window.TopikoUtils.closeModal('dateTimeModal');
-    
-    // Show completion message
-    window.TopikoUtils.showNotification(`🎉 Perfect! Call scheduled to claim "${offer.title}". Our team will contact you at the selected time.`, 'success');
-    
-    // Update completion screen to show success state
-    showCompletionSuccess('call_scheduled', offer.title, selectedSlot);
-    
-    window.TopikoUtils.addDebugLog(`✅ Call scheduled successfully: ${offer.title} at ${selectedSlot}`);
-}
-
-// Enhanced Reason Selection (REPLACE if exists, otherwise ADD)
-function selectReason(reasonType, element) {
-    // Remove selected class from all reasons
-    document.querySelectorAll('.reason-option').forEach(opt => opt.classList.remove('selected'));
-    
-    // Add selected class to clicked reason
-    element.classList.add('selected');
-    
-    // Store selected reason
-    window.selectedReason = reasonType;
-    
-    window.TopikoUtils.addDebugLog(`💭 Reason selected: ${reasonType}`);
-}
-
-// Submit Reason and Complete
-async function submitReasonAndComplete() {
-    const reasonType = window.selectedReason;
-    const comment = document.getElementById('reasonText')?.value || '';
-    
-    // Save exploration data
-    const explorationData = {
-        user_id: window.topikoApp?.currentUserId,
-        business_name: window.topikoApp?.businessName,
-        selected_offer: selectedOffer?.title || 'none',
-        reason_type: reasonType || 'no_reason',
-        comments: comment,
-        action_type: 'self_explore',
-        completion_choice: 'explore_self',
-        submitted_at: new Date().toISOString()
-    };
-    
-    // Save to database
-    if (window.topikoApp?.currentUserId) {
-        await window.TopikoUtils.saveToSupabase(explorationData, 'completion_actions');
-    }
-    
-    // Close modal and show success
-    window.TopikoUtils.closeModal('reasonModal');
-    
-    // Show completion message
-    window.TopikoUtils.showNotification('🚀 Thank you for your feedback! We\'ll use this to improve our service.', 'success');
-    
-    // Update completion screen to show success state
-    showCompletionSuccess('self_explore', reasonType, comment);
-    
-    window.TopikoUtils.addDebugLog(`✅ Exploration form submitted: ${reasonType}`);
-}
-
-// Show Completion Success State
-function showCompletionSuccess(actionType, primaryData, secondaryData) {
-    const completionContent = document.querySelector('#completion .content-card');
-    if (!completionContent) return;
-    
-    let successMessage = '';
-    let actionDetails = '';
-    
-    if (actionType === 'call_scheduled') {
-        successMessage = '📞 Call Scheduled Successfully!';
-        actionDetails = `
-            <div style="background: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
-                <h4 style="color: #047857; margin-bottom: 1rem;">✅ What happens next:</h4>
-                <ul style="text-align: left; color: #065f46; line-height: 1.6;">
-                    <li>Our team will call you at your selected time: <strong>${secondaryData}</strong></li>
-                    <li>We'll help you claim: <strong>${primaryData}</strong></li>
-                    <li>Complete setup of your online business presence</li>
-                    <li>Get your business live within 24-48 hours</li>
-                </ul>
-            </div>
-        `;
-    } else {
-        successMessage = '🚀 Thank You for Your Interest!';
-        actionDetails = `
-            <div style="background: rgba(99, 102, 241, 0.1); border: 2px solid #6366f1; border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
-                <h4 style="color: #4338ca; margin-bottom: 1rem;">✅ We've noted your preferences:</h4>
-                <div style="text-align: left; color: #3730a3; line-height: 1.6;">
-                    <p><strong>Your feedback:</strong> ${primaryData}</p>
-                    ${secondaryData ? `<p><strong>Additional details:</strong> ${secondaryData}</p>` : ''}
-                    <p>We'll use this information to better serve businesses like yours.</p>
-                </div>
-            </div>
-        `;
-    }
-    
-    completionContent.innerHTML = `
-        <div style="text-align: center;" class="completion-success-enter">
-            <div style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 2s infinite;">🎉</div>
-            <h2 style="color: #059669; font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">${successMessage}</h2>
-            ${actionDetails}
-            <div style="background: rgba(156, 163, 175, 0.1); border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
-                <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">
-                    If you have any questions, feel free to reach out to us at<br>
-                    <strong style="color: #374151;">support@topiko.com</strong> or call <strong style="color: #374151;">+91-XXX-XXX-XXXX</strong>
-                </p>
-            </div>
-        </div>
-    `;
-}
-window.TopikoUtils.addDebugLog('📱 ENHANCED Topiko Lead Form loaded - ALL FUNCTIONS FIXED', 'success');
-console.log('📱 FIXED Topiko Lead Form Ready');
-console.log('✅ FIXED: Missing updateQuickFiltersForSelection() function');
-console.log('✅ FIXED: Complete registration with all new database fields');
-console.log('✅ FIXED: Emergency initialization improvements');
-console.log('✅ FIXED: HTML compatibility for quick filters');
+window.TopikoUtils.addDebugLog('📱 COMPLETE FIXED Topiko Lead Form loaded - ALL FUNCTIONS AVAILABLE', 'success');
+console.log('📱 COMPLETE FIXED Topiko Lead Form Ready');
+console.log('✅ ALL COMPLETION SCREEN FUNCTIONS LOADED');
+console.log('✅ ALL MISSING FUNCTIONS ADDED');
+console.log('✅ GLOBAL AVAILABILITY CONFIRMED');
