@@ -227,13 +227,14 @@ async function completeRegistration() {
         address: address || null,
         selected_language: window.topikoApp.selectedLanguage,
         selected_goals: window.topikoApp.selectedGoals,
-        selected_categories: window.topikoApp.selectedCategories || [], 
-        selected_subcategories: window.topikoApp.selectedSubcategories || [], 
-        created_at: new Date().toISOString(),
-        timeline: window.topikoApp.qualifyingAnswers.timeline,
-        budget_range: window.topikoApp.qualifyingAnswers.budget,
-        decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes',
-        online_presence: window.topikoApp.qualifyingAnswers.online_presence
+       // selected_categories: window.topikoApp.selectedCategories || [], 
+       // selected_subcategories: window.topikoApp.selectedSubcategories || [], 
+        //timeline: window.topikoApp.qualifyingAnswers.timeline,
+        //budget_range: window.topikoApp.qualifyingAnswers.budget,
+        //decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes',
+        //online_presence: window.topikoApp.qualifyingAnswers.online_presence
+       lead_status: 'New',
+       created_at: new Date().toISOString()
     };
 
     const userResult = await window.TopikoUtils.saveToSupabase(userData, 'users');
@@ -299,6 +300,28 @@ async function proceedToCategories() {
     if (Object.values(window.topikoApp.qualifyingAnswers).some(answer => answer === '')) {
         window.TopikoUtils.showNotification('Please answer all questions', 'error');
         return;
+    }
+    
+    // 🔥 ADD THIS: Update user record with qualifying answers
+    if (window.topikoApp.currentUserId) {
+        const qualifyingData = {
+            timeline: window.topikoApp.qualifyingAnswers.timeline,
+            budget_range: window.topikoApp.qualifyingAnswers.budget,
+            decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes',
+            online_presence: window.topikoApp.qualifyingAnswers.online_presence,
+            updated_at: new Date().toISOString()
+        };
+        
+        const { error } = await supabase
+            .from('users')
+            .update(qualifyingData)
+            .eq('id', window.topikoApp.currentUserId);
+            
+        if (error) {
+            window.TopikoUtils.addDebugLog(`❌ Failed to update qualifying data: ${error.message}`, 'error');
+        } else {
+            window.TopikoUtils.addDebugLog('✅ Qualifying answers saved to user record', 'success');
+        }
     }
     
     window.TopikoUtils.addDebugLog(`Qualifying complete: ${JSON.stringify(window.topikoApp.qualifyingAnswers)}`);
@@ -491,12 +514,33 @@ function updateProductCategoriesDropdown() {
     };
 }
 
+async function updateUserCategories() {
+    if (!window.topikoApp.currentUserId) return;
+    
+    const categoriesData = {
+        selected_categories: window.topikoApp.selectedCategories,
+        selected_subcategories: window.topikoApp.selectedSubcategories,
+        updated_at: new Date().toISOString()
+    };
+    
+    const { error } = await supabase
+        .from('users')
+        .update(categoriesData)
+        .eq('id', window.topikoApp.currentUserId);
+        
+    if (error) {
+        window.TopikoUtils.addDebugLog(`❌ Failed to update categories: ${error.message}`, 'error');
+    } else {
+        window.TopikoUtils.addDebugLog('✅ Categories saved to user record', 'success');
+    }
+}
+
 async function proceedToProducts() {
     if (window.topikoApp.selectedCategories.length === 0) {
         window.TopikoUtils.showNotification('Please select at least one category to continue', 'error');
         return;
     }
-    
+    await updateUserCategories();
     window.TopikoUtils.showNotification(`Perfect! Moving to products with ${window.topikoApp.selectedCategories.length} categories selected...`, 'success');
     setTimeout(() => window.TopikoUtils.showScreen('products'), 1000);
 }
@@ -1607,7 +1651,17 @@ async function completeSetup() {
     
     // Save to database
     if (window.topikoApp.currentUserId) {
-        await window.TopikoUtils.saveToSupabase(leadData, 'completed_setups');
+        const finalUserData = {
+            selected_categories: window.topikoApp.selectedCategories,
+            selected_subcategories: window.topikoApp.selectedSubcategories,
+            timeline: window.topikoApp.qualifyingAnswers.timeline,
+            budget_range: window.topikoApp.qualifyingAnswers.budget,
+            decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes',
+            online_presence: window.topikoApp.qualifyingAnswers.online_presence,
+            updated_at: new Date().toISOString()
+        };
+        
+        await window.TopikoUtils.saveToSupabase(finalUserData, 'users', 'update', window.topikoApp.currentUserId);
     }
     
     // Save locally as backup
