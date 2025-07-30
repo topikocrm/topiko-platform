@@ -39,8 +39,8 @@
         <div id="notificationContent"></div>
     </div>
 
-    <!-- FOMO Notification System -->
-    <div class="fomo-notification" id="fomoNotification">
+    <!-- FOMO Notification System - MOVED TO TOP CENTER FOR DESKTOP VISIBILITY -->
+    <div class="fomo-notification" id="fomoNotification" style="position: fixed; top: 120px; left: 50%; transform: translateX(-50%); z-index: 1000; max-width: 400px;">
         <div class="fomo-header">
             <div class="fomo-icon"></div>
             <div class="fomo-status">Just Registered</div>
@@ -761,12 +761,55 @@
                     </div>
                 </div>
             </section>
+
+            <!-- FINAL CONGRATULATIONS SCREEN - SIMPLIFIED -->
+            <section class="screen" id="completion">
+                <div class="content-card">
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 2s infinite;">🎉</div>
+                        
+                        <h2 style="color: #059669; font-size: 2.2rem; font-weight: 700; margin-bottom: 1rem;">
+                            Congratulations, <span id="completionBusinessName">Your Business</span> is all set for the final touches!
+                        </h2>
+                        
+                        <p style="color: #064e3b; font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.6;">
+                            Your business setup is complete! Our team will now create your professional online presence.
+                        </p>
+
+                        <!-- OFFER SELECTION -->
+                        <div style="background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%); border: 2px solid #f59e0b; border-radius: 16px; padding: 2rem; margin: 2rem 0;">
+                            <h3 style="color: #d97706; font-size: 1.3rem; margin-bottom: 1rem;">🎯 Choose Your Next Step:</h3>
+                            
+                            <div style="display: grid; gap: 1rem; margin-bottom: 1.5rem;">
+                                <div class="offer-option" onclick="selectOffer('talk_team', this)">
+                                    <label style="cursor: pointer; display: block; padding: 1rem; background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 165, 0, 0.2); border-radius: 12px; font-weight: 600; color: #92400e; text-align: center;">
+                                        <input type="radio" name="completion_offer" value="talk_team" style="display: none;">
+                                        📞 I want to talk to Topiko Team
+                                    </label>
+                                </div>
+                                
+                                <div class="offer-option" onclick="selectOffer('self_explore', this)">
+                                    <label style="cursor: pointer; display: block; padding: 1rem; background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 165, 0, 0.2); border-radius: 12px; font-weight: 600; color: #92400e; text-align: center;">
+                                        <input type="radio" name="completion_offer" value="self_explore" style="display: none;">
+                                        🚀 I want to explore by myself
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button onclick="handleCompletionChoice()" id="completionChoiceBtn" disabled 
+                                    style="background: #f59e0b; color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem; opacity: 0.5; width: 100%;">
+                                Continue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
-    <!-- Existing Modal HTML Structures -->
+    <!-- UPDATED Modal HTML Structures -->
     
-    <!-- Goals Transition Modal -->
+    <!-- Goals Transition Modal - UPDATED -->
     <div class="modal-overlay" id="goalsTransitionModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('goalsTransitionModal')">×</button>
@@ -778,19 +821,21 @@
                     Great! Your goals are set.
                 </h2>
                 
-                <p style="color: #553c9a; font-size: 1rem; font-weight: 500; margin-bottom: 1.5rem; line-height: 1.4;">
-                    Now let's show you how Topiko can help with <span id="selectedGoalsText">your selected goals</span> for your business — one step at a time
-                </p>
-
-                <div style="background: rgba(139, 111, 205, 0.1); border: 2px solid rgba(139, 111, 205, 0.2); border-radius: 12px; padding: 1rem; margin: 1rem 0;">
-                    <h3 style="color: #6b46c1; font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">🎯 Your Selected Goals:</h3>
-                    <div style="text-align: center;" id="modalGoalsList">
-                        <!-- Goals will be populated here -->
+                <!-- UPDATED: Goals on separate lines -->
+                <div style="color: #553c9a; font-size: 1rem; font-weight: 500; margin-bottom: 1.5rem; line-height: 1.8; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;">
+                    Now let's show you how Topiko can help with:
+                    <div id="selectedGoalsListModal" style="margin-top: 1rem;">
+                        <!-- Goals will be populated here on separate lines -->
                     </div>
+                    for your business — one step at a time
                 </div>
 
-                <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: center;">
-                    Topiko helped 5,500+ businesses reach their goals last month — let's do the same for yours! ✨ No technical knowledge needed ✅ Zero obligation to continue 🧪 Try before you decide
+                <!-- UPDATED: Benefits on separate lines -->
+                <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: left; line-height: 1.8;">
+                    Topiko helped 5,500+ businesses reach their goals last month — let's do the same for yours! 
+                    <div style="margin-top: 0.5rem;">✨ No technical knowledge needed</div>
+                    <div>✅ Zero obligation to continue</div>
+                    <div>🧪 Try before you decide</div>
                 </div>
 
                 <button class="submit-button" onclick="proceedFromGoalsModal()" style="animation: pulse 2s infinite; margin-top: 1rem;">
@@ -800,7 +845,7 @@
         </div>
     </div>
 
-    <!-- Setup Intro Modal -->
+    <!-- Setup Intro Modal - UPDATED (removed goals) -->
     <div class="modal-overlay" id="setupIntroModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('setupIntroModal')">×</button>
@@ -816,13 +861,9 @@
                     <p style="color: #059669; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
                         In just 3 simple steps, we'll show you exactly how your <span id="setupBusinessName">business</span> can look and work online — the Topiko way!
                     </p>
-                    <p style="color: #064e3b; font-size: 0.95rem; margin-bottom: 1rem;">
+                    <p style="color: #064e3b; font-size: 0.95rem; margin-bottom: 0;">
                         🔥 Businesses like yours are going live every hour — don't miss the momentum!
                     </p>
-                    
-                    <div id="modalSetupGoalsList" style="display: flex; flex-direction: column; gap: 0.6rem;">
-                        <!-- Goals will be populated here -->
-                    </div>
                 </div>
 
                 <button class="submit-button" onclick="proceedFromSetupModal()" style="animation: pulse 2s infinite; font-size: 1.1rem;">
@@ -866,16 +907,50 @@
         </div>
     </div>
 
-    <!-- NEW MODAL STRUCTURES FOR SPECIAL OFFERS SYSTEM -->
-    
-    <!-- Date Time Selection Modal -->
+    <!-- UPDATED Date Time Selection Modal with actual date/time slots -->
     <div class="modal-overlay" id="dateTimeModal">
         <div class="modal-content">
             <h3 style="color: #6b46c1; margin-bottom: 1rem;">📅 Schedule Your Call</h3>
             <p style="margin-bottom: 1.5rem;">Select a convenient date and time for our team to contact you:</p>
             
             <div class="time-slots-grid" id="timeSlotsGrid">
-                <!-- Time slots will be populated dynamically -->
+                <!-- Today -->
+                <div class="time-slot" onclick="selectTimeSlot(this, 'today-10am')">
+                    <div class="slot-date">Today</div>
+                    <div class="slot-time">10:00 AM</div>
+                </div>
+                <div class="time-slot" onclick="selectTimeSlot(this, 'today-2pm')">
+                    <div class="slot-date">Today</div>
+                    <div class="slot-time">2:00 PM</div>
+                </div>
+                <div class="time-slot" onclick="selectTimeSlot(this, 'today-4pm')">
+                    <div class="slot-date">Today</div>
+                    <div class="slot-time">4:00 PM</div>
+                </div>
+                
+                <!-- Tomorrow -->
+                <div class="time-slot" onclick="selectTimeSlot(this, 'tomorrow-9am')">
+                    <div class="slot-date">Tomorrow</div>
+                    <div class="slot-time">9:00 AM</div>
+                </div>
+                <div class="time-slot" onclick="selectTimeSlot(this, 'tomorrow-11am')">
+                    <div class="slot-date">Tomorrow</div>
+                    <div class="slot-time">11:00 AM</div>
+                </div>
+                <div class="time-slot" onclick="selectTimeSlot(this, 'tomorrow-3pm')">
+                    <div class="slot-date">Tomorrow</div>
+                    <div class="slot-time">3:00 PM</div>
+                </div>
+                
+                <!-- Day After Tomorrow -->
+                <div class="time-slot" onclick="selectTimeSlot(this, 'dayafter-10am')">
+                    <div class="slot-date">Day After</div>
+                    <div class="slot-time">10:00 AM</div>
+                </div>
+                <div class="time-slot" onclick="selectTimeSlot(this, 'dayafter-1pm')">
+                    <div class="slot-date">Day After</div>
+                    <div class="slot-time">1:00 PM</div>
+                </div>
             </div>
             
             <div style="margin-top: 1.5rem; text-align: center;">
@@ -891,7 +966,7 @@
         </div>
     </div>
 
-    <!-- Reason Selection Modal -->
+    <!-- UPDATED Reason Selection Modal with comment option -->
     <div class="modal-overlay" id="reasonModal">
         <div class="modal-content">
             <h3 style="color: #6b46c1; margin-bottom: 1rem;">💭 Tell us more</h3>
@@ -912,10 +987,18 @@
                 </div>
             </div>
             
+            <!-- UPDATED: Comment section for "Looking for something else" -->
+            <div id="lookingElseComments" style="display: none; margin-top: 1rem; background: #fdf2f8; border-radius: 8px; padding: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500;">What are you looking for?</label>
+                <textarea id="lookingElseText" rows="3" 
+                          style="width: 100%; padding: 0.75rem; border: 2px solid #f3e8ff; border-radius: 8px; resize: vertical; font-family: inherit;"
+                          placeholder="Please tell us what you're looking for..."></textarea>
+            </div>
+            
             <div id="reasonComments" style="display: none; margin-top: 1rem;">
                 <label style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500;">Please elaborate:</label>
                 <textarea id="reasonText" rows="3" 
-                          style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; resize: vertical;"
+                          style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; resize: vertical; font-family: inherit;"
                           placeholder="Your comments..."></textarea>
             </div>
             
@@ -946,6 +1029,9 @@
                 }
             };
         }
+        
+        // Initialize lead score widget text
+        updateLeadScoreWidget();
     });
 
     // Global function to close modals (needed for the new modals)
@@ -958,6 +1044,138 @@
                     document.body.removeChild(modal);
                 }
             }, 300);
+        }
+    }
+
+    // NEW FUNCTIONS FOR UPDATED FUNCTIONALITY
+
+    // Update lead score widget to ensure text displays
+    function updateLeadScoreWidget() {
+        const scoreValue = document.getElementById('leadScoreValue');
+        const scoreLabel = document.getElementById('scoreLabel');
+        if (scoreValue && !scoreValue.textContent) {
+            scoreValue.textContent = '0';
+        }
+        if (scoreLabel && !scoreLabel.textContent) {
+            scoreLabel.textContent = 'Score';
+        }
+    }
+
+    // Handle completion choice selection
+    function selectOffer(offerType, element) {
+        // Remove selected class from all offers
+        document.querySelectorAll('.offer-option').forEach(opt => opt.classList.remove('selected'));
+        
+        // Add selected class to clicked offer
+        element.classList.add('selected');
+        
+        // Enable continue button
+        const continueBtn = document.getElementById('completionChoiceBtn');
+        continueBtn.disabled = false;
+        continueBtn.style.opacity = '1';
+        
+        // Store selected offer
+        window.selectedCompletionOffer = offerType;
+    }
+
+    // Handle completion choice
+    function handleCompletionChoice() {
+        const selectedOffer = window.selectedCompletionOffer;
+        
+        if (selectedOffer === 'talk_team') {
+            // Show date/time selection modal
+            document.getElementById('dateTimeModal').classList.add('show');
+        } else if (selectedOffer === 'self_explore') {
+            // Show reason modal
+            document.getElementById('reasonModal').classList.add('show');
+        }
+    }
+
+    // Handle time slot selection
+    function selectTimeSlot(element, slotId) {
+        // Remove selected class from all slots
+        document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
+        
+        // Add selected class to clicked slot
+        element.classList.add('selected');
+        
+        // Enable confirm button
+        const confirmBtn = document.getElementById('confirmScheduleBtn');
+        confirmBtn.disabled = false;
+        confirmBtn.style.opacity = '1';
+        
+        // Store selected slot
+        window.selectedTimeSlot = slotId;
+    }
+
+    // Confirm schedule
+    function confirmSchedule() {
+        const selectedSlot = window.selectedTimeSlot;
+        if (selectedSlot) {
+            alert(`Call scheduled! Our team will contact you at the selected time.`);
+            closeModal('dateTimeModal');
+        }
+    }
+
+    // Handle reason selection
+    function selectReason(reasonType, element) {
+        // Remove selected class from all reasons
+        document.querySelectorAll('.reason-option').forEach(opt => opt.classList.remove('selected'));
+        
+        // Add selected class to clicked reason
+        element.classList.add('selected');
+        
+        // Show/hide comment sections based on selection
+        const lookingElseComments = document.getElementById('lookingElseComments');
+        const reasonComments = document.getElementById('reasonComments');
+        
+        if (reasonType === 'looking_else') {
+            lookingElseComments.style.display = 'block';
+            reasonComments.style.display = 'none';
+        } else {
+            lookingElseComments.style.display = 'none';
+            reasonComments.style.display = 'block';
+        }
+        
+        // Enable submit button
+        const submitBtn = document.getElementById('submitReasonBtn');
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        
+        // Store selected reason
+        window.selectedReason = reasonType;
+    }
+
+    // Submit reason
+    function submitReason() {
+        const reasonType = window.selectedReason;
+        let comment = '';
+        
+        if (reasonType === 'looking_else') {
+            comment = document.getElementById('lookingElseText').value;
+        } else {
+            comment = document.getElementById('reasonText').value;
+        }
+        
+        alert(`Thank you for your feedback! We'll use this to improve our service.`);
+        closeModal('reasonModal');
+    }
+
+    // Update goals display in modal to show on separate lines
+    function updateGoalsModal(selectedGoals) {
+        const goalsList = document.getElementById('selectedGoalsListModal');
+        if (goalsList && selectedGoals && selectedGoals.length > 0) {
+            const goalIcons = {
+                'ecommerce': '🛒 Sell Online',
+                'customers': '📈 Reach More Customers', 
+                'manage': '👥 Manage Customers',
+                'search': '🔍 Appear in Search Results',
+                'brand': '⭐ Establish Brand'
+            };
+            
+            goalsList.innerHTML = selectedGoals.map(goal => 
+                `<div style="margin: 0.3rem 0;">${goalIcons[goal] || goal}</div>`
+            ).join('');
         }
     }
     </script>
