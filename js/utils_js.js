@@ -6,6 +6,21 @@
 // DEBUG & LOGGING UTILITIES
 // ========================================
 
+/* ========================================
+   SUPABASE INITIALIZATION
+   ======================================== */
+
+// Supabase configuration
+const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU1NTY4MDAsImV4cCI6MjA1MTEzMjgwMH0.YOUR_ACTUAL_KEY_HERE'; // ← Replace with your real key
+
+// Initialize Supabase client
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+console.log('🔑 Supabase client initialized');
+console.log('🔑 URL:', SUPABASE_URL);
+console.log('🔑 Key length:', SUPABASE_ANON_KEY.length);
+
 let debugLogs = [];
 
 function addDebugLog(message, type = 'info') {
