@@ -418,6 +418,21 @@ const TRANSLATIONS = {
             optional: "Optional",
             required: "Required"
         }
+       // ADD TO TRANSLATIONS.en:
+            personalized: {
+                qualifyingTitle: "Hi {name}! Let's setup things for you",
+                categoriesTitle: "Select Categories for {business}",
+                productsTitle: "Add Products for {business}",
+                productFormTitle: "Add {business}'s Products/Services", 
+                themesTitle: "Choose {business}'s Theme"
+            },
+            
+            completionSuccess: {
+                callScheduled: "📞 Call Scheduled Successfully!",
+                selfExplore: "🚀 Thank You for Your Interest!",
+                nextSteps: "✅ What happens next:",
+                preferences: "✅ We've noted your preferences:"
+            }
     },
 
     // ========================================
@@ -833,6 +848,20 @@ const TRANSLATIONS = {
             optional: "वैकल्पिक",
             required: "आवश्यक"
         }
+       personalized: {
+          qualifyingTitle: "नमस्ते {name}! आइए आपके लिए सेटअप करते हैं",
+          categoriesTitle: "{business} के लिए श्रेणियां चुनें", 
+          productsTitle: "{business} के लिए उत्पाद जोड़ें",
+          productFormTitle: "{business} के उत्पाद/सेवाएं जोड़ें",
+          themesTitle: "{business} की थीम चुनें"
+      },
+      
+      completionSuccess: {
+          callScheduled: "📞 कॉल सफलतापूर्वक शेड्यूल की गई!",
+          selfExplore: "🚀 आपकी रुचि के लिए धन्यवाद!",
+          nextSteps: "✅ आगे क्या होगा:",
+          preferences: "✅ हमने आपकी प्राथमिकताओं को नोट किया है:"
+      }
     }
 };
 
