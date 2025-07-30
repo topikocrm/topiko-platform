@@ -418,6 +418,7 @@ const TRANSLATIONS = {
             optional: "Optional",
             required: "Required"
         }
+      },
        // ADD TO TRANSLATIONS.en:
             personalized: {
                 qualifyingTitle: "Hi {name}! Let's setup things for you",
@@ -433,7 +434,7 @@ const TRANSLATIONS = {
                 nextSteps: "✅ What happens next:",
                 preferences: "✅ We've noted your preferences:"
             }
-    },
+    
 
     // ========================================
     // HINDI TRANSLATIONS
