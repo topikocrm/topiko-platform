@@ -667,7 +667,66 @@ function updatePriceRangeDisplay() {
         display.textContent = `${minPrice} - ₹${maxPrice}`;
     }
 }
+function updateQuickFiltersForSelection() {
+    const quickFiltersContainer = document.querySelector('.quick-filters-container');
+    const selectedCategories = window.topikoApp.selectedCategories;
+    const selectedSubcategories = window.topikoApp.selectedSubcategories;
+    
+    if (!quickFiltersContainer || !selectedCategories.length) {
+        window.TopikoUtils.addDebugLog('⚠️ Quick filters container not found or no categories selected');
+        return;
+    }
+    
+    // Get business category data
+    const businessCategory = document.getElementById('category')?.value;
+    if (!businessCategory || !window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory]) {
+        return;
+    }
+    
+    const categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory];
+    
+    // Build quick filter buttons for selected categories only
+    let filtersHTML = `
+        <button class="quick-filter active" data-category="all" onclick="applyQuickFilter('all', this)">
+            All Products
+        </button>
+    `;
+    
+    // Add filters for selected categories
+    selectedCategories.forEach(categoryKey => {
+        const category = categoryData.categories[categoryKey];
+        if (category) {
+            filtersHTML += `
+                <button class="quick-filter" data-category="${categoryKey}" onclick="applyQuickFilter('${categoryKey}', this)">
+                    ${category.icon} ${category.name}
+                </button>
+            `;
+        }
+    });
+    
+    quickFiltersContainer.innerHTML = filtersHTML;
+    
+    window.TopikoUtils.addDebugLog(`🎛️ Quick filters updated for ${selectedCategories.length} categories`);
+}
 
+function applyQuickFilter(category, element) {
+    // Update active state
+    document.querySelectorAll('.quick-filter').forEach(filter => {
+        filter.classList.remove('active');
+    });
+    element.classList.add('active');
+    
+    // Update category filter dropdown
+    const categoryFilter = document.getElementById('categoryFilter');
+    if (categoryFilter) {
+        categoryFilter.value = category;
+    }
+    
+    // Apply filter
+    filterAndDisplayProducts();
+    
+    window.TopikoUtils.addDebugLog(`🎯 Quick filter applied: ${category}`);
+}
 function filterAndDisplayProducts() {
     const searchTerm = document.getElementById('productSearch')?.value || '';
     const categoryFilter = document.getElementById('categoryFilter')?.value || 'all';
