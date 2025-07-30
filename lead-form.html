@@ -40,7 +40,7 @@
         <div id="notificationContent"></div>
     </div>
 
-    <!-- FOMO Notification System - POSITIONED BOTTOM-LEFT WITH AUTO-HIDE -->
+    <!-- FOMO Notification System -->
     <div class="fomo-notification" id="fomoNotification" style="position: fixed; bottom: 20px; left: 20px; transform: translateX(-400px); z-index: 999; max-width: 320px; transition: all 0.5s ease;">
         <div class="fomo-header">
             <div class="fomo-icon"></div>
@@ -460,7 +460,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- MOVED: Dynamic Motivational Messages -->
+                            <!-- Dynamic Motivational Messages -->
                             <div class="motivational-messages" id="motivationalMessages" style="min-width: 280px; max-width: 300px; height: 120px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 2px solid #10b981; border-radius: 12px; padding: 1rem; position: relative; overflow: hidden;">
                                 <div class="motivational-message active loading">
                                     🔄 Loading personalized messages for Perfect...
@@ -479,13 +479,13 @@
                 </div>
             </section>
 
-            <!-- Products Screen - UPDATED WITH PRODUCT SELECTOR -->
+            <!-- Products Screen -->
             <section class="screen" id="products">
                 <div class="content-card">
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" id="productsTitle">Add Your Products</h2>
                     <p style="text-align: center; margin-bottom: 2rem;">Choose products or add your own custom products</p>
                     
-                    <!-- Help Section - KEEP UNCHANGED -->
+                    <!-- Help Section -->
                     <div class="products-help-section" id="productsHelpSection" onclick="requestFollowup()">
                         <div class="help-title" id="productsHelpTitle">🎯 Free Professional Setup Available!</div>
                         <div class="help-progress">
@@ -496,7 +496,7 @@
                         </div>
                     </div>
 
-                    <!-- NEW: Product Selection Mode Toggle -->
+                    <!-- Product Selection Mode Toggle -->
                     <div class="product-mode-toggle">
                         <div class="toggle-options">
                             <button class="toggle-option active" id="selectMode" onclick="switchProductMode('select')">
@@ -510,7 +510,7 @@
                         </div>
                     </div>
 
-                    <!-- NEW: Product Selector Section -->
+                    <!-- Product Selector Section -->
                     <div class="product-selector-section" id="productSelectorSection">
                         
                         <!-- Helper Buttons -->
@@ -523,7 +523,7 @@
                             </button>
                         </div>
                         
-                        <!-- FIXED: Quick Filters with proper container structure -->
+                        <!-- Quick Filters with proper container structure -->
                         <div class="quick-filters-container" id="quickFiltersContainer">
                             <div class="quick-filters" id="quickFilters">
                                 <button class="quick-filter active" data-category="all" onclick="applyQuickFilter('all', this)">All Products</button>
@@ -581,7 +581,7 @@
                         </div>
                     </div>
 
-                    <!-- EXISTING: Custom Product Form (Modified to be toggleable) -->
+                    <!-- Custom Product Form (Modified to be toggleable) -->
                     <div class="product-form" id="customProductForm" style="display: none;">
                         <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;" id="productFormTitle">Add Custom Product/Service</h3>
                         
@@ -624,7 +624,7 @@
                         </button>
                     </div>
 
-                    <!-- NEW: Selected Products Summary -->
+                    <!-- Selected Products Summary -->
                     <div class="selected-products-summary" id="selectedProductsSection" style="display: none;">
                         <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;">
                             <span style="margin-right: 0.5rem;">🎯</span>
@@ -633,7 +633,7 @@
                         <div id="selectedProductsList"></div>
                     </div>
 
-                    <!-- MODIFIED: Products List (now shows all selected products) -->
+                    <!-- Products List (now shows all selected products) -->
                     <div class="products-list">
                         <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;">Your Product Catalog (<span id="productCount">0</span>)</h3>
                         
@@ -645,7 +645,7 @@
                         </div>
                     </div>
 
-                    <!-- KEEP: Navigation buttons unchanged -->
+                    <!-- Navigation buttons -->
                     <div class="flex-buttons">
                         <button onclick="navigateToStep('categories')" class="btn-secondary">
                             ← Back to Categories
@@ -766,224 +766,78 @@
                 </div>
             </section>
 
-            <!-- COMPLETION SCREEN - ENHANCED -->
-           <!-- COMPLETION SCREEN - ENHANCED WITH SPECIAL OFFERS -->
-<!-- ========================================
-   FIND AND REPLACE THIS ENTIRE SECTION IN YOUR lead-form.html
-   ======================================== -->
+            <!-- COMPLETION SCREEN - FIXED VERSION WITH WORKING OFFERS -->
+            <section class="screen" id="completion">
+                <div class="content-card">
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 2s infinite;">🎉</div>
+                        
+                        <h2 style="color: #059669; font-size: 2.2rem; font-weight: 700; margin-bottom: 1rem;">
+                            Congratulations, <span id="completionBusinessName">Your Business</span> is all set for the final touches!
+                        </h2>
+                        
+                        <p style="color: #064e3b; font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.6;">
+                            Your business setup is complete! Our team will now create your professional online presence.
+                        </p>
 
-<!-- 🔍 SEARCH FOR THIS LINE TO START: -->
-<!-- COMPLETION SCREEN - ENHANCED -->
-<section class="screen" id="completion">
-    <div class="content-card">
-        <!-- DELETE EVERYTHING FROM HERE... -->
-        
-        <!-- Your existing completion screen content -->
-        <!-- This might include congratulations message -->
-        <!-- Choice buttons -->
-        <!-- etc. -->
-        
-        <!-- ...ALL THE WAY DOWN TO HERE -->
-    </div>
-</section>
-<!-- 🔍 STOP DELETING AT THIS LINE -->
+                        <!-- TODAY'S SPECIAL OFFERS SECTION - SELECTABLE -->
+                        <div class="offers-section-background">
+                            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+                                <div style="font-size: 2rem; margin-right: 0.5rem;">🎁</div>
+                                <h3 style="color: #d97706; font-size: 1.4rem; margin: 0; font-weight: 700;">Choose Your FREE Bonus Offer!</h3>
+                            </div>
+                            
+                            <p style="color: #92400e; font-size: 0.9rem; margin-bottom: 1.5rem;">Select one offer that interests you most:</p>
+                            
+                            <!-- Selectable Offers Container -->
+                            <div id="specialOffersContainer">
+                                <!-- Offers will be populated here by JavaScript -->
+                                <div class="special-offer-item">
+                                    <div class="offer-title">
+                                        🎁 Loading Special Offers...
+                                        <span class="offer-value">FREE</span>
+                                    </div>
+                                    <div class="offer-description">Preparing personalized offers for your business</div>
+                                </div>
+                            </div>
+                            
+                            <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: center;">
+                                🔥 Limited Time: These offers expire in <span id="offerTimer" style="color: #dc2626; font-weight: 700;">23:45:12</span>
+                            </div>
 
-<!-- ========================================
-   REPLACE THE ABOVE SECTION WITH THE NEW HTML BELOW
-   ======================================== -->
-
-<!-- COMPLETION SCREEN - INTERACTIVE WITH SELECTABLE OFFERS (NEW VERSION) -->
-<section class="screen" id="completion">
-    <div class="content-card">
-        <div style="text-align: center;">
-            <div style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 2s infinite;">🎉</div>
-            
-            <h2 style="color: #059669; font-size: 2.2rem; font-weight: 700; margin-bottom: 1rem;">
-                Congratulations, <span id="completionBusinessName">Your Business</span> is all set for the final touches!
-            </h2>
-            
-            <p style="color: #064e3b; font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.6;">
-                Your business setup is complete! Our team will now create your professional online presence.
-            </p>
-
-            <!-- TODAY'S SPECIAL OFFERS SECTION - NOW SELECTABLE -->
-            <div class="offers-section-background">
-                <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
-                    <div style="font-size: 2rem; margin-right: 0.5rem;">🎁</div>
-                    <h3 style="color: #d97706; font-size: 1.4rem; margin: 0; font-weight: 700;">Choose Your FREE Bonus Offer!</h3>
-                </div>
-                
-                <p style="color: #92400e; font-size: 0.9rem; margin-bottom: 1.5rem;">Select one offer that interests you most:</p>
-                
-                <!-- Selectable Offers Container -->
-                <div id="specialOffersContainer">
-                    <!-- Offers will be populated here by JavaScript -->
-                    <div class="special-offer-item">
-                        <div class="offer-title">
-                            🎁 Loading Special Offers...
-                            <span class="offer-value">FREE</span>
+                            <!-- Selected Offer Display -->
+                            <div id="selectedOfferDisplay" style="display: none; background: rgba(34, 197, 94, 0.1); border: 2px solid #10b981; border-radius: 12px; padding: 1rem; margin: 1rem 0;">
+                                <div style="display: flex; align-items: center; justify-content: center; color: #047857; font-weight: 600; font-size: 0.9rem;">
+                                    ✅ Selected: <span id="selectedOfferName" style="margin-left: 0.5rem; font-weight: 700;"></span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="offer-description">Preparing personalized offers for your business</div>
+
+                        <!-- NEXT STEP ACTIONS -->
+                        <div style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); border: 2px solid #6366f1; border-radius: 16px; padding: 2rem; margin: 2rem 0;">
+                            <h3 style="color: #4338ca; font-size: 1.3rem; margin-bottom: 1rem;">🎯 How would you like to proceed?</h3>
+                            
+                            <div style="display: grid; gap: 1rem;">
+                                <button class="action-button claim-offer-btn" onclick="openCallScheduler()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1.25rem; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
+                                    📞 Book a Call to Claim My Selected Offer
+                                    <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Schedule a convenient time with our team</div>
+                                </button>
+                                
+                                <button class="action-button explore-btn" onclick="openExploreForm()" style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 1.25rem; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
+                                    🚀 I want to explore on my own
+                                    <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Tell us what you're looking for</div>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: center;">
-                    🔥 Limited Time: These offers expire in <span id="offerTimer" style="color: #dc2626; font-weight: 700;">23:45:12</span>
-                </div>
-
-                <!-- Selected Offer Display -->
-                <div id="selectedOfferDisplay" style="display: none; background: rgba(34, 197, 94, 0.1); border: 2px solid #10b981; border-radius: 12px; padding: 1rem; margin: 1rem 0;">
-                    <div style="display: flex; align-items: center; justify-content: center; color: #047857; font-weight: 600; font-size: 0.9rem;">
-                        ✅ Selected: <span id="selectedOfferName" style="margin-left: 0.5rem; font-weight: 700;"></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- NEXT STEP ACTIONS - NO CONTINUE BUTTON -->
-            <div style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); border: 2px solid #6366f1; border-radius: 16px; padding: 2rem; margin: 2rem 0;">
-                <h3 style="color: #4338ca; font-size: 1.3rem; margin-bottom: 1rem;">🎯 How would you like to proceed?</h3>
-                
-                <div style="display: grid; gap: 1rem;">
-                    <button class="action-button claim-offer-btn" onclick="openCallScheduler()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1.25rem; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
-                        📞 Book a Call to Claim My Selected Offer
-                        <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Schedule a convenient time with our team</div>
-                    </button>
-                    
-                    <button class="action-button explore-btn" onclick="openExploreForm()" style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 1.25rem; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
-                        🚀 I want to explore on my own
-                        <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Tell us what you're looking for</div>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- THEN ADD THE NEW MODALS AFTER THE COMPLETION SECTION -->
-
-<!-- UPDATED: Enhanced Call Scheduler Modal -->
-<div class="modal-overlay" id="dateTimeModal">
-    <div class="modal-content" style="max-width: 500px;">
-        <button class="modal-close" onclick="closeModal('dateTimeModal')">×</button>
-        
-        <div style="text-align: center; margin-bottom: 2rem;">
-            <div style="font-size: 2.5rem; margin-bottom: 1rem;">📅</div>
-            <h3 style="color: #6b46c1; margin-bottom: 0.5rem;">Schedule Your Call to Claim Offer</h3>
-            <div id="schedulerSelectedOffer" style="background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 8px; padding: 0.75rem; margin: 1rem 0; color: #047857; font-weight: 600; font-size: 0.9rem;">
-                Selected Offer: <span id="schedulerOfferName">Free Logo Design</span>
-            </div>
-            <p style="color: #64748b; font-size: 0.9rem;">Select a convenient time for our team to contact you:</p>
-        </div>
-        
-        <div class="time-slots-grid" id="timeSlotsGrid">
-            <!-- Today -->
-            <div class="time-slot" onclick="selectTimeSlot(this, 'today-10am')">
-                <div class="slot-date">Today</div>
-                <div class="slot-time">10:00 AM</div>
-            </div>
-            <div class="time-slot" onclick="selectTimeSlot(this, 'today-2pm')">
-                <div class="slot-date">Today</div>
-                <div class="slot-time">2:00 PM</div>
-            </div>
-            <div class="time-slot" onclick="selectTimeSlot(this, 'today-4pm')">
-                <div class="slot-date">Today</div>
-                <div class="slot-time">4:00 PM</div>
-            </div>
-            
-            <!-- Tomorrow -->
-            <div class="time-slot" onclick="selectTimeSlot(this, 'tomorrow-9am')">
-                <div class="slot-date">Tomorrow</div>
-                <div class="slot-time">9:00 AM</div>
-            </div>
-            <div class="time-slot" onclick="selectTimeSlot(this, 'tomorrow-11am')">
-                <div class="slot-date">Tomorrow</div>
-                <div class="slot-time">11:00 AM</div>
-            </div>
-            <div class="time-slot" onclick="selectTimeSlot(this, 'tomorrow-3pm')">
-                <div class="slot-date">Tomorrow</div>
-                <div class="slot-time">3:00 PM</div>
-            </div>
-            
-            <!-- Day After Tomorrow -->
-            <div class="time-slot" onclick="selectTimeSlot(this, 'dayafter-10am')">
-                <div class="slot-date">Day After</div>
-                <div class="slot-time">10:00 AM</div>
-            </div>
-            <div class="time-slot" onclick="selectTimeSlot(this, 'dayafter-1pm')">
-                <div class="slot-date">Day After</div>
-                <div class="slot-time">1:00 PM</div>
-            </div>
-        </div>
-        
-        <div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem;">
-            <button onclick="confirmScheduleAndComplete()" id="confirmScheduleBtn" disabled 
-                    style="flex: 1; background: #10b981; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; opacity: 0.5; font-weight: 600;">
-                Complete & Schedule Call
-            </button>
-            <button onclick="closeModal('dateTimeModal')" 
-                    style="flex: 1; background: #64748b; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                Close
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- UPDATED: Enhanced Explore Form Modal -->
-<div class="modal-overlay" id="reasonModal">
-    <div class="modal-content" style="max-width: 500px;">
-        <button class="modal-close" onclick="closeModal('reasonModal')">×</button>
-        
-        <div style="text-align: center; margin-bottom: 2rem;">
-            <div style="font-size: 2.5rem; margin-bottom: 1rem;">💭</div>
-            <h3 style="color: #6b46c1; margin-bottom: 1rem;">Tell us what you're looking for</h3>
-            <p style="color: #64748b; font-size: 0.9rem;">Help us understand your business needs better:</p>
-        </div>
-        
-        <div class="reason-options" style="margin-bottom: 1.5rem;">
-            <div class="reason-option" onclick="selectReason('budget', this)">
-                <div class="reason-icon">💰</div>
-                <div class="reason-text">Budget considerations</div>
-            </div>
-            <div class="reason-option" onclick="selectReason('timing', this)">
-                <div class="reason-icon">⏰</div>
-                <div class="reason-text">Need more time to decide</div>
-            </div>
-            <div class="reason-option" onclick="selectReason('looking_else', this)">
-                <div class="reason-icon">🔍</div>
-                <div class="reason-text">Looking for something specific</div>
-            </div>
-            <div class="reason-option" onclick="selectReason('just_browsing', this)">
-                <div class="reason-icon">👀</div>
-                <div class="reason-text">Just browsing for now</div>
-            </div>
-        </div>
-        
-        <!-- Comment section for specific needs -->
-        <div id="reasonComments" style="margin-bottom: 1.5rem;">
-            <label style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500;">Additional details (optional):</label>
-            <textarea id="reasonText" rows="3" 
-                      style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; resize: vertical; font-family: inherit;"
-                      placeholder="Tell us more about what you're looking for..."></textarea>
-        </div>
-        
-        <div style="text-align: center; display: flex; gap: 1rem;">
-            <button onclick="submitReasonAndComplete()" id="submitReasonBtn" 
-                    style="flex: 1; background: #6366f1; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                Complete Submission
-            </button>
-            <button onclick="closeModal('reasonModal')" 
-                    style="flex: 1; background: #64748b; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                Close
-            </button>
-        </div>
-    </div>
-</div>
+            </section>
         </main>
     </div>
 
-    <!-- UPDATED Modal HTML Structures -->
+    <!-- MODALS HTML STRUCTURES -->
     
-    <!-- Goals Transition Modal - UPDATED -->
+    <!-- Goals Transition Modal -->
     <div class="modal-overlay" id="goalsTransitionModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('goalsTransitionModal')">×</button>
@@ -1001,25 +855,24 @@
                     for your business — one step at a time
                 </p>
 
-                <!-- UPDATED: Benefits on separate lines -->
-                    <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: left; line-height: 1.8;">
-                        Topiko helped 5,500+ businesses reach their goals last month — let's do the same for yours! 
-                        
-                        <div style="margin-top: 0.8rem; display: flex; flex-direction: column; gap: 0.3rem;">
-                            <div style="display: flex; align-items: center;">
-                                <span style="margin-right: 0.5rem;">✨</span>
-                                <span>No technical knowledge needed</span>
-                            </div>
-                            <div style="display: flex; align-items: center;">
-                                <span style="margin-right: 0.5rem;">✅</span>
-                                <span>ZERO obligation to continue</span>
-                            </div>
-                            <div style="display: flex; align-items: center;">
-                                <span style="margin-right: 0.5rem;">🧪</span>
-                                <span>Try before you decide</span>
-                            </div>
+                <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: left; line-height: 1.8;">
+                    Topiko helped 5,500+ businesses reach their goals last month — let's do the same for yours! 
+                    
+                    <div style="margin-top: 0.8rem; display: flex; flex-direction: column; gap: 0.3rem;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="margin-right: 0.5rem;">✨</span>
+                            <span>No technical knowledge needed</span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="margin-right: 0.5rem;">✅</span>
+                            <span>ZERO obligation to continue</span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="margin-right: 0.5rem;">🧪</span>
+                            <span>Try before you decide</span>
                         </div>
                     </div>
+                </div>
 
                 <button class="submit-button" onclick="proceedFromGoalsModal()" style="animation: pulse 2s infinite; margin-top: 1rem;">
                     Get My Free Setup! 🚀
@@ -1028,7 +881,7 @@
         </div>
     </div>
 
-    <!-- Setup Intro Modal - UPDATED (removed goals) -->
+    <!-- Setup Intro Modal -->
     <div class="modal-overlay" id="setupIntroModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('setupIntroModal')">×</button>
@@ -1090,11 +943,19 @@
         </div>
     </div>
 
-    <!-- Date Time Selection Modal -->
+    <!-- Enhanced Call Scheduler Modal -->
     <div class="modal-overlay" id="dateTimeModal">
-        <div class="modal-content">
-            <h3 style="color: #6b46c1; margin-bottom: 1rem;">📅 Schedule Your Call</h3>
-            <p style="margin-bottom: 1.5rem;">Select a convenient date and time for our team to contact you:</p>
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="modal-close" onclick="closeModal('dateTimeModal')">×</button>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">📅</div>
+                <h3 style="color: #6b46c1; margin-bottom: 0.5rem;">Schedule Your Call to Claim Offer</h3>
+                <div id="schedulerSelectedOffer" style="background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 8px; padding: 0.75rem; margin: 1rem 0; color: #047857; font-weight: 600; font-size: 0.9rem;">
+                    Selected Offer: <span id="schedulerOfferName">Free Logo Design</span>
+                </div>
+                <p style="color: #64748b; font-size: 0.9rem;">Select a convenient time for our team to contact you:</p>
+            </div>
             
             <div class="time-slots-grid" id="timeSlotsGrid">
                 <!-- Today -->
@@ -1136,84 +997,82 @@
                 </div>
             </div>
             
-            <div style="margin-top: 1.5rem; text-align: center;">
-                <button onclick="confirmSchedule()" id="confirmScheduleBtn" disabled 
-                        style="background: #6b46c1; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; opacity: 0.5;">
-                    Confirm Schedule
+            <div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem;">
+                <button onclick="confirmScheduleAndComplete()" id="confirmScheduleBtn" disabled 
+                        style="flex: 1; background: #10b981; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; opacity: 0.5; font-weight: 600;">
+                    Complete & Schedule Call
                 </button>
                 <button onclick="closeModal('dateTimeModal')" 
-                        style="background: #64748b; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; margin-left: 1rem;">
-                    Cancel
+                        style="flex: 1; background: #64748b; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    Close
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Reason Selection Modal -->
+    <!-- Enhanced Explore Form Modal -->
     <div class="modal-overlay" id="reasonModal">
-        <div class="modal-content">
-            <h3 style="color: #6b46c1; margin-bottom: 1rem;">💭 Tell us more</h3>
-            <p style="margin-bottom: 1.5rem;">Help us understand your needs better:</p>
+        <div class="modal-content" style="max-width: 500px;">
+            <button class="modal-close" onclick="closeModal('reasonModal')">×</button>
             
-            <div class="reason-options">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">💭</div>
+                <h3 style="color: #6b46c1; margin-bottom: 1rem;">Tell us what you're looking for</h3>
+                <p style="color: #64748b; font-size: 0.9rem;">Help us understand your business needs better:</p>
+            </div>
+            
+            <div class="reason-options" style="margin-bottom: 1.5rem;">
                 <div class="reason-option" onclick="selectReason('budget', this)">
                     <div class="reason-icon">💰</div>
-                    <div class="reason-text">Budget Issue</div>
+                    <div class="reason-text">Budget considerations</div>
+                </div>
+                <div class="reason-option" onclick="selectReason('timing', this)">
+                    <div class="reason-icon">⏰</div>
+                    <div class="reason-text">Need more time to decide</div>
                 </div>
                 <div class="reason-option" onclick="selectReason('looking_else', this)">
                     <div class="reason-icon">🔍</div>
-                    <div class="reason-text">Looking for something else</div>
+                    <div class="reason-text">Looking for something specific</div>
                 </div>
-                <div class="reason-option" onclick="selectReason('need_time', this)">
-                    <div class="reason-icon">⏰</div>
-                    <div class="reason-text">Need time to decide</div>
+                <div class="reason-option" onclick="selectReason('just_browsing', this)">
+                    <div class="reason-icon">👀</div>
+                    <div class="reason-text">Just browsing for now</div>
                 </div>
             </div>
             
-            <!-- Comment section for "Looking for something else" -->
-            <div id="lookingElseComments" style="display: none; margin-top: 1rem; background: #fdf2f8; border-radius: 8px; padding: 1rem;">
-                <label style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500;">What are you looking for?</label>
-                <textarea id="lookingElseText" rows="3" 
-                          style="width: 100%; padding: 0.75rem; border: 2px solid #f3e8ff; border-radius: 8px; resize: vertical; font-family: inherit;"
-                          placeholder="Please tell us what you're looking for..."></textarea>
-            </div>
-            
-            <div id="reasonComments" style="display: none; margin-top: 1rem;">
-                <label style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500;">Please elaborate:</label>
+            <!-- Comment section for specific needs -->
+            <div id="reasonComments" style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500;">Additional details (optional):</label>
                 <textarea id="reasonText" rows="3" 
                           style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; resize: vertical; font-family: inherit;"
-                          placeholder="Your comments..."></textarea>
+                          placeholder="Tell us more about what you're looking for..."></textarea>
             </div>
             
-            <div style="margin-top: 1.5rem; text-align: center;">
-                <button onclick="submitReason()" id="submitReasonBtn" disabled 
-                        style="background: #6b46c1; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; opacity: 0.5;">
-                    Submit
+            <div style="text-align: center; display: flex; gap: 1rem;">
+                <button onclick="submitReasonAndComplete()" id="submitReasonBtn" 
+                        style="flex: 1; background: #6366f1; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    Complete Submission
+                </button>
+                <button onclick="closeModal('reasonModal')" 
+                        style="flex: 1; background: #64748b; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    Close
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- FIXED: Script Loading Order - CRITICAL -->
+    <!-- SCRIPT LOADING ORDER - CRITICAL -->
     <script src="js/config_js.js"></script>     <!-- FIRST - Configuration -->
     <script src="js/utils_js.js"></script>      <!-- SECOND - Utilities -->  
     <script src="js/script_js.js"></script>     <!-- THIRD - Main Application -->
 
-    <!-- Additional Initialization and Compatibility Script -->
+    <!-- Additional Initialization Script -->
     <script>
     // Additional initialization and safety checks
     document.addEventListener('DOMContentLoaded', function() {
         console.log('🔧 Running HTML compatibility fixes...');
         
-        // Fix 1: Ensure quick filters container exists (already fixed in HTML above)
-        const quickFilters = document.getElementById('quickFilters');
-        if (quickFilters && !quickFilters.parentElement.classList.contains('quick-filters-container')) {
-            console.log('⚠️ Quick filters container was missing, but should be fixed now');
-        } else {
-            console.log('✅ Quick filters container structure is correct');
-        }
-        
-        // Fix 2: Ensure completion screen business name is populated
+        // Fix 1: Ensure completion screen business name is populated
         setTimeout(() => {
             const completionBusinessName = document.getElementById('completionBusinessName');
             if (completionBusinessName && window.topikoApp && window.topikoApp.businessName) {
@@ -1221,7 +1080,7 @@
             }
         }, 1000);
         
-        // Fix 3: Initialize product mode correctly
+        // Fix 2: Initialize product mode correctly
         setTimeout(() => {
             if (typeof switchProductMode === 'function') {
                 try {
@@ -1236,16 +1095,11 @@
         console.log('✅ HTML compatibility fixes completed');
     });
 
-    // Global function to close modals (needed for the new modals)
+    // Global function to close modals
     function closeModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
             modal.classList.remove('show');
-            setTimeout(() => {
-                if (modal.parentNode === document.body) {
-                    document.body.removeChild(modal);
-                }
-            }, 300);
         }
     }
 
@@ -1259,136 +1113,6 @@
         if (scoreLabel && !scoreLabel.textContent) {
             scoreLabel.textContent = 'Score';
         }
-    }
-
-    // Function to get selected goals and update modal
-    function getSelectedGoalsAndUpdateModal() {
-        const selectedGoals = [];
-        document.querySelectorAll('.goal-checkbox:checked').forEach(checkbox => {
-            selectedGoals.push(checkbox.value);
-        });
-        updateGoalsModal(selectedGoals);
-        return selectedGoals;
-    }
-
-    // Function to show goals modal with populated goals
-    function showGoalsTransitionModal() {
-        // Ensure goals are populated in the modal
-        setTimeout(() => {
-            getSelectedGoalsAndUpdateModal();
-        }, 100);
-        
-        document.getElementById('goalsTransitionModal').classList.add('show');
-    }
-
-    // Backup function for submitGoals (if called from external JS)
-    function submitGoals() {
-        showGoalsTransitionModal();
-    }
-
-    // Completion screen functions (if not already defined globally)
-    if (typeof selectOffer === 'undefined') {
-        window.selectOffer = function(offerType, element) {
-            // Remove selected class from all offers
-            document.querySelectorAll('.offer-option').forEach(opt => opt.classList.remove('selected'));
-            
-            // Add selected class to clicked offer
-            element.classList.add('selected');
-            
-            // Enable continue button
-            const continueBtn = document.getElementById('completionChoiceBtn');
-            if (continueBtn) {
-                continueBtn.disabled = false;
-                continueBtn.style.opacity = '1';
-            }
-            
-            // Store selected offer
-            window.selectedCompletionOffer = offerType;
-        };
-    }
-
-    if (typeof handleCompletionChoice === 'undefined') {
-        window.handleCompletionChoice = function() {
-            const selectedOffer = window.selectedCompletionOffer;
-            
-            if (selectedOffer === 'talk_team') {
-                // Show date/time selection modal
-                document.getElementById('dateTimeModal').classList.add('show');
-            } else if (selectedOffer === 'self_explore') {
-                // Show reason modal
-                document.getElementById('reasonModal').classList.add('show');
-            }
-        };
-    }
-
-    // Handle time slot selection
-    function selectTimeSlot(element, slotId) {
-        // Remove selected class from all slots
-        document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
-        
-        // Add selected class to clicked slot
-        element.classList.add('selected');
-        
-        // Enable confirm button
-        const confirmBtn = document.getElementById('confirmScheduleBtn');
-        confirmBtn.disabled = false;
-        confirmBtn.style.opacity = '1';
-        
-        // Store selected slot
-        window.selectedTimeSlot = slotId;
-    }
-
-    // Confirm schedule
-    function confirmSchedule() {
-        const selectedSlot = window.selectedTimeSlot;
-        if (selectedSlot) {
-            alert(`Call scheduled! Our team will contact you at the selected time.`);
-            closeModal('dateTimeModal');
-        }
-    }
-
-    // Handle reason selection
-    function selectReason(reasonType, element) {
-        // Remove selected class from all reasons
-        document.querySelectorAll('.reason-option').forEach(opt => opt.classList.remove('selected'));
-        
-        // Add selected class to clicked reason
-        element.classList.add('selected');
-        
-        // Show/hide comment sections based on selection
-        const lookingElseComments = document.getElementById('lookingElseComments');
-        const reasonComments = document.getElementById('reasonComments');
-        
-        if (reasonType === 'looking_else') {
-            lookingElseComments.style.display = 'block';
-            reasonComments.style.display = 'none';
-        } else {
-            lookingElseComments.style.display = 'none';
-            reasonComments.style.display = 'block';
-        }
-        
-        // Enable submit button
-        const submitBtn = document.getElementById('submitReasonBtn');
-        submitBtn.disabled = false;
-        submitBtn.style.opacity = '1';
-        
-        // Store selected reason
-        window.selectedReason = reasonType;
-    }
-
-    // Submit reason
-    function submitReason() {
-        const reasonType = window.selectedReason;
-        let comment = '';
-        
-        if (reasonType === 'looking_else') {
-            comment = document.getElementById('lookingElseText').value;
-        } else {
-            comment = document.getElementById('reasonText').value;
-        }
-        
-        alert(`Thank you for your feedback! We'll use this to improve our service.`);
-        closeModal('reasonModal');
     }
 
     // Update goals display in modal to show inline with line breaks
@@ -1454,93 +1178,5 @@
         initializeFOMONotifications();
     });
     </script>
-
-    <!-- Additional CSS for fixes -->
-    <style>
-    /* Quick Filters Container Styling */
-    .quick-filters-container {
-        width: 100%;
-        margin-bottom: 1rem;
-    }
-
-    .quick-filters {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        padding: 0.5rem;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        border: 1px solid rgba(107, 70, 193, 0.2);
-    }
-
-    .quick-filter {
-        padding: 0.5rem 1rem;
-        border: 2px solid rgba(107, 70, 193, 0.3);
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #6b46c1;
-        transition: all 0.3s ease;
-    }
-
-    .quick-filter:hover {
-        background: rgba(107, 70, 193, 0.1);
-        border-color: #6b46c1;
-    }
-
-    .quick-filter.active {
-        background: #6b46c1;
-        color: white;
-        border-color: #6b46c1;
-    }
-
-    /* Completion Screen Offer Styling */
-    .offer-option {
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .offer-option:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .offer-option.selected {
-        transform: scale(1.02);
-        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
-    }
-
-    .offer-option.selected label {
-        border-color: #f59e0b !important;
-        background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%) !important;
-    }
-
-    /* Animation for completion screen */
-    @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {
-            transform: translateY(0);
-        }
-        40% {
-            transform: translateY(-10px);
-        }
-        60% {
-            transform: translateY(-5px);
-        }
-    }
-
-    @keyframes pulse {
-        0% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.05);
-        }
-        100% {
-            transform: scale(1);
-        }
-    }
-    </style>
 </body>
 </html>
