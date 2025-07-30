@@ -1425,7 +1425,169 @@ if (typeof window !== 'undefined') {
     window.displaySetupIntroModal = displaySetupIntroModal;
     window.proceedFromSetupModal = proceedFromSetupModal;
 }
+// ========================================
+// COMPLETION SCREEN FUNCTIONS - ADD TO script_js.js
+// ========================================
 
+// Special Offers Display Functions
+function displayRandomOffers() {
+    if (!window.TopikoConfig || !window.TopikoConfig.SPECIAL_OFFERS) {
+        console.warn('Special offers configuration not found');
+        return;
+    }
+    
+    const offersContainer = document.getElementById('specialOffersContainer');
+    if (!offersContainer) return;
+    
+    // Select 3-4 random offers
+    const allOffers = window.TopikoConfig.SPECIAL_OFFERS;
+    const numberOfOffers = Math.min(4, allOffers.length);
+    const selectedOffers = getRandomOffers(allOffers, numberOfOffers);
+    
+    // Display the offers
+    offersContainer.innerHTML = selectedOffers.map(offer => `
+        <div class="special-offer-item">
+            <div class="offer-title">
+                🎁 ${offer.title}
+                <span class="offer-value">FREE</span>
+            </div>
+            <div class="offer-description">${offer.description}</div>
+        </div>
+    `).join('');
+    
+    // Start the timer
+    startOfferTimer();
+    
+    window.TopikoUtils.addDebugLog(`✅ Special offers displayed: ${selectedOffers.length} offers`);
+}
+
+function getRandomOffers(offers, count) {
+    const shuffled = offers.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+}
+
+function startOfferTimer() {
+    const timerElement = document.getElementById('offerTimer');
+    if (!timerElement) return;
+    
+    // Set initial time (23 hours, 45 minutes, random seconds)
+    let totalSeconds = (23 * 3600) + (45 * 60) + Math.floor(Math.random() * 60);
+    
+    const timerInterval = setInterval(() => {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        
+        timerElement.textContent = 
+            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        totalSeconds--;
+        
+        if (totalSeconds < 0) {
+            clearInterval(timerInterval);
+            timerElement.textContent = "00:00:00";
+            timerElement.style.color = "#dc2626";
+        }
+    }, 1000);
+}
+
+function initializeCompletionScreen() {
+    // Set business name
+    const completionBusinessName = document.getElementById('completionBusinessName');
+    if (completionBusinessName && window.topikoApp && window.topikoApp.businessName) {
+        completionBusinessName.textContent = window.topikoApp.businessName;
+    }
+    
+    // Display random offers
+    displayRandomOffers();
+    
+    window.TopikoUtils.addDebugLog('✅ Completion screen initialized with special offers');
+}
+
+// ENHANCED: Update the existing completeSetup function
+async function completeSetup() {
+    const finalScore = window.TopikoUtils.calculateLeadScore() + 10;
+    
+    // ENHANCED: Complete setup data with all new fields
+    const leadData = {
+        user_id: window.topikoApp.currentUserId,
+        name: window.topikoApp.userName,
+        email: document.getElementById('email')?.value,
+        phone: document.getElementById('phoneNumber')?.value,
+        business_name: window.topikoApp.businessName,
+        selected_goals: window.topikoApp.selectedGoals,
+        selected_categories: window.topikoApp.selectedCategories,
+        selected_subcategories: window.topikoApp.selectedSubcategories || [],
+        products_count: window.topikoApp.userProducts.length,
+        selected_theme: window.topikoApp.selectedTheme,
+        qualifying_answers: window.topikoApp.qualifyingAnswers,
+        timeline: window.topikoApp.qualifyingAnswers.timeline,
+        budget_range: window.topikoApp.qualifyingAnswers.budget,
+        decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes',
+        online_presence: window.topikoApp.qualifyingAnswers.online_presence,
+        lead_score: finalScore,
+        lead_quality: finalScore >= 70 ? 'Hot' : finalScore >= 40 ? 'Warm' : 'Cold',
+        setup_completed: true,
+        completed_at: new Date().toISOString()
+    };
+    
+    // Save to database
+    if (window.topikoApp.currentUserId) {
+        await window.TopikoUtils.saveToSupabase(leadData, 'completed_setups');
+    }
+    
+    // Save locally as backup
+    const existingLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
+    existingLeads.push(leadData);
+    localStorage.setItem('topiko_local_leads', JSON.stringify(existingLeads));
+    
+    window.TopikoUtils.showNotification(`🎉 Congratulations ${window.topikoApp.userName}! Your business is ready for final touches!`, 'success');
+    
+    setTimeout(() => {
+        window.TopikoUtils.showScreen('completion');
+        // Initialize completion screen with offers after a short delay
+        setTimeout(() => {
+            initializeCompletionScreen();
+        }, 500);
+    }, 2000);
+}
+
+// ENHANCED: Update handleCompletionChoice function
+function handleCompletionChoice() {
+    const selectedOffer = window.selectedCompletionOffer;
+    
+    if (selectedOffer === 'talk_team') {
+        // Show date/time selection modal with offers context
+        window.TopikoUtils.showModal('dateTimeModal');
+        
+        // Update modal text to mention offers
+        const modalContent = document.querySelector('#dateTimeModal .modal-content h3');
+        if (modalContent) {
+            modalContent.innerHTML = '📅 Schedule Your Call to Claim Special Offers';
+        }
+        
+        window.TopikoUtils.addDebugLog('User selected to talk to team - showing scheduler with offers');
+    } else if (selectedOffer === 'self_explore') {
+        // Show reason modal
+        window.TopikoUtils.showModal('reasonModal');
+        window.TopikoUtils.addDebugLog('User selected to explore by themselves - showing reason modal');
+    }
+}
+
+// Add to global window object
+if (typeof window !== 'undefined') {
+    // Add new completion functions to globals
+    window.displayRandomOffers = displayRandomOffers;
+    window.getRandomOffers = getRandomOffers;
+    window.startOfferTimer = startOfferTimer;
+    window.initializeCompletionScreen = initializeCompletionScreen;
+    window.handleCompletionChoice = handleCompletionChoice;
+    
+    // Override existing if needed
+    window.completeSetup = completeSetup;
+}
+
+console.log('✅ Completion screen functions with special offers loaded');
 // ========================================
 // GLOBAL CONSOLE LOGGING
 // ========================================
