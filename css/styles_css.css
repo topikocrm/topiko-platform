@@ -3372,5 +3372,271 @@ body {
     50% { transform: rotate(180deg); }
 }
 /* ========================================
+   INTERACTIVE COMPLETION SCREEN STYLES - ADD TO END OF styles_css.css
+   ======================================== */
+
+/* Enhanced Action Buttons */
+.action-button {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.action-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.action-button:active {
+    transform: translateY(-1px);
+}
+
+/* Selectable Offers Enhancement */
+.special-offer-item {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.special-offer-item.selected {
+    border-color: #10b981 !important;
+    background: rgba(16, 185, 129, 0.1) !important;
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.special-offer-item.selected .offer-title {
+    color: #047857 !important;
+}
+
+.special-offer-item.selected .offer-description {
+    color: #065f46 !important;
+}
+
+/* Enhanced Time Slots Grid */
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.time-slot {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.time-slot:hover {
+    border-color: #6366f1;
+    background: #f0f4ff;
+    transform: translateY(-2px);
+}
+
+.time-slot.selected {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    color: #047857;
+    font-weight: 600;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.slot-date {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.slot-time {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.time-slot.selected .slot-date,
+.time-slot.selected .slot-time {
+    color: #047857;
+}
+
+/* Enhanced Reason Options Grid */
+.reason-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+}
+
+.reason-option {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.reason-option:hover {
+    border-color: #6366f1;
+    background: #f0f4ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+
+.reason-option.selected {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    color: #047857;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.2);
+}
+
+.reason-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.reason-option:hover .reason-icon {
+    transform: scale(1.1);
+}
+
+.reason-text {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #374151;
+    transition: color 0.3s ease;
+}
+
+.reason-option.selected .reason-text {
+    color: #047857;
+}
+
+/* Enhanced Selected Offer Display */
+#selectedOfferDisplay {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced Modal Buttons */
+.modal-content button:not(.modal-close) {
+    transition: all 0.3s ease;
+}
+
+.modal-content button:not(.modal-close):hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced Confirm Buttons */
+#confirmScheduleBtn:not(:disabled) {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+}
+
+#confirmScheduleBtn:not(:disabled):hover {
+    background: linear-gradient(135deg, #059669, #047857) !important;
+}
+
+#submitReasonBtn {
+    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+}
+
+#submitReasonBtn:hover {
+    background: linear-gradient(135deg, #4f46e5, #4338ca) !important;
+}
+
+/* Mobile Responsiveness Enhancements */
+@media (max-width: 768px) {
+    .time-slots-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .time-slot {
+        padding: 0.5rem;
+    }
+    
+    .slot-date {
+        font-size: 0.7rem;
+    }
+    
+    .slot-time {
+        font-size: 0.9rem;
+    }
+    
+    .reason-options {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .reason-option {
+        padding: 0.75rem;
+        flex-direction: row;
+        text-align: left;
+        gap: 0.75rem;
+    }
+    
+    .reason-icon {
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+    
+    .reason-text {
+        font-size: 0.85rem;
+    }
+    
+    .action-button {
+        padding: 1rem !important;
+        font-size: 0.9rem !important;
+    }
+}
+
+/* Enhanced Completion Success Animation */
+.completion-success-enter {
+    animation: successFadeIn 0.6s ease;
+}
+
+@keyframes successFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Enhanced Loading State */
+.special-offer-item:first-child:only-child {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+/* ========================================
    END OF STYLES
    ======================================== */
