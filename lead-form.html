@@ -523,15 +523,17 @@
                             </button>
                         </div>
                         
-                        <!-- Quick Filters -->
-                        <div class="quick-filters" id="quickFilters">
-                            <button class="quick-filter active" data-category="all">All Products</button>
-                            <button class="quick-filter" data-category="boutique">Fashion</button>
-                            <button class="quick-filter" data-category="homefoods">Home Foods</button>
-                            <button class="quick-filter" data-category="grocery">Grocery</button>
-                            <button class="quick-filter" data-category="electronics">Electronics</button>
-                            <button class="quick-filter" data-category="fitness">Fitness</button>
-                            <button class="quick-filter" data-category="restaurant">Restaurant</button>
+                        <!-- FIXED: Quick Filters with proper container structure -->
+                        <div class="quick-filters-container" id="quickFiltersContainer">
+                            <div class="quick-filters" id="quickFilters">
+                                <button class="quick-filter active" data-category="all" onclick="applyQuickFilter('all', this)">All Products</button>
+                                <button class="quick-filter" data-category="boutique" onclick="applyQuickFilter('boutique', this)">Fashion</button>
+                                <button class="quick-filter" data-category="homefoods" onclick="applyQuickFilter('homefoods', this)">Home Foods</button>
+                                <button class="quick-filter" data-category="grocery" onclick="applyQuickFilter('grocery', this)">Grocery</button>
+                                <button class="quick-filter" data-category="electronics" onclick="applyQuickFilter('electronics', this)">Electronics</button>
+                                <button class="quick-filter" data-category="fitness" onclick="applyQuickFilter('fitness', this)">Fitness</button>
+                                <button class="quick-filter" data-category="restaurant" onclick="applyQuickFilter('restaurant', this)">Restaurant</button>
+                            </div>
                         </div>
                         
                         <!-- Search & Filter Controls -->
@@ -764,14 +766,14 @@
                 </div>
             </section>
 
-            <!-- FINAL CONGRATULATIONS SCREEN - SIMPLIFIED -->
+            <!-- COMPLETION SCREEN - ENHANCED -->
             <section class="screen" id="completion">
                 <div class="content-card">
                     <div style="text-align: center;">
                         <div style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 2s infinite;">🎉</div>
                         
                         <h2 style="color: #059669; font-size: 2.2rem; font-weight: 700; margin-bottom: 1rem;">
-                            Congratss, <span id="completionBusinessName">Your Business</span> is all set for the final touches!
+                            Congratulations, <span id="completionBusinessName">Your Business</span> is all set for the final touches!
                         </h2>
                         
                         <p style="color: #064e3b; font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.6;">
@@ -918,7 +920,7 @@
         </div>
     </div>
 
-    <!-- UPDATED Date Time Selection Modal with actual date/time slots -->
+    <!-- Date Time Selection Modal -->
     <div class="modal-overlay" id="dateTimeModal">
         <div class="modal-content">
             <h3 style="color: #6b46c1; margin-bottom: 1rem;">📅 Schedule Your Call</h3>
@@ -977,7 +979,7 @@
         </div>
     </div>
 
-    <!-- UPDATED Reason Selection Modal with comment option -->
+    <!-- Reason Selection Modal -->
     <div class="modal-overlay" id="reasonModal">
         <div class="modal-content">
             <h3 style="color: #6b46c1; margin-bottom: 1rem;">💭 Tell us more</h3>
@@ -998,7 +1000,7 @@
                 </div>
             </div>
             
-            <!-- UPDATED: Comment section for "Looking for something else" -->
+            <!-- Comment section for "Looking for something else" -->
             <div id="lookingElseComments" style="display: none; margin-top: 1rem; background: #fdf2f8; border-radius: 8px; padding: 1rem;">
                 <label style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500;">What are you looking for?</label>
                 <textarea id="lookingElseText" rows="3" 
@@ -1022,27 +1024,46 @@
         </div>
     </div>
 
-    <!-- Load JavaScript Files -->
-    <script src="js/config_js.js"></script>
-    <script src="js/utils_js.js"></script>
-    <script src="js/script_js.js"></script>
+    <!-- FIXED: Script Loading Order - CRITICAL -->
+    <script src="js/config_js.js"></script>     <!-- FIRST - Configuration -->
+    <script src="js/utils_js.js"></script>      <!-- SECOND - Utilities -->  
+    <script src="js/script_js.js"></script>     <!-- THIRD - Main Application -->
 
+    <!-- Additional Initialization and Compatibility Script -->
     <script>
-    // Initialize categories when the page loads
+    // Additional initialization and safety checks
     document.addEventListener('DOMContentLoaded', function() {
-        // Load categories when categories screen is shown
-        const originalShowScreen = window.TopikoUtils?.showScreen;
-        if (originalShowScreen) {
-            window.TopikoUtils.showScreen = function(screenId) {
-                originalShowScreen.call(this, screenId);
-                if (screenId === 'categories') {
-                    setTimeout(() => loadCategories(), 100);
-                }
-            };
+        console.log('🔧 Running HTML compatibility fixes...');
+        
+        // Fix 1: Ensure quick filters container exists (already fixed in HTML above)
+        const quickFilters = document.getElementById('quickFilters');
+        if (quickFilters && !quickFilters.parentElement.classList.contains('quick-filters-container')) {
+            console.log('⚠️ Quick filters container was missing, but should be fixed now');
+        } else {
+            console.log('✅ Quick filters container structure is correct');
         }
         
-        // Initialize lead score widget text
-        updateLeadScoreWidget();
+        // Fix 2: Ensure completion screen business name is populated
+        setTimeout(() => {
+            const completionBusinessName = document.getElementById('completionBusinessName');
+            if (completionBusinessName && window.topikoApp && window.topikoApp.businessName) {
+                completionBusinessName.textContent = window.topikoApp.businessName;
+            }
+        }, 1000);
+        
+        // Fix 3: Initialize product mode correctly
+        setTimeout(() => {
+            if (typeof switchProductMode === 'function') {
+                try {
+                    switchProductMode('select');
+                    console.log('✅ Product mode initialized');
+                } catch (error) {
+                    console.warn('⚠️ Product mode initialization failed:', error);
+                }
+            }
+        }, 2000);
+        
+        console.log('✅ HTML compatibility fixes completed');
     });
 
     // Global function to close modals (needed for the new modals)
@@ -1057,8 +1078,6 @@
             }, 300);
         }
     }
-
-    // NEW FUNCTIONS FOR UPDATED FUNCTIONALITY
 
     // Update lead score widget to ensure text displays
     function updateLeadScoreWidget() {
@@ -1097,34 +1116,39 @@
         showGoalsTransitionModal();
     }
 
-    // Handle completion choice selection
-    function selectOffer(offerType, element) {
-        // Remove selected class from all offers
-        document.querySelectorAll('.offer-option').forEach(opt => opt.classList.remove('selected'));
-        
-        // Add selected class to clicked offer
-        element.classList.add('selected');
-        
-        // Enable continue button
-        const continueBtn = document.getElementById('completionChoiceBtn');
-        continueBtn.disabled = false;
-        continueBtn.style.opacity = '1';
-        
-        // Store selected offer
-        window.selectedCompletionOffer = offerType;
+    // Completion screen functions (if not already defined globally)
+    if (typeof selectOffer === 'undefined') {
+        window.selectOffer = function(offerType, element) {
+            // Remove selected class from all offers
+            document.querySelectorAll('.offer-option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Add selected class to clicked offer
+            element.classList.add('selected');
+            
+            // Enable continue button
+            const continueBtn = document.getElementById('completionChoiceBtn');
+            if (continueBtn) {
+                continueBtn.disabled = false;
+                continueBtn.style.opacity = '1';
+            }
+            
+            // Store selected offer
+            window.selectedCompletionOffer = offerType;
+        };
     }
 
-    // Handle completion choice
-    function handleCompletionChoice() {
-        const selectedOffer = window.selectedCompletionOffer;
-        
-        if (selectedOffer === 'talk_team') {
-            // Show date/time selection modal
-            document.getElementById('dateTimeModal').classList.add('show');
-        } else if (selectedOffer === 'self_explore') {
-            // Show reason modal
-            document.getElementById('reasonModal').classList.add('show');
-        }
+    if (typeof handleCompletionChoice === 'undefined') {
+        window.handleCompletionChoice = function() {
+            const selectedOffer = window.selectedCompletionOffer;
+            
+            if (selectedOffer === 'talk_team') {
+                // Show date/time selection modal
+                document.getElementById('dateTimeModal').classList.add('show');
+            } else if (selectedOffer === 'self_explore') {
+                // Show reason modal
+                document.getElementById('reasonModal').classList.add('show');
+            }
+        };
     }
 
     // Handle time slot selection
@@ -1260,5 +1284,93 @@
         initializeFOMONotifications();
     });
     </script>
+
+    <!-- Additional CSS for fixes -->
+    <style>
+    /* Quick Filters Container Styling */
+    .quick-filters-container {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .quick-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        border: 1px solid rgba(107, 70, 193, 0.2);
+    }
+
+    .quick-filter {
+        padding: 0.5rem 1rem;
+        border: 2px solid rgba(107, 70, 193, 0.3);
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #6b46c1;
+        transition: all 0.3s ease;
+    }
+
+    .quick-filter:hover {
+        background: rgba(107, 70, 193, 0.1);
+        border-color: #6b46c1;
+    }
+
+    .quick-filter.active {
+        background: #6b46c1;
+        color: white;
+        border-color: #6b46c1;
+    }
+
+    /* Completion Screen Offer Styling */
+    .offer-option {
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .offer-option:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .offer-option.selected {
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+    }
+
+    .offer-option.selected label {
+        border-color: #f59e0b !important;
+        background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%) !important;
+    }
+
+    /* Animation for completion screen */
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0);
+        }
+        40% {
+            transform: translateY(-10px);
+        }
+        60% {
+            transform: translateY(-5px);
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    </style>
 </body>
 </html>
