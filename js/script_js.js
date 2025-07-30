@@ -1307,6 +1307,10 @@ async function completeSetup() {
     
     setTimeout(() => {
         window.TopikoUtils.showScreen('completion');
+        // Initialize completion screen with offers after a short delay
+        setTimeout(() => {
+            initializeCompletionScreen();
+        }, 500);
     }, 2000);
 }
 
@@ -1498,10 +1502,15 @@ function initializeCompletionScreen() {
         completionBusinessName.textContent = window.topikoApp.businessName;
     }
     
-    // Display random offers
+    // Display random selectable offers
     displayRandomOffers();
     
-    window.TopikoUtils.addDebugLog('✅ Completion screen initialized with special offers');
+    // Reset selections
+    selectedOffer = null;
+    window.selectedTimeSlot = null;
+    window.selectedReason = null;
+    
+    window.TopikoUtils.addDebugLog('✅ Interactive completion screen initialized');
 }
 
 // ENHANCED: Update the existing completeSetup function
@@ -1580,9 +1589,17 @@ if (typeof window !== 'undefined') {
     window.displayRandomOffers = displayRandomOffers;
     window.getRandomOffers = getRandomOffers;
     window.startOfferTimer = startOfferTimer;
-    window.initializeCompletionScreen = initializeCompletionScreen;
     window.handleCompletionChoice = handleCompletionChoice;
     
+   window.selectOffer = selectOffer;
+    window.openCallScheduler = openCallScheduler;
+    window.openExploreForm = openExploreForm;
+    window.selectTimeSlot = selectTimeSlot;
+    window.confirmScheduleAndComplete = confirmScheduleAndComplete;
+    window.selectReason = selectReason;
+    window.submitReasonAndComplete = submitReasonAndComplete;
+    window.showCompletionSuccess = showCompletionSuccess;
+    window.initializeCompletionScreen = initializeCompletionScreen;
     // Override existing if needed
     window.completeSetup = completeSetup;
 }
@@ -1592,6 +1609,164 @@ console.log('✅ Completion screen functions with special offers loaded');
 // GLOBAL CONSOLE LOGGING
 // ========================================
 
+
+// Enhanced Time Slot Selection (REPLACE if exists, otherwise ADD)
+function selectTimeSlot(element, slotId) {
+    // Remove selected class from all slots
+    document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
+    
+    // Add selected class to clicked slot
+    element.classList.add('selected');
+    
+    // Enable confirm button
+    const confirmBtn = document.getElementById('confirmScheduleBtn');
+    if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.style.opacity = '1';
+    }
+    
+    // Store selected slot
+    window.selectedTimeSlot = slotId;
+    
+    window.TopikoUtils.addDebugLog(`⏰ Time slot selected: ${slotId}`);
+}
+
+// Confirm Schedule and Complete
+async function confirmScheduleAndComplete() {
+    const selectedSlot = window.selectedTimeSlot;
+    const offer = selectedOffer;
+    
+    if (!selectedSlot || !offer) {
+        window.TopikoUtils.showNotification('Please select a time slot', 'error');
+        return;
+    }
+    
+    // Save scheduling data
+    const schedulingData = {
+        user_id: window.topikoApp?.currentUserId,
+        business_name: window.topikoApp?.businessName,
+        selected_offer: offer.title,
+        offer_id: offer.id,
+        scheduled_slot: selectedSlot,
+        action_type: 'schedule_call',
+        completion_choice: 'talk_team',
+        scheduled_at: new Date().toISOString()
+    };
+    
+    // Save to database
+    if (window.topikoApp?.currentUserId) {
+        await window.TopikoUtils.saveToSupabase(schedulingData, 'completion_actions');
+    }
+    
+    // Close modal and show success
+    window.TopikoUtils.closeModal('dateTimeModal');
+    
+    // Show completion message
+    window.TopikoUtils.showNotification(`🎉 Perfect! Call scheduled to claim "${offer.title}". Our team will contact you at the selected time.`, 'success');
+    
+    // Update completion screen to show success state
+    showCompletionSuccess('call_scheduled', offer.title, selectedSlot);
+    
+    window.TopikoUtils.addDebugLog(`✅ Call scheduled successfully: ${offer.title} at ${selectedSlot}`);
+}
+
+// Enhanced Reason Selection (REPLACE if exists, otherwise ADD)
+function selectReason(reasonType, element) {
+    // Remove selected class from all reasons
+    document.querySelectorAll('.reason-option').forEach(opt => opt.classList.remove('selected'));
+    
+    // Add selected class to clicked reason
+    element.classList.add('selected');
+    
+    // Store selected reason
+    window.selectedReason = reasonType;
+    
+    window.TopikoUtils.addDebugLog(`💭 Reason selected: ${reasonType}`);
+}
+
+// Submit Reason and Complete
+async function submitReasonAndComplete() {
+    const reasonType = window.selectedReason;
+    const comment = document.getElementById('reasonText')?.value || '';
+    
+    // Save exploration data
+    const explorationData = {
+        user_id: window.topikoApp?.currentUserId,
+        business_name: window.topikoApp?.businessName,
+        selected_offer: selectedOffer?.title || 'none',
+        reason_type: reasonType || 'no_reason',
+        comments: comment,
+        action_type: 'self_explore',
+        completion_choice: 'explore_self',
+        submitted_at: new Date().toISOString()
+    };
+    
+    // Save to database
+    if (window.topikoApp?.currentUserId) {
+        await window.TopikoUtils.saveToSupabase(explorationData, 'completion_actions');
+    }
+    
+    // Close modal and show success
+    window.TopikoUtils.closeModal('reasonModal');
+    
+    // Show completion message
+    window.TopikoUtils.showNotification('🚀 Thank you for your feedback! We\'ll use this to improve our service.', 'success');
+    
+    // Update completion screen to show success state
+    showCompletionSuccess('self_explore', reasonType, comment);
+    
+    window.TopikoUtils.addDebugLog(`✅ Exploration form submitted: ${reasonType}`);
+}
+
+// Show Completion Success State
+function showCompletionSuccess(actionType, primaryData, secondaryData) {
+    const completionContent = document.querySelector('#completion .content-card');
+    if (!completionContent) return;
+    
+    let successMessage = '';
+    let actionDetails = '';
+    
+    if (actionType === 'call_scheduled') {
+        successMessage = '📞 Call Scheduled Successfully!';
+        actionDetails = `
+            <div style="background: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
+                <h4 style="color: #047857; margin-bottom: 1rem;">✅ What happens next:</h4>
+                <ul style="text-align: left; color: #065f46; line-height: 1.6;">
+                    <li>Our team will call you at your selected time: <strong>${secondaryData}</strong></li>
+                    <li>We'll help you claim: <strong>${primaryData}</strong></li>
+                    <li>Complete setup of your online business presence</li>
+                    <li>Get your business live within 24-48 hours</li>
+                </ul>
+            </div>
+        `;
+    } else {
+        successMessage = '🚀 Thank You for Your Interest!';
+        actionDetails = `
+            <div style="background: rgba(99, 102, 241, 0.1); border: 2px solid #6366f1; border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
+                <h4 style="color: #4338ca; margin-bottom: 1rem;">✅ We've noted your preferences:</h4>
+                <div style="text-align: left; color: #3730a3; line-height: 1.6;">
+                    <p><strong>Your feedback:</strong> ${primaryData}</p>
+                    ${secondaryData ? `<p><strong>Additional details:</strong> ${secondaryData}</p>` : ''}
+                    <p>We'll use this information to better serve businesses like yours.</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    completionContent.innerHTML = `
+        <div style="text-align: center;" class="completion-success-enter">
+            <div style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 2s infinite;">🎉</div>
+            <h2 style="color: #059669; font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">${successMessage}</h2>
+            ${actionDetails}
+            <div style="background: rgba(156, 163, 175, 0.1); border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
+                <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">
+                    If you have any questions, feel free to reach out to us at<br>
+                    <strong style="color: #374151;">support@topiko.com</strong> or call <strong style="color: #374151;">+91-XXX-XXX-XXXX</strong>
+                </p>
+            </div>
+        </div>
+    `;
+}
 window.TopikoUtils.addDebugLog('📱 ENHANCED Topiko Lead Form loaded - ALL FUNCTIONS FIXED', 'success');
 console.log('📱 FIXED Topiko Lead Form Ready');
 console.log('✅ FIXED: Missing updateQuickFiltersForSelection() function');
