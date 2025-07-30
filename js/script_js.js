@@ -489,30 +489,51 @@ async function proceedToProducts() {
 // ========================================
 
 function switchProductMode(mode) {
+    // Emergency initialization
+    if (!window.topikoApp) {
+        window.topikoApp = {
+            productsLoaded: false,
+            selectedProductIds: [],
+            userProducts: [],
+            selectedCategories: [],
+            selectedSubcategories: [],
+            qualifyingAnswers: {},
+            selectedGoals: [],
+            leadScore: 0,
+            currentStep: 1
+        };
+        console.log('⚠️ Emergency TopikoApp initialization');
+    }
+    
     const selectMode = document.getElementById('selectMode');
     const customMode = document.getElementById('customMode');
     const selectorSection = document.getElementById('productSelectorSection');
     const customForm = document.getElementById('customProductForm');
     
-    // Update button states
-    selectMode.classList.toggle('active', mode === 'select');
-    customMode.classList.toggle('active', mode === 'custom');
+    // Update button states (with safety checks)
+    if (selectMode) selectMode.classList.toggle('active', mode === 'select');
+    if (customMode) customMode.classList.toggle('active', mode === 'custom');
     
-    // Show/hide sections
+    // Show/hide sections (with safety checks)
     if (mode === 'select') {
-        selectorSection.style.display = 'block';
-        customForm.style.display = 'none';
+        if (selectorSection) selectorSection.style.display = 'block';
+        if (customForm) customForm.style.display = 'none';
         
         // Load products if not already loaded
         if (!window.topikoApp.productsLoaded) {
             loadProductSelector();
         }
     } else {
-        selectorSection.style.display = 'none';
-        customForm.style.display = 'block';
+        if (selectorSection) selectorSection.style.display = 'none';
+        if (customForm) customForm.style.display = 'block';
     }
     
-    window.TopikoUtils.addDebugLog(`📱 Product mode switched to: ${mode}`);
+    // Safe debug logging
+    if (window.TopikoUtils && window.TopikoUtils.addDebugLog) {
+        window.TopikoUtils.addDebugLog(`📱 Product mode switched to: ${mode}`);
+    } else {
+        console.log(`📱 Product mode switched to: ${mode}`);
+    }
 }
 
 function loadProductSelector() {
