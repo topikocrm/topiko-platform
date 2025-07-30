@@ -1269,5 +1269,90 @@
         initializeFOMONotifications();
     });
     </script>
+    <!-- Add this script right before </body> tag in lead-form.html -->
+<script>
+// EMERGENCY FIX for selectLanguageWithTranslation function
+console.log('🚨 Loading emergency language selection fix...');
+
+// Check if function exists in TopikoTranslations
+if (window.TopikoTranslations && window.TopikoTranslations.selectLanguageWithTranslation) {
+    console.log('✅ Found function in TopikoTranslations, making it global');
+    window.selectLanguageWithTranslation = window.TopikoTranslations.selectLanguageWithTranslation;
+} else {
+    console.log('⚠️ Creating emergency selectLanguageWithTranslation function');
+    
+    // Emergency implementation
+    window.selectLanguageWithTranslation = function(lang, element) {
+        console.log('🚨 Emergency language selection:', lang);
+        
+        try {
+            // Basic validation
+            if (!lang || !element) {
+                console.error('Missing parameters');
+                return;
+            }
+            
+            // Update UI
+            document.querySelectorAll('.language-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            // Set language if TopikoTranslations is available
+            if (window.TopikoTranslations && window.TopikoTranslations.setLanguage) {
+                window.TopikoTranslations.setLanguage(lang);
+            }
+            
+            // Store selection
+            if (!window.topikoApp) window.topikoApp = {};
+            window.topikoApp.selectedLanguage = lang;
+            
+            // Simple text updates for Hindi
+            if (lang === 'hi') {
+                setTimeout(() => {
+                    // Update key elements manually
+                    const tagline = document.querySelector('[data-translate="welcome.tagline"]');
+                    if (tagline) {
+                        tagline.textContent = 'भारतीय SMBs के लिए संपूर्ण बिजनेस प्लेटफॉर्म';
+                    }
+                    
+                    const tryButton = document.querySelector('[data-translate="welcome.tryFreeButton"]');
+                    if (tryButton) {
+                        tryButton.textContent = 'मुफ्त में शुरू करें';
+                    }
+                }, 100);
+            }
+            
+            // Navigate to goals screen
+            setTimeout(() => {
+                if (window.TopikoUtils && window.TopikoUtils.showScreen) {
+                    window.TopikoUtils.showScreen('goals');
+                } else {
+                    // Manual navigation
+                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                    const goalsScreen = document.getElementById('goals');
+                    if (goalsScreen) {
+                        goalsScreen.classList.add('active');
+                    }
+                }
+            }, 1500);
+            
+            console.log('✅ Emergency language selection completed');
+            
+        } catch (error) {
+            console.error('❌ Emergency function error:', error);
+        }
+    };
+}
+
+// Test the function
+setTimeout(() => {
+    if (typeof selectLanguageWithTranslation === 'function') {
+        console.log('✅ selectLanguageWithTranslation is now available globally');
+    } else {
+        console.error('❌ selectLanguageWithTranslation still not available');
+    }
+}, 2000);
+</script>
 </body>
 </html>
