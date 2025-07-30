@@ -39,16 +39,16 @@
         <div id="notificationContent"></div>
     </div>
 
-    <!-- FOMO Notification System - POSITIONED TOP-RIGHT FOR DESKTOP VISIBILITY -->
-    <div class="fomo-notification" id="fomoNotification" style="position: fixed; top: 20px; right: 20px; transform: none; z-index: 999; max-width: 280px; left: auto; bottom: auto;">
+    <!-- FOMO Notification System - POSITIONED BOTTOM-LEFT WITH AUTO-HIDE -->
+    <div class="fomo-notification" id="fomoNotification" style="position: fixed; bottom: 20px; left: 20px; transform: translateX(-400px); z-index: 999; max-width: 320px; transition: all 0.5s ease;">
         <div class="fomo-header">
             <div class="fomo-icon"></div>
-            <div class="fomo-status">Just Registered</div>
+            <div class="fomo-status">New Member</div>
         </div>
         <div class="fomo-content" id="fomoContent">
-            <span class="business-name">Vasavi Silks</span> from <span class="business-location">Mysore</span> just went live with help of Topiko
+            <span class="business-name">TrendyWear Collection</span> from <span class="business-location">Pune</span> joined our platform with help of Topiko
         </div>
-        <div class="fomo-time" id="fomoTime">2 minutes ago</div>
+        <div class="fomo-time" id="fomoTime">5 minutes ago</div>
     </div>
 
     <!-- FOMO Counter -->
@@ -288,7 +288,7 @@
                     </div>
 
                     <button class="submit-button" onclick="submitRegistration()">
-                        Create Free Account
+                        Show my Business online
                     </button>
                 </div>
             </section>
@@ -445,15 +445,25 @@
                     
                     <!-- Selection Summary -->
                     <div class="selection-summary" id="selectionSummary" style="display: none;">
-                        <div class="summary-title">📊 Your Selection Summary</div>
-                        <div class="summary-content">
-                            <div class="summary-item">
-                                <span>Categories: </span>
-                                <span class="summary-count" id="categoriesCount">0</span>
+                        <div style="display: flex; gap: 2rem; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <div class="summary-title">📊 Your Selection Summary</div>
+                                <div class="summary-content">
+                                    <div class="summary-item">
+                                        <span>Categories: </span>
+                                        <span class="summary-count" id="categoriesCount">0</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span>Subcategories: </span>
+                                        <span class="summary-count" id="subcategoriesCount">0</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="summary-item">
-                                <span>Subcategories: </span>
-                                <span class="summary-count" id="subcategoriesCount">0</span>
+                            <!-- FOMO Success Message -->
+                            <div style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 2px solid #10b981; border-radius: 12px; padding: 1rem; min-width: 280px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);">
+                                <div style="color: #065f46; font-weight: 600; font-size: 0.9rem; line-height: 1.4; text-align: center;">
+                                    Businesses like <span style="color: #059669; font-weight: 700;">234a</span> got <span style="color: #059669; font-weight: 700;">43%</span> more customers after going online. Want to see how?
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -822,9 +832,9 @@
                 </h2>
                 
                 <!-- UPDATED: Goals on separate lines -->
-                <div style="color: #553c9a; font-size: 1rem; font-weight: 500; margin-bottom: 1.5rem; line-height: 1.8; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;">
+                <div style="color: #553c9a; font-size: 1rem; font-weight: 500; margin-bottom: 1.5rem; line-height: 1.8;">
                     Now let's show you how Topiko can help with:
-                    <div id="selectedGoalsListModal" style="margin-top: 1rem;">
+                    <div id="selectedGoalsListModal" style="margin: 1rem 0; padding-left: 1rem;">
                         <!-- Goals will be populated here on separate lines -->
                     </div>
                     for your business — one step at a time
@@ -1174,10 +1184,55 @@
             };
             
             goalsList.innerHTML = selectedGoals.map(goal => 
-                `<div style="margin: 0.3rem 0;">${goalIcons[goal] || goal}</div>`
+                `<div style="margin: 0.5rem 0; color: #6b46c1; font-weight: 600;">${goalIcons[goal] || goal}</div>`
             ).join('');
         }
     }
+
+    // FOMO notification auto-show/hide functionality
+    function initializeFOMONotifications() {
+        const fomoNotification = document.getElementById('fomoNotification');
+        if (!fomoNotification) return;
+
+        // Show FOMO notification initially after 3 seconds
+        setTimeout(() => {
+            fomoNotification.style.transform = 'translateX(0)';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                fomoNotification.style.transform = 'translateX(-400px)';
+                
+                // Show again every 30 seconds
+                setInterval(() => {
+                    fomoNotification.style.transform = 'translateX(0)';
+                    setTimeout(() => {
+                        fomoNotification.style.transform = 'translateX(-400px)';
+                    }, 5000);
+                }, 30000);
+                
+            }, 5000);
+        }, 3000);
+    }
+
+    // Initialize categories when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load categories when categories screen is shown
+        const originalShowScreen = window.TopikoUtils?.showScreen;
+        if (originalShowScreen) {
+            window.TopikoUtils.showScreen = function(screenId) {
+                originalShowScreen.call(this, screenId);
+                if (screenId === 'categories') {
+                    setTimeout(() => loadCategories(), 100);
+                }
+            };
+        }
+        
+        // Initialize lead score widget text
+        updateLeadScoreWidget();
+        
+        // Initialize FOMO notifications
+        initializeFOMONotifications();
+    });
     </script>
 </body>
 </html>
