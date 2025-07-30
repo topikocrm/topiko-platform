@@ -12,7 +12,7 @@
 
 // Supabase Configuration
 const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.YOUR_ACTUAL_KEY_HERE'; // ← Replace with your real key
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k'; // ← Replace with your real key
 
 // Initialize Supabase Client (CORRECT WAY)
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
