@@ -1244,5 +1244,71 @@ console.log('🌍 Topiko Translation System Loaded - Hindi Complete!');
 console.log('📊 Translation Stats:');
 console.log('- English: ✅ Complete');
 console.log('- Hindi (हिन्दी): ✅ Complete'); 
-console.log('- Telugu (తెలుగు): ⏳ Pending');
-console.log('- Tamil (தமிழ்): ⏳ Pending');
+
+// ========================================
+// HINDI LANGUAGE SELECTION FIX
+// Add this code to the END of your translations.js file
+// ========================================
+
+// Override the language selection function to actually work
+window.selectLanguageWithTranslation = function(lang, element) {
+    console.log(`🌍 Selecting language: ${lang}`);
+    
+    // Update UI selection
+    document.querySelectorAll('.language-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    element.classList.add('selected');
+    
+    // Store language choice
+    if (!window.topikoApp) window.topikoApp = {};
+    window.topikoApp.selectedLanguage = lang;
+    currentLanguage = lang;
+    
+    // Apply Hindi translations immediately
+    if (lang === 'hi') {
+        console.log('🔄 Applying Hindi translations...');
+        
+        // Update all data-translate elements
+        const elements = document.querySelectorAll('[data-translate]');
+        elements.forEach(element => {
+            const keyPath = element.getAttribute('data-translate');
+            const translation = getTranslation(keyPath);
+            
+            if (translation && translation !== keyPath) {
+                if (element.tagName === 'INPUT' && (element.type === 'button' || element.type === 'submit')) {
+                    element.value = translation;
+                } else if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    element.placeholder = translation;
+                } else {
+                    element.textContent = translation;
+                }
+            }
+        });
+        
+        console.log('✅ Hindi translations applied successfully');
+    }
+    
+    // Show notification
+    const languageNames = { 'en': 'English', 'hi': 'हिन्दी', 'te': 'తెలుగు', 'ta': 'தமிழ்' };
+    if (window.TopikoUtils && window.TopikoUtils.showNotification) {
+        window.TopikoUtils.showNotification(`Language: ${languageNames[lang]}`, 'success');
+    }
+    
+    if (window.TopikoUtils && window.TopikoUtils.calculateLeadScore) {
+        window.TopikoUtils.calculateLeadScore();
+    }
+    
+    // Navigate to goals screen
+    setTimeout(() => {
+        if (window.TopikoUtils && window.TopikoUtils.showScreen) {
+            window.TopikoUtils.showScreen('goals');
+        } else {
+            document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+            const goalsScreen = document.getElementById('goals');
+            if (goalsScreen) goalsScreen.classList.add('active');
+        }
+    }, 1500);
+};
+
+console.log('🔧 Hindi Language Selection Fix Applied - Ready to use!');
