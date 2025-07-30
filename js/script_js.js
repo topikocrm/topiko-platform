@@ -219,23 +219,17 @@ async function completeRegistration() {
     window.TopikoUtils.showNotification('Creating your free account...', 'info');
     
     // Complete user data with all new fields
-    const userData = {
-        name, email, phone,
-        business_name: business,
-        business_type: type,
-        business_category: category,
-        address: address || null,
-        selected_language: window.topikoApp.selectedLanguage,
-        selected_goals: window.topikoApp.selectedGoals,
-       // selected_categories: window.topikoApp.selectedCategories || [], 
-       // selected_subcategories: window.topikoApp.selectedSubcategories || [], 
-        //timeline: window.topikoApp.qualifyingAnswers.timeline,
-        //budget_range: window.topikoApp.qualifyingAnswers.budget,
-        //decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes',
-        //online_presence: window.topikoApp.qualifyingAnswers.online_presence
-       lead_status: 'New',
-       created_at: new Date().toISOString()
-    };
+const userData = {
+    name, email, phone,
+    business_name: business,
+    business_type: type,
+    business_category: category,
+    address: address || null,
+    selected_language: window.topikoApp.selectedLanguage,
+    selected_goals: window.topikoApp.selectedGoals,
+    created_at: new Date().toISOString()
+    // ✅ No lead_status here - REMOVED
+};
 
     const userResult = await window.TopikoUtils.saveToSupabase(userData, 'users');
     
