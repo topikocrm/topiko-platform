@@ -212,7 +212,9 @@ async function completeRegistration() {
         address: address || null,
         selected_language: window.topikoApp.selectedLanguage,
         selected_goals: window.topikoApp.selectedGoals,
-        created_at: new Date().toISOString(),
+        selected_categories: window.topikoApp.selectedCategories || [], 
+        selected_subcategories: window.topikoApp.selectedSubcategories || [], 
+         created_at: new Date().toISOString(),
          timeline: window.topikoApp.qualifyingAnswers.timeline,
           budget_range: window.topikoApp.qualifyingAnswers.budget,
           decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes',
@@ -232,7 +234,13 @@ async function completeRegistration() {
             session_duration_minutes: Math.round((Date.now() - window.topikoApp.sessionStartTime) / 60000),
             page_views: window.topikoApp.pageViews,
             selected_goals: window.topikoApp.selectedGoals,
-            lead_status: 'New'
+            selected_categories: window.topikoApp.selectedCategories || [], 
+             selected_subcategories: window.topikoApp.selectedSubcategories || [], 
+             lead_status: 'New',
+           timeline: window.topikoApp.qualifyingAnswers.timeline, 
+          budget_range: window.topikoApp.qualifyingAnswers.budget, 
+          decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes', 
+          online_presence: window.topikoApp.qualifyingAnswers.online_presence 
         };
         
         await window.TopikoUtils.saveToSupabase(leadData, 'lead_intelligence');
@@ -1568,6 +1576,7 @@ async function completeSetup() {
         business_name: window.topikoApp.businessName,
         selected_goals: window.topikoApp.selectedGoals,
         selected_categories: window.topikoApp.selectedCategories,
+       selected_subcategories: window.topikoApp.selectedSubcategories || [],
         products_count: window.topikoApp.userProducts.length,
         selected_theme: window.topikoApp.selectedTheme,
         qualifying_answers: window.topikoApp.qualifyingAnswers,
