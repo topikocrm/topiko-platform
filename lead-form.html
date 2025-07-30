@@ -768,6 +768,31 @@
 
             <!-- COMPLETION SCREEN - ENHANCED -->
            <!-- COMPLETION SCREEN - ENHANCED WITH SPECIAL OFFERS -->
+<!-- ========================================
+   FIND AND REPLACE THIS ENTIRE SECTION IN YOUR lead-form.html
+   ======================================== -->
+
+<!-- 🔍 SEARCH FOR THIS LINE TO START: -->
+<!-- COMPLETION SCREEN - ENHANCED -->
+<section class="screen" id="completion">
+    <div class="content-card">
+        <!-- DELETE EVERYTHING FROM HERE... -->
+        
+        <!-- Your existing completion screen content -->
+        <!-- This might include congratulations message -->
+        <!-- Choice buttons -->
+        <!-- etc. -->
+        
+        <!-- ...ALL THE WAY DOWN TO HERE -->
+    </div>
+</section>
+<!-- 🔍 STOP DELETING AT THIS LINE -->
+
+<!-- ========================================
+   REPLACE THE ABOVE SECTION WITH THE NEW HTML BELOW
+   ======================================== -->
+
+<!-- COMPLETION SCREEN - INTERACTIVE WITH SELECTABLE OFFERS (NEW VERSION) -->
 <section class="screen" id="completion">
     <div class="content-card">
         <div style="text-align: center;">
@@ -781,14 +806,16 @@
                 Your business setup is complete! Our team will now create your professional online presence.
             </p>
 
-            <!-- TODAY'S SPECIAL OFFERS SECTION -->
+            <!-- TODAY'S SPECIAL OFFERS SECTION - NOW SELECTABLE -->
             <div class="offers-section-background">
                 <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
                     <div style="font-size: 2rem; margin-right: 0.5rem;">🎁</div>
-                    <h3 style="color: #d97706; font-size: 1.4rem; margin: 0; font-weight: 700;">Today's Exclusive Offers for You!</h3>
+                    <h3 style="color: #d97706; font-size: 1.4rem; margin: 0; font-weight: 700;">Choose Your FREE Bonus Offer!</h3>
                 </div>
                 
-                <!-- Random Offers Container -->
+                <p style="color: #92400e; font-size: 0.9rem; margin-bottom: 1.5rem;">Select one offer that interests you most:</p>
+                
+                <!-- Selectable Offers Container -->
                 <div id="specialOffersContainer">
                     <!-- Offers will be populated here by JavaScript -->
                     <div class="special-offer-item">
@@ -803,36 +830,154 @@
                 <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: center;">
                     🔥 Limited Time: These offers expire in <span id="offerTimer" style="color: #dc2626; font-weight: 700;">23:45:12</span>
                 </div>
-            </div>
 
-            <!-- CHOICE SELECTION -->
-            <div style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); border: 2px solid #6366f1; border-radius: 16px; padding: 2rem; margin: 2rem 0;">
-                <h3 style="color: #4338ca; font-size: 1.3rem; margin-bottom: 1rem;">🎯 Choose Your Next Step:</h3>
-                
-                <div style="display: grid; gap: 1rem; margin-bottom: 1.5rem;">
-                    <div class="offer-option" onclick="selectOffer('talk_team', this)">
-                        <label style="cursor: pointer; display: block; padding: 1rem; background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(99, 102, 241, 0.2); border-radius: 12px; font-weight: 600; color: #4338ca; text-align: center;">
-                            <input type="radio" name="completion_offer" value="talk_team" style="display: none;">
-                            📞 I want to talk to Topiko Team & Claim Offers!
-                        </label>
-                    </div>
-                    
-                    <div class="offer-option" onclick="selectOffer('self_explore', this)">
-                        <label style="cursor: pointer; display: block; padding: 1rem; background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(99, 102, 241, 0.2); border-radius: 12px; font-weight: 600; color: #4338ca; text-align: center;">
-                            <input type="radio" name="completion_offer" value="self_explore" style="display: none;">
-                            🚀 I want to explore by myself (Skip Offers)
-                        </label>
+                <!-- Selected Offer Display -->
+                <div id="selectedOfferDisplay" style="display: none; background: rgba(34, 197, 94, 0.1); border: 2px solid #10b981; border-radius: 12px; padding: 1rem; margin: 1rem 0;">
+                    <div style="display: flex; align-items: center; justify-content: center; color: #047857; font-weight: 600; font-size: 0.9rem;">
+                        ✅ Selected: <span id="selectedOfferName" style="margin-left: 0.5rem; font-weight: 700;"></span>
                     </div>
                 </div>
+            </div>
 
-                <button onclick="handleCompletionChoice()" id="completionChoiceBtn" disabled 
-                        style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem; opacity: 0.5; width: 100%;">
-                    Continue
-                </button>
+            <!-- NEXT STEP ACTIONS - NO CONTINUE BUTTON -->
+            <div style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); border: 2px solid #6366f1; border-radius: 16px; padding: 2rem; margin: 2rem 0;">
+                <h3 style="color: #4338ca; font-size: 1.3rem; margin-bottom: 1rem;">🎯 How would you like to proceed?</h3>
+                
+                <div style="display: grid; gap: 1rem;">
+                    <button class="action-button claim-offer-btn" onclick="openCallScheduler()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1.25rem; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
+                        📞 Book a Call to Claim My Selected Offer
+                        <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Schedule a convenient time with our team</div>
+                    </button>
+                    
+                    <button class="action-button explore-btn" onclick="openExploreForm()" style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 1.25rem; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
+                        🚀 I want to explore on my own
+                        <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Tell us what you're looking for</div>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- THEN ADD THE NEW MODALS AFTER THE COMPLETION SECTION -->
+
+<!-- UPDATED: Enhanced Call Scheduler Modal -->
+<div class="modal-overlay" id="dateTimeModal">
+    <div class="modal-content" style="max-width: 500px;">
+        <button class="modal-close" onclick="closeModal('dateTimeModal')">×</button>
+        
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem;">📅</div>
+            <h3 style="color: #6b46c1; margin-bottom: 0.5rem;">Schedule Your Call to Claim Offer</h3>
+            <div id="schedulerSelectedOffer" style="background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 8px; padding: 0.75rem; margin: 1rem 0; color: #047857; font-weight: 600; font-size: 0.9rem;">
+                Selected Offer: <span id="schedulerOfferName">Free Logo Design</span>
+            </div>
+            <p style="color: #64748b; font-size: 0.9rem;">Select a convenient time for our team to contact you:</p>
+        </div>
+        
+        <div class="time-slots-grid" id="timeSlotsGrid">
+            <!-- Today -->
+            <div class="time-slot" onclick="selectTimeSlot(this, 'today-10am')">
+                <div class="slot-date">Today</div>
+                <div class="slot-time">10:00 AM</div>
+            </div>
+            <div class="time-slot" onclick="selectTimeSlot(this, 'today-2pm')">
+                <div class="slot-date">Today</div>
+                <div class="slot-time">2:00 PM</div>
+            </div>
+            <div class="time-slot" onclick="selectTimeSlot(this, 'today-4pm')">
+                <div class="slot-date">Today</div>
+                <div class="slot-time">4:00 PM</div>
+            </div>
+            
+            <!-- Tomorrow -->
+            <div class="time-slot" onclick="selectTimeSlot(this, 'tomorrow-9am')">
+                <div class="slot-date">Tomorrow</div>
+                <div class="slot-time">9:00 AM</div>
+            </div>
+            <div class="time-slot" onclick="selectTimeSlot(this, 'tomorrow-11am')">
+                <div class="slot-date">Tomorrow</div>
+                <div class="slot-time">11:00 AM</div>
+            </div>
+            <div class="time-slot" onclick="selectTimeSlot(this, 'tomorrow-3pm')">
+                <div class="slot-date">Tomorrow</div>
+                <div class="slot-time">3:00 PM</div>
+            </div>
+            
+            <!-- Day After Tomorrow -->
+            <div class="time-slot" onclick="selectTimeSlot(this, 'dayafter-10am')">
+                <div class="slot-date">Day After</div>
+                <div class="slot-time">10:00 AM</div>
+            </div>
+            <div class="time-slot" onclick="selectTimeSlot(this, 'dayafter-1pm')">
+                <div class="slot-date">Day After</div>
+                <div class="slot-time">1:00 PM</div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem;">
+            <button onclick="confirmScheduleAndComplete()" id="confirmScheduleBtn" disabled 
+                    style="flex: 1; background: #10b981; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; opacity: 0.5; font-weight: 600;">
+                Complete & Schedule Call
+            </button>
+            <button onclick="closeModal('dateTimeModal')" 
+                    style="flex: 1; background: #64748b; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- UPDATED: Enhanced Explore Form Modal -->
+<div class="modal-overlay" id="reasonModal">
+    <div class="modal-content" style="max-width: 500px;">
+        <button class="modal-close" onclick="closeModal('reasonModal')">×</button>
+        
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem;">💭</div>
+            <h3 style="color: #6b46c1; margin-bottom: 1rem;">Tell us what you're looking for</h3>
+            <p style="color: #64748b; font-size: 0.9rem;">Help us understand your business needs better:</p>
+        </div>
+        
+        <div class="reason-options" style="margin-bottom: 1.5rem;">
+            <div class="reason-option" onclick="selectReason('budget', this)">
+                <div class="reason-icon">💰</div>
+                <div class="reason-text">Budget considerations</div>
+            </div>
+            <div class="reason-option" onclick="selectReason('timing', this)">
+                <div class="reason-icon">⏰</div>
+                <div class="reason-text">Need more time to decide</div>
+            </div>
+            <div class="reason-option" onclick="selectReason('looking_else', this)">
+                <div class="reason-icon">🔍</div>
+                <div class="reason-text">Looking for something specific</div>
+            </div>
+            <div class="reason-option" onclick="selectReason('just_browsing', this)">
+                <div class="reason-icon">👀</div>
+                <div class="reason-text">Just browsing for now</div>
+            </div>
+        </div>
+        
+        <!-- Comment section for specific needs -->
+        <div id="reasonComments" style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 500;">Additional details (optional):</label>
+            <textarea id="reasonText" rows="3" 
+                      style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; resize: vertical; font-family: inherit;"
+                      placeholder="Tell us more about what you're looking for..."></textarea>
+        </div>
+        
+        <div style="text-align: center; display: flex; gap: 1rem;">
+            <button onclick="submitReasonAndComplete()" id="submitReasonBtn" 
+                    style="flex: 1; background: #6366f1; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                Complete Submission
+            </button>
+            <button onclick="closeModal('reasonModal')" 
+                    style="flex: 1; background: #64748b; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
         </main>
     </div>
 
