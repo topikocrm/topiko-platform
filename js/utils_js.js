@@ -314,40 +314,33 @@ function addPersonalization(screenId) {
     
     if (screenId === 'qualifying-questions' && name) {
         const titleEl = document.getElementById('qualifyingTitle');
-        if (titleEl && window.TopikoTranslations) {
-            const translatedTitle = window.TopikoTranslations.getTranslation('personalized.qualifyingTitle', { name: name });
-            titleEl.textContent = translatedTitle;
+        if (titleEl) {
+            titleEl.innerHTML = `Hi ${name}! Let's setup things for you`;
         }
     }
     
     if (screenId === 'categories' && business) {
         const titleEl = document.getElementById('categoriesTitle');
-        if (titleEl && window.TopikoTranslations) {
-            const translatedTitle = window.TopikoTranslations.getTranslation('personalized.categoriesTitle', { business: business });
-            titleEl.textContent = translatedTitle;
+        if (titleEl) {
+            titleEl.innerHTML = `Select Categories for ${business}`;
         }
     }
     
     if (screenId === 'products' && business) {
         const titleEl = document.getElementById('productsTitle');
         const formTitleEl = document.getElementById('productFormTitle');
-        
-        if (titleEl && window.TopikoTranslations) {
-            const translatedTitle = window.TopikoTranslations.getTranslation('personalized.productsTitle', { business: business });
-            titleEl.textContent = translatedTitle;
+        if (titleEl) {
+            titleEl.innerHTML = `Add Products for ${business}`;
         }
-        
-        if (formTitleEl && window.TopikoTranslations) {
-            const translatedFormTitle = window.TopikoTranslations.getTranslation('personalized.productFormTitle', { business: business });
-            formTitleEl.textContent = translatedFormTitle;
+        if (formTitleEl) {
+            formTitleEl.innerHTML = `Add ${business}'s Products/Services`;
         }
     }
     
     if (screenId === 'themes' && business) {
         const titleEl = document.getElementById('themesTitle');
-        if (titleEl && window.TopikoTranslations) {
-            const translatedTitle = window.TopikoTranslations.getTranslation('personalized.themesTitle', { business: business });
-            titleEl.textContent = translatedTitle;
+        if (titleEl) {
+            titleEl.innerHTML = `Choose ${business}'s Theme`;
         }
     }
 }
