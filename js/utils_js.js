@@ -1,32 +1,17 @@
 /* ========================================
-   TOPIKO LEAD FORM - UTILITY FUNCTIONS
+   TOPIKO LEAD FORM - UTILITY FUNCTIONS - FIXED VERSION
    ======================================== */
+
+// ========================================
+// CRITICAL FIX: Initialize debugLogs FIRST
+// ========================================
+
+// Initialize debug logs array IMMEDIATELY
+let debugLogs = [];
 
 // ========================================
 // DEBUG & LOGGING UTILITIES
 // ========================================
-
-/* ========================================
-   SUPABASE INITIALIZATION
-   ======================================== */
-
-// Supabase Configuration
-const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k'; // ← Replace with your real key
-
-// Initialize Supabase Client (CORRECT WAY)
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// Debug logging
-console.log('✅ Supabase client initialized');
-console.log('🔑 URL:', SUPABASE_URL);
-console.log('🔑 Key length:', SUPABASE_ANON_KEY.length);
-
-/* ========================================
-   YOUR EXISTING UTILITY FUNCTIONS CONTINUE BELOW
-   ======================================== */
-
-// Your existing saveToSupabase function and other utilities...
 
 function addDebugLog(message, type = 'info') {
     const timestamp = new Date().toLocaleTimeString();
@@ -47,7 +32,30 @@ function addDebugLog(message, type = 'info') {
 
 function toggleDebugPanel() {
     const panel = document.getElementById('debugPanel');
-    panel.classList.toggle('show');
+    if (panel) {
+        panel.classList.toggle('show');
+    }
+}
+
+/* ========================================
+   SUPABASE INITIALIZATION
+   ======================================== */
+
+// Supabase Configuration
+const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc3MDI0ODMsImV4cCI6MjA1MzI3ODQ4M30.YOUR_ACTUAL_KEY_HERE'; // ← Replace with your real key
+
+// Initialize Supabase Client with error handling
+let supabase;
+try {
+    if (window.supabase && window.supabase.createClient) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        addDebugLog('✅ Supabase client initialized successfully', 'success');
+    } else {
+        addDebugLog('❌ Supabase library not loaded', 'error');
+    }
+} catch (error) {
+    addDebugLog(`❌ Supabase initialization failed: ${error.message}`, 'error');
 }
 
 // ========================================
@@ -102,17 +110,15 @@ document.addEventListener('click', function(e) {
 // DATABASE UTILITIES
 // ========================================
 
-// Replace your saveToSupabase function with this debug version:
 async function saveToSupabase(data, table) {
-    // 🔍 DEBUG LOGGING - Remove after fixing
-    console.group(`🔍 DEBUGGING ${table.toUpperCase()} INSERTION`);
-    console.log('📤 Raw data being sent:', data);
-    console.log('📤 JSON stringified data:', JSON.stringify(data, null, 2));
-    console.log('📍 Target table:', table);
-    console.log('🔑 Supabase URL:', typeof SUPABASE_URL !== 'undefined' ? SUPABASE_URL : 'undefined');
-    console.log('🔑 API Key exists:', typeof SUPABASE_ANON_KEY !== 'undefined' && SUPABASE_ANON_KEY.length > 0);
-    console.log('🔑 API Key length:', typeof SUPABASE_ANON_KEY !== 'undefined' ? SUPABASE_ANON_KEY.length : 0);
-    console.log('⏰ Timestamp:', new Date().toISOString());
+    // 🔍 DEBUG LOGGING
+    addDebugLog(`🔍 DEBUGGING ${table.toUpperCase()} INSERTION`, 'info');
+    addDebugLog(`📤 Data: ${JSON.stringify(data, null, 2)}`, 'info');
+    
+    if (!supabase) {
+        addDebugLog('❌ Supabase client not initialized', 'error');
+        return { success: false, error: 'Supabase not initialized' };
+    }
     
     try {
         const { data: result, error } = await supabase
@@ -121,40 +127,24 @@ async function saveToSupabase(data, table) {
             .select();
         
         if (error) {
-            console.error('❌ === SUPABASE ERROR DETAILS ===');
-            console.error('❌ Full error object:', error);
-            console.error('❌ Error code:', error.code);
-            console.error('❌ Error message:', error.message);
-            console.error('❌ Error details:', error.details);
-            console.error('❌ Error hint:', error.hint);
-            console.error('❌ Failed data:', data);
-            console.error('❌ === END ERROR DETAILS ===');
-            console.groupEnd();
+            addDebugLog(`❌ Supabase error: ${error.message}`, 'error');
+            console.error('❌ Full error:', error);
             return { success: false, error };
         }
         
-        console.log('✅ === SUCCESS ===');
-        console.log('✅ Inserted data:', result);
-        console.log('✅ Record ID:', result[0]?.id);
-        console.groupEnd();
+        addDebugLog(`✅ Data saved to ${table}: ${result[0]?.id}`, 'success');
         return { success: true, data: result };
         
     } catch (networkError) {
-        console.error('❌ === NETWORK/JS ERROR ===');
-        console.error('❌ Network error:', networkError);
-        console.error('❌ Error name:', networkError.name);
-        console.error('❌ Error message:', networkError.message);
-        console.error('❌ Stack trace:', networkError.stack);
-        console.groupEnd();
+        addDebugLog(`❌ Network error: ${networkError.message}`, 'error');
         return { success: false, error: networkError };
     }
 }
 
-// 🧪 DEBUG TEST FUNCTIONS - Remove after fixing
+// 🧪 DEBUG TEST FUNCTIONS
 async function testDatabaseConnection() {
-    console.log('🧪 === DATABASE CONNECTION TEST ===');
+    addDebugLog('🧪 Testing database connection...', 'info');
     
-    // Test 1: Ultra minimal data
     const minimalData = {
         name: 'Debug Test ' + Date.now(),
         email: 'debug' + Date.now() + '@test.com',
@@ -162,18 +152,10 @@ async function testDatabaseConnection() {
         business_name: 'Debug Business'
     };
     
-    console.log('🧪 Testing minimal insert...');
     const result = await saveToSupabase(minimalData, 'users');
-    console.log('🧪 Test result:', result);
-    
+    addDebugLog(`🧪 Test result: ${result.success ? 'SUCCESS' : 'FAILED'}`, result.success ? 'success' : 'error');
     return result;
 }
-
-// Make test function globally available
-if (typeof window !== 'undefined') {
-    window.testDatabaseConnection = testDatabaseConnection;
-}
-
 
 // ========================================
 // SCREEN NAVIGATION UTILITIES
@@ -188,7 +170,7 @@ function showScreen(screenId) {
     if (targetScreen) {
         targetScreen.classList.add('active');
         
-        // Update global variables (these will be defined in script.js)
+        // Update global variables (safe check)
         if (typeof window.topikoApp !== 'undefined') {
             window.topikoApp.pageViews++;
             
@@ -209,8 +191,10 @@ function showScreen(screenId) {
             }
             
             if (screenId === 'categories') {
-                loadCategories();
-                // Start dynamic messages after a short delay to ensure DOM is ready
+                if (typeof loadCategories === 'function') {
+                    loadCategories();
+                }
+                // Start dynamic messages after a short delay
                 setTimeout(() => {
                     updateMotivationalMessages();
                 }, 200);
@@ -241,6 +225,13 @@ function showScreen(screenId) {
 
 function updateProgressBar(activeStep) {
     const progressElements = document.querySelectorAll('.progress-step');
+    
+    // Safe check for config
+    if (!window.TopikoConfig || !window.TopikoConfig.STEP_CONFIG) {
+        addDebugLog('⚠️ TopikoConfig not loaded', 'error');
+        return;
+    }
+    
     const activeProgressIndex = window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.indexOf(activeStep);
     
     progressElements.forEach((step, index) => {
@@ -261,7 +252,7 @@ function updateProgressBar(activeStep) {
 
 function updateBackButton() {
     const backButton = document.getElementById('backButton');
-    if (!window.topikoApp) return;
+    if (!window.topikoApp || !backButton) return;
     
     const canGoBack = window.topikoApp.navigationHistory.length > 1 && window.topikoApp.currentStep !== 'welcome';
     
@@ -276,9 +267,7 @@ function goBack() {
     if (!window.topikoApp) return;
     
     if (window.topikoApp.navigationHistory.length > 1) {
-        // Remove current step from history
         window.topikoApp.navigationHistory.pop();
-        // Get previous step
         const previousStep = window.topikoApp.navigationHistory[window.topikoApp.navigationHistory.length - 1];
         window.topikoApp.currentStep = previousStep;
         showScreen(previousStep);
@@ -288,8 +277,14 @@ function goBack() {
 }
 
 function navigateToStep(stepId) {
+    // Safe check for config
+    if (!window.TopikoConfig || !window.TopikoConfig.STEP_CONFIG) {
+        addDebugLog(`❌ Navigation blocked: TopikoConfig not loaded`, 'error');
+        return;
+    }
+    
     if (!window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.includes(stepId)) {
-        addDebugLog(`❌ Navigation blocked: ${stepId} (not in progress steps)`);
+        addDebugLog(`❌ Navigation blocked: ${stepId} (not in progress steps)`, 'error');
         return;
     }
     
@@ -303,7 +298,7 @@ function navigateToStep(stepId) {
         addDebugLog(`📱 Navigated to: ${stepId} via progress bar`);
     } else {
         showNotification('Complete current step first', 'warning');
-        addDebugLog(`❌ Navigation blocked: ${stepId} (step not available yet)`);
+        addDebugLog(`❌ Navigation blocked: ${stepId} (step not available yet)`, 'error');
     }
 }
 
@@ -441,23 +436,28 @@ function toggleScoreDetails() {
 }
 
 // ========================================
-// FOMO SYSTEM UTILITIES (UPDATED)
+// FOMO SYSTEM UTILITIES
 // ========================================
 
 function getRandomBusinessData() {
+    // Safe check for config
+    if (!window.TopikoConfig) {
+        addDebugLog('⚠️ TopikoConfig not loaded for FOMO system', 'error');
+        return {
+            business: 'TrendyWear Collection',
+            city: 'Mumbai', 
+            template: { text: '{business} from {city} just went live with help of Topiko', status: 'New Member' },
+            message: 'TrendyWear Collection from Mumbai just went live with help of Topiko'
+        };
+    }
+    
     const business = window.TopikoConfig.INDIAN_BUSINESS_NAMES[Math.floor(Math.random() * window.TopikoConfig.INDIAN_BUSINESS_NAMES.length)];
     const city = window.TopikoConfig.INDIAN_CITIES[Math.floor(Math.random() * window.TopikoConfig.INDIAN_CITIES.length)];
     const template = window.TopikoConfig.FOMO_MESSAGE_TEMPLATES[Math.floor(Math.random() * window.TopikoConfig.FOMO_MESSAGE_TEMPLATES.length)];
     
-    // Replace placeholders in the template text
     const message = template.text.replace('{business}', business).replace('{city}', city);
     
-    return {
-        business, 
-        city, 
-        template,
-        message
-    };
+    return { business, city, template, message };
 }
 
 function showFomoNotification() {
@@ -474,7 +474,6 @@ function showFomoNotification() {
     
     const data = getRandomBusinessData();
     
-    // Use the complete message from the template (which already includes "with help of Topiko" etc.)
     contentEl.innerHTML = `<span class="business-name">${data.business}</span> from <span class="business-location">${data.city}</span> ${data.message.split(`${data.business} from ${data.city} `)[1] || data.message.split(`${data.business} in ${data.city} `)[1] || 'just went live with help of Topiko'}`;
     
     timeEl.textContent = `${Math.floor(Math.random() * 15) + 1} minutes ago`;
@@ -550,13 +549,18 @@ function displayProducts() {
         return;
     }
     
+    // Safe check for business category
     const businessCategory = document.getElementById('category')?.value;
-    const categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory];
+    let categoryData = null;
+    
+    if (window.TopikoConfig && window.TopikoConfig.BUSINESS_CATEGORIES && businessCategory) {
+        categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory];
+    }
     
     productsList.innerHTML = window.topikoApp.userProducts.map(product => {
         const categoryName = categoryData?.categories[product.categoryKey]?.name || product.categoryKey;
         const subcategoryName = product.subcategoryKey ? 
-            (window.TopikoConfig.SUBCATEGORY_NAMES[product.subcategoryKey] || product.subcategoryKey) : '';
+            (window.TopikoConfig?.SUBCATEGORY_NAMES?.[product.subcategoryKey] || product.subcategoryKey) : '';
         
         return `
             <div class="product-card">
@@ -623,21 +627,15 @@ let messageInterval = null;
 function updateMotivationalMessages() {
     if (!window.topikoApp) return;
     
-    console.log('🔄 updateMotivationalMessages called, currentStep:', window.topikoApp.currentStep);
-    
     if (window.topikoApp.currentStep !== 'categories') {
-        console.log('❌ Not on categories screen, skipping messages');
         return;
     }
     
     const messagesContainer = document.getElementById('motivationalMessages');
     if (!messagesContainer) {
-        console.error('❌ Messages container not found!');
         addDebugLog('❌ Messages container not found', 'error');
         return;
     }
-    
-    console.log('✅ Messages container found:', messagesContainer);
     
     // Stop any existing interval
     stopMotivationalMessages();
@@ -649,65 +647,59 @@ function updateMotivationalMessages() {
     currentMessageIndex = 0;
     
     // Show first message immediately
-    console.log('🚀 Starting dynamic messages...');
     showNextMessage();
     
-    // Set interval for automatic rotation (3.5 seconds = average of 3-4)
+    // Set interval for automatic rotation
     messageInterval = setInterval(() => {
-        console.log('⏰ Message interval triggered');
         showNextMessage();
     }, 3500);
     
-    addDebugLog('🔄 Dynamic messages started - rotating every 3.5s', 'success');
-    console.log('✅ Dynamic messaging system initialized');
+    addDebugLog('🔄 Dynamic messages started', 'success');
 }
 
 function showNextMessage() {
     if (!window.topikoApp) return;
     
-    console.log('📝 showNextMessage called, index:', currentMessageIndex);
-    
     if (window.topikoApp.currentStep !== 'categories') {
-        console.log('❌ Not on categories screen, stopping messages');
         stopMotivationalMessages();
         return;
     }
     
     const messagesContainer = document.getElementById('motivationalMessages');
-    if (!messagesContainer) {
-        console.error('❌ Messages container not found in showNextMessage!');
-        return;
-    }
+    if (!messagesContainer) return;
     
     const message = generatePersonalizedMessage(currentMessageIndex);
-    console.log('💬 Generated message:', message);
     
-    addDebugLog(`📝 Showing message ${currentMessageIndex + 1}: "${message.substring(0, 30)}..."`, 'info');
+    addDebugLog(`📝 Showing message ${currentMessageIndex + 1}`, 'info');
     
     showNewMessage(message, messagesContainer);
     
-    currentMessageIndex = (currentMessageIndex + 1) % window.TopikoConfig.MOTIVATIONAL_MESSAGE_TEMPLATES.length;
-    console.log('➡️ Next message index will be:', currentMessageIndex);
+    // Safe check for message templates
+    const templateCount = window.TopikoConfig?.MOTIVATIONAL_MESSAGE_TEMPLATES?.length || 5;
+    currentMessageIndex = (currentMessageIndex + 1) % templateCount;
 }
 
 function generatePersonalizedMessage(index) {
-    if (!window.topikoApp) return '';
-    
-    console.log('🎯 generatePersonalizedMessage called with index:', index);
+    if (!window.topikoApp || !window.TopikoConfig?.MOTIVATIONAL_MESSAGE_TEMPLATES) {
+        return 'Select your categories to see how your business will look online!';
+    }
     
     const template = window.TopikoConfig.MOTIVATIONAL_MESSAGE_TEMPLATES[index];
-    const currentProgressIndex = window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.indexOf(window.topikoApp.currentStep);
-    // Calculate remaining steps (categories is index 3, so products=1, themes=2 steps left)
-    const stepsLeft = Math.max(1, window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.length - currentProgressIndex - 1);
+    if (!template) return 'Keep going! Your business is taking shape!';
+    
+    // Safe check for step config
+    const stepConfig = window.TopikoConfig.STEP_CONFIG?.PROGRESS_STEPS || ['goals', 'registration', 'qualifying-questions', 'categories', 'products', 'themes'];
+    const currentProgressIndex = stepConfig.indexOf(window.topikoApp.currentStep);
+    const stepsLeft = Math.max(1, stepConfig.length - currentProgressIndex - 1);
     const plural = stepsLeft !== 1 ? 's' : '';
     const businessDisplayName = window.topikoApp.businessName || 'your business';
     
-    // Get category name without emoji
+    // Get category name
     const categoryDropdown = document.getElementById('category');
     let categoryName = 'your category';
-    if (categoryDropdown && categoryDropdown.value && window.TopikoConfig.BUSINESS_CATEGORIES[categoryDropdown.value]) {
+    if (categoryDropdown && categoryDropdown.value && window.TopikoConfig.BUSINESS_CATEGORIES?.[categoryDropdown.value]) {
         const categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[categoryDropdown.value];
-        categoryName = categoryData.name; // Use clean category name from data
+        categoryName = categoryData.name;
     }
     
     const personalizedMessage = template
@@ -716,21 +708,15 @@ function generatePersonalizedMessage(index) {
         .replace('{businessName}', businessDisplayName)
         .replace('{category}', categoryName);
         
-    console.log(`🎯 Personalization: steps=${stepsLeft}, business="${businessDisplayName}", category="${categoryName}"`);
-    addDebugLog(`🎯 Message ${index + 1}: steps=${stepsLeft}, business="${businessDisplayName}", category="${categoryName}"`, 'info');
     return personalizedMessage;
 }
 
 function showNewMessage(messageText, container) {
-    console.log('🎬 showNewMessage called with:', messageText.substring(0, 50) + '...');
-    
     // Mark existing messages for exit
     const existingMessages = container.querySelectorAll('.motivational-message');
-    console.log('🗑️ Found', existingMessages.length, 'existing messages to remove');
     
-    existingMessages.forEach((msg, i) => {
+    existingMessages.forEach((msg) => {
         if (!msg.classList.contains('exit')) {
-            console.log(`🚪 Marking message ${i} for exit`);
             msg.classList.remove('active');
             msg.classList.add('exit');
         }
@@ -741,19 +727,16 @@ function showNewMessage(messageText, container) {
     messageEl.className = 'motivational-message';
     messageEl.textContent = messageText;
     
-    console.log('➕ Created new message element');
     container.appendChild(messageEl);
     
-    // Trigger slide-in animation after a short delay
+    // Trigger slide-in animation
     setTimeout(() => {
-        console.log('🎞️ Triggering slide-in animation');
         messageEl.classList.add('active');
     }, 100);
     
-    // Clean up old messages after animation completes
+    // Clean up old messages
     setTimeout(() => {
         const oldMessages = container.querySelectorAll('.motivational-message.exit');
-        console.log('🧹 Cleaning up', oldMessages.length, 'old messages');
         oldMessages.forEach(msg => {
             if (msg.parentNode) {
                 msg.parentNode.removeChild(msg);
@@ -766,7 +749,6 @@ function stopMotivationalMessages() {
     if (messageInterval) {
         clearInterval(messageInterval);
         messageInterval = null;
-        console.log('⏹️ Dynamic messages stopped');
         addDebugLog('🔄 Dynamic messages stopped', 'info');
     }
 }
@@ -822,7 +804,7 @@ function updateProductsHelpSection() {
             textEl.innerHTML = `Topiko is helping with free setup for 75 businesses every month. ${claimedCount} claimed for ${monthEl.textContent}. Click here for help!`;
         }
         
-        addDebugLog(`📊 Help section updated: ${claimedCount}/75 claimed (${currentPercentage.toFixed(1)}%)`, 'info');
+        addDebugLog(`📊 Help section updated: ${claimedCount}/75 claimed`, 'info');
     }
 }
 
@@ -872,6 +854,8 @@ function loadSessionData() {
 // ========================================
 
 function initializeTopikoApp() {
+    addDebugLog('🚀 Initializing Topiko App...', 'info');
+    
     // Initialize global app state
     window.topikoApp = {
         // Core variables
@@ -901,19 +885,19 @@ function initializeTopikoApp() {
             timeline: ''
         },
 
-        // NEW: Product Selection System
+        // Product Selection System
         selectedProductIds: [],
         productsLoaded: false,
 
-        // FOMO system
+        // FOMO system - safe defaults
         fomoActive: true,
         fomoTimer: null,
-        businessCounter: window.TopikoConfig.DEFAULTS.BUSINESS_COUNTER,
+        businessCounter: window.TopikoConfig?.DEFAULTS?.BUSINESS_COUNTER || 247,
         lastFomoShow: 0,
-        helpClaimedCount: window.TopikoConfig.DEFAULTS.HELP_CLAIMED_COUNT
+        helpClaimedCount: window.TopikoConfig?.DEFAULTS?.HELP_CLAIMED_COUNT || 47
     };
 
-    addDebugLog('🚀 Topiko App State initialized with Product Selection System', 'success');
+    addDebugLog('✅ Topiko App State initialized successfully', 'success');
 }
 
 // ========================================
@@ -921,7 +905,7 @@ function initializeTopikoApp() {
 // ========================================
 
 window.addEventListener('error', function(e) {
-    addDebugLog(`❌ Error: ${e.error?.message || e.message}`, 'error');
+    addDebugLog(`❌ Global Error: ${e.error?.message || e.message}`, 'error');
 });
 
 // ========================================
@@ -942,6 +926,7 @@ if (typeof window !== 'undefined') {
         
         // Database
         saveToSupabase,
+        testDatabaseConnection,
         
         // Navigation
         showScreen,
@@ -989,4 +974,11 @@ if (typeof window !== 'undefined') {
         // Initialization
         initializeTopikoApp
     };
+    
+    // Make test function globally available
+    window.testDatabaseConnection = testDatabaseConnection;
 }
+
+// Initialize debug system immediately
+addDebugLog('📱 FIXED Topiko Utils loaded successfully', 'success');
+console.log('✅ DEBUG LOGS INITIALIZED - No more debugLogs errors!');
