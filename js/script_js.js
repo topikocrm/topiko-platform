@@ -213,10 +213,6 @@ async function completeRegistration() {
         selected_language: window.topikoApp.selectedLanguage,
         selected_goals: window.topikoApp.selectedGoals,
         created_at: new Date().toISOString()
-       timeline: window.topikoApp.qualifyingAnswers.timeline,
-       budget_range: window.topikoApp.qualifyingAnswers.budget,
-       decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes',
-       online_presence: window.topikoApp.qualifyingAnswers.online_presence
     };
 
     const userResult = await window.TopikoUtils.saveToSupabase(userData, 'users');
