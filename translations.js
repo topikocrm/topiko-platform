@@ -1069,7 +1069,177 @@ if (typeof window !== 'undefined') {
         initializeTranslations();
     }
 }
+// IMMEDIATE FIX - Add this to the END of your translations.js file
 
+// ========================================
+// GLOBAL FUNCTION EXPORT FIX
+// ========================================
+
+// Make the function available globally (not just in TopikoTranslations object)
+window.selectLanguageWithTranslation = selectLanguageWithTranslation;
+
+// Also export other essential functions globally
+window.getTranslation = getTranslation;
+window.setLanguage = setLanguage;
+window.getCurrentLanguage = getCurrentLanguage;
+window.updatePageTranslations = updatePageTranslations;
+window.initializeTranslations = initializeTranslations;
+
+// Enhanced version with better error handling
+function selectLanguageWithTranslation(lang, element) {
+    console.log(`🌍 Selecting language: ${lang}`);
+    
+    try {
+        // Validate inputs
+        if (!lang) {
+            console.error('❌ No language code provided');
+            return false;
+        }
+        
+        if (!element) {
+            console.error('❌ No element provided');
+            return false;
+        }
+
+        // Check if TRANSLATIONS exists
+        if (typeof TRANSLATIONS === 'undefined') {
+            console.error('❌ TRANSLATIONS object not found');
+            return false;
+        }
+
+        // Validate language exists
+        if (!TRANSLATIONS[lang]) {
+            console.error(`❌ Language not supported: ${lang}`);
+            console.log('Available languages:', Object.keys(TRANSLATIONS));
+            return false;
+        }
+
+        // Set the language
+        const success = setLanguage(lang);
+        if (!success) {
+            console.error(`❌ Failed to set language: ${lang}`);
+            return false;
+        }
+
+        // Update global app state
+        if (!window.topikoApp) {
+            window.topikoApp = {};
+        }
+        window.topikoApp.selectedLanguage = lang;
+
+        // Update UI selection state
+        document.querySelectorAll('.language-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        element.classList.add('selected');
+
+        // Show notification
+        const languageNames = {
+            'en': 'English',
+            'hi': 'हिन्दी',
+            'te': 'తెలుగు', 
+            'ta': 'தமிழ்'
+        };
+
+        console.log(`✅ Language set to: ${languageNames[lang]}`);
+
+        // Show notification if TopikoUtils exists
+        if (window.TopikoUtils && window.TopikoUtils.showNotification) {
+            const message = getTranslation('notifications.languageSelected', { language: languageNames[lang] });
+            window.TopikoUtils.showNotification(message, 'success');
+        }
+
+        // Calculate lead score if available
+        if (window.TopikoUtils && window.TopikoUtils.calculateLeadScore) {
+            window.TopikoUtils.calculateLeadScore();
+        }
+
+        // Navigate to goals screen
+        setTimeout(() => {
+            if (window.TopikoUtils && window.TopikoUtils.showScreen) {
+                window.TopikoUtils.showScreen('goals');
+            } else {
+                // Fallback navigation
+                console.log('🔄 Using fallback navigation to goals screen');
+                showGoalsScreenFallback();
+            }
+        }, 1500);
+
+        return true;
+
+    } catch (error) {
+        console.error('❌ Error in selectLanguageWithTranslation:', error);
+        return false;
+    }
+}
+
+// Fallback function to show goals screen
+function showGoalsScreenFallback() {
+    try {
+        // Hide all screens
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+        
+        // Show goals screen
+        const goalsScreen = document.getElementById('goals');
+        if (goalsScreen) {
+            goalsScreen.classList.add('active');
+            console.log('✅ Goals screen shown (fallback method)');
+        } else {
+            console.error('❌ Goals screen element not found');
+        }
+    } catch (error) {
+        console.error('❌ Error in fallback navigation:', error);
+    }
+}
+
+// Enhanced setLanguage function
+function setLanguage(languageCode) {
+    try {
+        if (!TRANSLATIONS[languageCode]) {
+            console.error(`❌ Translation not found for: ${languageCode}`);
+            return false;
+        }
+
+        currentLanguage = languageCode;
+        console.log(`✅ Language set to: ${languageCode}`);
+        
+        // Update page translations
+        updatePageTranslations();
+        
+        // Store in localStorage
+        try {
+            localStorage.setItem('topiko_language', languageCode);
+        } catch (e) {
+            console.warn('⚠️ Could not save language to localStorage');
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('❌ Error setting language:', error);
+        return false;
+    }
+}
+
+// Diagnostic function
+function diagnosticCheck() {
+    console.log('=== DIAGNOSTIC CHECK ===');
+    console.log('TRANSLATIONS defined:', typeof TRANSLATIONS !== 'undefined');
+    console.log('Available languages:', typeof TRANSLATIONS !== 'undefined' ? Object.keys(TRANSLATIONS) : 'N/A');
+    console.log('selectLanguageWithTranslation defined:', typeof selectLanguageWithTranslation !== 'undefined');
+    console.log('Current language:', currentLanguage);
+    console.log('Elements with data-translate:', document.querySelectorAll('[data-translate]').length);
+    console.log('========================');
+}
+
+// Make diagnostic available globally
+window.diagnosticCheck = diagnosticCheck;
+
+// Auto-run diagnostic on load
+setTimeout(diagnosticCheck, 1000);
+
+console.log('🔧 Global functions exported successfully');
 console.log('🌍 Topiko Translation System Loaded - Hindi Complete!');
 console.log('📊 Translation Stats:');
 console.log('- English: ✅ Complete');
