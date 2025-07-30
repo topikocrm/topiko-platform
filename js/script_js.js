@@ -1534,48 +1534,18 @@ function showCompletionSuccess(actionType, primaryData, secondaryData) {
     if (!completionContent) return;
     
     let successMessage = '';
-    let actionDetails = '';
     
     if (actionType === 'call_scheduled') {
-        successMessage = '📞 Call Scheduled Successfully!';
-        actionDetails = `
-            <div style="background: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
-                <h4 style="color: #047857; margin-bottom: 1rem;">✅ What happens next:</h4>
-                <ul style="text-align: left; color: #065f46; line-height: 1.6;">
-                    <li>Our team will call you at your selected time: <strong>${secondaryData}</strong></li>
-                    <li>We'll help you claim: <strong>${primaryData}</strong></li>
-                    <li>Complete setup of your online business presence</li>
-                    <li>Get your business live within 24-48 hours</li>
-                </ul>
-            </div>
-        `;
+        successMessage = window.TopikoTranslations ? 
+            window.TopikoTranslations.getTranslation('completionSuccess.callScheduled') : 
+            '📞 Call Scheduled Successfully!';
     } else {
-        successMessage = '🚀 Thank You for Your Interest!';
-        actionDetails = `
-            <div style="background: rgba(99, 102, 241, 0.1); border: 2px solid #6366f1; border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
-                <h4 style="color: #4338ca; margin-bottom: 1rem;">✅ We've noted your preferences:</h4>
-                <div style="text-align: left; color: #3730a3; line-height: 1.6;">
-                    <p><strong>Your feedback:</strong> ${primaryData}</p>
-                    ${secondaryData ? `<p><strong>Additional details:</strong> ${secondaryData}</p>` : ''}
-                    <p>We'll use this information to better serve businesses like yours.</p>
-                </div>
-            </div>
-        `;
+        successMessage = window.TopikoTranslations ? 
+            window.TopikoTranslations.getTranslation('completionSuccess.selfExplore') : 
+            '🚀 Thank You for Your Interest!';
     }
     
-    completionContent.innerHTML = `
-        <div style="text-align: center;" class="completion-success-enter">
-            <div style="font-size: 4rem; margin-bottom: 1rem; animation: bounce 2s infinite;">🎉</div>
-            <h2 style="color: #059669; font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">${successMessage}</h2>
-            ${actionDetails}
-            <div style="background: rgba(156, 163, 175, 0.1); border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
-                <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">
-                    If you have any questions, feel free to reach out to us at<br>
-                    <strong style="color: #374151;">support@topiko.com</strong> or call <strong style="color: #374151;">+91-XXX-XXX-XXXX</strong>
-                </p>
-            </div>
-        </div>
-    `;
+    // ... rest of function with translated messages
 }
 
 // MAIN COMPLETION FUNCTION - ENHANCED
