@@ -82,33 +82,38 @@ document.addEventListener('click', function(e) {
 // DATABASE UTILITIES
 // ========================================
 
+// Replace your saveToSupabase function with this debug version:
 async function saveToSupabase(data, table) {
+    console.group(`🔍 Debugging ${table} insertion`);
+    console.log('📤 Data being sent:', JSON.stringify(data, null, 2));
+    console.log('📍 Table:', table);
+    console.log('🔑 Supabase URL:', SUPABASE_URL);
+    console.log('🔑 API Key length:', SUPABASE_ANON_KEY?.length);
+    
     try {
-        addDebugLog(`💾 Saving to ${table}`);
+        const { data: result, error } = await supabase
+            .from(table)
+            .insert([data])
+            .select();
         
-        const response = await fetch(`${window.TopikoConfig.SUPABASE_CONFIG.URL}/rest/v1/${table}`, {
-            method: 'POST',
-            headers: {
-                'apikey': window.TopikoConfig.SUPABASE_CONFIG.ANON_KEY,
-                'Authorization': `Bearer ${window.TopikoConfig.SUPABASE_CONFIG.ANON_KEY}`,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=representation'
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            addDebugLog(`✅ Saved to ${table}`, 'success');
-            return { success: true, data: result };
-        } else {
-            const errorText = await response.text();
-            addDebugLog(`❌ Save failed: ${response.status}`, 'error');
-            return { success: false, error: `${response.status}: ${errorText}` };
+        if (error) {
+            console.error('❌ FULL ERROR OBJECT:', error);
+            console.error('❌ Error code:', error.code);
+            console.error('❌ Error message:', error.message);
+            console.error('❌ Error details:', error.details);
+            console.error('❌ Error hint:', error.hint);
+            console.groupEnd();
+            return { success: false, error };
         }
-    } catch (error) {
-        addDebugLog(`❌ Save error: ${error.message}`, 'error');
-        return { success: false, error: error.message };
+        
+        console.log('✅ SUCCESS:', result);
+        console.groupEnd();
+        return { success: true, data: result };
+        
+    } catch (networkError) {
+        console.error('❌ NETWORK ERROR:', networkError);
+        console.groupEnd();
+        return { success: false, error: networkError };
     }
 }
 
