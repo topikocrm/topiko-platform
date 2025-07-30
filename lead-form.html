@@ -211,7 +211,7 @@
                         </div>
                     </div>
 
-                    <button class="submit-button" onclick="submitGoals()">
+                    <button class="submit-button" onclick="showGoalsTransitionModal()">
                         Next Step
                     </button>
                 </div>
@@ -459,10 +459,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- FOMO Success Message -->
-                            <div style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 2px solid #10b981; border-radius: 12px; padding: 1rem; min-width: 280px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);">
-                                <div style="color: #065f46; font-weight: 600; font-size: 0.9rem; line-height: 1.4; text-align: center;">
-                                    Businesses like <span style="color: #059669; font-weight: 700;">234a</span> got <span style="color: #059669; font-weight: 700;">43%</span> more customers after going online. Want to see how?
+                            <!-- MOVED: Dynamic Motivational Messages -->
+                            <div class="motivational-messages" id="motivationalMessages" style="min-width: 280px; max-width: 300px; height: 120px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 2px solid #10b981; border-radius: 12px; padding: 1rem; position: relative; overflow: hidden;">
+                                <div class="motivational-message active loading">
+                                    🔄 Loading personalized messages for Perfect...
                                 </div>
                             </div>
                         </div>
@@ -470,15 +470,6 @@
                     
                     <div id="categoriesContainer">
                         <!-- Categories will be populated dynamically -->
-                    </div>
-
-                    <!-- Category Footer with Dynamic Motivational Messages -->
-                    <div class="category-footer">
-                        <div class="motivational-messages" id="motivationalMessages">
-                            <div class="motivational-message active loading">
-                                🔄 Loading personalized messages for Perfect...
-                            </div>
-                        </div>
                     </div>
 
                     <button class="submit-button" onclick="proceedToProducts()" id="categoryNextBtn" disabled>
@@ -831,14 +822,11 @@
                     Great! Your goals are set.
                 </h2>
                 
-                <!-- UPDATED: Goals on separate lines -->
-                <div style="color: #553c9a; font-size: 1rem; font-weight: 500; margin-bottom: 1.5rem; line-height: 1.8;">
-                    Now let's show you how Topiko can help with:
-                    <div id="selectedGoalsListModal" style="margin: 1rem 0; padding-left: 1rem;">
-                        <!-- Goals will be populated here on separate lines -->
-                    </div>
+                <p style="color: #553c9a; font-size: 1rem; font-weight: 500; margin-bottom: 1.5rem; line-height: 1.6;">
+                    Now let's show you how Topiko can help with 
+                    <span id="selectedGoalsInlineText" style="display: block; margin: 0.5rem 0; color: #6b46c1; font-weight: 600;">your selected goals</span> 
                     for your business — one step at a time
-                </div>
+                </p>
 
                 <!-- UPDATED: Benefits on separate lines -->
                 <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: left; line-height: 1.8;">
@@ -1071,6 +1059,31 @@
         }
     }
 
+    // Function to get selected goals and update modal
+    function getSelectedGoalsAndUpdateModal() {
+        const selectedGoals = [];
+        document.querySelectorAll('.goal-checkbox:checked').forEach(checkbox => {
+            selectedGoals.push(checkbox.value);
+        });
+        updateGoalsModal(selectedGoals);
+        return selectedGoals;
+    }
+
+    // Function to show goals modal with populated goals
+    function showGoalsTransitionModal() {
+        // Ensure goals are populated in the modal
+        setTimeout(() => {
+            getSelectedGoalsAndUpdateModal();
+        }, 100);
+        
+        document.getElementById('goalsTransitionModal').classList.add('show');
+    }
+
+    // Backup function for submitGoals (if called from external JS)
+    function submitGoals() {
+        showGoalsTransitionModal();
+    }
+
     // Handle completion choice selection
     function selectOffer(offerType, element) {
         // Remove selected class from all offers
@@ -1171,10 +1184,10 @@
         closeModal('reasonModal');
     }
 
-    // Update goals display in modal to show on separate lines
+    // Update goals display in modal to show inline with line breaks
     function updateGoalsModal(selectedGoals) {
-        const goalsList = document.getElementById('selectedGoalsListModal');
-        if (goalsList && selectedGoals && selectedGoals.length > 0) {
+        const goalsInlineText = document.getElementById('selectedGoalsInlineText');
+        if (goalsInlineText && selectedGoals && selectedGoals.length > 0) {
             const goalIcons = {
                 'ecommerce': '🛒 Sell Online',
                 'customers': '📈 Reach More Customers', 
@@ -1183,9 +1196,9 @@
                 'brand': '⭐ Establish Brand'
             };
             
-            goalsList.innerHTML = selectedGoals.map(goal => 
-                `<div style="margin: 0.5rem 0; color: #6b46c1; font-weight: 600;">${goalIcons[goal] || goal}</div>`
-            ).join('');
+            // Create goals with line breaks
+            const goalsText = selectedGoals.map(goal => goalIcons[goal] || goal).join('<br>');
+            goalsInlineText.innerHTML = goalsText;
         }
     }
 
