@@ -84,11 +84,15 @@ document.addEventListener('click', function(e) {
 
 // Replace your saveToSupabase function with this debug version:
 async function saveToSupabase(data, table) {
-    console.group(`🔍 Debugging ${table} insertion`);
-    console.log('📤 Data being sent:', JSON.stringify(data, null, 2));
-    console.log('📍 Table:', table);
-    console.log('🔑 Supabase URL:', SUPABASE_URL);
-    console.log('🔑 API Key length:', SUPABASE_ANON_KEY?.length);
+    // 🔍 DEBUG LOGGING - Remove after fixing
+    console.group(`🔍 DEBUGGING ${table.toUpperCase()} INSERTION`);
+    console.log('📤 Raw data being sent:', data);
+    console.log('📤 JSON stringified data:', JSON.stringify(data, null, 2));
+    console.log('📍 Target table:', table);
+    console.log('🔑 Supabase URL:', typeof SUPABASE_URL !== 'undefined' ? SUPABASE_URL : 'undefined');
+    console.log('🔑 API Key exists:', typeof SUPABASE_ANON_KEY !== 'undefined' && SUPABASE_ANON_KEY.length > 0);
+    console.log('🔑 API Key length:', typeof SUPABASE_ANON_KEY !== 'undefined' ? SUPABASE_ANON_KEY.length : 0);
+    console.log('⏰ Timestamp:', new Date().toISOString());
     
     try {
         const { data: result, error } = await supabase
@@ -97,25 +101,59 @@ async function saveToSupabase(data, table) {
             .select();
         
         if (error) {
-            console.error('❌ FULL ERROR OBJECT:', error);
+            console.error('❌ === SUPABASE ERROR DETAILS ===');
+            console.error('❌ Full error object:', error);
             console.error('❌ Error code:', error.code);
             console.error('❌ Error message:', error.message);
             console.error('❌ Error details:', error.details);
             console.error('❌ Error hint:', error.hint);
+            console.error('❌ Failed data:', data);
+            console.error('❌ === END ERROR DETAILS ===');
             console.groupEnd();
             return { success: false, error };
         }
         
-        console.log('✅ SUCCESS:', result);
+        console.log('✅ === SUCCESS ===');
+        console.log('✅ Inserted data:', result);
+        console.log('✅ Record ID:', result[0]?.id);
         console.groupEnd();
         return { success: true, data: result };
         
     } catch (networkError) {
-        console.error('❌ NETWORK ERROR:', networkError);
+        console.error('❌ === NETWORK/JS ERROR ===');
+        console.error('❌ Network error:', networkError);
+        console.error('❌ Error name:', networkError.name);
+        console.error('❌ Error message:', networkError.message);
+        console.error('❌ Stack trace:', networkError.stack);
         console.groupEnd();
         return { success: false, error: networkError };
     }
 }
+
+// 🧪 DEBUG TEST FUNCTIONS - Remove after fixing
+async function testDatabaseConnection() {
+    console.log('🧪 === DATABASE CONNECTION TEST ===');
+    
+    // Test 1: Ultra minimal data
+    const minimalData = {
+        name: 'Debug Test ' + Date.now(),
+        email: 'debug' + Date.now() + '@test.com',
+        phone: '9999999999',
+        business_name: 'Debug Business'
+    };
+    
+    console.log('🧪 Testing minimal insert...');
+    const result = await saveToSupabase(minimalData, 'users');
+    console.log('🧪 Test result:', result);
+    
+    return result;
+}
+
+// Make test function globally available
+if (typeof window !== 'undefined') {
+    window.testDatabaseConnection = testDatabaseConnection;
+}
+
 
 // ========================================
 // SCREEN NAVIGATION UTILITIES
