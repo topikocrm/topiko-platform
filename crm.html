@@ -761,36 +761,39 @@
             background: #3b82f6;
         }
 
-        /* ===== SDR SUMMARY GRID ===== */
+        /* ===== ENHANCED SDR SUMMARY GRID ===== */
         .sdr-summary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
         .sdr-summary-card {
             background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
+            padding: 2rem;
+            border-radius: 16px;
             border: 1px solid #e2e8f0;
             transition: all 0.3s ease;
+            min-height: 280px;
         }
 
         .sdr-summary-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
         .sdr-header {
             display: flex;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f1f5f9;
         }
 
         .sdr-avatar {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             border-radius: 50%;
             display: flex;
@@ -799,6 +802,7 @@
             color: white;
             font-weight: bold;
             margin-right: 1rem;
+            font-size: 1.2rem;
         }
 
         .sdr-info {
@@ -806,36 +810,116 @@
         }
 
         .sdr-name {
-            font-weight: 600;
+            font-weight: 700;
             color: #1e293b;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
         }
 
         .sdr-email {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #64748b;
         }
 
         .sdr-stats {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 1rem;
+            margin-bottom: 1rem;
         }
 
         .sdr-stat {
             text-align: center;
+            padding: 0.75rem 0.5rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sdr-stat:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
         }
 
         .sdr-stat-value {
             font-size: 1.5rem;
             font-weight: 700;
             color: #1e293b;
+            margin-bottom: 0.25rem;
         }
 
         .sdr-stat-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* Status-specific colors */
+        .sdr-stat.total {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 1px solid #93c5fd;
+        }
+
+        .sdr-stat.contacted {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #f59e0b;
+        }
+
+        .sdr-stat.qualified {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border: 1px solid #10b981;
+        }
+
+        .sdr-stat.converted {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border: 1px solid #059669;
+        }
+
+        .sdr-stat.followup {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border: 1px solid #8b5cf6;
+        }
+
+        .sdr-stat.demo {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border: 1px solid #0284c7;
+        }
+
+        /* Enhanced status grid for more stats */
+        .sdr-extended-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .sdr-mini-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            background: #f8fafc;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sdr-mini-stat:hover {
+            background: #e2e8f0;
+        }
+
+        .sdr-mini-stat-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .sdr-mini-stat-value {
+            color: #1e293b;
+            font-weight: 700;
         }
 
         /* ===== ENHANCED LEAD CARD WITH DATE/TIME ===== */
@@ -1194,6 +1278,29 @@
                 grid-template-columns: 1fr;
             }
 
+            /* Enhanced mobile support for bigger SDR cards */
+            .sdr-summary-card {
+                padding: 1.5rem;
+                min-height: auto;
+            }
+
+            .sdr-stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.75rem;
+            }
+
+            .sdr-extended-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .sdr-stat {
+                padding: 0.5rem;
+            }
+
+            .sdr-stat-value {
+                font-size: 1.2rem;
+            }
+
             .lead-intelligence-panel {
                 position: fixed;
                 top: 0;
@@ -1228,6 +1335,19 @@
             .followup-content {
                 padding: 1rem;
                 margin: 1rem;
+            }
+
+            /* Mobile filter buttons */
+            .section-header > div:last-child {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: stretch;
+            }
+
+            .section-header select,
+            .section-header button {
+                width: 100%;
+                min-width: auto;
             }
         }
 
@@ -1510,12 +1630,18 @@
                             </select>
                             <select id="statusFilterSelect" onchange="filterByStatus()" style="padding: 0.5rem; border-radius: 6px; border: 1px solid #d1d5db;">
                                 <option value="">All Statuses</option>
-                                <option value="Assigned">Assigned</option>
+                                <option value="New">New</option>
                                 <option value="Contacted">Contacted</option>
+                                <option value="Not Reachable">Not Reachable</option>
+                                <option value="Demo Requested">Demo Requested</option>
+                                <option value="Samples Requested">Samples Requested</option>
                                 <option value="Qualified">Qualified</option>
-                                <option value="Likely to Convert">Likely to Convert</option>
-                                <option value="Closed">Closed</option>
+                                <option value="Converted">Converted</option>
+                                <option value="Dropped-Budget">Dropped-Budget</option>
                             </select>
+                            <button onclick="clearAssignedFilters()" style="padding: 0.5rem 1rem; background: #64748b; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
+                                Clear Filters
+                            </button>
                         </div>
                     </div>
 
@@ -2393,6 +2519,130 @@
             applySorting();
         }
 
+        // ENHANCED SDR FILTERING FUNCTIONS
+        function filterSDRLeads(sdrId, status) {
+            console.log(`🔍 Filtering leads for SDR ${sdrId} with status: ${status}`);
+            
+            // Update global filters
+            activeFilters.sdr = sdrId;
+            activeFilters.assignedStatus = status === 'all' ? '' : status;
+            
+            // Update UI selects
+            const sdrSelect = document.getElementById('sdrFilterSelect');
+            const statusSelect = document.getElementById('statusFilterSelect');
+            
+            if (sdrSelect) sdrSelect.value = sdrId;
+            if (statusSelect) statusSelect.value = status === 'all' ? '' : status;
+            
+            // Apply filters and render
+            renderAssignedLeads();
+            
+            // Show notification
+            const sdr = sdrTeam.find(s => s.id === sdrId);
+            const sdrName = sdr ? sdr.name : 'Unknown SDR';
+            const statusText = status === 'all' ? 'all leads' : `${status} leads`;
+            
+            showNotification(`Showing ${statusText} for ${sdrName}`, 'info');
+            
+            // Scroll to leads section
+            document.getElementById('assignedLeadsGrid').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function filterSDRFollowups(sdrId) {
+            console.log(`📅 Filtering followups for SDR ${sdrId}`);
+            
+            const sdr = sdrTeam.find(s => s.id === sdrId);
+            const sdrName = sdr ? sdr.name : 'Unknown SDR';
+            
+            // Get leads with followups for this SDR
+            const now = new Date();
+            let sdrLeadsWithFollowups = allLeads.filter(lead => {
+                return lead.assigned_sdr_id === sdrId && lead.next_followup_date;
+            });
+            
+            // Update the assigned leads grid directly with filtered results
+            const assignedLeadsGrid = document.getElementById('assignedLeadsGrid');
+            const assignedLeadCount = document.getElementById('assignedLeadCount');
+            
+            if (sdrLeadsWithFollowups.length === 0) {
+                assignedLeadsGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #64748b;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
+                        <h3 style="margin-bottom: 0.5rem;">No followups scheduled</h3>
+                        <p>${sdrName} has no pending followups</p>
+                        <button onclick="renderAssignedLeads()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                            Show All Leads
+                        </button>
+                    </div>
+                `;
+                assignedLeadCount.textContent = `0 followups for ${sdrName}`;
+                return;
+            }
+            
+            // Sort by followup date
+            sdrLeadsWithFollowups.sort((a, b) => {
+                const dateA = new Date(a.next_followup_date);
+                const dateB = new Date(b.next_followup_date);
+                return dateA - dateB;
+            });
+            
+            // Separate upcoming and overdue
+            const upcoming = sdrLeadsWithFollowups.filter(lead => new Date(lead.next_followup_date) >= now);
+            const overdue = sdrLeadsWithFollowups.filter(lead => new Date(lead.next_followup_date) < now);
+            
+            // Create enhanced cards with followup info
+            const createFollowupCard = (lead, isOverdue = false) => {
+                const baseCard = createLeadCard(lead);
+                const followupDate = new Date(lead.next_followup_date);
+                const followupStatus = isOverdue ? 
+                    `🚨 OVERDUE: ${getTimeAgo(lead.next_followup_date)}` : 
+                    `📅 Due: ${followupDate.toLocaleDateString('en-IN')} at ${followupDate.toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'})}`;
+                
+                return baseCard.replace(
+                    '<div class="lead-card fade-in',
+                    `<div class="lead-card fade-in${isOverdue ? ' priority' : ''}`
+                ).replace(
+                    '<div class="lead-card-top">',
+                    `<div class="lead-card-top">
+                        <div style="background: ${isOverdue ? '#fee2e2' : '#f0fdf4'}; color: ${isOverdue ? '#dc2626' : '#059669'}; padding: 0.5rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem; margin-bottom: 0.5rem;">
+                            ${followupStatus}
+                        </div>`
+                );
+            };
+            
+            let leadsHTML = '';
+            
+            // Add overdue section
+            if (overdue.length > 0) {
+                leadsHTML += `
+                    <div style="grid-column: 1 / -1; background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                        <h3 style="color: #dc2626; font-size: 1.1rem; margin-bottom: 0.5rem;">🚨 Overdue Followups (${overdue.length})</h3>
+                        <p style="color: #7f1d1d; font-size: 0.9rem;">These leads need immediate attention</p>
+                    </div>
+                `;
+                leadsHTML += overdue.map(lead => createFollowupCard(lead, true)).join('');
+            }
+            
+            // Add upcoming section
+            if (upcoming.length > 0) {
+                leadsHTML += `
+                    <div style="grid-column: 1 / -1; background: #f0fdf4; border: 1px solid #a7f3d0; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; ${overdue.length > 0 ? 'margin-top: 2rem;' : ''}">
+                        <h3 style="color: #059669; font-size: 1.1rem; margin-bottom: 0.5rem;">📅 Upcoming Followups (${upcoming.length})</h3>
+                        <p style="color: #064e3b; font-size: 0.9rem;">Scheduled followups for ${sdrName}</p>
+                    </div>
+                `;
+                leadsHTML += upcoming.map(lead => createFollowupCard(lead, false)).join('');
+            }
+            
+            assignedLeadsGrid.innerHTML = leadsHTML;
+            assignedLeadCount.textContent = `${sdrLeadsWithFollowups.length} followups for ${sdrName} (${overdue.length} overdue, ${upcoming.length} upcoming)`;
+            
+            showNotification(`Showing followups for ${sdrName}`, 'info');
+            
+            // Scroll to leads section
+            assignedLeadsGrid.scrollIntoView({ behavior: 'smooth' });
+        }
+
         function filterBySDR() {
             const selectedSDR = document.getElementById('sdrFilterSelect')?.value;
             activeFilters.sdr = selectedSDR;
@@ -2821,38 +3071,93 @@
         function renderAssignedLeads() {
             let assignedLeads = allLeads.filter(lead => lead.assigned_sdr_id);
             
-            // Apply filters
+            // Apply SDR filter
             if (activeFilters.sdr) {
                 assignedLeads = assignedLeads.filter(lead => lead.assigned_sdr_id === activeFilters.sdr);
             }
             
+            // Apply status filter  
             if (activeFilters.assignedStatus) {
-                assignedLeads = assignedLeads.filter(lead => lead.lead_status === activeFilters.assignedStatus);
+                assignedLeads = assignedLeads.filter(lead => lead.lead_pipeline_status === activeFilters.assignedStatus);
             }
             
             // Update count
             const assignedLeadCount = document.getElementById('assignedLeadCount');
-            assignedLeadCount.textContent = `${assignedLeads.length} assigned leads`;
+            const sdrName = activeFilters.sdr ? 
+                sdrTeam.find(sdr => sdr.id === activeFilters.sdr)?.name || 'Unknown SDR' : 
+                'all SDRs';
+            const statusText = activeFilters.assignedStatus ? 
+                ` with status "${activeFilters.assignedStatus}"` : '';
             
-            // Render SDR summary
+            assignedLeadCount.textContent = `${assignedLeads.length} assigned leads for ${sdrName}${statusText}`;
+            
+            // Render SDR summary (always show full summary)
             renderSDRSummary();
             
             // Render leads grid
             const assignedLeadsGrid = document.getElementById('assignedLeadsGrid');
             
             if (assignedLeads.length === 0) {
+                const emptyMessage = activeFilters.sdr || activeFilters.assignedStatus ? 
+                    'No leads match the current filters' : 'No assigned leads found';
+                const emptySubtext = activeFilters.sdr || activeFilters.assignedStatus ? 
+                    'Try adjusting the filters or assign leads from the dashboard' : 'Assign leads to SDRs from the dashboard';
+                
                 assignedLeadsGrid.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #64748b;">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍💼</div>
-                        <h3 style="margin-bottom: 0.5rem;">No assigned leads found</h3>
-                        <p>Assign leads to SDRs from the dashboard</p>
+                        <h3 style="margin-bottom: 0.5rem;">${emptyMessage}</h3>
+                        <p>${emptySubtext}</p>
+                        ${activeFilters.sdr || activeFilters.assignedStatus ? `
+                            <button onclick="clearAssignedFilters()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                Clear Filters
+                            </button>
+                        ` : ''}
                     </div>
                 `;
                 return;
             }
             
+            // Sort leads by most recent activity or followup date
+            assignedLeads.sort((a, b) => {
+                // Prioritize leads with upcoming followups
+                const aFollowup = a.next_followup_date ? new Date(a.next_followup_date) : null;
+                const bFollowup = b.next_followup_date ? new Date(b.next_followup_date) : null;
+                const now = new Date();
+                
+                // Overdue followups first
+                const aOverdue = aFollowup && aFollowup < now;
+                const bOverdue = bFollowup && bFollowup < now;
+                
+                if (aOverdue && !bOverdue) return -1;
+                if (!aOverdue && bOverdue) return 1;
+                
+                // Then by followup date
+                if (aFollowup && bFollowup) return aFollowup - bFollowup;
+                if (aFollowup && !bFollowup) return -1;
+                if (!aFollowup && bFollowup) return 1;
+                
+                // Finally by creation date
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+            
             const leadsHTML = assignedLeads.map(lead => createLeadCard(lead)).join('');
             assignedLeadsGrid.innerHTML = leadsHTML;
+        }
+
+        function clearAssignedFilters() {
+            activeFilters.sdr = '';
+            activeFilters.assignedStatus = '';
+            
+            // Reset dropdowns
+            const sdrSelect = document.getElementById('sdrFilterSelect');
+            const statusSelect = document.getElementById('statusFilterSelect');
+            
+            if (sdrSelect) sdrSelect.value = '';
+            if (statusSelect) statusSelect.value = '';
+            
+            renderAssignedLeads();
+            showNotification('Filters cleared', 'info');
         }
 
         function renderSDRSummary() {
@@ -2860,12 +3165,41 @@
             
             const sdrStats = sdrTeam.map(sdr => {
                 const sdrLeads = allLeads.filter(lead => lead.assigned_sdr_id === sdr.id);
-                const contactedLeads = sdrLeads.filter(lead => lead.lead_status === 'Contacted').length;
+                
+                // Calculate all status counts
+                const statusCounts = {
+                    total: sdrLeads.length,
+                    new: sdrLeads.filter(lead => lead.lead_pipeline_status === 'New').length,
+                    contacted: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Contacted').length,
+                    not_reachable: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Not Reachable').length,
+                    demo_requested: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Demo Requested').length,
+                    samples_requested: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Samples Requested').length,
+                    qualified: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Qualified').length,
+                    converted: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Converted').length,
+                    dropped_budget: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Dropped-Budget').length
+                };
+                
+                // Calculate pending followups (future dates)
+                const now = new Date();
+                const upcomingFollowups = sdrLeads.filter(lead => {
+                    if (!lead.next_followup_date) return false;
+                    const followupDate = new Date(lead.next_followup_date);
+                    return followupDate >= now;
+                }).length;
+                
+                // Calculate overdue followups (past dates)
+                const overdueFollowups = sdrLeads.filter(lead => {
+                    if (!lead.next_followup_date) return false;
+                    const followupDate = new Date(lead.next_followup_date);
+                    return followupDate < now;
+                }).length;
                 
                 return {
                     ...sdr,
-                    totalLeads: sdrLeads.length,
-                    contactedLeads: contactedLeads
+                    ...statusCounts,
+                    upcomingFollowups,
+                    overdueFollowups,
+                    totalFollowups: upcomingFollowups + overdueFollowups
                 };
             });
             
@@ -2878,16 +3212,66 @@
                             <div class="sdr-email">${sdr.email}</div>
                         </div>
                     </div>
+                    
+                    <!-- Main Stats Grid -->
                     <div class="sdr-stats">
-                        <div class="sdr-stat">
-                            <div class="sdr-stat-value">${sdr.totalLeads}</div>
-                            <div class="sdr-stat-label">Assigned</div>
+                        <div class="sdr-stat total" onclick="filterSDRLeads('${sdr.id}', 'all')" title="View all assigned leads">
+                            <div class="sdr-stat-value">${sdr.total}</div>
+                            <div class="sdr-stat-label">Total</div>
                         </div>
-                        <div class="sdr-stat">
-                            <div class="sdr-stat-value">${sdr.contactedLeads}</div>
+                        <div class="sdr-stat contacted" onclick="filterSDRLeads('${sdr.id}', 'Contacted')" title="View contacted leads">
+                            <div class="sdr-stat-value">${sdr.contacted}</div>
                             <div class="sdr-stat-label">Contacted</div>
                         </div>
+                        <div class="sdr-stat qualified" onclick="filterSDRLeads('${sdr.id}', 'Qualified')" title="View qualified leads">
+                            <div class="sdr-stat-value">${sdr.qualified}</div>
+                            <div class="sdr-stat-label">Qualified</div>
+                        </div>
                     </div>
+                    
+                    <!-- Secondary Stats Grid -->
+                    <div class="sdr-stats">
+                        <div class="sdr-stat demo" onclick="filterSDRLeads('${sdr.id}', 'Demo Requested')" title="View demo requests">
+                            <div class="sdr-stat-value">${sdr.demo_requested}</div>
+                            <div class="sdr-stat-label">Demo Req</div>
+                        </div>
+                        <div class="sdr-stat converted" onclick="filterSDRLeads('${sdr.id}', 'Converted')" title="View converted leads">
+                            <div class="sdr-stat-value">${sdr.converted}</div>
+                            <div class="sdr-stat-label">Converted</div>
+                        </div>
+                        <div class="sdr-stat followup" onclick="filterSDRFollowups('${sdr.id}')" title="View pending followups">
+                            <div class="sdr-stat-value">${sdr.totalFollowups}</div>
+                            <div class="sdr-stat-label">Followups</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Extended Stats Details -->
+                    <div class="sdr-extended-stats">
+                        <div class="sdr-mini-stat" onclick="filterSDRLeads('${sdr.id}', 'New')" title="View new leads">
+                            <span class="sdr-mini-stat-label">New</span>
+                            <span class="sdr-mini-stat-value">${sdr.new}</span>
+                        </div>
+                        <div class="sdr-mini-stat" onclick="filterSDRLeads('${sdr.id}', 'Not Reachable')" title="View unreachable leads">
+                            <span class="sdr-mini-stat-label">Not Reachable</span>
+                            <span class="sdr-mini-stat-value">${sdr.not_reachable}</span>
+                        </div>
+                        <div class="sdr-mini-stat" onclick="filterSDRLeads('${sdr.id}', 'Samples Requested')" title="View sample requests">
+                            <span class="sdr-mini-stat-label">Samples Req</span>
+                            <span class="sdr-mini-stat-value">${sdr.samples_requested}</span>
+                        </div>
+                        <div class="sdr-mini-stat" onclick="filterSDRLeads('${sdr.id}', 'Dropped-Budget')" title="View budget drops">
+                            <span class="sdr-mini-stat-label">Dropped</span>
+                            <span class="sdr-mini-stat-value">${sdr.dropped_budget}</span>
+                        </div>
+                    </div>
+                    
+                    ${sdr.totalFollowups > 0 ? `
+                    <div style="margin-top: 1rem; padding: 0.75rem; background: ${sdr.overdueFollowups > 0 ? '#fef2f2' : '#f0fdf4'}; border-radius: 8px; border-left: 4px solid ${sdr.overdueFollowups > 0 ? '#ef4444' : '#10b981'};">
+                        <div style="font-size: 0.8rem; color: #374151; font-weight: 500;">
+                            📅 Followups: ${sdr.upcomingFollowups} upcoming${sdr.overdueFollowups > 0 ? `, ${sdr.overdueFollowups} overdue` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
                 </div>
             `).join('');
             
