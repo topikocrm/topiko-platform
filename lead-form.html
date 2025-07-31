@@ -9,7 +9,7 @@
 </head>
 <body>
     <!-- Back Button -->
-    <div class="back-button hidden" id="backButton" onclick="goBack()">
+    <div class="back-button hidden" id="backButton" onclick="goBack('back')">
         ←
     </div>
 
@@ -21,10 +21,22 @@
     <!-- Debug Toggle -->
     <button class="debug-toggle" onclick="toggleDebugPanel()">🔍</button>
 
-    <!-- Debug Panel -->
+    <!-- Enhanced Debug Panel with Navigation Analytics -->
     <div class="debug-panel" id="debugPanel">
         <h4>🔍 Debug Log</h4>
         <div id="debugLog"></div>
+        
+        <!-- Navigation Analytics Section -->
+        <div class="debug-section" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
+            <h5 style="margin: 0 0 0.5rem 0; color: #374151; font-size: 0.9rem;">📊 Navigation Analytics</h5>
+            <div class="navigation-stats" style="font-size: 0.8rem; color: #6b7280;">
+                <div><strong>Current Page:</strong> <span id="debugCurrentPage">welcome</span></div>
+                <div><strong>Pages Visited:</strong> <span id="debugPagesVisited">1</span></div>
+                <div><strong>Session Time:</strong> <span id="debugSessionTime">0s</span></div>
+                <div><strong>Page Time:</strong> <span id="debugPageTime">0s</span></div>
+                <div><strong>Navigation Events:</strong> <span id="debugNavigationEvents">0</span></div>
+            </div>
+        </div>
     </div>
 
     <!-- Lead Score Widget -->
@@ -62,27 +74,27 @@
         <!-- Progress Bar -->
         <div class="progress-container">
             <div class="progress-bar" id="progressBar">
-                <div class="progress-step" data-step="goals" onclick="navigateToStep('goals')">
+                <div class="progress-step" data-step="goals" onclick="navigateToStep('goals', 'direct_click')">
                     <div class="progress-circle">1</div>
                     <div class="progress-label" data-translate="progress.businessGoals">Business Goals</div>
                 </div>
-                <div class="progress-step" data-step="registration" onclick="navigateToStep('registration')">
+                <div class="progress-step" data-step="registration" onclick="navigateToStep('registration', 'direct_click')">
                     <div class="progress-circle">2</div>
                     <div class="progress-label" data-translate="progress.signUp">Sign Up</div>
                 </div>
-                <div class="progress-step" data-step="qualifying-questions" onclick="navigateToStep('qualifying-questions')">
+                <div class="progress-step" data-step="qualifying-questions" onclick="navigateToStep('qualifying-questions', 'direct_click')">
                     <div class="progress-circle">3</div>
                     <div class="progress-label" data-translate="progress.successFactors">Success Factors</div>
                 </div>
-                <div class="progress-step" data-step="categories" onclick="navigateToStep('categories')">
+                <div class="progress-step" data-step="categories" onclick="navigateToStep('categories', 'direct_click')">
                     <div class="progress-circle">4</div>
                     <div class="progress-label" data-translate="progress.businessLive1">Business Live-1</div>
                 </div>
-                <div class="progress-step" data-step="products" onclick="navigateToStep('products')">
+                <div class="progress-step" data-step="products" onclick="navigateToStep('products', 'direct_click')">
                     <div class="progress-circle">5</div>
                     <div class="progress-label" data-translate="progress.businessLive2">Business Live-2</div>
                 </div>
-                <div class="progress-step" data-step="themes" onclick="navigateToStep('themes')">
+                <div class="progress-step" data-step="themes" onclick="navigateToStep('themes', 'direct_click')">
                     <div class="progress-circle">6</div>
                     <div class="progress-label" data-translate="progress.businessLive3">Business Live-3</div>
                 </div>
@@ -97,7 +109,7 @@
                     <h1 class="topiko-logo">Topiko</h1>
                     <p style="font-size: 1.1rem; color: #6b46c1; margin-bottom: 2rem;" 
                        data-translate="welcome.tagline">Complete Business Platform for Indian SMBs</p>
-                    <button class="try-free-button" onclick="startLeadFlow()" 
+                    <button class="try-free-button" onclick="startLeadFlow('forward')" 
                             data-translate="welcome.tryFreeButton">
                         Try for Free
                     </button>
@@ -110,10 +122,10 @@
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" 
                         data-translate="language.title">Choose Your Language</h2>
                     <p style="text-align: center; margin-bottom: 2rem; font-size: 0.9rem;" 
-                       data-translate="language.subtitle">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெडுக்கவும்</p>
+                       data-translate="language.subtitle">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெडுक்கவும்</p>
                     
                     <div class="language-grid">
-                        <div class="language-option" onclick="selectLanguageWithTranslation('en', this)">
+                        <div class="language-option" onclick="selectLanguageWithTranslation('en', this, 'forward')">
                             <div class="language-flag">🇬🇧</div>
                             <div class="language-content">
                                 <h3>English</h3>
@@ -121,7 +133,7 @@
                             </div>
                         </div>
 
-                        <div class="language-option" onclick="selectLanguageWithTranslation('hi', this)">
+                        <div class="language-option" onclick="selectLanguageWithTranslation('hi', this, 'forward')">
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
                                 <h3>हिन्दी</h3>
@@ -129,7 +141,7 @@
                             </div>
                         </div>
 
-                        <div class="language-option" onclick="selectLanguageWithTranslation('te', this)">
+                        <div class="language-option" onclick="selectLanguageWithTranslation('te', this, 'forward')">
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
                                 <h3>తెలుగు</h3>
@@ -137,11 +149,11 @@
                             </div>
                         </div>
 
-                        <div class="language-option" onclick="selectLanguageWithTranslation('ta', this)">
+                        <div class="language-option" onclick="selectLanguageWithTranslation('ta', this, 'forward')">
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
                                 <h3>தமிழ்</h3>
-                                <p data-translate="language.options.ta">தமிழில் தொடরવ</p>
+                                <p data-translate="language.options.ta">தமிழில் தொடரવ</p>
                             </div>
                         </div>
                     </div>
@@ -218,7 +230,7 @@
                         </div>
                     </div>
 
-                    <button class="submit-button" onclick="showGoalsTransitionModal()" 
+                    <button class="submit-button" onclick="showGoalsTransitionModal('forward')" 
                             data-translate="goals.nextButton">
                         Next Step
                     </button>
@@ -312,7 +324,7 @@
                         </select>
                     </div>
 
-                    <button class="submit-button" onclick="submitRegistration()" 
+                    <button class="submit-button" onclick="submitRegistration('forward')" 
                             data-translate="registration.submitButton">
                         Show my Business online
                     </button>
@@ -459,7 +471,7 @@
                         </div>
                     </div>
 
-                    <button class="submit-button" onclick="proceedToCategories()" 
+                    <button class="submit-button" onclick="proceedToCategories('forward')" 
                             id="qualifyingNextBtn" disabled style="opacity: 0.5;"
                             data-translate="qualifying.nextButton">
                         Create my Business 🚀
@@ -504,7 +516,7 @@
                         <!-- Categories will be populated dynamically -->
                     </div>
 
-                    <button class="submit-button" onclick="proceedToProducts()" 
+                    <button class="submit-button" onclick="proceedToProducts('forward')" 
                             id="categoryNextBtn" disabled data-translate="categories.nextButton">
                         Continue to Add Products
                     </button>
@@ -700,10 +712,10 @@
 
                     <!-- Navigation buttons -->
                     <div class="flex-buttons">
-                        <button onclick="navigateToStep('categories')" class="btn-secondary">
+                        <button onclick="navigateToStep('categories', 'back')" class="btn-secondary">
                             <span data-translate="products.navigation.backButton">← Back to Categories</span>
                         </button>
-                        <button onclick="proceedToThemes()" class="submit-button">
+                        <button onclick="proceedToThemes('forward')" class="submit-button">
                             <span data-translate="products.navigation.nextButton">Choose Theme 🎨</span>
                         </button>
                     </div>
@@ -812,10 +824,10 @@
                     </div>
 
                     <div class="flex-buttons">
-                        <button onclick="navigateToStep('products')" class="btn-secondary">
+                        <button onclick="navigateToStep('products', 'back')" class="btn-secondary">
                             <span data-translate="themes.navigation.backButton">← Back to Products</span>
                         </button>
-                        <button onclick="completeSetup()" id="themeNextBtn" disabled style="opacity: 0.5;">
+                        <button onclick="completeSetup('forward')" id="themeNextBtn" disabled style="opacity: 0.5;">
                             <span data-translate="themes.navigation.nextButton">Complete Setup 🚀</span>
                         </button>
                     </div>
@@ -937,7 +949,7 @@
                     </div>
                 </div>
 
-                <button class="submit-button" onclick="proceedFromGoalsModal()" 
+                <button class="submit-button" onclick="proceedFromGoalsModal('forward')" 
                         style="animation: pulse 2s infinite; margin-top: 1rem;"
                         data-translate="modals.goalsTransition.button">
                     Get My Free Setup! 🚀
@@ -970,7 +982,7 @@
                     </p>
                 </div>
 
-                <button class="submit-button" onclick="proceedFromSetupModal()" 
+                <button class="submit-button" onclick="proceedFromSetupModal('forward')" 
                         style="animation: pulse 2s infinite; font-size: 1.1rem;"
                         data-translate="modals.setupIntro.button">
                     Let's Create Something Amazing! 🎯
@@ -1008,7 +1020,7 @@
                     <span data-translate="modals.otpVerification.resend">Didn't receive the code? Resend OTP</span>
                 </p>
 
-                <button class="submit-button" id="verifyOtpBtn" onclick="verifyOtp()" 
+                <button class="submit-button" id="verifyOtpBtn" onclick="verifyOtp('forward')" 
                         disabled style="opacity: 0.5;"
                         data-translate="modals.otpVerification.button">
                     Verify & Continue
@@ -1074,7 +1086,7 @@
             </div>
             
             <div style="margin-top: 2rem; text-align: center; display: flex; gap: 1rem;">
-                <button onclick="confirmScheduleAndComplete()" id="confirmScheduleBtn" disabled 
+                <button onclick="confirmScheduleAndComplete('complete')" id="confirmScheduleBtn" disabled 
                         style="flex: 1; background: #10b981; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; opacity: 0.5; font-weight: 600;"
                         data-translate="modals.callScheduler.button">
                     Complete & Schedule Call
@@ -1131,7 +1143,7 @@
             </div>
             
             <div style="text-align: center; display: flex; gap: 1rem;">
-                <button onclick="submitReasonAndComplete()" id="submitReasonBtn" 
+                <button onclick="submitReasonAndComplete('complete')" id="submitReasonBtn" 
                         style="flex: 1; background: #6366f1; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;"
                         data-translate="modals.exploreForm.button">
                     Complete Submission
@@ -1181,6 +1193,12 @@
         if (window.TopikoTranslations && window.TopikoTranslations.initializeTranslations) {
             window.TopikoTranslations.initializeTranslations();
             console.log('✅ Translation system initialized');
+        }
+        
+        // Fix 4: Initialize navigation analytics display
+        if (window.TopikoNavigation && window.TopikoNavigation.initializeDebugDisplay) {
+            window.TopikoNavigation.initializeDebugDisplay();
+            console.log('✅ Navigation analytics initialized');
         }
         
         console.log('✅ HTML compatibility fixes completed');
@@ -1281,15 +1299,23 @@ if (window.TopikoTranslations && window.TopikoTranslations.selectLanguageWithTra
 } else {
     console.log('⚠️ Creating emergency selectLanguageWithTranslation function');
     
-    // Emergency implementation
-    window.selectLanguageWithTranslation = function(lang, element) {
-        console.log('🚨 Emergency language selection:', lang);
+    // Emergency implementation with navigation tracking
+    window.selectLanguageWithTranslation = function(lang, element, navigationType = 'forward') {
+        console.log('🚨 Emergency language selection:', lang, 'Type:', navigationType);
         
         try {
             // Basic validation
             if (!lang || !element) {
                 console.error('Missing parameters');
                 return;
+            }
+            
+            // Track navigation if available
+            if (window.TopikoNavigation && window.TopikoNavigation.trackNavigation) {
+                window.TopikoNavigation.trackNavigation('language', 'goals', navigationType, {
+                    selectedLanguage: lang,
+                    trigger: 'language_selection'
+                });
             }
             
             // Update UI
