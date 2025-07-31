@@ -411,20 +411,17 @@ function calculateLeadScore() {
     score += Math.min(qualifyingScore, 25);
     window.topikoApp.leadScore = Math.min(score, 100);
     
+    // Update widget (hidden but keep for internal tracking)
     updateLeadScoreWidget();
     addDebugLog(`📊 Lead Score: ${window.topikoApp.leadScore}/100`);
     return window.topikoApp.leadScore;
 }
 
 function updateLeadScoreWidget() {
+    // Lead score widget is hidden - keeping function for compatibility
     if (!window.topikoApp) return;
     
-    const scoreValue = document.getElementById('leadScoreValue');
-    const scoreCircle = document.getElementById('leadScoreCircle');
-    const scoreLabel = document.getElementById('scoreLabel');
-    
-    if (scoreValue) scoreValue.textContent = window.topikoApp.leadScore;
-    
+    // Still calculate for internal tracking but don't display
     let quality, circleClass;
     if (window.topikoApp.leadScore >= 70) {
         quality = 'Hot';
@@ -437,17 +434,17 @@ function updateLeadScoreWidget() {
         circleClass = 'cold';
     }
     
-    if (scoreLabel) scoreLabel.textContent = quality;
-    if (scoreCircle) {
-        scoreCircle.className = `score-circle ${circleClass}`;
-    }
+    // Widget is hidden, but we keep the data for internal use
+    window.topikoApp.leadQuality = quality;
 }
 
 function toggleScoreDetails() {
     if (!window.topikoApp) return;
     
+    // Lead score widget is hidden, but show debug info in notification
     const sessionMinutes = Math.round((Date.now() - window.topikoApp.sessionStartTime) / 60000);
-    showNotification(`Score: ${window.topikoApp.leadScore}/100 | Quality: ${window.topikoApp.leadScore >= 70 ? 'Hot' : window.topikoApp.leadScore >= 40 ? 'Warm' : 'Cold'} | Session: ${sessionMinutes}m | Views: ${window.topikoApp.pageViews}`, 'info');
+    const quality = window.topikoApp.leadScore >= 70 ? 'Hot' : window.topikoApp.leadScore >= 40 ? 'Warm' : 'Cold';
+    showNotification(`Debug - Score: ${window.topikoApp.leadScore}/100 | Quality: ${quality} | Session: ${sessionMinutes}m | Views: ${window.topikoApp.pageViews}`, 'info');
 }
 
 // ========================================
