@@ -344,6 +344,7 @@
             padding: 1.5rem;
             transition: all 0.3s ease;
             position: relative;
+            z-index: 1;
         }
 
         .lead-card:hover {
@@ -540,8 +541,10 @@
 
         /* Card Actions */
         .card-actions {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 0.5rem;
+            margin-bottom: 1rem;
         }
 
         .action-btn {
@@ -580,6 +583,24 @@
 
         .btn-intel:hover {
             background: #059669;
+        }
+
+        .btn-status {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-status:hover {
+            background: #d97706;
+        }
+
+        .btn-followup {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .btn-followup:hover {
+            background: #7c3aed;
         }
 
         /* ===== LEAD INTELLIGENCE PANEL ===== */
@@ -894,20 +915,15 @@
             border-bottom: none;
         }
 
-        /* Ensure dropdown appears above cards */
-        .lead-card {
-            position: relative;
-            z-index: 1;
-        }
-
         /* Modern browsers with :has() support */
         @supports selector(:has(*)) {
             .lead-card:has(.sdr-dropdown-content.show) {
                 z-index: 999;
             }
+            .lead-card:has(.status-dropdown-content.show) {
+                z-index: 999;
+            }
         }
-
-        /* Fallback for browsers without :has() support - handled by JavaScript */
 
         /* Alternative positioning for dropdowns near screen edges */
         .sdr-dropdown-content.dropdown-up {
@@ -920,6 +936,65 @@
         .sdr-dropdown-content.dropdown-right {
             left: auto;
             right: 0;
+        }
+
+        /* ===== STATUS DROPDOWN STYLES (FIXED POSITIONING) ===== */
+        .status-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .status-dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 4px;
+        }
+
+        .status-dropdown-content.show {
+            display: block;
+            animation: dropdownSlideIn 0.2s ease;
+        }
+
+        .status-dropdown-content.dropdown-up {
+            top: auto;
+            bottom: 100%;
+            margin-top: 0;
+            margin-bottom: 4px;
+        }
+
+        .status-dropdown-content.dropdown-right {
+            left: auto;
+            right: 0;
+        }
+
+        .status-option {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #374151;
+        }
+
+        .status-option:hover {
+            background-color: #f8fafc;
+            color: #3b82f6;
+        }
+
+        .status-option:last-child {
+            border-bottom: none;
         }
 
         /* ===== SCORE BREAKDOWN MODAL ===== */
@@ -1020,95 +1095,11 @@
         }
 
         /* ===== ENHANCED LEAD CARD WITH STATUS ===== */
-        .card-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
         .card-status-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 0.5rem;
             margin-top: 1rem;
-        }
-
-        /* ===== STATUS DROPDOWN STYLES (FIXED POSITIONING) ===== */
-        .status-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .status-dropdown-content {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background-color: white;
-            min-width: 160px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            z-index: 1000;
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 4px;
-        }
-
-        .status-dropdown-content.show {
-            display: block;
-            animation: dropdownSlideIn 0.2s ease;
-        }
-
-        .status-dropdown-content.dropdown-up {
-            top: auto;
-            bottom: 100%;
-            margin-top: 0;
-            margin-bottom: 4px;
-        }
-
-        .status-dropdown-content.dropdown-right {
-            left: auto;
-            right: 0;
-        }
-
-        .status-option {
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            border-bottom: 1px solid #f1f5f9;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            font-size: 0.85rem;
-            color: #374151;
-        }
-
-        .status-option:hover {
-            background-color: #f8fafc;
-            color: #3b82f6;
-        }
-
-        .status-option:last-child {
-            border-bottom: none;
-        }
-
-        .btn-status {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .btn-status:hover {
-            background: #d97706;
-        }
-
-        .btn-followup {
-            background: #8b5cf6;
-            color: white;
-        }
-
-        .btn-followup:hover {
-            background: #7c3aed;
         }
 
         /* ===== FOLLOWUP DATE PICKER ===== */
@@ -1237,98 +1228,6 @@
             .followup-content {
                 padding: 1rem;
                 margin: 1rem;
-            }
-        }
-        @media (max-width: 768px) {
-            .crm-container {
-                flex-direction: column;
-            }
-            
-            .crm-sidebar {
-                width: 100%;
-                height: auto;
-                order: 2;
-            }
-            
-            .crm-main {
-                order: 1;
-                padding: 1rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .filters-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .leads-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .sdr-summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .lead-intelligence-panel {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                width: auto;
-                border-radius: 0;
-                max-height: none;
-            }
-
-            .card-details {
-                grid-template-columns: 1fr;
-            }
-
-            .lead-card-top {
-                flex-direction: column;
-                gap: 0.25rem;
-                align-items: flex-start;
-            }
-        }
-        @media (max-width: 768px) {
-            .crm-container {
-                flex-direction: column;
-            }
-            
-            .crm-sidebar {
-                width: 100%;
-                height: auto;
-                order: 2;
-            }
-            
-            .crm-main {
-                order: 1;
-                padding: 1rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .filters-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .leads-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .lead-intelligence-panel {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                width: auto;
-                border-radius: 0;
-                max-height: none;
             }
         }
 
@@ -1839,6 +1738,59 @@
             return lead.budget_range === 'high';
         }
 
+        // PERSISTENCE FUNCTIONS (FIXED)
+        function loadSavedChanges() {
+            try {
+                const savedChanges = localStorage.getItem('topiko_crm_changes');
+                return savedChanges ? JSON.parse(savedChanges) : {};
+            } catch (error) {
+                console.warn('❌ Saved changes read failed:', error);
+                return {};
+            }
+        }
+
+        function saveLeadChanges(leadId, changes) {
+            try {
+                const allChanges = loadSavedChanges();
+                
+                // Merge new changes with existing changes for this lead
+                if (!allChanges[leadId]) {
+                    allChanges[leadId] = {};
+                }
+                
+                Object.assign(allChanges[leadId], changes);
+                
+                localStorage.setItem('topiko_crm_changes', JSON.stringify(allChanges));
+                console.log(`💾 Saved changes for lead ${leadId}:`, changes);
+                
+                return true;
+            } catch (error) {
+                console.error('❌ Error saving lead changes:', error);
+                return false;
+            }
+        }
+
+        function processCombinedLeadsWithChanges(sources, savedChanges) {
+            console.log('🔄 Processing leads with saved changes merge...');
+            
+            return sources.map(source => {
+                const processedLead = processLeadData(source);
+                const leadKey = processedLead.id || processedLead.user_id || processedLead.email;
+                
+                // Apply saved changes if they exist
+                if (savedChanges[leadKey]) {
+                    const changes = savedChanges[leadKey];
+                    console.log(`💾 Applying saved changes to ${processedLead.name}:`, changes);
+                    
+                    // Merge saved changes with priority to saved data
+                    Object.assign(processedLead, changes);
+                    processedLead.has_local_changes = true;
+                }
+                
+                return processedLead;
+            });
+        }
+
         // DATA FETCHING FUNCTIONS WITH PROPER PERSISTENCE
         async function fetchLeads() {
             try {
@@ -1939,196 +1891,6 @@
                 return storedLeads ? JSON.parse(storedLeads) : [];
             } catch (error) {
                 console.warn('❌ Original localStorage read failed:', error);
-                return [];
-            }
-        }
-
-        function loadSavedChanges() {
-            try {
-                const savedChanges = localStorage.getItem('topiko_crm_changes');
-                return savedChanges ? JSON.parse(savedChanges) : {};
-            } catch (error) {
-                console.warn('❌ Saved changes read failed:', error);
-                return {};
-            }
-        }
-
-        function processCombinedLeadsWithChanges(sources, savedChanges) {
-            console.log('🔄 Processing leads with saved changes merge...');
-            
-            return sources.map(source => {
-                const processedLead = processLeadData(source);
-                const leadKey = processedLead.id || processedLead.email || processedLead.phone;
-                
-                // Apply saved changes if they exist
-                if (savedChanges[leadKey]) {
-                    const changes = savedChanges[leadKey];
-                    console.log(`💾 Applying saved changes to ${processedLead.name}:`, changes);
-                    
-                    // Merge saved changes
-                    Object.assign(processedLead, changes);
-                }
-                
-                return processedLead;
-            });
-        }
-
-        function loadFromLocalStorage() {
-            try {
-                // Load original leads
-                const originalLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
-                
-                // Load CRM saved leads (assignments, status updates, etc.)
-                const crmLeads = JSON.parse(localStorage.getItem('topiko_crm_leads') || '[]');
-                
-                console.log(`📱 localStorage: ${originalLeads.length} original + ${crmLeads.length} CRM leads`);
-                
-                // Combine and deduplicate
-                const allStoredLeads = [...originalLeads, ...crmLeads];
-                const uniqueLeads = new Map();
-                
-                allStoredLeads.forEach(lead => {
-                    const key = lead.id || lead.user_id || lead.email;
-                    if (key && (!uniqueLeads.has(key) || lead.assigned_sdr_id)) {
-                        // Prefer leads with assignments
-                        uniqueLeads.set(key, lead);
-                    }
-                });
-                
-                return Array.from(uniqueLeads.values());
-            } catch (error) {
-                console.warn('❌ localStorage read failed:', error);
-                return [];
-            }
-        }
-
-        async function fetchUsers() {
-            console.log('👥 Fetching users from Supabase...');
-            
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
-            
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*&order=created_at.desc&limit=100`, {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    signal: controller.signal
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                return await response.json();
-            } catch (error) {
-                clearTimeout(timeoutId);
-                if (error.name === 'AbortError') {
-                    throw new Error('Request timeout');
-                }
-                throw error;
-            }
-        }
-
-        // DATA FETCHING FUNCTIONS
-        async function fetchLeads() {
-            try {
-                console.log('🔍 Fetching leads from multiple sources...');
-                
-                let allSources = [];
-                let successCount = 0;
-                let errorCount = 0;
-                
-                // Try localStorage first (fastest)
-                const localLeads = loadFromLocalStorage();
-                if (localLeads.length > 0) {
-                    allSources.push(...localLeads);
-                    console.log(`📱 Loaded ${localLeads.length} leads from localStorage`);
-                    successCount++;
-                }
-                
-                // Try Supabase sources with better error handling
-                try {
-                    const users = await fetchUsers();
-                    if (users.length > 0) {
-                        allSources.push(...users);
-                        console.log(`👥 Loaded ${users.length} users from Supabase`);
-                        successCount++;
-                    }
-                } catch (error) {
-                    console.warn('❌ Users fetch failed:', error.message);
-                    errorCount++;
-                }
-                
-                try {
-                    const intelligence = await fetchLeadIntelligence();
-                    console.log(`🧠 Loaded ${intelligence.length} intelligence records`);
-                } catch (error) {
-                    console.warn('❌ Intelligence fetch failed:', error.message);
-                }
-                
-                try {
-                    const crmLeads = await fetchCRMLeads();
-                    if (crmLeads.length > 0) {
-                        allSources.push(...crmLeads);
-                        console.log(`📊 Loaded ${crmLeads.length} CRM leads`);
-                        successCount++;
-                    }
-                } catch (error) {
-                    console.warn('❌ CRM leads fetch failed:', error.message);
-                    errorCount++;
-                }
-                
-                // If no data from any source, load demo data
-                if (allSources.length === 0) {
-                    console.log('📋 No data found, loading demo data...');
-                    allSources = generateDemoLeads();
-                    showNotification('Demo data loaded - Connect to database for live data', 'info');
-                }
-                
-                // Process and combine data
-                const processedLeads = processCombinedLeads(allSources);
-                allLeads = processedLeads;
-                
-                console.log(`✅ Total processed leads: ${allLeads.length}`);
-                console.log(`📊 Success: ${successCount}, Errors: ${errorCount}`);
-                
-                updateDashboardStats();
-                applyFilters();
-                
-                // Show status notification
-                if (errorCount > 0 && successCount > 0) {
-                    showNotification(`Loaded ${allLeads.length} leads (some sources failed)`, 'info');
-                } else if (errorCount === 0 && successCount > 0) {
-                    showNotification(`Successfully loaded ${allLeads.length} leads`, 'success');
-                }
-                
-                return allLeads.length;
-                
-            } catch (error) {
-                console.error('❌ Critical error in fetchLeads:', error);
-                
-                // Emergency fallback to demo data
-                console.log('🚨 Loading emergency demo data...');
-                allLeads = generateDemoLeads();
-                updateDashboardStats();
-                applyFilters();
-                
-                showNotification('Using demo data - Check network connection', 'error');
-                return allLeads.length;
-            }
-        }
-
-        function loadFromLocalStorage() {
-            try {
-                const storedLeads = localStorage.getItem('topiko_local_leads');
-                return storedLeads ? JSON.parse(storedLeads) : [];
-            } catch (error) {
-                console.warn('❌ localStorage read failed:', error);
                 return [];
             }
         }
@@ -2273,9 +2035,18 @@
             const categories = ['boutique', 'home-foods', 'salons', 'grocery', 'electronics'];
             const statuses = ['New', 'Contacted', 'Demo Requested', 'Samples Requested'];
             
+            const now = new Date();
+            
             for (let i = 0; i < 25; i++) {
-                const createdDate = new Date();
-                createdDate.setDate(createdDate.getDate() - Math.floor(Math.random() * 30));
+                // Generate varied creation dates over the past 30 days
+                const daysAgo = Math.floor(Math.random() * 30);
+                const hoursAgo = Math.floor(Math.random() * 24);
+                const minutesAgo = Math.floor(Math.random() * 60);
+                
+                const createdDate = new Date(now);
+                createdDate.setDate(createdDate.getDate() - daysAgo);
+                createdDate.setHours(createdDate.getHours() - hoursAgo);
+                createdDate.setMinutes(createdDate.getMinutes() - minutesAgo);
                 
                 const lead = {
                     id: `demo_lead_${i + 1}`,
@@ -2295,7 +2066,8 @@
                     lead_status: 'New',
                     lead_pipeline_status: statuses[Math.floor(Math.random() * statuses.length)],
                     assigned_sdr_id: Math.random() > 0.7 ? sdrTeam[Math.floor(Math.random() * sdrTeam.length)]?.id : null,
-                    next_followup_date: Math.random() > 0.8 ? new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString() : null,
+                    next_followup_date: Math.random() > 0.8 ? 
+                        new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString() : null,
                     lead_notes: Math.random() > 0.9 ? 'Interested in premium package. Follow up next week.' : '',
                     created_at: createdDate.toISOString(),
                     utm_source: 'Direct',
@@ -2306,6 +2078,7 @@
                 demoLeads.push(processLeadData(lead));
             }
             
+            console.log('📋 Generated demo leads with varied timestamps');
             return demoLeads;
         }
 
@@ -2432,6 +2205,19 @@
 
         function generateId() {
             return 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // REMOVED OLD saveLead function - replaced with saveLeadChanges system
+
+        function loadSavedLeads() {
+            try {
+                const savedLeads = JSON.parse(localStorage.getItem('topiko_crm_leads') || '[]');
+                console.log('📱 Loaded saved leads from localStorage:', savedLeads.length);
+                return savedLeads;
+            } catch (error) {
+                console.error('❌ Error loading saved leads:', error);
+                return [];
+            }
         }
 
         // DASHBOARD FUNCTIONS
@@ -2994,8 +2780,18 @@
             
             if (!lead || !sdr) return;
             
-            lead.assigned_sdr_id = sdrId;
-            lead.lead_status = 'Assigned';
+            // Save changes separately
+            const changes = {
+                assigned_sdr_id: sdrId,
+                lead_status: 'Assigned',
+                assignment_date: new Date().toISOString()
+            };
+            
+            // Apply changes to local lead object
+            Object.assign(lead, changes);
+            
+            // Save changes to localStorage for persistence
+            saveLeadChanges(leadId, changes);
             
             // Close dropdown and reset z-index
             const dropdown = document.getElementById(`sdrDropdown-${leadId}`);
@@ -3005,9 +2801,6 @@
             if (card) card.style.zIndex = '1';
             
             showNotification(`${lead.name} assigned to ${sdr.name}`, 'success');
-            
-            // Save the lead to prevent disappearing
-            saveLead(lead);
             
             // Re-render leads
             renderLeads();
@@ -3223,10 +3016,18 @@
             if (!currentSelectedLead) return;
             
             const notes = document.getElementById('leadNotes').value;
-            currentSelectedLead.lead_notes = notes;
             
-            // Save to localStorage
-            saveLead(currentSelectedLead);
+            // Save changes separately
+            const changes = {
+                lead_notes: notes,
+                notes_updated_at: new Date().toISOString()
+            };
+            
+            // Apply changes to local lead object
+            Object.assign(currentSelectedLead, changes);
+            
+            // Save changes to localStorage for persistence
+            saveLeadChanges(currentSelectedLead.id, changes);
             
             showNotification('Notes saved', 'success');
         }
@@ -3343,7 +3144,7 @@
             }
         }
 
-        // STATUS MANAGEMENT FUNCTIONS
+        // STATUS MANAGEMENT FUNCTIONS (FIXED)
         function toggleStatusDropdown(leadId, event) {
             console.log('📊 Toggling status dropdown for lead:', leadId);
             
@@ -3358,27 +3159,60 @@
                 }
             });
             
-            // Toggle current dropdown
+            // Get current dropdown
             const dropdown = document.getElementById(`statusDropdown-${leadId}`);
             if (!dropdown) {
                 console.error('❌ Status dropdown not found:', `statusDropdown-${leadId}`);
                 return;
             }
             
-            dropdown.classList.toggle('show');
-            console.log('✅ Status dropdown toggled');
+            const button = event.target;
+            const card = button.closest('.lead-card');
             
-            // Close when clicking outside
+            // Remove any positioning classes
+            dropdown.classList.remove('dropdown-up', 'dropdown-right');
+            
+            // Check if dropdown would go off screen
+            const rect = button.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            const dropdownHeight = 200; // max-height
+            const dropdownWidth = 160; // min-width
+            
+            // Position dropdown up if it would go off bottom of screen
+            if (rect.bottom + dropdownHeight > viewportHeight - 20) {
+                dropdown.classList.add('dropdown-up');
+            }
+            
+            // Position dropdown left if it would go off right side of screen
+            if (rect.left + dropdownWidth > viewportWidth - 20) {
+                dropdown.classList.add('dropdown-right');
+            }
+            
+            // Toggle dropdown visibility
+            dropdown.classList.toggle('show');
+            
+            // Add higher z-index to parent card when dropdown is open
+            if (dropdown.classList.contains('show')) {
+                card.style.zIndex = '999';
+            } else {
+                card.style.zIndex = '1';
+            }
+            
+            // Close dropdown when clicking outside
             if (dropdown.classList.contains('show')) {
                 setTimeout(() => {
                     document.addEventListener('click', function closeDropdown(e) {
-                        if (!dropdown.contains(e.target)) {
+                        if (!dropdown.contains(e.target) && !button.contains(e.target)) {
                             dropdown.classList.remove('show');
+                            card.style.zIndex = '1';
                             document.removeEventListener('click', closeDropdown);
                         }
                     });
                 }, 100);
             }
+            
+            console.log('✅ Status dropdown toggled');
         }
 
         function updateLeadStatus(leadId, status) {
@@ -3390,18 +3224,30 @@
                 return;
             }
             
-            lead.lead_pipeline_status = status;
+            // Save changes separately
+            const changes = {
+                lead_pipeline_status: status,
+                status_updated_at: new Date().toISOString()
+            };
             
-            // Close dropdown
+            // Apply changes to local lead object
+            Object.assign(lead, changes);
+            
+            // Save changes to localStorage for persistence
+            saveLeadChanges(leadId, changes);
+            
+            // Close dropdown and reset z-index
             const dropdown = document.getElementById(`statusDropdown-${leadId}`);
+            const card = dropdown?.closest('.lead-card');
+            
             if (dropdown) {
                 dropdown.classList.remove('show');
             }
+            if (card) {
+                card.style.zIndex = '1';
+            }
             
             showNotification(`${lead.name} status updated to: ${status}`, 'success');
-            
-            // Save the lead
-            saveLead(lead);
             
             // Re-render leads
             renderLeads();
@@ -3470,58 +3316,27 @@
                 return;
             }
             
-            currentSelectedLead.next_followup_date = new Date(dateInput.value).toISOString();
+            const followupDate = new Date(dateInput.value).toISOString();
+            
+            // Save changes separately
+            const changes = {
+                next_followup_date: followupDate,
+                followup_set_at: new Date().toISOString()
+            };
+            
+            // Apply changes to local lead object
+            Object.assign(currentSelectedLead, changes);
+            
+            // Save changes to localStorage for persistence
+            saveLeadChanges(currentSelectedLead.id, changes);
             
             closeFollowupModal();
             showNotification(`Followup scheduled for ${currentSelectedLead.name}`, 'success');
             
-            // Save the lead
-            saveLead(currentSelectedLead);
-            
-            // Re-render leads
+            // Re-render leads to show updated followup date
             renderLeads();
             
             console.log('✅ Followup date saved successfully');
-        }
-
-        // PERSISTENCE FUNCTIONS (to prevent leads from disappearing)
-        async function saveLead(lead) {
-            try {
-                // Save to localStorage as backup
-                const allLeadsData = JSON.parse(localStorage.getItem('topiko_crm_leads') || '[]');
-                const existingIndex = allLeadsData.findIndex(l => l.id === lead.id);
-                
-                if (existingIndex >= 0) {
-                    allLeadsData[existingIndex] = lead;
-                } else {
-                    allLeadsData.push(lead);
-                }
-                
-                localStorage.setItem('topiko_crm_leads', JSON.stringify(allLeadsData));
-                console.log('💾 Lead saved to localStorage:', lead.name);
-                
-                // In a real app, also save to database here
-                // await saveToDatabase(lead);
-                
-            } catch (error) {
-                console.error('❌ Error saving lead:', error);
-            }
-        }
-
-        function loadSavedLeads() {
-            try {
-                const savedLeads = JSON.parse(localStorage.getItem('topiko_crm_leads') || '[]');
-                console.log('📱 Loaded saved leads from localStorage:', savedLeads.length);
-                return savedLeads;
-            } catch (error) {
-                console.error('❌ Error loading saved leads:', error);
-                return [];
-            }
-        }
-
-        function closeIntelligencePanel() {
-            document.getElementById('leadIntelligencePanel').classList.remove('show');
-            currentSelectedLead = null;
         }
 
         function initiateCall() {
