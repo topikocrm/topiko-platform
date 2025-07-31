@@ -922,7 +922,233 @@
             right: 0;
         }
 
-        /* ===== MOBILE RESPONSIVENESS ===== */
+        /* ===== SCORE BREAKDOWN MODAL ===== */
+        .score-breakdown-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .score-breakdown-modal.show {
+            display: flex;
+        }
+
+        .score-breakdown-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .score-breakdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .score-breakdown-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .score-close {
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #64748b;
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .score-item:last-child {
+            border-bottom: none;
+        }
+
+        .score-item-label {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .score-item-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .score-total {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .score-total-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .score-total-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+
+        /* ===== ENHANCED LEAD CARD WITH STATUS ===== */
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-status-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .status-dropdown {
+            position: relative;
+        }
+
+        .status-dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            min-width: 150px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            z-index: 1000;
+            margin-top: 4px;
+        }
+
+        .status-dropdown-content.show {
+            display: block;
+        }
+
+        .status-option {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.85rem;
+            color: #374151;
+        }
+
+        .status-option:hover {
+            background: #f8fafc;
+            color: #3b82f6;
+        }
+
+        .status-option:last-child {
+            border-bottom: none;
+        }
+
+        .btn-status {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-status:hover {
+            background: #d97706;
+        }
+
+        .btn-followup {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .btn-followup:hover {
+            background: #7c3aed;
+        }
+
+        /* ===== FOLLOWUP DATE PICKER ===== */
+        .followup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .followup-modal.show {
+            display: flex;
+        }
+
+        .followup-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .followup-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        .followup-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-save, .btn-cancel {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #64748b;
+            color: white;
+        }
         @media (max-width: 768px) {
             .crm-container {
                 flex-direction: column;
@@ -1313,81 +1539,137 @@
         </main>
     </div>
 
-    <!-- LEAD INTELLIGENCE PANEL -->
+    <!-- LEAD INTELLIGENCE PANEL - ENHANCED WITH ANALYTICS -->
     <div class="lead-intelligence-panel" id="leadIntelligencePanel">
         <div class="intelligence-header">
-            <h3 class="intelligence-title">Lead Intelligence</h3>
+            <h3 class="intelligence-title">Lead Analytics & Insights</h3>
             <button class="intelligence-close" onclick="closeIntelligencePanel()">×</button>
         </div>
 
         <div class="score-display" id="scoreDisplay">
             <div class="score-value" id="leadScoreValue">0</div>
-            <div class="score-label" id="leadScoreLabel">Lead Score</div>
+            <div class="score-label" id="leadScoreLabel">Analytics Score</div>
         </div>
 
         <div class="intelligence-section">
-            <div class="intelligence-section-title">Contact Information</div>
-            <div class="intelligence-item">
-                <span class="intelligence-label">Name:</span>
-                <span class="intelligence-value" id="leadName">-</span>
-            </div>
-            <div class="intelligence-item">
-                <span class="intelligence-label">Business:</span>
-                <span class="intelligence-value" id="leadBusiness">-</span>
-            </div>
-            <div class="intelligence-item">
-                <span class="intelligence-label">Phone:</span>
-                <span class="intelligence-value" id="leadPhone">-</span>
-            </div>
-            <div class="intelligence-item">
-                <span class="intelligence-label">Email:</span>
-                <span class="intelligence-value" id="leadEmail">-</span>
+            <div class="intelligence-section-title">💡 AI Recommendations</div>
+            <div id="aiRecommendations" style="background: #f0fdf4; padding: 1rem; border-radius: 8px; border-left: 4px solid #10b981; margin-bottom: 1rem;">
+                <div style="font-size: 0.85rem; color: #059669; line-height: 1.5;" id="recommendationText">
+                    Loading personalized recommendations...
+                </div>
             </div>
         </div>
 
         <div class="intelligence-section">
-            <div class="intelligence-section-title">Qualification Data</div>
+            <div class="intelligence-section-title">📊 Behavioral Analytics</div>
             <div class="intelligence-item">
-                <span class="intelligence-label">Budget:</span>
-                <span class="intelligence-value" id="leadBudget">-</span>
+                <span class="intelligence-label">Engagement Level:</span>
+                <span class="intelligence-value" id="engagementLevel">-</span>
             </div>
             <div class="intelligence-item">
-                <span class="intelligence-label">Timeline:</span>
-                <span class="intelligence-value" id="leadTimeline">-</span>
+                <span class="intelligence-label">Time Spent:</span>
+                <span class="intelligence-value" id="timeSpent">-</span>
             </div>
             <div class="intelligence-item">
-                <span class="intelligence-label">Decision Maker:</span>
-                <span class="intelligence-value" id="leadDecisionMaker">-</span>
+                <span class="intelligence-label">Page Views:</span>
+                <span class="intelligence-value" id="pageViews">-</span>
             </div>
             <div class="intelligence-item">
-                <span class="intelligence-label">Online Presence:</span>
-                <span class="intelligence-value" id="leadOnlinePresence">-</span>
+                <span class="intelligence-label">Last Activity:</span>
+                <span class="intelligence-value" id="lastActivity">-</span>
             </div>
         </div>
 
         <div class="intelligence-section">
-            <div class="intelligence-section-title">Engagement Data</div>
-            <div class="intelligence-item">
-                <span class="intelligence-label">Session Time:</span>
-                <span class="intelligence-value" id="leadSessionTime">-</span>
-            </div>
-            <div class="intelligence-item">
-                <span class="intelligence-label">Device:</span>
-                <span class="intelligence-value" id="leadDevice">-</span>
-            </div>
-            <div class="intelligence-item">
-                <span class="intelligence-label">Source:</span>
-                <span class="intelligence-value" id="leadSource">-</span>
-            </div>
-            <div class="intelligence-item">
-                <span class="intelligence-label">Products:</span>
-                <span class="intelligence-value" id="leadProducts">-</span>
+            <div class="intelligence-section-title">🎯 Conversion Probability</div>
+            <div id="conversionMeter" style="background: #f8fafc; padding: 1rem; border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #1e293b;" id="conversionScore">0%</div>
+                <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">Based on similar leads</div>
+                <div id="conversionBar" style="width: 100%; height: 8px; background: #e5e7eb; border-radius: 4px; margin-top: 0.5rem; overflow: hidden;">
+                    <div id="conversionProgress" style="height: 100%; background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981); width: 0%; transition: width 0.5s ease;"></div>
+                </div>
             </div>
         </div>
 
-        <button class="action-button" onclick="initiateCall()" id="callButton">
-            📞 Call Lead
-        </button>
+        <div class="intelligence-section">
+            <div class="intelligence-section-title">📈 Lead Journey</div>
+            <div id="leadJourney" style="font-size: 0.85rem;">
+                <div class="journey-step" style="display: flex; align-items: center; margin: 0.5rem 0; padding: 0.5rem; background: #f8fafc; border-radius: 6px;">
+                    <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; margin-right: 0.75rem;"></div>
+                    <div>
+                        <div style="font-weight: 500; color: #1e293b;">Form Submitted</div>
+                        <div style="color: #64748b; font-size: 0.75rem;" id="journeyFormDate">-</div>
+                    </div>
+                </div>
+                <div class="journey-step" style="display: flex; align-items: center; margin: 0.5rem 0; padding: 0.5rem; background: #f8fafc; border-radius: 6px;">
+                    <div style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; margin-right: 0.75rem;"></div>
+                    <div>
+                        <div style="font-weight: 500; color: #1e293b;">Profile Completed</div>
+                        <div style="color: #64748b; font-size: 0.75rem;" id="journeyProfileDate">-</div>
+                    </div>
+                </div>
+                <div class="journey-step" style="display: flex; align-items: center; margin: 0.5rem 0; padding: 0.5rem; background: #f8fafc; border-radius: 6px;">
+                    <div style="width: 8px; height: 8px; background: #f59e0b; border-radius: 50%; margin-right: 0.75rem;"></div>
+                    <div>
+                        <div style="font-weight: 500; color: #1e293b;">Categories Selected</div>
+                        <div style="color: #64748b; font-size: 0.75rem;" id="journeyCategoriesDate">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="intelligence-section">
+            <div class="intelligence-section-title">📝 Quick Notes</div>
+            <textarea id="leadNotes" placeholder="Add notes about this lead..." 
+                      style="width: 100%; min-height: 80px; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.85rem; resize: vertical; font-family: inherit;">
+            </textarea>
+            <button onclick="saveLeadNotes()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
+                Save Notes
+            </button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem;">
+            <button class="action-button" onclick="initiateCall()" id="callButton">
+                📞 Call Lead
+            </button>
+            <button class="action-button" onclick="sendEmail()" style="background: #8b5cf6;">
+                📧 Send Email
+            </button>
+        </div>
+    </div>
+
+    <!-- SCORE BREAKDOWN MODAL -->
+    <div class="score-breakdown-modal" id="scoreBreakdownModal">
+        <div class="score-breakdown-content">
+            <div class="score-breakdown-header">
+                <h3 class="score-breakdown-title">Lead Score Breakdown</h3>
+                <button class="score-close" onclick="closeScoreBreakdown()">×</button>
+            </div>
+            
+            <div id="scoreBreakdownItems">
+                <!-- Score items will be populated here -->
+            </div>
+            
+            <div class="score-total">
+                <div class="score-total-value" id="totalScoreValue">0</div>
+                <div class="score-total-label">Total Lead Score</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOLLOWUP DATE MODAL -->
+    <div class="followup-modal" id="followupModal">
+        <div class="followup-content">
+            <h3 style="margin-bottom: 1rem; color: #1e293b;">Set Next Followup Date</h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">
+                When should we follow up with <span id="followupLeadName">this lead</span>?
+            </p>
+            <input type="datetime-local" id="followupDateInput" class="followup-input">
+            <div class="followup-buttons">
+                <button class="btn-cancel" onclick="closeFollowupModal()">Cancel</button>
+                <button class="btn-save" onclick="saveFollowupDate()">Set Followup</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -2316,6 +2598,12 @@
             const assignedSDR = lead.assigned_sdr_id ? 
                 sdrTeam.find(sdr => sdr.id === lead.assigned_sdr_id)?.name || 'Unknown SDR' : 
                 'Unassigned';
+
+            // Current status and followup date
+            const currentStatus = lead.lead_pipeline_status || 'New';
+            const nextFollowup = lead.next_followup_date ? 
+                new Date(lead.next_followup_date).toLocaleDateString('en-IN') : 
+                'Not set';
             
             return `
                 <div class="${cardClasses}">
@@ -2331,7 +2619,10 @@
                             <div class="lead-contact">📧 ${lead.email}</div>
                             <div class="lead-contact">📞 ${lead.phone}</div>
                         </div>
-                        <div class="lead-score-badge score-${lead.lead_quality.toLowerCase()}">
+                        <div class="lead-score-badge score-${lead.lead_quality.toLowerCase()}" 
+                             onclick="showScoreBreakdown('${lead.id}')" 
+                             style="cursor: pointer;" 
+                             title="Click to see score breakdown">
                             ${lead.lead_score}
                         </div>
                     </div>
@@ -2398,9 +2689,36 @@
                                 `).join('')}
                             </div>
                         </div>
+                        
+                        <div class="status-dropdown">
+                            <button class="action-btn btn-status" onclick="toggleStatusDropdown('${lead.id}', event)">
+                                📊 Status
+                            </button>
+                            <div class="status-dropdown-content" id="statusDropdown-${lead.id}">
+                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Contacted')">Contacted</div>
+                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Not Reachable')">Not Reachable</div>
+                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Demo Requested')">Demo Requested</div>
+                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Samples Requested')">Samples Requested</div>
+                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Dropped-Budget')">Dropped-Budget</div>
+                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Converted')">Converted</div>
+                            </div>
+                        </div>
+                        
                         <button class="action-btn btn-intel" onclick="showLeadIntelligence('${lead.id}')">
-                            📊 Intelligence
+                            📈 Analytics
                         </button>
+                    </div>
+
+                    <div class="card-status-section">
+                        <div class="detail-item">
+                            <span class="detail-label">Pipeline Status:</span>
+                            <span style="font-weight: 600; color: #3b82f6;">${currentStatus}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Next Followup:</span>
+                            <span style="cursor: pointer; color: #8b5cf6; text-decoration: underline;" 
+                                  onclick="setFollowupDate('${lead.id}')">${nextFollowup}</span>
+                        </div>
                     </div>
                 </div>
             `;
