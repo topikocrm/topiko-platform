@@ -16,7 +16,7 @@
         // Check if Supabase library is loaded
         if (typeof supabase !== 'undefined' && supabase.createClient) {
             try {
-                // Replace these with your actual Supabase credentials
+                // Use credentials from config_js.js
                 const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
                 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k';
                 
@@ -45,6 +45,24 @@
             console.error('❌ Supabase library not loaded properly');
             window.DISABLE_NAVIGATION_TRACKING = true;
         }
+        
+        // Alternative: Use config from config_js.js if available
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.TopikoConfig && window.TopikoConfig.SUPABASE_CONFIG && !window.supabase) {
+                console.log('🔄 Trying to initialize Supabase from config...');
+                try {
+                    const { createClient } = supabase;
+                    window.supabaseClient = createClient(
+                        window.TopikoConfig.SUPABASE_CONFIG.URL,
+                        window.TopikoConfig.SUPABASE_CONFIG.ANON_KEY
+                    );
+                    window.supabase = window.supabaseClient;
+                    console.log('✅ Supabase initialized from config');
+                } catch (error) {
+                    console.error('❌ Config-based Supabase init failed:', error);
+                }
+            }
+        });
     </script>
     
     <link rel="stylesheet" href="css/styles_css.css">
@@ -164,7 +182,7 @@
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" 
                         data-translate="language.title">Choose Your Language</h2>
                     <p style="text-align: center; margin-bottom: 2rem; font-size: 0.9rem;" 
-                       data-translate="language.subtitle">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெडुக்கवும்</p>
+                       data-translate="language.subtitle">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெडுक्कवும्</p>
                     
                     <div class="language-grid">
                         <div class="language-option" onclick="selectLanguageWithTranslation('en', this, 'forward')">
@@ -187,7 +205,7 @@
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
                                 <h3>తెలుగు</h3>
-                                <p data-translate="language.options.te">తెలుగులో కొనసాగించండి</p>
+                                <p data-translate="language.options.te">తెలుగులో కొনసాగించండి</p>
                             </div>
                         </div>
 
@@ -195,7 +213,7 @@
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
                                 <h3>தமிழ்</h3>
-                                <p data-translate="language.options.ta">தமிழில் தொடരવ</p>
+                                <p data-translate="language.options.ta">தமிழில் தொடরવ</p>
                             </div>
                         </div>
                     </div>
@@ -618,11 +636,11 @@
                             <div class="quick-filters" id="quickFilters">
                                 <button class="quick-filter active" data-category="all" onclick="applyQuickFilter('all', this)">All Products</button>
                                 <button class="quick-filter" data-category="boutique" onclick="applyQuickFilter('boutique', this)">Fashion</button>
-                                <button class="quick-filter" data-category="homefoods" onclick="applyQuickFilter('homefoods', this)">Home Foods</button>
+                                <button class="quick-filter" data-category="home-foods" onclick="applyQuickFilter('home-foods', this)">Home Foods</button>
                                 <button class="quick-filter" data-category="grocery" onclick="applyQuickFilter('grocery', this)">Grocery</button>
                                 <button class="quick-filter" data-category="electronics" onclick="applyQuickFilter('electronics', this)">Electronics</button>
                                 <button class="quick-filter" data-category="fitness" onclick="applyQuickFilter('fitness', this)">Fitness</button>
-                                <button class="quick-filter" data-category="restaurant" onclick="applyQuickFilter('restaurant', this)">Restaurant</button>
+                                <button class="quick-filter" data-category="restaurants" onclick="applyQuickFilter('restaurants', this)">Restaurant</button>
                             </div>
                         </div>
                         
@@ -638,11 +656,11 @@
                             <select id="categoryFilter" class="filter-select">
                                 <option value="all" data-translate="products.filters.allCategories">All Categories</option>
                                 <option value="boutique">Boutique & Fashion</option>
-                                <option value="homefoods">Home Foods</option>
+                                <option value="home-foods">Home Foods</option>
                                 <option value="grocery">Grocery & Provisions</option>
                                 <option value="electronics">Electronics & Gadgets</option>
                                 <option value="fitness">Fitness & Wellness</option>
-                                <option value="restaurant">Restaurant & Food</option>
+                                <option value="restaurants">Restaurant & Food</option>
                             </select>
                             
                             <select id="sortBy" class="sort-select">
@@ -1309,17 +1327,466 @@
         }, 3000);
     }
 
-    // Initialize categories when the page loads
+    // REAL PRODUCT LOADING from config_js.js
+    console.log('🛍️ Initializing products section with real data...');
+    
+    function initializeProductsSection() {
+        const productsGrid = document.getElementById('productsGrid');
+        
+        if (!productsGrid) {
+            console.error('❌ Products grid not found');
+            return;
+        }
+        
+        // Clear loading message
+        productsGrid.innerHTML = '';
+        
+        // Check if config is loaded
+        if (!window.TopikoConfig || !window.TopikoConfig.INDIAN_PRODUCTS_DB) {
+            console.error('❌ TopikoConfig not loaded, using fallback products');
+            loadFallbackProducts();
+            return;
+        }
+        
+        // Get products from config
+        const productsDB = window.TopikoConfig.INDIAN_PRODUCTS_DB;
+        let allProducts = [];
+        
+        // Extract all products from the database
+        Object.keys(productsDB).forEach(categoryKey => {
+            Object.keys(productsDB[categoryKey]).forEach(subcategoryKey => {
+                const products = productsDB[categoryKey][subcategoryKey];
+                products.forEach(product => {
+                    allProducts.push({
+                        ...product,
+                        parentCategory: categoryKey
+                    });
+                });
+            });
+        });
+        
+        console.log(`📦 Found ${allProducts.length} products in database`);
+        
+        // Sort products to show popular ones first
+        allProducts.sort((a, b) => {
+            if (a.isPopular && !b.isPopular) return -1;
+            if (!a.isPopular && b.isPopular) return 1;
+            return a.name.localeCompare(b.name);
+        });
+        
+        // Limit to first 50 products for better performance
+        const displayProducts = allProducts.slice(0, 50);
+        
+        // Create product cards
+        displayProducts.forEach(product => {
+            const productCard = document.createElement('div');
+            productCard.className = 'product-card';
+            productCard.setAttribute('data-category', product.parentCategory);
+            productCard.setAttribute('data-price', product.suggestedPrice);
+            productCard.style.cssText = `
+                border: 2px solid #e5e7eb;
+                border-radius: 12px;
+                padding: 1rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-align: center;
+                background: white;
+                margin-bottom: 1rem;
+            `;
+            
+            // Add hover effects
+            productCard.addEventListener('mouseenter', function() {
+                this.style.borderColor = '#6366f1';
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.15)';
+            });
+            
+            productCard.addEventListener('mouseleave', function() {
+                this.style.borderColor = '#e5e7eb';
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+            
+            productCard.innerHTML = `
+                <div class="product-image" style="width: 100%; height: 120px; background: url('${product.image}') center/cover; border-radius: 8px; margin-bottom: 0.75rem; background-color: #f3f4f6;"></div>
+                <h4 style="color: #374151; margin: 0.5rem 0; font-size: 0.9rem; font-weight: 600;">${product.name}</h4>
+                <p style="color: #6b7280; font-size: 0.8rem; margin: 0.25rem 0; line-height: 1.3;">${product.description}</p>
+                <p style="color: #10b981; font-weight: 700; font-size: 1rem; margin: 0.5rem 0;">₹${product.suggestedPrice}</p>
+                ${product.isPopular ? '<span style="background: #10b981; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.7rem; margin: 0.5rem 0; display: inline-block;">🔥 Popular</span>' : ''}
+                <br>
+                <button onclick="selectProduct('${product.id}', '${product.name}', ${product.suggestedPrice}, '${product.parentCategory}')" 
+                        style="background: #6366f1; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; margin-top: 0.5rem; transition: all 0.3s ease;"
+                        onmouseover="this.style.background='#4f46e5'"
+                        onmouseout="this.style.background='#6366f1'">
+                    ✅ Select
+                </button>
+            `;
+            
+            productsGrid.appendChild(productCard);
+        });
+        
+        console.log(`✅ Loaded ${displayProducts.length} products successfully`);
+        
+        // Update products count
+        const productsCount = document.getElementById('productsCount');
+        if (productsCount) {
+            productsCount.textContent = allProducts.length;
+        }
+    }
+    
+    // Fallback function if config fails to load
+    function loadFallbackProducts() {
+        const productsGrid = document.getElementById('productsGrid');
+        const fallbackProducts = [
+            { id: 'fallback-1', name: 'Cotton T-Shirt', suggestedPrice: 599, parentCategory: 'boutique', description: 'Comfortable cotton t-shirt', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300' },
+            { id: 'fallback-2', name: 'Masala Dosa', suggestedPrice: 120, parentCategory: 'home-foods', description: 'Crispy dosa with spiced potato filling', image: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=300' },
+            { id: 'fallback-3', name: 'Smartphone', suggestedPrice: 15999, parentCategory: 'electronics', description: 'Latest Android smartphone', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300' },
+            { id: 'fallback-4', name: 'Fresh Tomatoes', suggestedPrice: 40, parentCategory: 'grocery', description: 'Farm fresh red tomatoes', image: 'https://images.unsplash.com/photo-1546470427-e1295e888100?w=300' },
+            { id: 'fallback-5', name: 'Yoga Mat', suggestedPrice: 899, parentCategory: 'fitness', description: 'Non-slip yoga mat', image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=300' },
+            { id: 'fallback-6', name: 'Cappuccino', suggestedPrice: 120, parentCategory: 'restaurants', description: 'Rich cappuccino with foam art', image: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=300' }
+        ];
+        
+        fallbackProducts.forEach(product => {
+            const productCard = document.createElement('div');
+            productCard.className = 'product-card';
+            productCard.style.cssText = `
+                border: 2px solid #e5e7eb;
+                border-radius: 12px;  
+                padding: 1rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-align: center;
+                background: white;
+                margin-bottom: 1rem;
+            `;
+            
+            productCard.innerHTML = `
+                <div class="product-image" style="width: 100%; height: 120px; background: url('${product.image}') center/cover; border-radius: 8px; margin-bottom: 0.75rem; background-color: #f3f4f6;"></div>
+                <h4 style="color: #374151; margin: 0.5rem 0; font-size: 0.9rem; font-weight: 600;">${product.name}</h4>
+                <p style="color: #6b7280; font-size: 0.8rem; margin: 0.25rem 0;">${product.description}</p>
+                <p style="color: #10b981; font-weight: 700; font-size: 1rem; margin: 0.5rem 0;">₹${product.suggestedPrice}</p>
+                <button onclick="selectProduct('${product.id}', '${product.name}', ${product.suggestedPrice}, '${product.parentCategory}')" 
+                        style="background: #6366f1; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+                    ✅ Select
+                </button>
+            `;
+            
+            productsGrid.appendChild(productCard);
+        });
+        
+        console.log('✅ Fallback products loaded');
+    }
+
+    // Enhanced product selection function
+    window.selectProduct = function(id, name, price, category) {
+        console.log('🛍️ Product selected:', { id, name, price, category });
+        
+        // Initialize selected products array if not exists
+        if (!window.selectedProducts) {
+            window.selectedProducts = [];
+        }
+        
+        // Check if product already selected
+        const existingIndex = window.selectedProducts.findIndex(p => p.id === id);
+        if (existingIndex !== -1) {
+            // Remove if already selected
+            window.selectedProducts.splice(existingIndex, 1);
+            updateProductButton(id, false);
+            showNotification(`❌ Removed ${name} from your catalog`, 'warning');
+        } else {
+            // Add to selected products
+            window.selectedProducts.push({ id, name, price, category });
+            updateProductButton(id, true);
+            showNotification(`✅ Added ${name} to your catalog!`, 'success');
+        }
+        
+        // Update selected products display
+        updateSelectedProductsDisplay();
+        updateProductsCatalogDisplay();
+        
+        console.log('📦 Total selected products:', window.selectedProducts.length);
+    };
+    
+    // Function to update product button state
+    function updateProductButton(productId, isSelected) {
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach(card => {
+            const button = card.querySelector('button');
+            if (button && button.onclick.toString().includes(productId)) {
+                if (isSelected) {
+                    button.innerHTML = '✅ Selected';
+                    button.style.background = '#10b981';
+                    card.style.borderColor = '#10b981';
+                    card.style.backgroundColor = '#f0fdf4';
+                } else {
+                    button.innerHTML = '✅ Select';
+                    button.style.background = '#6366f1';
+                    card.style.borderColor = '#e5e7eb';
+                    card.style.backgroundColor = 'white';
+                }
+            }
+        });
+    }
+    
+    // Function to show notifications
+    function showNotification(message, type = 'success') {
+        const notification = document.getElementById('notification');
+        const content = document.getElementById('notificationContent');
+        
+        if (notification && content) {
+            content.innerHTML = message;
+            notification.style.display = 'block';
+            notification.style.background = type === 'success' ? '#10b981' : '#f59e0b';
+            notification.style.color = 'white';
+            notification.style.padding = '1rem';
+            notification.style.borderRadius = '8px';
+            notification.style.margin = '1rem 0';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+    }
+    
+    // Function to update selected products display
+    function updateSelectedProductsDisplay() {
+        const selectedSection = document.getElementById('selectedProductsSection');
+        const selectedList = document.getElementById('selectedProductsList');
+        
+        if (!window.selectedProducts || window.selectedProducts.length === 0) {
+            if (selectedSection) selectedSection.style.display = 'none';
+            return;
+        }
+        
+        if (selectedSection) selectedSection.style.display = 'block';
+        
+        if (selectedList) {
+            selectedList.innerHTML = '';
+            window.selectedProducts.forEach(product => {
+                const productItem = document.createElement('div');
+                productItem.style.cssText = `
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 0.75rem;
+                    background: #f8fafc;
+                    border-radius: 8px;
+                    margin-bottom: 0.5rem;
+                `;
+                
+                productItem.innerHTML = `
+                    <div>
+                        <strong>${product.name}</strong>
+                        <div style="color: #10b981; font-weight: 600;">₹${product.price}</div>
+                    </div>
+                    <button onclick="selectProduct('${product.id}', '${product.name}', ${product.price}, '${product.category}')"
+                            style="background: #ef4444; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                        Remove
+                    </button>
+                `;
+                
+                selectedList.appendChild(productItem);
+            });
+        }
+    }
+    
+    // Function to update products catalog display
+    function updateProductsCatalogDisplay() {
+        const catalogTitle = document.querySelector('[data-translate="products.selectedProducts.catalogTitle"]');
+        const productsList = document.getElementById('productsList');
+        
+        if (catalogTitle) {
+            catalogTitle.textContent = `Your Product Catalog (${window.selectedProducts ? window.selectedProducts.length : 0})`;
+        }
+        
+        if (!window.selectedProducts || window.selectedProducts.length === 0) {
+            if (productsList) {
+                productsList.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+                        <p>No products selected yet. Choose products above or add custom products!</p>
+                    </div>
+                `;
+            }
+            return;
+        }
+        
+        if (productsList) {
+            productsList.innerHTML = '';
+            window.selectedProducts.forEach(product => {
+                const catalogItem = document.createElement('div');
+                catalogItem.style.cssText = `
+                    background: white;
+                    border: 2px solid #e5e7eb;
+                    border-radius: 12px;
+                    padding: 1rem;
+                    margin-bottom: 1rem;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                `;
+                
+                catalogItem.innerHTML = `
+                    <div>
+                        <h4 style="margin: 0; color: #374151;">${product.name}</h4>
+                        <p style="margin: 0.5rem 0; color: #10b981; font-weight: 600; font-size: 1.1rem;">₹${product.price}</p>
+                        <span style="background: #6366f1; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">${product.category}</span>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: #10b981; font-size: 1.5rem; margin-bottom: 0.5rem;">✅</div>
+                        <div style="font-size: 0.8rem; color: #6b7280;">Selected</div>
+                    </div>
+                `;
+                
+                productsList.appendChild(catalogItem);
+            });
+        }
+    }
+    
+    // Product filtering functions
+    window.applyQuickFilter = function(category, buttonElement) {
+        // Update active button
+        document.querySelectorAll('.quick-filter').forEach(btn => btn.classList.remove('active'));
+        buttonElement.classList.add('active');
+        
+        // Filter products
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach(card => {
+            if (category === 'all' || card.getAttribute('data-category') === category) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        console.log(`🔍 Applied filter: ${category}`);
+    };
+    
+    window.selectPopularProducts = function() {
+        if (!window.TopikoConfig || !window.TopikoConfig.getPopularProducts) {
+            console.warn('⚠️ Popular products function not available');
+            return;
+        }
+        
+        const popularProducts = window.TopikoConfig.getPopularProducts(10);
+        popularProducts.forEach(product => {
+            selectProduct(product.id, product.name, product.suggestedPrice, product.parentCategory);
+        });
+        
+        showNotification('🔥 Added popular products to your catalog!', 'success');
+    };
+    
+    window.clearAllSelections = function() {
+        if (window.selectedProducts) {
+            window.selectedProducts.forEach(product => {
+                updateProductButton(product.id, false);
+            });
+            window.selectedProducts = [];
+            updateSelectedProductsDisplay();
+            updateProductsCatalogDisplay();
+            showNotification('🗑️ Cleared all product selections', 'warning');
+        }
+    };
+
+    // Initialize when products screen is shown
     document.addEventListener('DOMContentLoaded', function() {
-        // Load categories when categories screen is shown
+        console.log('🚀 DOM loaded, initializing products...');
+        
+        // Wait for config to load, then initialize products
+        let configCheckAttempts = 0;
+        const maxAttempts = 10;
+        
+        function waitForConfig() {
+            configCheckAttempts++;
+            
+            if (window.TopikoConfig && window.TopikoConfig.INDIAN_PRODUCTS_DB) {
+                console.log('✅ Config loaded, initializing products');
+                // Try to initialize products after a short delay
+                setTimeout(() => {
+                    const productsGrid = document.getElementById('productsGrid');
+                    if (productsGrid) {
+                        initializeProductsSection();
+                    }
+                }, 1000);
+            } else if (configCheckAttempts < maxAttempts) {
+                console.log(`⏳ Waiting for config... (${configCheckAttempts}/${maxAttempts})`);
+                setTimeout(waitForConfig, 500);
+            } else {
+                console.warn('⚠️ Config not loaded after max attempts, using fallback');
+                setTimeout(() => {
+                    const productsGrid = document.getElementById('productsGrid');
+                    if (productsGrid) {
+                        loadFallbackProducts();
+                    }
+                }, 1000);
+            }
+        }
+        
+        // Start waiting for config
+        waitForConfig();
+        
+        // Also initialize when user navigates to products screen
         const originalShowScreen = window.TopikoUtils?.showScreen;
         if (originalShowScreen) {
             window.TopikoUtils.showScreen = function(screenId) {
                 originalShowScreen.call(this, screenId);
+                if (screenId === 'products') {
+                    setTimeout(() => {
+                        const productsGrid = document.getElementById('productsGrid');
+                        if (productsGrid && productsGrid.children.length === 0) {
+                            initializeProductsSection();
+                        }
+                    }, 500);
+                }
                 if (screenId === 'categories') {
                     setTimeout(() => loadCategories(), 100);
                 }
             };
+        }
+        
+        // Add search functionality
+        const productSearch = document.getElementById('productSearch');
+        if (productSearch) {
+            productSearch.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const productCards = document.querySelectorAll('.product-card');
+                
+                productCards.forEach(card => {
+                    const productName = card.querySelector('h4').textContent.toLowerCase();
+                    const productDesc = card.querySelector('p').textContent.toLowerCase();
+                    
+                    if (productName.includes(searchTerm) || productDesc.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Add price filter functionality
+        const minPrice = document.getElementById('minPrice');
+        const maxPrice = document.getElementById('maxPrice');
+        
+        if (minPrice && maxPrice) {
+            [minPrice, maxPrice].forEach(input => {
+                input.addEventListener('input', function() {
+                    const min = parseInt(minPrice.value) || 0;
+                    const max = parseInt(maxPrice.value) || 100000;
+                    
+                    document.getElementById('priceRangeDisplay').textContent = `${min} - ₹${max}`;
+                    
+                    const productCards = document.querySelectorAll('.product-card');
+                    productCards.forEach(card => {
+                        const price = parseInt(card.getAttribute('data-price'));
+                        if (price >= min && price <= max) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
         }
         
         // Initialize lead score widget text
