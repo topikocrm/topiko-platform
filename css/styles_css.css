@@ -223,24 +223,9 @@ body {
    4. WIDGET STYLES
    ======================================== */
 
-/* Lead Score Widget */
+/* Lead Score Widget - HIDDEN */
 .lead-score-widget {
-    position: fixed;
-    top: 2rem;
-    right: 2rem;
-    background: white;
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 999;
-    border: 3px solid #e5e7eb;
+    display: none !important;
 }
 
 .lead-score-widget:hover {
@@ -2633,11 +2618,6 @@ body {
         left: 65px;
     }
     
-    .lead-score-widget {
-        top: 2rem;
-        right: 2rem;
-    }
-    
     .fomo-notification {
         left: 2rem;
         right: auto;
@@ -2676,8 +2656,10 @@ body {
         padding: 0 0.5rem;
     }
 
+    /* Enhanced mobile content spacing to avoid FOMO overlap */
     .main-content {
         padding: 1rem 0;
+        margin-bottom: 8rem; /* Extra space for FOMO elements */
     }
 
     .content-card {
@@ -2721,23 +2703,6 @@ body {
 
     .progress-label {
         font-size: 0.65rem;
-    }
-    
-    .lead-score-widget {
-        top: 1rem;
-        right: 1rem;
-        width: 60px;
-        height: 60px;
-    }
-    
-    .score-circle {
-        width: 30px;
-        height: 30px;
-        font-size: 0.8rem;
-    }
-    
-    .score-label {
-        font-size: 0.6rem;
     }
 
     .language-grid {
@@ -2858,6 +2823,7 @@ body {
         left: 1rem;
         max-width: none;
         transform: translateY(-100px);
+        z-index: 1002;
     }
 
     .notification.show {
@@ -2870,6 +2836,7 @@ body {
         right: 1rem;
         max-width: none;
         transform: translateY(200px);
+        z-index: 997;
     }
 
     .fomo-notification.show {
@@ -2877,12 +2844,20 @@ body {
     }
 
     .fomo-counter {
-        left: 0.5rem;
+        position: fixed;
+        bottom: 2rem;
+        right: 1rem;
+        left: auto;
         top: auto;
-        bottom: 6rem;
         transform: none;
-        padding: 0.6rem;
-        min-width: 80px;
+        padding: 0.8rem;
+        min-width: 100px;
+        font-size: 0.9rem;
+        z-index: 998;
+    }
+    
+    .fomo-counter.show {
+        transform: none;
     }
     
     .counter-number {
@@ -3137,6 +3112,35 @@ body {
         flex-direction: column;
         gap: 0.5rem;
     }
+
+    /* Enhanced FOMO positioning for very small screens */
+    .fomo-counter {
+        bottom: 1.5rem;
+        right: 0.5rem;
+        padding: 0.6rem;
+        min-width: 80px;
+        font-size: 0.8rem;
+    }
+    
+    .counter-number {
+        font-size: 1rem;
+    }
+
+    .counter-text {
+        font-size: 0.65rem;
+    }
+    
+    .fomo-notification {
+        bottom: 0.5rem;
+        left: 0.5rem;
+        right: 0.5rem;
+        padding: 0.8rem;
+        font-size: 0.85rem;
+    }
+    
+    .main-content {
+        margin-bottom: 10rem; /* More space for FOMO elements on very small screens */
+    }
 }
 
 /* ========================================
@@ -3162,6 +3166,10 @@ body {
     body {
         background: white;
         color: black;
+    }
+    
+    .main-content {
+        margin-bottom: 0; /* Remove extra spacing for print */
     }
 }
 /* ========================================
