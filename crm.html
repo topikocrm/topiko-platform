@@ -845,18 +845,33 @@
         .sdr-dropdown-content {
             display: none;
             position: absolute;
+            top: 100%;
+            left: 0;
             background-color: white;
             min-width: 200px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             border-radius: 8px;
             border: 1px solid #e2e8f0;
-            z-index: 10;
+            z-index: 1000;
             max-height: 200px;
             overflow-y: auto;
+            margin-top: 4px;
         }
 
         .sdr-dropdown-content.show {
             display: block;
+            animation: dropdownSlideIn 0.2s ease;
+        }
+
+        @keyframes dropdownSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .sdr-option {
@@ -864,14 +879,47 @@
             cursor: pointer;
             border-bottom: 1px solid #f1f5f9;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #374151;
         }
 
         .sdr-option:hover {
             background-color: #f8fafc;
+            color: #3b82f6;
         }
 
         .sdr-option:last-child {
             border-bottom: none;
+        }
+
+        /* Ensure dropdown appears above cards */
+        .lead-card {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Modern browsers with :has() support */
+        @supports selector(:has(*)) {
+            .lead-card:has(.sdr-dropdown-content.show) {
+                z-index: 999;
+            }
+        }
+
+        /* Fallback for browsers without :has() support - handled by JavaScript */
+
+        /* Alternative positioning for dropdowns near screen edges */
+        .sdr-dropdown-content.dropdown-up {
+            top: auto;
+            bottom: 100%;
+            margin-top: 0;
+            margin-bottom: 4px;
+        }
+
+        .sdr-dropdown-content.dropdown-right {
+            left: auto;
+            right: 0;
         }
 
         /* ===== MOBILE RESPONSIVENESS ===== */
@@ -2389,19 +2437,53 @@
                 }
             });
             
-            // Toggle current dropdown
+            // Get current dropdown
             const dropdown = document.getElementById(`sdrDropdown-${leadId}`);
+            const button = event.target;
+            const card = button.closest('.lead-card');
+            
+            // Remove any positioning classes
+            dropdown.classList.remove('dropdown-up', 'dropdown-right');
+            
+            // Check if dropdown would go off screen
+            const rect = button.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            const dropdownHeight = 200; // max-height
+            const dropdownWidth = 200; // min-width
+            
+            // Position dropdown up if it would go off bottom of screen
+            if (rect.bottom + dropdownHeight > viewportHeight - 20) {
+                dropdown.classList.add('dropdown-up');
+            }
+            
+            // Position dropdown left if it would go off right side of screen
+            if (rect.left + dropdownWidth > viewportWidth - 20) {
+                dropdown.classList.add('dropdown-right');
+            }
+            
+            // Toggle dropdown visibility
             dropdown.classList.toggle('show');
             
+            // Add higher z-index to parent card when dropdown is open
+            if (dropdown.classList.contains('show')) {
+                card.style.zIndex = '999';
+            } else {
+                card.style.zIndex = '1';
+            }
+            
             // Close dropdown when clicking outside
-            setTimeout(() => {
-                document.addEventListener('click', function closeDropdown(e) {
-                    if (!dropdown.contains(e.target)) {
-                        dropdown.classList.remove('show');
-                        document.removeEventListener('click', closeDropdown);
-                    }
-                });
-            }, 100);
+            if (dropdown.classList.contains('show')) {
+                setTimeout(() => {
+                    document.addEventListener('click', function closeDropdown(e) {
+                        if (!dropdown.contains(e.target) && !button.contains(e.target)) {
+                            dropdown.classList.remove('show');
+                            card.style.zIndex = '1';
+                            document.removeEventListener('click', closeDropdown);
+                        }
+                    });
+                }, 100);
+            }
         }
 
         function assignLeadToSDR(leadId, sdrId) {
@@ -2413,8 +2495,12 @@
             lead.assigned_sdr_id = sdrId;
             lead.lead_status = 'Assigned';
             
-            // Close dropdown
-            document.getElementById(`sdrDropdown-${leadId}`).classList.remove('show');
+            // Close dropdown and reset z-index
+            const dropdown = document.getElementById(`sdrDropdown-${leadId}`);
+            const card = dropdown.closest('.lead-card');
+            
+            dropdown.classList.remove('show');
+            if (card) card.style.zIndex = '1';
             
             showNotification(`${lead.name} assigned to ${sdr.name}`, 'success');
             
