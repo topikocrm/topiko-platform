@@ -4,7 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Topiko - Complete Business Platform</title>
+    
+    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Supabase Client Initialization -->
+    <script>
+        // Initialize Supabase client immediately after library loads
+        console.log('🔧 Initializing Supabase client...');
+        
+        // Check if Supabase library is loaded
+        if (typeof supabase !== 'undefined' && supabase.createClient) {
+            try {
+                // Replace these with your actual Supabase credentials
+                const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+                const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+                
+                // Create the client
+                const { createClient } = supabase;
+                window.supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                // Also make it available as 'supabase' for compatibility
+                window.supabase = window.supabaseClient;
+                
+                console.log('✅ Supabase client initialized successfully');
+                
+                // Test the client
+                if (window.supabase && typeof window.supabase.from === 'function') {
+                    console.log('✅ Supabase client.from() is working');
+                } else {
+                    console.error('❌ Supabase client.from() is not available');
+                }
+                
+            } catch (error) {
+                console.error('❌ Failed to initialize Supabase client:', error);
+                // Fallback: disable navigation tracking
+                window.DISABLE_NAVIGATION_TRACKING = true;
+            }
+        } else {
+            console.error('❌ Supabase library not loaded properly');
+            window.DISABLE_NAVIGATION_TRACKING = true;
+        }
+    </script>
+    
     <link rel="stylesheet" href="css/styles_css.css">
 </head>
 <body>
@@ -122,7 +164,7 @@
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" 
                         data-translate="language.title">Choose Your Language</h2>
                     <p style="text-align: center; margin-bottom: 2rem; font-size: 0.9rem;" 
-                       data-translate="language.subtitle">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெडுक்கவும்</p>
+                       data-translate="language.subtitle">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெडुக்கवும்</p>
                     
                     <div class="language-grid">
                         <div class="language-option" onclick="selectLanguageWithTranslation('en', this, 'forward')">
@@ -153,7 +195,7 @@
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
                                 <h3>தமிழ்</h3>
-                                <p data-translate="language.options.ta">தமிழில் தொடரવ</p>
+                                <p data-translate="language.options.ta">தமிழில் தொடരવ</p>
                             </div>
                         </div>
                     </div>
@@ -1287,98 +1329,99 @@
         initializeFOMONotifications();
     });
     </script>
-    <!-- Add this script right before </body> tag in lead-form.html -->
-<script>
-// EMERGENCY FIX for selectLanguageWithTranslation function
-console.log('🚨 Loading emergency language selection fix...');
-
-// Check if function exists in TopikoTranslations
-if (window.TopikoTranslations && window.TopikoTranslations.selectLanguageWithTranslation) {
-    console.log('✅ Found function in TopikoTranslations, making it global');
-    window.selectLanguageWithTranslation = window.TopikoTranslations.selectLanguageWithTranslation;
-} else {
-    console.log('⚠️ Creating emergency selectLanguageWithTranslation function');
     
-    // Emergency implementation with navigation tracking
-    window.selectLanguageWithTranslation = function(lang, element, navigationType = 'forward') {
-        console.log('🚨 Emergency language selection:', lang, 'Type:', navigationType);
-        
-        try {
-            // Basic validation
-            if (!lang || !element) {
-                console.error('Missing parameters');
-                return;
-            }
-            
-            // Track navigation if available
-            if (window.TopikoNavigation && window.TopikoNavigation.trackNavigation) {
-                window.TopikoNavigation.trackNavigation('language', 'goals', navigationType, {
-                    selectedLanguage: lang,
-                    trigger: 'language_selection'
-                });
-            }
-            
-            // Update UI
-            document.querySelectorAll('.language-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            element.classList.add('selected');
-            
-            // Set language if TopikoTranslations is available
-            if (window.TopikoTranslations && window.TopikoTranslations.setLanguage) {
-                window.TopikoTranslations.setLanguage(lang);
-            }
-            
-            // Store selection
-            if (!window.topikoApp) window.topikoApp = {};
-            window.topikoApp.selectedLanguage = lang;
-            
-            // Simple text updates for Hindi
-            if (lang === 'hi') {
-                setTimeout(() => {
-                    // Update key elements manually
-                    const tagline = document.querySelector('[data-translate="welcome.tagline"]');
-                    if (tagline) {
-                        tagline.textContent = 'भारतीय SMBs के लिए संपूर्ण बिजनेस प्लेटफॉर्म';
-                    }
-                    
-                    const tryButton = document.querySelector('[data-translate="welcome.tryFreeButton"]');
-                    if (tryButton) {
-                        tryButton.textContent = 'मुफ्त में शुरू करें';
-                    }
-                }, 100);
-            }
-            
-            // Navigate to goals screen
-            setTimeout(() => {
-                if (window.TopikoUtils && window.TopikoUtils.showScreen) {
-                    window.TopikoUtils.showScreen('goals');
-                } else {
-                    // Manual navigation
-                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                    const goalsScreen = document.getElementById('goals');
-                    if (goalsScreen) {
-                        goalsScreen.classList.add('active');
-                    }
-                }
-            }, 1500);
-            
-            console.log('✅ Emergency language selection completed');
-            
-        } catch (error) {
-            console.error('❌ Emergency function error:', error);
-        }
-    };
-}
+    <!-- Emergency Language Selection Fix -->
+    <script>
+    // EMERGENCY FIX for selectLanguageWithTranslation function
+    console.log('🚨 Loading emergency language selection fix...');
 
-// Test the function
-setTimeout(() => {
-    if (typeof selectLanguageWithTranslation === 'function') {
-        console.log('✅ selectLanguageWithTranslation is now available globally');
+    // Check if function exists in TopikoTranslations
+    if (window.TopikoTranslations && window.TopikoTranslations.selectLanguageWithTranslation) {
+        console.log('✅ Found function in TopikoTranslations, making it global');
+        window.selectLanguageWithTranslation = window.TopikoTranslations.selectLanguageWithTranslation;
     } else {
-        console.error('❌ selectLanguageWithTranslation still not available');
+        console.log('⚠️ Creating emergency selectLanguageWithTranslation function');
+        
+        // Emergency implementation with navigation tracking
+        window.selectLanguageWithTranslation = function(lang, element, navigationType = 'forward') {
+            console.log('🚨 Emergency language selection:', lang, 'Type:', navigationType);
+            
+            try {
+                // Basic validation
+                if (!lang || !element) {
+                    console.error('Missing parameters');
+                    return;
+                }
+                
+                // Track navigation if available
+                if (window.TopikoNavigation && window.TopikoNavigation.trackNavigation) {
+                    window.TopikoNavigation.trackNavigation('language', 'goals', navigationType, {
+                        selectedLanguage: lang,
+                        trigger: 'language_selection'
+                    });
+                }
+                
+                // Update UI
+                document.querySelectorAll('.language-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                element.classList.add('selected');
+                
+                // Set language if TopikoTranslations is available
+                if (window.TopikoTranslations && window.TopikoTranslations.setLanguage) {
+                    window.TopikoTranslations.setLanguage(lang);
+                }
+                
+                // Store selection
+                if (!window.topikoApp) window.topikoApp = {};
+                window.topikoApp.selectedLanguage = lang;
+                
+                // Simple text updates for Hindi
+                if (lang === 'hi') {
+                    setTimeout(() => {
+                        // Update key elements manually
+                        const tagline = document.querySelector('[data-translate="welcome.tagline"]');
+                        if (tagline) {
+                            tagline.textContent = 'भारतीय SMBs के लिए संपूर्ण बिजनेस प्लेटफॉर्म';
+                        }
+                        
+                        const tryButton = document.querySelector('[data-translate="welcome.tryFreeButton"]');
+                        if (tryButton) {
+                            tryButton.textContent = 'मुफ्त में शुरू करें';
+                        }
+                    }, 100);
+                }
+                
+                // Navigate to goals screen
+                setTimeout(() => {
+                    if (window.TopikoUtils && window.TopikoUtils.showScreen) {
+                        window.TopikoUtils.showScreen('goals');
+                    } else {
+                        // Manual navigation
+                        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                        const goalsScreen = document.getElementById('goals');
+                        if (goalsScreen) {
+                            goalsScreen.classList.add('active');
+                        }
+                    }
+                }, 1500);
+                
+                console.log('✅ Emergency language selection completed');
+                
+            } catch (error) {
+                console.error('❌ Emergency function error:', error);
+            }
+        };
     }
-}, 2000);
-</script>
+
+    // Test the function
+    setTimeout(() => {
+        if (typeof selectLanguageWithTranslation === 'function') {
+            console.log('✅ selectLanguageWithTranslation is now available globally');
+        } else {
+            console.error('❌ selectLanguageWithTranslation still not available');
+        }
+    }, 2000);
+    </script>
 </body>
 </html>
