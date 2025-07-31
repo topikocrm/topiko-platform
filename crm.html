@@ -1779,7 +1779,8 @@
             <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">
                 When should we follow up with <span id="followupLeadName">this lead</span>?
             </p>
-            <input type="datetime-local" id="followupDateInput" class="followup-input">
+            <input type="datetime-local" id="followupDateInput" class="followup-input" 
+                   step="1" min="" max="" required>
             <div class="followup-buttons">
                 <button class="btn-cancel" onclick="event.stopPropagation(); closeFollowupModal();">Cancel</button>
                 <button class="btn-save" onclick="event.stopPropagation(); saveFollowupDate();">Set Followup</button>
@@ -1825,7 +1826,10 @@
         }
 
         function getTimeAgo(dateString) {
-            if (!dateString) return 'Unknown';
+            if (!dateString) {
+                console.warn('getTimeAgo: No date provided');
+                return 'Unknown';
+            }
             
             try {
                 const now = new Date();
@@ -1833,17 +1837,24 @@
                 
                 // Check if date is valid
                 if (isNaN(past.getTime())) {
-                    console.warn('Invalid date string:', dateString);
+                    console.warn('getTimeAgo: Invalid date string:', dateString);
                     return 'Unknown';
                 }
                 
                 const diffMs = now - past;
+                
+                // Handle future dates (shouldn't happen but just in case)
+                if (diffMs < 0) {
+                    return 'In the future';
+                }
+                
                 const diffSecs = Math.floor(diffMs / 1000);
                 const diffMins = Math.floor(diffMs / 60000);
                 const diffHours = Math.floor(diffMs / 3600000);
                 const diffDays = Math.floor(diffMs / 86400000);
                 
-                if (diffSecs < 60) return 'Just now';
+                if (diffSecs < 30) return 'Just now';
+                if (diffSecs < 60) return `${diffSecs}s ago`;
                 if (diffMins < 60) return `${diffMins}m ago`;
                 if (diffHours < 24) return `${diffHours}h ago`;
                 if (diffDays < 30) return `${diffDays}d ago`;
@@ -1851,7 +1862,7 @@
                 return `${Math.floor(diffDays / 365)}y ago`;
                 
             } catch (error) {
-                console.error('Error calculating time ago:', error, dateString);
+                console.error('getTimeAgo: Error calculating time ago:', error, dateString);
                 return 'Unknown';
             }
         }
@@ -1892,7 +1903,6 @@
                 Object.assign(allChanges[leadId], changes);
                 
                 localStorage.setItem('topiko_crm_changes', JSON.stringify(allChanges));
-                console.log(`💾 Saved changes for lead ${leadId}:`, changes);
                 
                 return true;
             } catch (error) {
@@ -1908,13 +1918,21 @@
                 const processedLead = processLeadData(source);
                 const leadKey = processedLead.id || processedLead.user_id || processedLead.email;
                 
-                // Apply saved changes if they exist
+                // Apply saved changes if they exist, but preserve original dates
                 if (savedChanges[leadKey]) {
                     const changes = savedChanges[leadKey];
-                    console.log(`💾 Applying saved changes to ${processedLead.name}:`, changes);
+                    
+                    // Store original created_at before merging changes
+                    const originalCreatedAt = processedLead.created_at;
                     
                     // Merge saved changes with priority to saved data
                     Object.assign(processedLead, changes);
+                    
+                    // Preserve original creation date (don't let changes overwrite it)
+                    if (originalCreatedAt && !changes.created_at) {
+                        processedLead.created_at = originalCreatedAt;
+                    }
+                    
                     processedLead.has_local_changes = true;
                 }
                 
@@ -1987,8 +2005,11 @@
                 allLeads = processedLeads;
                 
                 console.log(`✅ Total processed leads: ${allLeads.length}`);
-                console.log(`📊 Success: ${successCount}, Errors: ${errorCount}`);
-                console.log(`💾 Applied saved changes to ${Object.keys(savedChanges).length} leads`);
+                console.log(`📊 Data sources - Success: ${successCount}, Errors: ${errorCount}`);
+                
+                if (Object.keys(savedChanges).length > 0) {
+                    console.log(`💾 Applied saved changes to ${Object.keys(savedChanges).length} leads`);
+                }
                 
                 updateDashboardStats();
                 applyFilters();
@@ -2152,32 +2173,40 @@
             const businesses = [
                 'TrendyWear Boutique', 'Spice Magic Foods', 'Beauty Parlour Deluxe', 'Fresh Mart Grocery',
                 'Tech Solutions Hub', 'Fitness First Gym', 'Golden Jewellers', 'Cafe Coffee Corner',
-                'Home Decor Palace', 'Kids Fashion Store'
+                'Home Decor Palace', 'Kids Fashion Store', 'Elegant Saree House', 'Modern Electronics',
+                'Organic Farm Store', 'City Bakery', 'Fashion Forward', 'Digital Marketing Pro',
+                'Handmade Crafts Co', 'Premium Watches', 'Local Pharmacy', 'Fitness Equipment Plus',
+                'Artisan Jewelry', 'Quick Service Diner', 'Mobile Repair Hub', 'Beauty & Wellness',
+                'Smart Home Solutions'
             ];
             
             const names = [
                 'Amit Sharma', 'Priya Singh', 'Rajesh Kumar', 'Sunita Patel', 'Vikram Gupta',
-                'Kavya Reddy', 'Arjun Mehta', 'Deepika Jain', 'Rohit Agarwal', 'Sneha Verma'
+                'Kavya Reddy', 'Arjun Mehta', 'Deepika Jain', 'Rohit Agarwal', 'Sneha Verma',
+                'Manoj Tiwari', 'Pooja Nair', 'Sanjay Desai', 'Ritu Malhotra', 'Anil Yadav',
+                'Neha Kapoor', 'Suresh Rao', 'Megha Pillai', 'Karan Gill', 'Shruti Joshi',
+                'Ramesh Iyer', 'Divya Sinha', 'Ashok Patil', 'Nisha Bhatt', 'Vinod Chandra'
             ];
             
             const goals = ['ecommerce', 'customers', 'manage', 'search', 'brand'];
             const timelines = ['immediately', 'within_week', 'this_month', 'just_checking'];
             const budgets = ['high', 'qualified', 'budget_unqualified', 'low'];
             const categories = ['boutique', 'home-foods', 'salons', 'grocery', 'electronics'];
-            const statuses = ['New', 'Contacted', 'Demo Requested', 'Samples Requested'];
+            const statuses = ['New', 'Contacted', 'Demo Requested', 'Samples Requested', 'Not Reachable', 'Qualified'];
             
             const now = new Date();
             
             for (let i = 0; i < 25; i++) {
-                // Generate varied creation dates over the past 30 days
-                const daysAgo = Math.floor(Math.random() * 30);
-                const hoursAgo = Math.floor(Math.random() * 24);
-                const minutesAgo = Math.floor(Math.random() * 60);
+                // Create much more varied creation dates - spread over 45 days
+                const daysAgo = Math.floor(Math.random() * 45); // 0 to 45 days ago
+                const hoursAgo = Math.floor(Math.random() * 24); // 0 to 23 hours additional
+                const minutesAgo = Math.floor(Math.random() * 60); // 0 to 59 minutes additional
                 
                 const createdDate = new Date(now);
                 createdDate.setDate(createdDate.getDate() - daysAgo);
                 createdDate.setHours(createdDate.getHours() - hoursAgo);
                 createdDate.setMinutes(createdDate.getMinutes() - minutesAgo);
+                createdDate.setSeconds(Math.floor(Math.random() * 60)); // Random seconds too
                 
                 const lead = {
                     id: `demo_lead_${i + 1}`,
@@ -2209,7 +2238,7 @@
                 demoLeads.push(processLeadData(lead));
             }
             
-            console.log('📋 Generated demo leads with varied timestamps');
+            console.log('📋 Generated demo leads with varied timestamps over 45 days');
             return demoLeads;
         }
 
@@ -2269,7 +2298,7 @@
                 next_followup_date: rawLead.next_followup_date || intel.next_followup_date || null,
                 lead_notes: rawLead.lead_notes || intel.lead_notes || '',
                 
-                // Timestamps
+                // Timestamps - ensure proper date format
                 created_at: rawLead.created_at || new Date().toISOString(),
                 
                 // Source
@@ -2807,17 +2836,30 @@
                                  lead.timeline === 'within_week' ? 'week' : '';
             badges += `<span class="badge badge-timeline ${timelineClass}">${timelineLabels[lead.timeline]}</span>`;
             
-            // Format date and time
-            const leadDate = new Date(lead.created_at);
-            const formattedDate = leadDate.toLocaleDateString('en-IN', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric'
-            });
-            const formattedTime = leadDate.toLocaleTimeString('en-IN', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            // Format date and time - FIXED DATE PARSING
+            let formattedDate = 'Unknown Date';
+            let formattedTime = '';
+            
+            if (lead.created_at) {
+                try {
+                    const leadDate = new Date(lead.created_at);
+                    if (!isNaN(leadDate.getTime())) {
+                        formattedDate = leadDate.toLocaleDateString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                        });
+                        formattedTime = leadDate.toLocaleTimeString('en-IN', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    } else {
+                        console.warn('Invalid created_at date for lead:', lead.name, lead.created_at);
+                    }
+                } catch (error) {
+                    console.error('Error parsing created_at date for lead:', lead.name, error);
+                }
+            }
             
             // Get assigned SDR name
             const assignedSDR = lead.assigned_sdr_id ? 
@@ -2830,10 +2872,13 @@
                 new Date(lead.next_followup_date).toLocaleDateString('en-IN') : 
                 'Not set';
             
+            // FIXED: Get proper time ago for the bottom display
+            const timeAgoText = getTimeAgo(lead.created_at);
+            
             return `
                 <div class="${cardClasses}">
                     <div class="lead-card-top">
-                        <div class="lead-date">${formattedDate} • ${formattedTime}</div>
+                        <div class="lead-date">${formattedDate}${formattedTime ? ' • ' + formattedTime : ''}</div>
                         <div class="lead-assigned-sdr">${assignedSDR}</div>
                     </div>
                     
@@ -2895,7 +2940,7 @@
                                 ${lead.lead_status}
                             </span>
                             <span class="assigned-sdr">
-                                ${getTimeAgo(lead.created_at)}
+                                ${timeAgoText}
                             </span>
                         </div>
                     </div>
@@ -3716,15 +3761,19 @@
         }
 
         function saveFollowupDate() {
-            console.log('💾 Starting saveFollowupDate, currentSelectedLead:', currentSelectedLead);
+            console.log('💾 Starting saveFollowupDate...');
+            console.log('💾 currentSelectedLead:', currentSelectedLead);
             
             if (!currentSelectedLead) {
                 console.error('❌ No lead selected for followup');
-                showNotification('Error: No lead selected', 'error');
+                showNotification('Error: No lead selected. Please try again.', 'error');
                 return;
             }
             
             const dateInput = document.getElementById('followupDateInput');
+            console.log('💾 dateInput element:', dateInput);
+            console.log('💾 dateInput value:', dateInput?.value);
+            
             if (!dateInput || !dateInput.value) {
                 showNotification('Please select a date and time', 'error');
                 return;
@@ -3736,7 +3785,16 @@
             const leadId = leadToUpdate.id;
             
             try {
-                const followupDate = new Date(dateInput.value).toISOString();
+                const inputValue = dateInput.value;
+                console.log('💾 Raw input value:', inputValue);
+                
+                const followupDate = new Date(inputValue).toISOString();
+                console.log('💾 Converted to ISO:', followupDate);
+                
+                // Validate the date
+                if (isNaN(new Date(followupDate).getTime())) {
+                    throw new Error('Invalid date format');
+                }
                 
                 // Save changes separately
                 const changes = {
@@ -3744,24 +3802,45 @@
                     followup_set_at: new Date().toISOString()
                 };
                 
+                console.log('💾 Changes to save:', changes);
+                
                 // Apply changes to local lead object
                 Object.assign(leadToUpdate, changes);
+                console.log('💾 Updated lead object:', leadToUpdate);
+                
+                // Also update the lead in the main array
+                const leadInArray = allLeads.find(l => l.id === leadId);
+                if (leadInArray) {
+                    Object.assign(leadInArray, changes);
+                    console.log('💾 Updated lead in main array');
+                }
                 
                 // Save changes to localStorage for persistence
-                saveLeadChanges(leadId, changes);
+                const saveResult = saveLeadChanges(leadId, changes);
+                console.log('💾 Save result:', saveResult);
+                
+                if (!saveResult) {
+                    throw new Error('Failed to save to localStorage');
+                }
                 
                 // Close modal and show success
                 closeFollowupModal();
                 showNotification(`Followup scheduled for ${leadName}`, 'success');
                 
                 // Re-render leads to show updated followup date
+                console.log('💾 Re-rendering leads...');
                 renderLeads();
+                
+                // Update assigned leads if on that page
+                if (document.getElementById('assigned-leads').style.display !== 'none') {
+                    renderAssignedLeads();
+                }
                 
                 console.log('✅ Followup date saved successfully for:', leadName);
                 
             } catch (error) {
                 console.error('❌ Error saving followup date:', error);
-                showNotification('Error saving followup date', 'error');
+                showNotification('Error saving followup date: ' + error.message, 'error');
             }
         }
 
@@ -3826,6 +3905,55 @@
         // INITIALIZATION
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Modern Topiko CRM v5.0 Initialized');
+            
+            // Add debugging tools
+            window.debugCRM = {
+                clearLocalStorage: () => {
+                    localStorage.removeItem('topiko_crm_changes');
+                    localStorage.removeItem('topiko_crm_leads');
+                    localStorage.removeItem('topiko_local_leads');
+                    console.log('🧹 Cleared all localStorage data');
+                    location.reload();
+                },
+                regenerateDemo: () => {
+                    localStorage.removeItem('topiko_crm_leads');
+                    console.log('🔄 Regenerating demo data...');
+                    location.reload();
+                },
+                showLeadDates: () => {
+                    console.log('📅 All lead dates:');
+                    allLeads.forEach(lead => {
+                        console.log(`${lead.name}: ${lead.created_at} (${getTimeAgo(lead.created_at)})`);
+                    });
+                },
+                fixDemoData: () => {
+                    console.log('🔧 Fixing demo data dates...');
+                    const now = new Date();
+                    allLeads.forEach((lead, index) => {
+                        if (lead.data_source === 'demo') {
+                            const daysAgo = Math.floor(Math.random() * 45);
+                            const hoursAgo = Math.floor(Math.random() * 24);
+                            const minutesAgo = Math.floor(Math.random() * 60);
+                            
+                            const newDate = new Date(now);
+                            newDate.setDate(newDate.getDate() - daysAgo);
+                            newDate.setHours(newDate.getHours() - hoursAgo);
+                            newDate.setMinutes(newDate.getMinutes() - minutesAgo);
+                            
+                            lead.created_at = newDate.toISOString();
+                            console.log(`Fixed ${lead.name}: ${lead.created_at}`);
+                        }
+                    });
+                    renderLeads();
+                    console.log('✅ Demo data dates fixed!');
+                }
+            };
+            
+            console.log('🔧 Debug tools available:');
+            console.log('  - window.debugCRM.clearLocalStorage() // Clear all saved data');
+            console.log('  - window.debugCRM.regenerateDemo() // Regenerate demo data');
+            console.log('  - window.debugCRM.showLeadDates() // Show all lead dates');
+            console.log('  - window.debugCRM.fixDemoData() // Fix existing demo data dates');
             
             // Load SDR team first
             await fetchSDRTeam();
