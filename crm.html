@@ -1149,6 +1149,76 @@
             background: #64748b;
             color: white;
         }
+
+        /* ===== MOBILE RESPONSIVENESS ===== */
+        @media (max-width: 768px) {
+            .crm-container {
+                flex-direction: column;
+            }
+            
+            .crm-sidebar {
+                width: 100%;
+                height: auto;
+                order: 2;
+            }
+            
+            .crm-main {
+                order: 1;
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .leads-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sdr-summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .lead-intelligence-panel {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: auto;
+                border-radius: 0;
+                max-height: none;
+            }
+
+            .card-details {
+                grid-template-columns: 1fr;
+            }
+
+            .lead-card-top {
+                flex-direction: column;
+                gap: 0.25rem;
+                align-items: flex-start;
+            }
+
+            .card-actions {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .card-status-section {
+                grid-template-columns: 1fr;
+            }
+
+            .score-breakdown-content,
+            .followup-content {
+                padding: 1rem;
+                margin: 1rem;
+            }
+        }
         @media (max-width: 768px) {
             .crm-container {
                 flex-direction: column;
@@ -1824,8 +1894,27 @@
 
         function loadFromLocalStorage() {
             try {
-                const storedLeads = localStorage.getItem('topiko_local_leads');
-                return storedLeads ? JSON.parse(storedLeads) : [];
+                // Load original leads
+                const originalLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
+                
+                // Load CRM saved leads (assignments, status updates, etc.)
+                const crmLeads = JSON.parse(localStorage.getItem('topiko_crm_leads') || '[]');
+                
+                console.log(`📱 localStorage: ${originalLeads.length} original + ${crmLeads.length} CRM leads`);
+                
+                // Combine and deduplicate
+                const allStoredLeads = [...originalLeads, ...crmLeads];
+                const uniqueLeads = new Map();
+                
+                allStoredLeads.forEach(lead => {
+                    const key = lead.id || lead.user_id || lead.email;
+                    if (key && (!uniqueLeads.has(key) || lead.assigned_sdr_id)) {
+                        // Prefer leads with assignments
+                        uniqueLeads.set(key, lead);
+                    }
+                });
+                
+                return Array.from(uniqueLeads.values());
             } catch (error) {
                 console.warn('❌ localStorage read failed:', error);
                 return [];
@@ -2078,6 +2167,13 @@
         }
 
         function generateDemoLeads() {
+            // First, try to load any existing saved leads
+            const savedLeads = loadSavedLeads();
+            if (savedLeads.length > 0) {
+                console.log('📱 Using saved leads instead of generating new demo data');
+                return savedLeads;
+            }
+            
             const demoLeads = [];
             const businesses = [
                 'TrendyWear Boutique', 'Spice Magic Foods', 'Beauty Parlour Deluxe', 'Fresh Mart Grocery',
@@ -2094,6 +2190,7 @@
             const timelines = ['immediately', 'within_week', 'this_month', 'just_checking'];
             const budgets = ['high', 'qualified', 'budget_unqualified', 'low'];
             const categories = ['boutique', 'home-foods', 'salons', 'grocery', 'electronics'];
+            const statuses = ['New', 'Contacted', 'Demo Requested', 'Samples Requested'];
             
             for (let i = 0; i < 25; i++) {
                 const createdDate = new Date();
@@ -2115,7 +2212,10 @@
                     selected_categories: [categories[Math.floor(Math.random() * categories.length)]],
                     selected_subcategories: [],
                     lead_status: 'New',
+                    lead_pipeline_status: statuses[Math.floor(Math.random() * statuses.length)],
                     assigned_sdr_id: Math.random() > 0.7 ? sdrTeam[Math.floor(Math.random() * sdrTeam.length)]?.id : null,
+                    next_followup_date: Math.random() > 0.8 ? new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString() : null,
+                    lead_notes: Math.random() > 0.9 ? 'Interested in premium package. Follow up next week.' : '',
                     created_at: createdDate.toISOString(),
                     utm_source: 'Direct',
                     device_type: Math.random() > 0.5 ? 'Mobile' : 'Desktop',
@@ -2177,9 +2277,12 @@
                 // Products
                 products_count: rawLead.products_count || 0,
                 
-                // Status
+                // Status and assignment
                 lead_status: intel.lead_status || 'New',
-                assigned_sdr_id: intel.assigned_sdr_id || null,
+                assigned_sdr_id: intel.assigned_sdr_id || rawLead.assigned_sdr_id || null,
+                lead_pipeline_status: rawLead.lead_pipeline_status || intel.lead_pipeline_status || 'New',
+                next_followup_date: rawLead.next_followup_date || intel.next_followup_date || null,
+                lead_notes: rawLead.lead_notes || intel.lead_notes || '',
                 
                 // Timestamps
                 created_at: rawLead.created_at || new Date().toISOString(),
@@ -2822,6 +2925,9 @@
             
             showNotification(`${lead.name} assigned to ${sdr.name}`, 'success');
             
+            // Save the lead to prevent disappearing
+            saveLead(lead);
+            
             // Re-render leads
             renderLeads();
             updateDashboardStats();
@@ -2919,42 +3025,34 @@
             
             currentSelectedLead = lead;
             
-            // Update intelligence panel
+            // Update score display
             document.getElementById('leadScoreValue').textContent = lead.lead_score;
-            document.getElementById('leadScoreLabel').textContent = `${lead.lead_quality} Lead`;
+            document.getElementById('leadScoreLabel').textContent = `${lead.lead_quality} Lead Analytics`;
             
-            document.getElementById('leadName').textContent = lead.name;
-            document.getElementById('leadBusiness').textContent = lead.business_name;
-            document.getElementById('leadPhone').textContent = lead.phone;
-            document.getElementById('leadEmail').textContent = lead.email;
+            // Update behavioral analytics
+            document.getElementById('engagementLevel').textContent = getEngagementLevel(lead);
+            document.getElementById('timeSpent').textContent = `${lead.session_duration_minutes} minutes`;
+            document.getElementById('pageViews').textContent = lead.page_views || 1;
+            document.getElementById('lastActivity').textContent = getTimeAgo(lead.created_at);
             
-            const budgetLabels = {
-                'high': '₹25,000+',
-                'qualified': '₹10,000-₹25,000',
-                'budget_unqualified': '₹5,000-₹10,000',
-                'low': '<₹5,000'
-            };
+            // Update conversion probability
+            const conversionProb = calculateConversionProbability(lead);
+            document.getElementById('conversionScore').textContent = `${conversionProb}%`;
+            document.getElementById('conversionProgress').style.width = `${conversionProb}%`;
             
-            const timelineLabels = {
-                'immediately': 'Immediately',
-                'within_week': 'Within Week',
-                'this_month': 'This Month',
-                'just_checking': 'Just Checking'
-            };
+            // Update journey dates
+            document.getElementById('journeyFormDate').textContent = new Date(lead.created_at).toLocaleDateString('en-IN');
+            document.getElementById('journeyProfileDate').textContent = new Date(lead.created_at).toLocaleDateString('en-IN');
+            document.getElementById('journeyCategoriesDate').textContent = new Date(lead.created_at).toLocaleDateString('en-IN');
             
-            document.getElementById('leadBudget').textContent = budgetLabels[lead.budget_range] || lead.budget_range;
-            document.getElementById('leadTimeline').textContent = timelineLabels[lead.timeline] || lead.timeline;
-            document.getElementById('leadDecisionMaker').textContent = lead.decision_maker ? 'Yes' : 'No';
-            document.getElementById('leadOnlinePresence').textContent = lead.online_presence || 'None';
+            // Load AI recommendations
+            generateAIRecommendations(lead);
             
-            document.getElementById('leadSessionTime').textContent = `${lead.session_duration_minutes} min`;
-            document.getElementById('leadDevice').textContent = lead.device_type;
-            document.getElementById('leadSource').textContent = lead.utm_source;
-            document.getElementById('leadProducts').textContent = lead.products_count;
+            // Load notes
+            document.getElementById('leadNotes').value = lead.lead_notes || '';
             
             // Update score display color
             const scoreDisplay = document.getElementById('scoreDisplay');
-            scoreDisplay.className = 'score-display';
             if (lead.lead_score >= 65) {
                 scoreDisplay.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
             } else if (lead.lead_score >= 41) {
@@ -2964,6 +3062,380 @@
             }
             
             document.getElementById('leadIntelligencePanel').classList.add('show');
+        }
+
+        function closeIntelligencePanel() {
+            document.getElementById('leadIntelligencePanel').classList.remove('show');
+            currentSelectedLead = null;
+        }
+
+        function getEngagementLevel(lead) {
+            const score = lead.lead_score;
+            const sessionTime = lead.session_duration_minutes;
+            const pageViews = lead.page_views || 1;
+            
+            if (score >= 65 || sessionTime >= 5 || pageViews >= 5) return 'High';
+            if (score >= 41 || sessionTime >= 2 || pageViews >= 3) return 'Medium';
+            return 'Low';
+        }
+
+        function calculateConversionProbability(lead) {
+            let probability = 0;
+            
+            // Base score contribution (40%)
+            probability += (lead.lead_score / 100) * 40;
+            
+            // Timeline urgency (20%)
+            if (lead.timeline === 'immediately') probability += 20;
+            else if (lead.timeline === 'within_week') probability += 15;
+            else if (lead.timeline === 'this_month') probability += 10;
+            
+            // Budget qualification (20%)
+            if (lead.budget_range === 'high') probability += 20;
+            else if (lead.budget_range === 'qualified') probability += 15;
+            else if (lead.budget_range === 'budget_unqualified') probability += 10;
+            
+            // Decision maker (10%)
+            if (lead.decision_maker) probability += 10;
+            
+            // Products added (10%)
+            if (lead.products_count > 5) probability += 10;
+            else if (lead.products_count > 0) probability += 5;
+            
+            return Math.min(Math.round(probability), 95);
+        }
+
+        function generateAIRecommendations(lead) {
+            const recommendations = [];
+            
+            if (lead.timeline === 'immediately') {
+                recommendations.push("🔥 HIGH PRIORITY: Lead wants immediate setup - call within 1 hour!");
+            }
+            
+            if (lead.decision_maker && lead.budget_range === 'high') {
+                recommendations.push("💰 PREMIUM PROSPECT: Decision maker with high budget - schedule demo immediately");
+            }
+            
+            if (lead.session_duration_minutes < 2) {
+                recommendations.push("⏰ Low engagement detected - try different approach or timing");
+            }
+            
+            if (lead.products_count === 0) {
+                recommendations.push("📦 No products added - guide through product selection during call");
+            }
+            
+            if (lead.online_presence === 'none') {
+                recommendations.push("🌐 No online presence - emphasize digital transformation benefits");
+            }
+            
+            if (recommendations.length === 0) {
+                recommendations.push("👍 Well-qualified lead - standard follow-up approach recommended");
+            }
+            
+            const recommendationText = document.getElementById('recommendationText');
+            if (recommendationText) {
+                recommendationText.innerHTML = recommendations.join('<br><br>');
+            }
+        }
+
+        function saveLeadNotes() {
+            if (!currentSelectedLead) return;
+            
+            const notes = document.getElementById('leadNotes').value;
+            currentSelectedLead.lead_notes = notes;
+            
+            // Save to localStorage
+            saveLead(currentSelectedLead);
+            
+            showNotification('Notes saved', 'success');
+        }
+
+        function sendEmail() {
+            if (!currentSelectedLead) return;
+            
+            const emailSubject = `Follow-up: ${currentSelectedLead.business_name} - Topiko Business Setup`;
+            const emailBody = `Hi ${currentSelectedLead.name.split(' ')[0]},\n\nI hope this email finds you well. I wanted to follow up on your interest in setting up ${currentSelectedLead.business_name} online with Topiko.\n\nBased on your requirements, I believe we can help you achieve your goals of ${currentSelectedLead.goals_display.join(', ').toLowerCase()}.\n\nWould you be available for a brief call to discuss the next steps?\n\nBest regards,\nYour Topiko Team`;
+            
+            const mailtoLink = `mailto:${currentSelectedLead.email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+            window.open(mailtoLink);
+            
+            showNotification(`Email composed for ${currentSelectedLead.name}`, 'info');
+        }
+
+        // SCORE BREAKDOWN FUNCTIONS
+        function showScoreBreakdown(leadId) {
+            console.log('🔍 Showing score breakdown for lead:', leadId);
+            
+            const lead = allLeads.find(l => l.id === leadId);
+            if (!lead) {
+                console.error('❌ Lead not found:', leadId);
+                showNotification('Lead not found', 'error');
+                return;
+            }
+            
+            console.log('📊 Lead found, calculating score breakdown...');
+            
+            const scoreItems = calculateDetailedScore(lead);
+            const breakdownContainer = document.getElementById('scoreBreakdownItems');
+            
+            if (!breakdownContainer) {
+                console.error('❌ Score breakdown container not found');
+                return;
+            }
+            
+            let itemsHTML = '';
+            scoreItems.forEach(item => {
+                itemsHTML += `
+                    <div class="score-item">
+                        <span class="score-item-label">${item.label}</span>
+                        <span class="score-item-value">${item.points} pts</span>
+                    </div>
+                `;
+            });
+            
+            breakdownContainer.innerHTML = itemsHTML;
+            
+            const totalScoreElement = document.getElementById('totalScoreValue');
+            if (totalScoreElement) {
+                totalScoreElement.textContent = lead.lead_score;
+            }
+            
+            const modal = document.getElementById('scoreBreakdownModal');
+            if (modal) {
+                modal.classList.add('show');
+                console.log('✅ Score breakdown modal shown');
+            } else {
+                console.error('❌ Score breakdown modal not found');
+            }
+        }
+
+        function calculateDetailedScore(lead) {
+            const items = [];
+            
+            // Basic completion (20 points)
+            if (lead.name && lead.email && lead.phone && lead.business_name) {
+                items.push({ label: 'Profile Completed', points: 20 });
+            }
+            
+            // Goals (25 points max)
+            const goalsPoints = Math.min((lead.selected_goals || []).length * 5, 25);
+            if (goalsPoints > 0) {
+                items.push({ label: `Goals Selected (${(lead.selected_goals || []).length})`, points: goalsPoints });
+            }
+            
+            // Categories (20 points max)
+            const categoriesPoints = Math.min(((lead.selected_categories || []).length + (lead.selected_subcategories || []).length) * 2, 20);
+            if (categoriesPoints > 0) {
+                items.push({ label: 'Categories & Subcategories', points: categoriesPoints });
+            }
+            
+            // Products (25 points max)
+            const productsPoints = Math.min((lead.products_count || 0) * 5, 25);
+            if (productsPoints > 0) {
+                items.push({ label: `Products Added (${lead.products_count})`, points: productsPoints });
+            }
+            
+            // Budget qualification (5 points)
+            if (lead.budget_range === 'qualified' || lead.budget_range === 'high') {
+                items.push({ label: 'Budget Qualified', points: 5 });
+            }
+            
+            // Decision maker (5 points)
+            if (lead.decision_maker) {
+                items.push({ label: 'Decision Maker', points: 5 });
+            }
+            
+            // Timeline urgency
+            if (lead.timeline === 'immediately') {
+                items.push({ label: 'Immediate Timeline', points: 10 });
+            } else if (lead.timeline === 'within_week') {
+                items.push({ label: 'Weekly Timeline', points: 5 });
+            }
+            
+            return items;
+        }
+
+        function closeScoreBreakdown() {
+            const modal = document.getElementById('scoreBreakdownModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // STATUS MANAGEMENT FUNCTIONS
+        function toggleStatusDropdown(leadId, event) {
+            console.log('📊 Toggling status dropdown for lead:', leadId);
+            
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            // Close all other dropdowns
+            document.querySelectorAll('.status-dropdown-content').forEach(dropdown => {
+                if (dropdown.id !== `statusDropdown-${leadId}`) {
+                    dropdown.classList.remove('show');
+                }
+            });
+            
+            // Toggle current dropdown
+            const dropdown = document.getElementById(`statusDropdown-${leadId}`);
+            if (!dropdown) {
+                console.error('❌ Status dropdown not found:', `statusDropdown-${leadId}`);
+                return;
+            }
+            
+            dropdown.classList.toggle('show');
+            console.log('✅ Status dropdown toggled');
+            
+            // Close when clicking outside
+            if (dropdown.classList.contains('show')) {
+                setTimeout(() => {
+                    document.addEventListener('click', function closeDropdown(e) {
+                        if (!dropdown.contains(e.target)) {
+                            dropdown.classList.remove('show');
+                            document.removeEventListener('click', closeDropdown);
+                        }
+                    });
+                }, 100);
+            }
+        }
+
+        function updateLeadStatus(leadId, status) {
+            console.log('📊 Updating lead status:', leadId, status);
+            
+            const lead = allLeads.find(l => l.id === leadId);
+            if (!lead) {
+                console.error('❌ Lead not found for status update:', leadId);
+                return;
+            }
+            
+            lead.lead_pipeline_status = status;
+            
+            // Close dropdown
+            const dropdown = document.getElementById(`statusDropdown-${leadId}`);
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+            
+            showNotification(`${lead.name} status updated to: ${status}`, 'success');
+            
+            // Save the lead
+            saveLead(lead);
+            
+            // Re-render leads
+            renderLeads();
+            
+            // Update assigned leads if on that page
+            if (document.getElementById('assigned-leads').style.display !== 'none') {
+                renderAssignedLeads();
+            }
+            
+            console.log('✅ Lead status updated successfully');
+        }
+
+        // FOLLOWUP DATE FUNCTIONS
+        function setFollowupDate(leadId) {
+            console.log('📅 Setting followup date for lead:', leadId);
+            
+            const lead = allLeads.find(l => l.id === leadId);
+            if (!lead) {
+                console.error('❌ Lead not found for followup:', leadId);
+                return;
+            }
+            
+            currentSelectedLead = lead;
+            
+            const followupLeadName = document.getElementById('followupLeadName');
+            if (followupLeadName) {
+                followupLeadName.textContent = lead.name;
+            }
+            
+            // Set current followup date if exists
+            if (lead.next_followup_date) {
+                const date = new Date(lead.next_followup_date);
+                const localDateTime = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+                const dateInput = document.getElementById('followupDateInput');
+                if (dateInput) {
+                    dateInput.value = localDateTime;
+                }
+            }
+            
+            const modal = document.getElementById('followupModal');
+            if (modal) {
+                modal.classList.add('show');
+                console.log('✅ Followup modal shown');
+            } else {
+                console.error('❌ Followup modal not found');
+            }
+        }
+
+        function closeFollowupModal() {
+            const modal = document.getElementById('followupModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+            currentSelectedLead = null;
+        }
+
+        function saveFollowupDate() {
+            if (!currentSelectedLead) {
+                console.error('❌ No lead selected for followup');
+                return;
+            }
+            
+            const dateInput = document.getElementById('followupDateInput');
+            if (!dateInput || !dateInput.value) {
+                showNotification('Please select a date and time', 'error');
+                return;
+            }
+            
+            currentSelectedLead.next_followup_date = new Date(dateInput.value).toISOString();
+            
+            closeFollowupModal();
+            showNotification(`Followup scheduled for ${currentSelectedLead.name}`, 'success');
+            
+            // Save the lead
+            saveLead(currentSelectedLead);
+            
+            // Re-render leads
+            renderLeads();
+            
+            console.log('✅ Followup date saved successfully');
+        }
+
+        // PERSISTENCE FUNCTIONS (to prevent leads from disappearing)
+        async function saveLead(lead) {
+            try {
+                // Save to localStorage as backup
+                const allLeadsData = JSON.parse(localStorage.getItem('topiko_crm_leads') || '[]');
+                const existingIndex = allLeadsData.findIndex(l => l.id === lead.id);
+                
+                if (existingIndex >= 0) {
+                    allLeadsData[existingIndex] = lead;
+                } else {
+                    allLeadsData.push(lead);
+                }
+                
+                localStorage.setItem('topiko_crm_leads', JSON.stringify(allLeadsData));
+                console.log('💾 Lead saved to localStorage:', lead.name);
+                
+                // In a real app, also save to database here
+                // await saveToDatabase(lead);
+                
+            } catch (error) {
+                console.error('❌ Error saving lead:', error);
+            }
+        }
+
+        function loadSavedLeads() {
+            try {
+                const savedLeads = JSON.parse(localStorage.getItem('topiko_crm_leads') || '[]');
+                console.log('📱 Loaded saved leads from localStorage:', savedLeads.length);
+                return savedLeads;
+            } catch (error) {
+                console.error('❌ Error loading saved leads:', error);
+                return [];
+            }
         }
 
         function closeIntelligencePanel() {
