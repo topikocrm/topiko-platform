@@ -1034,8 +1034,10 @@
             margin-top: 1rem;
         }
 
+        /* ===== STATUS DROPDOWN STYLES (FIXED POSITIONING) ===== */
         .status-dropdown {
             position: relative;
+            display: inline-block;
         }
 
         .status-dropdown-content {
@@ -1043,29 +1045,47 @@
             position: absolute;
             top: 100%;
             left: 0;
-            background: white;
-            min-width: 150px;
+            background-color: white;
+            min-width: 160px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             border-radius: 8px;
             border: 1px solid #e2e8f0;
             z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
             margin-top: 4px;
         }
 
         .status-dropdown-content.show {
             display: block;
+            animation: dropdownSlideIn 0.2s ease;
+        }
+
+        .status-dropdown-content.dropdown-up {
+            top: auto;
+            bottom: 100%;
+            margin-top: 0;
+            margin-bottom: 4px;
+        }
+
+        .status-dropdown-content.dropdown-right {
+            left: auto;
+            right: 0;
         }
 
         .status-option {
             padding: 0.75rem 1rem;
             cursor: pointer;
             border-bottom: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
             font-size: 0.85rem;
             color: #374151;
         }
 
         .status-option:hover {
-            background: #f8fafc;
+            background-color: #f8fafc;
             color: #3b82f6;
         }
 
@@ -1782,17 +1802,33 @@
         function getTimeAgo(dateString) {
             if (!dateString) return 'Unknown';
             
-            const now = new Date();
-            const past = new Date(dateString);
-            const diffMs = now - past;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            
-            if (diffMins < 1) return 'Just now';
-            if (diffMins < 60) return `${diffMins}m ago`;
-            if (diffHours < 24) return `${diffHours}h ago`;
-            return `${diffDays}d ago`;
+            try {
+                const now = new Date();
+                const past = new Date(dateString);
+                
+                // Check if date is valid
+                if (isNaN(past.getTime())) {
+                    console.warn('Invalid date string:', dateString);
+                    return 'Unknown';
+                }
+                
+                const diffMs = now - past;
+                const diffSecs = Math.floor(diffMs / 1000);
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+                
+                if (diffSecs < 60) return 'Just now';
+                if (diffMins < 60) return `${diffMins}m ago`;
+                if (diffHours < 24) return `${diffHours}h ago`;
+                if (diffDays < 30) return `${diffDays}d ago`;
+                if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
+                return `${Math.floor(diffDays / 365)}y ago`;
+                
+            } catch (error) {
+                console.error('Error calculating time ago:', error, dateString);
+                return 'Unknown';
+            }
         }
 
         function isPriorityLead(lead) {
@@ -1803,20 +1839,24 @@
             return lead.budget_range === 'high';
         }
 
-        // DATA FETCHING FUNCTIONS
+        // DATA FETCHING FUNCTIONS WITH PROPER PERSISTENCE
         async function fetchLeads() {
             try {
-                console.log('🔍 Fetching leads from multiple sources...');
+                console.log('🔍 Fetching leads with persistence merge...');
                 
                 let allSources = [];
                 let successCount = 0;
                 let errorCount = 0;
                 
-                // Try localStorage first (fastest)
-                const localLeads = loadFromLocalStorage();
+                // FIRST: Load locally saved changes (assignments, status, followups)
+                const savedChanges = loadSavedChanges();
+                console.log(`💾 Loaded ${Object.keys(savedChanges).length} saved lead changes`);
+                
+                // Try localStorage for original form data
+                const localLeads = loadOriginalLocalStorage();
                 if (localLeads.length > 0) {
                     allSources.push(...localLeads);
-                    console.log(`📱 Loaded ${localLeads.length} leads from localStorage`);
+                    console.log(`📱 Loaded ${localLeads.length} leads from original localStorage`);
                     successCount++;
                 }
                 
@@ -1859,12 +1899,13 @@
                     showNotification('Demo data loaded - Connect to database for live data', 'info');
                 }
                 
-                // Process and combine data
-                const processedLeads = processCombinedLeads(allSources);
+                // CRITICAL: Process and merge with saved changes
+                const processedLeads = processCombinedLeadsWithChanges(allSources, savedChanges);
                 allLeads = processedLeads;
                 
                 console.log(`✅ Total processed leads: ${allLeads.length}`);
                 console.log(`📊 Success: ${successCount}, Errors: ${errorCount}`);
+                console.log(`💾 Applied saved changes to ${Object.keys(savedChanges).length} leads`);
                 
                 updateDashboardStats();
                 applyFilters();
@@ -1890,6 +1931,46 @@
                 showNotification('Using demo data - Check network connection', 'error');
                 return allLeads.length;
             }
+        }
+
+        function loadOriginalLocalStorage() {
+            try {
+                const storedLeads = localStorage.getItem('topiko_local_leads');
+                return storedLeads ? JSON.parse(storedLeads) : [];
+            } catch (error) {
+                console.warn('❌ Original localStorage read failed:', error);
+                return [];
+            }
+        }
+
+        function loadSavedChanges() {
+            try {
+                const savedChanges = localStorage.getItem('topiko_crm_changes');
+                return savedChanges ? JSON.parse(savedChanges) : {};
+            } catch (error) {
+                console.warn('❌ Saved changes read failed:', error);
+                return {};
+            }
+        }
+
+        function processCombinedLeadsWithChanges(sources, savedChanges) {
+            console.log('🔄 Processing leads with saved changes merge...');
+            
+            return sources.map(source => {
+                const processedLead = processLeadData(source);
+                const leadKey = processedLead.id || processedLead.email || processedLead.phone;
+                
+                // Apply saved changes if they exist
+                if (savedChanges[leadKey]) {
+                    const changes = savedChanges[leadKey];
+                    console.log(`💾 Applying saved changes to ${processedLead.name}:`, changes);
+                    
+                    // Merge saved changes
+                    Object.assign(processedLead, changes);
+                }
+                
+                return processedLead;
+            });
         }
 
         function loadFromLocalStorage() {
