@@ -1,996 +1,923 @@
 /* ========================================
-   TOPIKO LEAD FORM - UTILITY FUNCTIONS - FIXED VERSION
+   TOPIKO UTILITIES - ENHANCED WITH NAVIGATION TRACKING
    ======================================== */
 
-// ========================================
-// CRITICAL FIX: Initialize debugLogs FIRST
-// ========================================
-
-// Initialize debug logs array IMMEDIATELY
-let debugLogs = [];
-
-// ========================================
-// DEBUG & LOGGING UTILITIES
-// ========================================
-
-function addDebugLog(message, type = 'info') {
-    const timestamp = new Date().toLocaleTimeString();
-    debugLogs.push({ timestamp, message, type });
+window.TopikoUtils = {
     
-    console.log(`🔍 DEBUG: ${message}`);
+    // ========================================
+    // APP INITIALIZATION WITH NAVIGATION TRACKING
+    // ========================================
     
-    const debugLogEl = document.getElementById('debugLog');
-    if (debugLogEl) {
-        debugLogEl.innerHTML = debugLogs.slice(-15).map(log => 
-            `<div style="color: ${log.type === 'error' ? '#ff6b6b' : log.type === 'success' ? '#51cf66' : '#74c0fc'}; margin-bottom: 3px; font-size: 0.7rem;">
-                [${log.timestamp.split(':').slice(-2).join(':')}] ${log.message}
-            </div>`
-        ).join('');
-        debugLogEl.scrollTop = debugLogEl.scrollHeight;
-    }
-}
-
-function toggleDebugPanel() {
-    const panel = document.getElementById('debugPanel');
-    if (panel) {
-        panel.classList.toggle('show');
-    }
-}
-
-/* ========================================
-   SUPABASE INITIALIZATION
-   ======================================== */
-
-// Supabase Configuration
-const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k'; // ← Replace with your real key
-
-// Initialize Supabase Client with error handling
-let supabase;
-try {
-    if (window.supabase && window.supabase.createClient) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        addDebugLog('✅ Supabase client initialized successfully', 'success');
-    } else {
-        addDebugLog('❌ Supabase library not loaded', 'error');
-    }
-} catch (error) {
-    addDebugLog(`❌ Supabase initialization failed: ${error.message}`, 'error');
-}
-
-// ========================================
-// NOTIFICATION SYSTEM
-// ========================================
-
-function showNotification(message, type = 'info') {
-    const notification = document.getElementById('notification');
-    const content = document.getElementById('notificationContent');
-    
-    if (!notification || !content) {
-        console.log(`Notification: ${message}`);
-        return;
-    }
-    
-    content.textContent = message;
-    notification.className = `notification ${type} show`;
-    
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 4000);
-}
-
-// ========================================
-// MODAL UTILITIES
-// ========================================
-
-function showModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.add('show');
-        addDebugLog(`📱 Modal shown: ${modalId}`);
-    }
-}
-
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.classList.remove('show');
-        addDebugLog(`📱 Modal closed: ${modalId}`);
-    }
-}
-
-// Close modal when clicking outside
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('modal-overlay')) {
-        e.target.classList.remove('show');
-    }
-});
-
-// ========================================
-// DATABASE UTILITIES
-// ========================================
-
-async function saveToSupabase(data, table, operation = 'insert', userId = null) {
-    addDebugLog(`🔍 DEBUGGING ${table.toUpperCase()} ${operation.toUpperCase()}`, 'info');
-    addDebugLog(`📤 Data: ${JSON.stringify(data, null, 2)}`, 'info');
-    
-    if (!supabase) {
-        addDebugLog('❌ Supabase client not initialized', 'error');
-        return { success: false, error: 'Supabase not initialized' };
-    }
-    
-    try {
-        let result, error;
-        
-        if (operation === 'update' && userId) {
-            // 🔥 ADD UPDATE OPERATION
-            const response = await supabase
-                .from(table)
-                .update(data)
-                .eq('id', userId)
-                .select();
-            result = response.data;
-            error = response.error;
-        } else {
-            // INSERT OPERATION
-            const response = await supabase
-                .from(table)
-                .insert([data])
-                .select();
-            result = response.data;
-            error = response.error;
+    initializeTopikoApp: function() {
+        if (!window.topikoApp) {
+            window.topikoApp = {
+                // Core app state
+                currentStep: 'welcome',
+                currentUserId: null,
+                sessionStartTime: Date.now(),
+                leadScore: 0,
+                pageViews: 1,
+                formProgress: 0,
+                
+                // User data
+                selectedLanguage: 'en',
+                userName: '',
+                businessName: '',
+                selectedGoals: [],
+                selectedCategories: [],
+                selectedSubcategories: [],
+                selectedProductIds: [],
+                userProducts: [],
+                selectedTheme: '',
+                
+                // Qualifying data
+                qualifyingAnswers: {
+                    online_presence: '',
+                    budget: '',
+                    decision_maker: '',
+                    timeline: ''
+                },
+                
+                // FOMO system
+                fomoShown: false,
+                helpClaimedCount: 47,
+                
+                // NEW: Navigation tracking properties
+                sessionId: this.generateSessionId(),
+                currentPage: 'welcome',
+                previousPage: null,
+                pageStartTime: Date.now(),
+                pageSequenceNumber: 1,
+                navigationHistory: [],
+                currentPageInteractions: [],
+                
+                // Products state
+                productsLoaded: false
+            };
         }
         
-        if (error) {
-            addDebugLog(`❌ Supabase error: ${error.message}`, 'error');
-            console.error('❌ Full error:', error);
-            return { success: false, error };
+        this.addDebugLog('✅ TopikoApp initialized with navigation tracking', 'success');
+        return window.topikoApp;
+    },
+    
+    // NEW: Generate unique session ID
+    generateSessionId: function() {
+        const stored = localStorage.getItem('topiko_session_id');
+        if (stored) {
+            return stored;
         }
         
-        addDebugLog(`✅ Data ${operation}d in ${table}: ${result[0]?.id}`, 'success');
-        return { success: true, data: result };
+        const sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('topiko_session_id', sessionId);
+        return sessionId;
+    },
+    
+    // ========================================
+    // NAVIGATION TRACKING CORE FUNCTIONS
+    // ========================================
+    
+    // NEW: Enhanced showScreen with navigation tracking
+    showScreen: async function(screenId, navigationType = 'forward') {
+        // Get page-specific data before navigation
+        const pageData = this.getPageSpecificData(window.topikoApp.currentPage);
         
-    } catch (networkError) {
-        addDebugLog(`❌ Network error: ${networkError.message}`, 'error');
-        return { success: false, error: networkError };
-    }
-}
-
-// 🧪 DEBUG TEST FUNCTIONS
-async function testDatabaseConnection() {
-    addDebugLog('🧪 Testing database connection...', 'info');
-    
-    const minimalData = {
-        name: 'Debug Test ' + Date.now(),
-        email: 'debug' + Date.now() + '@test.com',
-        phone: '9999999999',
-        business_name: 'Debug Business'
-    };
-    
-    const result = await saveToSupabase(minimalData, 'users');
-    addDebugLog(`🧪 Test result: ${result.success ? 'SUCCESS' : 'FAILED'}`, result.success ? 'success' : 'error');
-    return result;
-}
-
-// ========================================
-// SCREEN NAVIGATION UTILITIES
-// ========================================
-
-function showScreen(screenId) {
-    document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.remove('active');
-    });
-    
-    const targetScreen = document.getElementById(screenId);
-    if (targetScreen) {
-        targetScreen.classList.add('active');
+        // Track the navigation BEFORE changing screens
+        if (window.topikoApp.currentPage && window.topikoApp.currentPage !== screenId) {
+            await this.trackPageNavigationSafe(screenId, navigationType, pageData);
+        }
         
-        // Update global variables (safe check)
-        if (typeof window.topikoApp !== 'undefined') {
-            window.topikoApp.pageViews++;
+        // Existing screen switching logic
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+        
+        const targetScreen = document.getElementById(screenId);
+        if (targetScreen) {
+            targetScreen.classList.add('active');
             
-            // Update navigation history
-            if (window.topikoApp.currentStep !== screenId) {
-                window.topikoApp.currentStep = screenId;
-                if (window.topikoApp.navigationHistory[window.topikoApp.navigationHistory.length - 1] !== screenId) {
-                    window.topikoApp.navigationHistory.push(screenId);
-                }
+            // Update progress bar and UI
+            this.updateProgressBar(screenId);
+            this.updateBackButton();
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+            
+            this.addDebugLog(`📱 Screen shown: ${screenId}`);
+        }
+        
+        // If this is the initial page load, track it
+        if (!window.topikoApp.currentPage || window.topikoApp.currentPage === screenId) {
+            window.topikoApp.currentPage = screenId;
+            window.topikoApp.pageStartTime = Date.now();
+            if (navigationType !== 'initial_load') {
+                await this.trackPageNavigationSafe(screenId, 'initial_load', {});
+            }
+        }
+        
+        // Clean up previous page data
+        this.cleanupPageData();
+    },
+    
+    // NEW: Safe navigation tracking with error handling
+    trackPageNavigationSafe: async function(toPage, navigationType = 'forward', pageData = {}) {
+        try {
+            const config = window.TopikoConfig?.PAGE_NAVIGATION?.TRACKING_CONFIG || {};
+            const timeSpent = Math.round((Date.now() - window.topikoApp.pageStartTime) / 1000);
+            
+            // Skip if time is too short (accidental clicks)
+            const minThreshold = config.MIN_TIME_THRESHOLD || 1;
+            if (timeSpent < minThreshold) {
+                this.addNavigationDebugLog(`⏭️ Skipping navigation tracking: time too short (${timeSpent}s)`, 'debug');
+                return;
             }
             
-            updateProgressBar(window.topikoApp.currentStep);
-            updateBackButton();
+            // Validate and clean page data
+            const validatedPageData = this.validatePageData(pageData);
             
-            // Stop motivational messages when leaving categories
-            if (screenId !== 'categories') {
-                stopMotivationalMessages();
-            }
+            // Call the main tracking function
+            await this.trackPageNavigation(toPage, navigationType, validatedPageData);
             
-            if (screenId === 'categories') {
-                if (typeof loadCategories === 'function') {
-                    loadCategories();
-                }
-                // Start dynamic messages after a short delay
-                setTimeout(() => {
-                    updateMotivationalMessages();
-                }, 200);
-            }
+        } catch (error) {
+            this.addNavigationDebugLog(`❌ Navigation tracking error: ${error.message}`, 'error');
             
-            if (screenId === 'products') {
-                updateProductsHelpSection();
-                // Initialize product selector if not already done
-                setTimeout(() => {
-                    if (!window.topikoApp.productsLoaded && typeof window.switchProductMode === 'function') {
-                        window.switchProductMode('select');
-                    }
-                }, 300);
-            }
-            
-            if (screenId === 'themes') {
-                populateThemePreviews();
-            }
-
-            // Add personalization
-            addPersonalization(screenId);
-            
-            addDebugLog(`📱 Screen: ${screenId} (views: ${window.topikoApp.pageViews})`);
-            calculateLeadScore();
+            // Fallback: store minimal data locally
+            this.storeNavigationLocally({
+                session_id: window.topikoApp.sessionId,
+                from_page: window.topikoApp.currentPage,
+                to_page: toPage,
+                navigation_type: navigationType,
+                created_at: new Date().toISOString(),
+                error: error.message
+            });
         }
-    }
-}
-
-function updateProgressBar(activeStep) {
-    const progressElements = document.querySelectorAll('.progress-step');
+    },
     
-    // Safe check for config
-    if (!window.TopikoConfig || !window.TopikoConfig.STEP_CONFIG) {
-        addDebugLog('⚠️ TopikoConfig not loaded', 'error');
-        return;
-    }
-    
-    const activeProgressIndex = window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.indexOf(activeStep);
-    
-    progressElements.forEach((step, index) => {
-        const stepData = step.getAttribute('data-step');
-        const stepProgressIndex = window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.indexOf(stepData);
+    // NEW: Core navigation tracking function
+    trackPageNavigation: async function(toPage, navigationType = 'forward', pageData = {}) {
+        const fromPage = window.topikoApp.currentPage;
+        const currentTime = Date.now();
+        const timeSpentSeconds = Math.round((currentTime - window.topikoApp.pageStartTime) / 1000);
         
-        step.classList.remove('completed', 'in-progress');
-        
-        if (stepProgressIndex < activeProgressIndex) {
-            step.classList.add('completed');
-        } else if (stepProgressIndex === activeProgressIndex) {
-            step.classList.add('in-progress');
-        }
-    });
-    
-    addDebugLog(`📊 Progress bar updated: ${activeStep} (${activeProgressIndex + 1}/${window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.length})`);
-}
-
-function updateBackButton() {
-    const backButton = document.getElementById('backButton');
-    if (!window.topikoApp || !backButton) return;
-    
-    const canGoBack = window.topikoApp.navigationHistory.length > 1 && window.topikoApp.currentStep !== 'welcome';
-    
-    if (canGoBack) {
-        backButton.classList.remove('hidden');
-    } else {
-        backButton.classList.add('hidden');
-    }
-}
-
-function goBack() {
-    if (!window.topikoApp) return;
-    
-    if (window.topikoApp.navigationHistory.length > 1) {
-        window.topikoApp.navigationHistory.pop();
-        const previousStep = window.topikoApp.navigationHistory[window.topikoApp.navigationHistory.length - 1];
-        window.topikoApp.currentStep = previousStep;
-        showScreen(previousStep);
-        updateBackButton();
-        addDebugLog(`🔙 Navigated back to: ${previousStep}`);
-    }
-}
-
-function navigateToStep(stepId) {
-    // Safe check for config
-    if (!window.TopikoConfig || !window.TopikoConfig.STEP_CONFIG) {
-        addDebugLog(`❌ Navigation blocked: TopikoConfig not loaded`, 'error');
-        return;
-    }
-    
-    if (!window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.includes(stepId)) {
-        addDebugLog(`❌ Navigation blocked: ${stepId} (not in progress steps)`, 'error');
-        return;
-    }
-    
-    if (!window.topikoApp) return;
-    
-    const targetProgressIndex = window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.indexOf(stepId);
-    const currentProgressIndex = window.TopikoConfig.STEP_CONFIG.PROGRESS_STEPS.indexOf(window.topikoApp.currentStep);
-    
-    if (targetProgressIndex <= currentProgressIndex || window.topikoApp.currentStep === 'welcome' || window.topikoApp.currentStep === 'language') {
-        showScreen(stepId);
-        addDebugLog(`📱 Navigated to: ${stepId} via progress bar`);
-    } else {
-        showNotification('Complete current step first', 'warning');
-        addDebugLog(`❌ Navigation blocked: ${stepId} (step not available yet)`, 'error');
-    }
-}
-
-// ========================================
-// PERSONALIZATION UTILITIES
-// ========================================
-
-function addPersonalization(screenId) {
-    if (!window.topikoApp) return;
-    
-    const name = window.topikoApp.userName || document.getElementById('fullName')?.value || '';
-    const business = window.topikoApp.businessName || document.getElementById('businessName')?.value || '';
-    
-    if (screenId === 'qualifying-questions' && name) {
-        const titleEl = document.getElementById('qualifyingTitle');
-        if (titleEl) {
-            titleEl.innerHTML = `Hi ${name}! Let's setup things for you`;
-        }
-    }
-    
-    if (screenId === 'categories' && business) {
-        const titleEl = document.getElementById('categoriesTitle');
-        if (titleEl) {
-            titleEl.innerHTML = `Select Categories for ${business}`;
-        }
-    }
-    
-    if (screenId === 'products' && business) {
-        const titleEl = document.getElementById('productsTitle');
-        const formTitleEl = document.getElementById('productFormTitle');
-        if (titleEl) {
-            titleEl.innerHTML = `Add Products for ${business}`;
-        }
-        if (formTitleEl) {
-            formTitleEl.innerHTML = `Add ${business}'s Products/Services`;
-        }
-    }
-    
-    if (screenId === 'themes' && business) {
-        const titleEl = document.getElementById('themesTitle');
-        if (titleEl) {
-            titleEl.innerHTML = `Choose ${business}'s Theme`;
-        }
-    }
-}
-
-// ========================================
-// LEAD SCORING UTILITIES
-// ========================================
-
-function calculateLeadScore() {
-    if (!window.topikoApp) return 0;
-    
-    let score = 0;
-    
-    if (window.topikoApp.selectedLanguage) score += 5;
-    score += Math.min(window.topikoApp.selectedGoals.length * 10, 50);
-    score += Math.floor(window.topikoApp.formProgress * 0.25);
-    
-    const sessionMinutes = (Date.now() - window.topikoApp.sessionStartTime) / 60000;
-    if (sessionMinutes > 1) score += 5;
-    if (sessionMinutes > 3) score += 5;
-    
-    score += Math.min(window.topikoApp.pageViews * 2, 10);
-    score += Math.min(window.topikoApp.selectedCategories.length * 5, 25);
-    score += Math.min(window.topikoApp.userProducts.length * 3, 15);
-    if (window.topikoApp.selectedTheme) score += 5;
-    
-    // Qualifying questions scoring
-    let qualifyingScore = 0;
-    
-    switch (window.topikoApp.qualifyingAnswers.online_presence) {
-        case 'none': qualifyingScore += 8; break;
-        case 'whatsapp': qualifyingScore += 6; break;
-        case 'social': qualifyingScore += 4; break;
-        case 'basic_website': qualifyingScore += 3; break;
-        case 'full_website': qualifyingScore += 2; break;
-    }
-    
-    switch (window.topikoApp.qualifyingAnswers.budget) {
-        case '25000+': qualifyingScore += 8; break;
-        case '10000-25000': qualifyingScore += 6; break;
-        case '5000-10000': qualifyingScore += 4; break;
-    }
-    
-    if (window.topikoApp.qualifyingAnswers.decision_maker === 'yes') qualifyingScore += 5;
-    
-    switch (window.topikoApp.qualifyingAnswers.timeline) {
-        case 'immediately': qualifyingScore += 4; break;
-        case 'within_week': qualifyingScore += 3; break;
-        case 'this_month': qualifyingScore += 2; break;
-        case 'just_checking': qualifyingScore += 1; break;
-    }
-    
-    score += Math.min(qualifyingScore, 25);
-    window.topikoApp.leadScore = Math.min(score, 100);
-    
-    // Update widget (hidden but keep for internal tracking)
-    updateLeadScoreWidget();
-    addDebugLog(`📊 Lead Score: ${window.topikoApp.leadScore}/100`);
-    return window.topikoApp.leadScore;
-}
-
-function updateLeadScoreWidget() {
-    // Lead score widget is hidden - keeping function for compatibility
-    if (!window.topikoApp) return;
-    
-    // Still calculate for internal tracking but don't display
-    let quality, circleClass;
-    if (window.topikoApp.leadScore >= 70) {
-        quality = 'Hot';
-        circleClass = 'hot';
-    } else if (window.topikoApp.leadScore >= 40) {
-        quality = 'Warm';
-        circleClass = 'warm';
-    } else {
-        quality = 'Cold';
-        circleClass = 'cold';
-    }
-    
-    // Widget is hidden, but we keep the data for internal use
-    window.topikoApp.leadQuality = quality;
-}
-
-function toggleScoreDetails() {
-    if (!window.topikoApp) return;
-    
-    // Lead score widget is hidden, but show debug info in notification
-    const sessionMinutes = Math.round((Date.now() - window.topikoApp.sessionStartTime) / 60000);
-    const quality = window.topikoApp.leadScore >= 70 ? 'Hot' : window.topikoApp.leadScore >= 40 ? 'Warm' : 'Cold';
-    showNotification(`Debug - Score: ${window.topikoApp.leadScore}/100 | Quality: ${quality} | Session: ${sessionMinutes}m | Views: ${window.topikoApp.pageViews}`, 'info');
-}
-
-// ========================================
-// FOMO SYSTEM UTILITIES
-// ========================================
-
-function getRandomBusinessData() {
-    // Safe check for config
-    if (!window.TopikoConfig) {
-        addDebugLog('⚠️ TopikoConfig not loaded for FOMO system', 'error');
-        return {
-            business: 'TrendyWear Collection',
-            city: 'Mumbai', 
-            template: { text: '{business} from {city} just went live with help of Topiko', status: 'New Member' },
-            message: 'TrendyWear Collection from Mumbai just went live with help of Topiko'
+        // Prepare navigation data
+        const navigationData = {
+            user_id: window.topikoApp.currentUserId || null,
+            session_id: window.topikoApp.sessionId,
+            from_page: fromPage,
+            to_page: toPage,
+            navigation_type: navigationType,
+            time_spent_seconds: timeSpentSeconds,
+            page_sequence_number: window.topikoApp.pageSequenceNumber,
+            user_agent: navigator.userAgent,
+            referrer_url: document.referrer || null,
+            utm_data: this.getUtmData(),
+            page_data: pageData,
+            created_at: new Date().toISOString()
         };
-    }
-    
-    const business = window.TopikoConfig.INDIAN_BUSINESS_NAMES[Math.floor(Math.random() * window.TopikoConfig.INDIAN_BUSINESS_NAMES.length)];
-    const city = window.TopikoConfig.INDIAN_CITIES[Math.floor(Math.random() * window.TopikoConfig.INDIAN_CITIES.length)];
-    const template = window.TopikoConfig.FOMO_MESSAGE_TEMPLATES[Math.floor(Math.random() * window.TopikoConfig.FOMO_MESSAGE_TEMPLATES.length)];
-    
-    const message = template.text.replace('{business}', business).replace('{city}', city);
-    
-    return { business, city, template, message };
-}
-
-function showFomoNotification() {
-    if (!window.topikoApp) return;
-    
-    if (Date.now() - window.topikoApp.lastFomoShow < 10000) return;
-    
-    const fomoEl = document.getElementById('fomoNotification');
-    const contentEl = document.getElementById('fomoContent');
-    const timeEl = document.getElementById('fomoTime');
-    const statusEl = document.querySelector('.fomo-status');
-    
-    if (!fomoEl || !contentEl || !timeEl || !statusEl) return;
-    
-    const data = getRandomBusinessData();
-    
-    contentEl.innerHTML = `<span class="business-name">${data.business}</span> from <span class="business-location">${data.city}</span> ${data.message.split(`${data.business} from ${data.city} `)[1] || data.message.split(`${data.business} in ${data.city} `)[1] || 'just went live with help of Topiko'}`;
-    
-    timeEl.textContent = `${Math.floor(Math.random() * 15) + 1} minutes ago`;
-    statusEl.textContent = data.template.status;
-    
-    fomoEl.classList.add('show');
-    window.topikoApp.lastFomoShow = Date.now();
-    
-    setTimeout(() => {
-        fomoEl.classList.remove('show');
-        fomoEl.classList.add('hide');
-        setTimeout(() => fomoEl.classList.remove('hide'), 500);
-    }, 5000);
-    
-    window.topikoApp.businessCounter += Math.floor(Math.random() * 2) + 1;
-    updateBusinessCounter();
-}
-
-function updateBusinessCounter() {
-    if (!window.topikoApp) return;
-    
-    const counterEl = document.getElementById('counterNumber');
-    if (counterEl) {
-        counterEl.textContent = window.topikoApp.businessCounter.toLocaleString();
-    }
-}
-
-function showBusinessCounter() {
-    const counterEl = document.getElementById('fomoCounter');
-    if (counterEl) {
-        counterEl.classList.add('show');
-        setTimeout(() => counterEl.classList.remove('show'), 4000);
-    }
-}
-
-function startFomoSystem() {
-    setTimeout(() => showFomoNotification(), 8000);
-    setTimeout(() => showBusinessCounter(), 15000);
-    
-    setInterval(() => {
-        const randomDelay = Math.random() * 20000 + 25000;
-        setTimeout(() => showFomoNotification(), randomDelay);
-    }, 45000);
-    
-    setInterval(() => showBusinessCounter(), 90000);
-}
-
-// ========================================
-// PRODUCT UTILITIES
-// ========================================
-
-function getDefaultProductImage() {
-    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjFmNWY5Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjM2NjcwIiBmb250LWZhbWlseT0iYXJpYWwiIGZvbnQtc2l6ZT0iNDAiPvCfk6Y8L3RleHQ+PC9zdmc+';
-}
-
-function displayProducts() {
-    if (!window.topikoApp) return;
-    
-    const productsList = document.getElementById('productsList');
-    const productCount = document.getElementById('productCount');
-    
-    if (!productsList || !productCount) return;
-    
-    productCount.textContent = window.topikoApp.userProducts.length;
-    
-    if (window.topikoApp.userProducts.length === 0) {
-        productsList.innerHTML = `
-            <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
-                <p>No products selected yet. Choose products above or add custom products!</p>
-            </div>
-        `;
-        return;
-    }
-    
-    // Safe check for business category
-    const businessCategory = document.getElementById('category')?.value;
-    let categoryData = null;
-    
-    if (window.TopikoConfig && window.TopikoConfig.BUSINESS_CATEGORIES && businessCategory) {
-        categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory];
-    }
-    
-    productsList.innerHTML = window.topikoApp.userProducts.map(product => {
-        const categoryName = categoryData?.categories[product.categoryKey]?.name || product.categoryKey;
-        const subcategoryName = product.subcategoryKey ? 
-            (window.TopikoConfig?.SUBCATEGORY_NAMES?.[product.subcategoryKey] || product.subcategoryKey) : '';
         
-        return `
-            <div class="product-card">
-                <div class="product-image" style="background-image: url('${product.imageUrl}');">
-                    <div class="product-price">₹${product.price.toLocaleString()}</div>
+        // Add interaction summary to page data
+        if (window.topikoApp.currentPageInteractions && window.topikoApp.currentPageInteractions.length > 0) {
+            navigationData.page_data.interactions = this.getPageInteractionSummary();
+        }
+        
+        // Save to database (with batching for performance)
+        const result = await this.batchTrackNavigation(navigationData);
+        
+        if (result && result.success) {
+            this.addNavigationDebugLog(`📊 Page navigation tracked: ${fromPage} → ${toPage} (${timeSpentSeconds}s)`, 'info');
+        } else {
+            this.addNavigationDebugLog(`❌ Failed to track navigation`, 'error');
+            // Fallback: store locally for later sync
+            this.storeNavigationLocally(navigationData);
+        }
+        
+        // Update app state
+        window.topikoApp.previousPage = fromPage;
+        window.topikoApp.currentPage = toPage;
+        window.topikoApp.pageStartTime = currentTime;
+        window.topikoApp.pageSequenceNumber++;
+        
+        // Add to in-memory history
+        window.topikoApp.navigationHistory.push({
+            from: fromPage,
+            to: toPage,
+            type: navigationType,
+            timeSpent: timeSpentSeconds,
+            timestamp: currentTime
+        });
+        
+        // Update page views counter
+        window.topikoApp.pageViews++;
+    },
+    
+    // NEW: Navigation queue for batching
+    navigationQueue: [],
+    
+    // NEW: Batch navigation tracking for performance
+    batchTrackNavigation: async function(navigationData) {
+        const config = window.TopikoConfig?.PAGE_NAVIGATION?.TRACKING_CONFIG || {};
+        const batchSize = config.BATCH_SIZE || 10;
+        
+        this.navigationQueue.push(navigationData);
+        
+        if (this.navigationQueue.length >= batchSize) {
+            return await this.flushNavigationQueue();
+        }
+        
+        // For immediate tracking of critical pages
+        const criticalPages = window.TopikoConfig?.ANALYTICS?.CRITICAL_PAGES || ['registration', 'completion'];
+        if (criticalPages.includes(navigationData.to_page)) {
+            return await this.flushNavigationQueue();
+        }
+        
+        return { success: true }; // Queued successfully
+    },
+    
+    // NEW: Flush navigation queue
+    flushNavigationQueue: async function() {
+        if (this.navigationQueue.length === 0) return { success: true };
+        
+        const batch = [...this.navigationQueue];
+        this.navigationQueue = [];
+        
+        try {
+            const { data, error } = await supabase
+                .from('page_navigation')
+                .insert(batch);
+                
+            if (error) throw error;
+            
+            this.addNavigationDebugLog(`✅ Batch tracked ${batch.length} navigation events`, 'info');
+            return { success: true, data };
+            
+        } catch (error) {
+            this.addNavigationDebugLog(`❌ Batch tracking failed: ${error.message}`, 'error');
+            
+            // Re-add to queue for retry
+            this.navigationQueue.unshift(...batch);
+            
+            // Store locally as fallback
+            batch.forEach(nav => this.storeNavigationLocally(nav));
+            return { success: false, error: error.message };
+        }
+    },
+    
+    // NEW: Get page-specific data for tracking
+    getPageSpecificData: function(currentPage) {
+        if (!currentPage) return {};
+        
+        const pageData = {};
+        
+        switch (currentPage) {
+            case 'language':
+                pageData.selectedLanguage = window.topikoApp.selectedLanguage;
+                break;
+                
+            case 'goals':
+                pageData.selectedGoals = window.topikoApp.selectedGoals || [];
+                pageData.goalsCount = (window.topikoApp.selectedGoals || []).length;
+                break;
+                
+            case 'registration':
+                pageData.formProgress = window.topikoApp.formProgress || 0;
+                pageData.userName = document.getElementById('fullName')?.value || '';
+                pageData.businessName = document.getElementById('businessName')?.value || '';
+                pageData.email = document.getElementById('email')?.value || '';
+                pageData.phone = document.getElementById('phoneNumber')?.value || '';
+                pageData.businessType = document.getElementById('businessType')?.value || '';
+                pageData.category = document.getElementById('category')?.value || '';
+                break;
+                
+            case 'qualifying-questions':
+                pageData.qualifyingAnswers = window.topikoApp.qualifyingAnswers || {};
+                pageData.answersComplete = Object.values(window.topikoApp.qualifyingAnswers || {}).filter(a => a !== '').length;
+                break;
+                
+            case 'categories':
+                pageData.selectedCategories = window.topikoApp.selectedCategories || [];
+                pageData.selectedSubcategories = window.topikoApp.selectedSubcategories || [];
+                pageData.categoriesCount = (window.topikoApp.selectedCategories || []).length;
+                pageData.subcategoriesCount = (window.topikoApp.selectedSubcategories || []).length;
+                break;
+                
+            case 'products':
+                pageData.selectedProducts = window.topikoApp.selectedProductIds || [];
+                pageData.customProducts = window.topikoApp.userProducts?.filter(p => p.isCustom) || [];
+                pageData.productsCount = (window.topikoApp.userProducts || []).length;
+                break;
+                
+            case 'themes':
+                pageData.selectedTheme = window.topikoApp.selectedTheme;
+                break;
+                
+            case 'completion':
+                pageData.leadScore = window.topikoApp.leadScore;
+                pageData.completionType = 'setup_complete';
+                break;
+        }
+        
+        // Add performance metrics
+        pageData.performance = this.getPagePerformanceMetrics();
+        
+        return pageData;
+    },
+    
+    // NEW: Get UTM parameters
+    getUtmData: function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const utmData = {};
+        
+        ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(param => {
+            const value = urlParams.get(param);
+            if (value) {
+                utmData[param] = value;
+            }
+        });
+        
+        return Object.keys(utmData).length > 0 ? utmData : null;
+    },
+    
+    // NEW: Store navigation locally as fallback
+    storeNavigationLocally: function(navigationData) {
+        const config = window.TopikoConfig?.PAGE_NAVIGATION?.TRACKING_CONFIG || {};
+        const storageKey = config.OFFLINE_STORAGE_KEY || 'topiko_navigation_queue';
+        
+        const stored = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        stored.push(navigationData);
+        
+        // Limit local storage size
+        if (stored.length > 100) {
+            stored.splice(0, stored.length - 100);
+        }
+        
+        localStorage.setItem(storageKey, JSON.stringify(stored));
+        this.addNavigationDebugLog(`💾 Navigation stored locally: ${navigationData.from_page} → ${navigationData.to_page}`, 'info');
+    },
+    
+    // NEW: Sync locally stored navigation data
+    syncLocalNavigationData: async function() {
+        const config = window.TopikoConfig?.PAGE_NAVIGATION?.TRACKING_CONFIG || {};
+        const storageKey = config.OFFLINE_STORAGE_KEY || 'topiko_navigation_queue';
+        
+        const stored = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        if (stored.length === 0) return;
+        
+        this.addNavigationDebugLog(`🔄 Syncing ${stored.length} navigation events...`);
+        
+        let synced = 0;
+        for (const navData of stored) {
+            try {
+                const { data, error } = await supabase
+                    .from('page_navigation')
+                    .insert([navData]);
+                    
+                if (error) throw error;
+                synced++;
+                
+            } catch (error) {
+                this.addNavigationDebugLog(`❌ Failed to sync navigation data: ${error.message}`, 'error');
+                break;
+            }
+        }
+        
+        if (synced === stored.length) {
+            // Clear synced data
+            localStorage.removeItem(storageKey);
+            this.addNavigationDebugLog(`✅ All ${synced} navigation events synced successfully`);
+        } else if (synced > 0) {
+            // Remove synced items
+            const remaining = stored.slice(synced);
+            localStorage.setItem(storageKey, JSON.stringify(remaining));
+            this.addNavigationDebugLog(`✅ ${synced} of ${stored.length} navigation events synced`);
+        }
+    },
+    
+    // ========================================
+    // PAGE INTERACTION TRACKING
+    // ========================================
+    
+    // NEW: Track user interactions on current page
+    trackPageInteraction: function(interactionType, elementInfo = {}) {
+        if (!window.topikoApp.currentPageInteractions) {
+            window.topikoApp.currentPageInteractions = [];
+        }
+        
+        window.topikoApp.currentPageInteractions.push({
+            type: interactionType,
+            element: elementInfo,
+            timestamp: Date.now(),
+            pageTime: Date.now() - window.topikoApp.pageStartTime
+        });
+        
+        this.addNavigationDebugLog(`👆 Interaction tracked: ${interactionType}`, 'debug');
+    },
+    
+    // NEW: Get page interaction summary
+    getPageInteractionSummary: function() {
+        const interactions = window.topikoApp.currentPageInteractions || [];
+        
+        return {
+            totalInteractions: interactions.length,
+            interactionTypes: [...new Set(interactions.map(i => i.type))],
+            firstInteractionTime: interactions.length > 0 ? interactions[0].pageTime : null,
+            lastInteractionTime: interactions.length > 0 ? interactions[interactions.length - 1].pageTime : null,
+            clickCount: interactions.filter(i => i.type === 'click').length,
+            focusCount: interactions.filter(i => i.type === 'focus').length,
+            inputCount: interactions.filter(i => i.type === 'input').length
+        };
+    },
+    
+    // NEW: Get page performance metrics
+    getPagePerformanceMetrics: function() {
+        if (!window.performance) return {};
+        
+        const navigation = performance.getEntriesByType('navigation')[0];
+        const paint = performance.getEntriesByType('paint');
+        
+        return {
+            loadTime: navigation ? Math.round(navigation.loadEventEnd - navigation.fetchStart) : 0,
+            domContentLoaded: navigation ? Math.round(navigation.domContentLoadedEventEnd - navigation.fetchStart) : 0,
+            firstPaint: paint.find(p => p.name === 'first-paint')?.startTime || 0,
+            firstContentfulPaint: paint.find(p => p.name === 'first-contentful-paint')?.startTime || 0
+        };
+    },
+    
+    // NEW: Clean up page data on navigation
+    cleanupPageData: function() {
+        // Reset page-specific tracking data
+        window.topikoApp.currentPageInteractions = [];
+        
+        // Clear any page-specific timers
+        if (window.topikoApp.pageTimer) {
+            clearInterval(window.topikoApp.pageTimer);
+        }
+        
+        // Flush any pending navigation events for critical pages
+        const criticalPages = window.TopikoConfig?.ANALYTICS?.CRITICAL_PAGES || [];
+        if (criticalPages.includes(window.topikoApp.currentPage) && this.navigationQueue.length > 0) {
+            this.flushNavigationQueue();
+        }
+    },
+    
+    // ========================================
+    // NAVIGATION ANALYTICS HELPERS
+    // ========================================
+    
+    // NEW: Get navigation summary for analytics
+    getNavigationSummary: function() {
+        const history = window.topikoApp.navigationHistory || [];
+        const totalTime = history.reduce((sum, nav) => sum + nav.timeSpent, 0);
+        const pagesVisited = new Set(history.map(nav => nav.to)).size;
+        
+        return {
+            totalNavigations: history.length,
+            totalTimeSpent: totalTime,
+            uniquePagesVisited: pagesVisited,
+            averageTimePerPage: pagesVisited > 0 ? Math.round(totalTime / pagesVisited) : 0,
+            currentPage: window.topikoApp.currentPage,
+            sessionDuration: Math.round((Date.now() - window.topikoApp.sessionStartTime) / 1000),
+            navigationPath: history.map(nav => nav.to).join(' → ')
+        };
+    },
+    
+    // NEW: Validate page data before tracking
+    validatePageData: function(pageData) {
+        const config = window.TopikoConfig?.PAGE_NAVIGATION?.TRACKING_CONFIG || {};
+        const maxSize = config.MAX_PAGE_DATA_SIZE || 5000;
+        
+        const dataString = JSON.stringify(pageData);
+        
+        if (dataString.length > maxSize) {
+            this.addNavigationDebugLog(`⚠️ Page data too large: ${dataString.length} bytes`, 'warn');
+            return this.truncatePageData(pageData);
+        }
+        
+        return pageData;
+    },
+    
+    // NEW: Truncate page data if too large
+    truncatePageData: function(pageData) {
+        const truncated = { ...pageData };
+        
+        // Remove large arrays/objects, keep essential data
+        Object.keys(truncated).forEach(key => {
+            const value = truncated[key];
+            if (Array.isArray(value) && value.length > 50) {
+                truncated[key] = value.slice(0, 50);
+                truncated[`${key}_truncated`] = true;
+            }
+            if (typeof value === 'string' && value.length > 1000) {
+                truncated[key] = value.substring(0, 1000);
+                truncated[`${key}_truncated`] = true;
+            }
+        });
+        
+        return truncated;
+    },
+    
+    // NEW: Enhanced debug logging for navigation
+    addNavigationDebugLog: function(message, level = 'info', data = {}) {
+        const config = window.TopikoConfig?.PAGE_NAVIGATION?.DEBUG || {};
+        
+        if (!config.ENABLED) return;
+        
+        const logLevels = ['error', 'warn', 'info', 'debug'];
+        const currentLevelIndex = logLevels.indexOf(config.LOG_LEVEL || 'info');
+        const messageLevelIndex = logLevels.indexOf(level);
+        
+        if (messageLevelIndex <= currentLevelIndex) {
+            const timestamp = new Date().toISOString();
+            const logEntry = {
+                timestamp,
+                level,
+                message,
+                page: window.topikoApp.currentPage,
+                session: window.topikoApp.sessionId,
+                ...data
+            };
+            
+            console.log(`[NAVIGATION ${level.toUpperCase()}]`, logEntry);
+            
+            // Add to debug panel if exists
+            this.addDebugLog(message, level);
+        }
+    },
+    
+    // ========================================
+    // EXISTING UTILITY FUNCTIONS (UNCHANGED)
+    // ========================================
+    
+    // Save to Supabase
+    saveToSupabase: async function(data, tableName, operation = 'insert', id = null) {
+        try {
+            let result;
+            
+            if (operation === 'insert') {
+                result = await supabase.from(tableName).insert([data]).select();
+            } else if (operation === 'update' && id) {
+                result = await supabase.from(tableName).update(data).eq('id', id).select();
+            } else if (operation === 'upsert') {
+                result = await supabase.from(tableName).upsert(data).select();
+            }
+            
+            const { data: returnedData, error } = result;
+            
+            if (error) {
+                this.addDebugLog(`❌ ${tableName} ${operation} failed: ${error.message}`, 'error');
+                return { success: false, error: error.message };
+            }
+            
+            this.addDebugLog(`✅ ${tableName} ${operation} successful`, 'success');
+            return { success: true, data: returnedData };
+            
+        } catch (error) {
+            this.addDebugLog(`❌ ${tableName} ${operation} error: ${error.message}`, 'error');
+            return { success: false, error: error.message };
+        }
+    },
+    
+    // Debug system
+    addDebugLog: function(message, type = 'info') {
+        const timestamp = new Date().toLocaleTimeString();
+        const debugLog = document.getElementById('debugLog');
+        
+        if (debugLog) {
+            const logEntry = document.createElement('div');
+            logEntry.className = `debug-entry debug-${type}`;
+            logEntry.innerHTML = `
+                <span class="debug-time">${timestamp}</span>
+                <span class="debug-message">${message}</span>
+            `;
+            
+            debugLog.appendChild(logEntry);
+            debugLog.scrollTop = debugLog.scrollHeight;
+            
+            // Limit log entries
+            while (debugLog.children.length > 100) {
+                debugLog.removeChild(debugLog.firstChild);
+            }
+        }
+        
+        console.log(`[TOPIKO ${type.toUpperCase()}] ${message}`);
+    },
+    
+    // Show notification
+    showNotification: function(message, type = 'info') {
+        const notification = document.getElementById('notification');
+        const notificationContent = document.getElementById('notificationContent');
+        
+        if (notification && notificationContent) {
+            notificationContent.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        this.addDebugLog(`📢 Notification: ${message}`, type);
+    },
+    
+    // Lead score calculation
+    calculateLeadScore: function() {
+        let score = 0;
+        
+        // Language selection: +5
+        if (window.topikoApp.selectedLanguage) score += 5;
+        
+        // Goals: +5 per goal
+        score += (window.topikoApp.selectedGoals?.length || 0) * 5;
+        
+        // Form completion: up to +30
+        score += Math.round((window.topikoApp.formProgress || 0) * 0.3);
+        
+        // Qualifying answers: +10 each
+        const qualifyingCount = Object.values(window.topikoApp.qualifyingAnswers || {}).filter(a => a !== '').length;
+        score += qualifyingCount * 10;
+        
+        // Categories: +5 per category
+        score += (window.topikoApp.selectedCategories?.length || 0) * 5;
+        
+        // Products: +3 per product
+        score += (window.topikoApp.userProducts?.length || 0) * 3;
+        
+        // Theme selection: +10
+        if (window.topikoApp.selectedTheme) score += 10;
+        
+        // Navigation engagement bonus: +1 per minute spent
+        const sessionMinutes = Math.round((Date.now() - window.topikoApp.sessionStartTime) / 60000);
+        score += Math.min(sessionMinutes, 10);
+        
+        window.topikoApp.leadScore = Math.min(score, 100);
+        this.updateLeadScoreWidget();
+        
+        return window.topikoApp.leadScore;
+    },
+    
+    // Lead score widget
+    updateLeadScoreWidget: function() {
+        const scoreValue = document.getElementById('leadScoreValue');
+        const scoreCircle = document.getElementById('leadScoreCircle');
+        const scoreLabel = document.getElementById('scoreLabel');
+        
+        if (scoreValue && scoreCircle) {
+            const score = window.topikoApp.leadScore || 0;
+            scoreValue.textContent = score;
+            
+            // Update color based on score
+            scoreCircle.className = 'score-circle';
+            if (score >= 70) {
+                scoreCircle.classList.add('hot');
+                if (scoreLabel) scoreLabel.textContent = 'Hot Lead';
+            } else if (score >= 40) {
+                scoreCircle.classList.add('warm');
+                if (scoreLabel) scoreLabel.textContent = 'Warm Lead';
+            } else {
+                scoreCircle.classList.add('cold');
+                if (scoreLabel) scoreLabel.textContent = 'Cold Lead';
+            }
+        }
+    },
+    
+    // Progress bar
+    updateProgressBar: function(currentStep) {
+        const steps = document.querySelectorAll('.progress-step');
+        
+        steps.forEach(step => {
+            const stepName = step.getAttribute('data-step');
+            
+            if (stepName === currentStep) {
+                step.classList.add('active');
+            } else {
+                step.classList.remove('active');
+            }
+        });
+        
+        window.topikoApp.currentStep = currentStep;
+    },
+    
+    // Back button
+    updateBackButton: function() {
+        const backButton = document.getElementById('backButton');
+        const currentStep = window.topikoApp.currentStep;
+        
+        if (backButton) {
+            if (currentStep === 'welcome' || currentStep === 'language') {
+                backButton.classList.add('hidden');
+            } else {
+                backButton.classList.remove('hidden');
+            }
+        }
+    },
+    
+    // Session data
+    saveSessionData: function() {
+        const sessionData = {
+            ...window.topikoApp,
+            lastSaved: new Date().toISOString()
+        };
+        
+        try {
+            localStorage.setItem('topiko_session_data', JSON.stringify(sessionData));
+            this.addDebugLog('💾 Session data saved', 'info');
+        } catch (error) {
+            this.addDebugLog(`❌ Failed to save session: ${error.message}`, 'error');
+        }
+    },
+    
+    loadSessionData: function() {
+        try {
+            const saved = localStorage.getItem('topiko_session_data');
+            if (saved) {
+                const sessionData = JSON.parse(saved);
+                
+                // Restore app state
+                Object.assign(window.topikoApp, sessionData);
+                
+                this.addDebugLog('📂 Session data loaded', 'success');
+                return true;
+            }
+        } catch (error) {
+            this.addDebugLog(`❌ Failed to load session: ${error.message}`, 'error');
+        }
+        
+        return false;
+    },
+    
+    // FOMO system
+    startFomoSystem: function() {
+        this.showFomoNotification();
+        this.updateFomoCounter();
+        
+        // Show FOMO notification every 30 seconds
+        this.fomoInterval = setInterval(() => {
+            this.showFomoNotification();
+        }, 30000);
+        
+        // Update counter every 10 seconds
+        this.counterInterval = setInterval(() => {
+            this.updateFomoCounter();
+        }, 10000);
+    },
+    
+    showFomoNotification: function() {
+        const fomoNotification = document.getElementById('fomoNotification');
+        if (!fomoNotification || window.topikoApp.fomoShown) return;
+        
+        // Random business names and locations
+        const businesses = [
+            { name: 'TrendyWear Collection', location: 'Pune' },
+            { name: 'Spice Garden Restaurant', location: 'Bangalore' },
+            { name: 'Tech Solutions Hub', location: 'Mumbai' },
+            { name: 'Fresh Fruits Market', location: 'Delhi' },
+            { name: 'Fashion Forward Boutique', location: 'Chennai' }
+        ];
+        
+        const randomBusiness = businesses[Math.floor(Math.random() * businesses.length)];
+        const minutesAgo = Math.floor(Math.random() * 30) + 1;
+        
+        // Update notification content
+        document.getElementById('fomoContent').innerHTML = `
+            <span class="business-name">${randomBusiness.name}</span> from <span class="business-location">${randomBusiness.location}</span> joined our platform with help of Topiko
+        `;
+        document.getElementById('fomoTime').textContent = `${minutesAgo} minutes ago`;
+        
+        // Show notification
+        fomoNotification.style.transform = 'translateX(0)';
+        window.topikoApp.fomoShown = true;
+        
+        // Hide after 5 seconds
+        setTimeout(() => {
+            fomoNotification.style.transform = 'translateX(-400px)';
+            window.topikoApp.fomoShown = false;
+        }, 5000);
+    },
+    
+    updateFomoCounter: function() {
+        const counterNumber = document.getElementById('counterNumber');
+        if (counterNumber) {
+            // Simulate increasing counter
+            const current = parseInt(counterNumber.textContent) || 247;
+            const increase = Math.floor(Math.random() * 3) + 1;
+            counterNumber.textContent = current + increase;
+        }
+    },
+    
+    stopMotivationalMessages: function() {
+        if (this.fomoInterval) {
+            clearInterval(this.fomoInterval);
+        }
+        if (this.counterInterval) {
+            clearInterval(this.counterInterval);
+        }
+    },
+    
+    // Modal system
+    showModal: function(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('show');
+            this.addDebugLog(`📱 Modal shown: ${modalId}`, 'info');
+        }
+    },
+    
+    closeModal: function(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('show');
+            this.addDebugLog(`📱 Modal closed: ${modalId}`, 'info');
+        }
+    },
+    
+    // Products display
+    displayProducts: function() {
+        const productsList = document.getElementById('productsList');
+        if (!productsList) return;
+        
+        const products = window.topikoApp.userProducts || [];
+        
+        if (products.length === 0) {
+            productsList.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
+                    <p>No products selected yet. Choose products above or add custom products!</p>
                 </div>
-                <div class="product-content">
-                    <div class="product-name">${product.name}</div>
-                    <div class="product-description">${product.description}</div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #64748b; margin-top: 0.5rem;">
-                        <span>📁 ${categoryName}</span>
-                        ${subcategoryName ? `<span>🏷️ ${subcategoryName}</span>` : ''}
+            `;
+            return;
+        }
+        
+        productsList.innerHTML = products.map(product => `
+            <div class="product-item">
+                <img src="${product.imageUrl || this.getDefaultProductImage()}" 
+                     alt="${product.name}" class="product-image">
+                <div class="product-details">
+                    <h4>${product.name}</h4>
+                    <p class="product-price">₹${product.price?.toLocaleString() || 'N/A'}</p>
+                    <p class="product-description">${product.description || ''}</p>
+                    ${product.isCustom ? '<span class="custom-badge">Custom</span>' : ''}
+                </div>
+            </div>
+        `).join('');
+        
+        // Update count
+        const catalogTitle = document.querySelector('[data-translate="products.selectedProducts.catalogTitle"]');
+        if (catalogTitle) {
+            catalogTitle.setAttribute('data-translate-vars', JSON.stringify({ count: products.length }));
+        }
+    },
+    
+    getDefaultProductImage: function() {
+        return 'https://via.placeholder.com/200x150?text=Product+Image';
+    },
+    
+    // Theme previews
+    populateThemePreviews: function() {
+        const products = window.topikoApp.userProducts?.slice(0, 3) || [];
+        
+        if (products.length === 0) {
+            this.addDebugLog('⚠️ No products available for theme preview', 'warn');
+            return;
+        }
+        
+        const themes = ['modern', 'vibrant', 'professional', 'traditional', 'creative', 'luxury'];
+        
+        themes.forEach(themeId => {
+            const preview = document.getElementById(`${themeId}-preview`);
+            if (preview) {
+                preview.innerHTML = products.map(product => `
+                    <div class="theme-product-preview">
+                        <div class="theme-product-image" style="background-image: url('${product.imageUrl || this.getDefaultProductImage()}');"></div>
+                        <div class="theme-product-name">${product.name}</div>
+                        <div class="theme-product-price">₹${product.price?.toLocaleString() || 'N/A'}</div>
                     </div>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-// ========================================
-// THEME UTILITIES
-// ========================================
-
-function populateThemePreviews() {
-    if (!window.topikoApp) return;
-    
-    const themePreviewIds = ['modern-preview', 'vibrant-preview', 'professional-preview', 'traditional-preview', 'creative-preview', 'luxury-preview'];
-    
-    if (window.topikoApp.userProducts.length === 0) {
-        themePreviewIds.forEach(previewId => {
-            const previewEl = document.getElementById(previewId);
-            if (previewEl) {
-                previewEl.innerHTML = `
-                    <div class="theme-preview-item">Sample Product</div>
-                    <div class="theme-preview-item">₹999</div>
-                `;
+                `).join('');
             }
         });
-        return;
-    }
-    
-    const previewProducts = window.topikoApp.userProducts.slice(0, 2);
-    
-    themePreviewIds.forEach(previewId => {
-        const previewEl = document.getElementById(previewId);
-        if (previewEl) {
-            previewEl.innerHTML = previewProducts.map(product => 
-                `<div class="theme-preview-item">
-                    <div style="font-weight: 600; margin-bottom: 2px; font-size: 0.7rem;">${product.name.substring(0, 15)}${product.name.length > 15 ? '...' : ''}</div>
-                    <div style="color: #059669; font-weight: bold; font-size: 0.7rem;">₹${product.price.toLocaleString()}</div>
-                </div>`
-            ).join('');
-        }
-    });
-}
-
-// ========================================
-// MOTIVATIONAL MESSAGES UTILITIES
-// ========================================
-
-let currentMessageIndex = 0;
-let messageInterval = null;
-
-function updateMotivationalMessages() {
-    if (!window.topikoApp) return;
-    
-    if (window.topikoApp.currentStep !== 'categories') {
-        return;
-    }
-    
-    const messagesContainer = document.getElementById('motivationalMessages');
-    if (!messagesContainer) {
-        addDebugLog('❌ Messages container not found', 'error');
-        return;
-    }
-    
-    // Stop any existing interval
-    stopMotivationalMessages();
-    
-    // Clear any existing messages
-    messagesContainer.innerHTML = '';
-    
-    // Start new message rotation
-    currentMessageIndex = 0;
-    
-    // Show first message immediately
-    showNextMessage();
-    
-    // Set interval for automatic rotation
-    messageInterval = setInterval(() => {
-        showNextMessage();
-    }, 3500);
-    
-    addDebugLog('🔄 Dynamic messages started', 'success');
-}
-
-function showNextMessage() {
-    if (!window.topikoApp) return;
-    
-    if (window.topikoApp.currentStep !== 'categories') {
-        stopMotivationalMessages();
-        return;
-    }
-    
-    const messagesContainer = document.getElementById('motivationalMessages');
-    if (!messagesContainer) return;
-    
-    const message = generatePersonalizedMessage(currentMessageIndex);
-    
-    addDebugLog(`📝 Showing message ${currentMessageIndex + 1}`, 'info');
-    
-    showNewMessage(message, messagesContainer);
-    
-    // Safe check for message templates
-    const templateCount = window.TopikoConfig?.MOTIVATIONAL_MESSAGE_TEMPLATES?.length || 5;
-    currentMessageIndex = (currentMessageIndex + 1) % templateCount;
-}
-
-function generatePersonalizedMessage(index) {
-    if (!window.topikoApp || !window.TopikoConfig?.MOTIVATIONAL_MESSAGE_TEMPLATES) {
-        return 'Select your categories to see how your business will look online!';
-    }
-    
-    const template = window.TopikoConfig.MOTIVATIONAL_MESSAGE_TEMPLATES[index];
-    if (!template) return 'Keep going! Your business is taking shape!';
-    
-    // Safe check for step config
-    const stepConfig = window.TopikoConfig.STEP_CONFIG?.PROGRESS_STEPS || ['goals', 'registration', 'qualifying-questions', 'categories', 'products', 'themes'];
-    const currentProgressIndex = stepConfig.indexOf(window.topikoApp.currentStep);
-    const stepsLeft = Math.max(1, stepConfig.length - currentProgressIndex - 1);
-    const plural = stepsLeft !== 1 ? 's' : '';
-    const businessDisplayName = window.topikoApp.businessName || 'your business';
-    
-    // Get category name
-    const categoryDropdown = document.getElementById('category');
-    let categoryName = 'your category';
-    if (categoryDropdown && categoryDropdown.value && window.TopikoConfig.BUSINESS_CATEGORIES?.[categoryDropdown.value]) {
-        const categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[categoryDropdown.value];
-        categoryName = categoryData.name;
-    }
-    
-    const personalizedMessage = template
-        .replace('{stepsLeft}', stepsLeft.toString())
-        .replace('{plural}', plural)
-        .replace('{businessName}', businessDisplayName)
-        .replace('{category}', categoryName);
         
-    return personalizedMessage;
-}
-
-function showNewMessage(messageText, container) {
-    // Mark existing messages for exit
-    const existingMessages = container.querySelectorAll('.motivational-message');
+        this.addDebugLog(`🎨 Theme previews populated with ${products.length} products`, 'success');
+    },
     
-    existingMessages.forEach((msg) => {
-        if (!msg.classList.contains('exit')) {
-            msg.classList.remove('active');
-            msg.classList.add('exit');
-        }
-    });
-    
-    // Create new message
-    const messageEl = document.createElement('div');
-    messageEl.className = 'motivational-message';
-    messageEl.textContent = messageText;
-    
-    container.appendChild(messageEl);
-    
-    // Trigger slide-in animation
-    setTimeout(() => {
-        messageEl.classList.add('active');
-    }, 100);
-    
-    // Clean up old messages
-    setTimeout(() => {
-        const oldMessages = container.querySelectorAll('.motivational-message.exit');
-        oldMessages.forEach(msg => {
-            if (msg.parentNode) {
-                msg.parentNode.removeChild(msg);
+    // Products help section
+    updateProductsHelpSection: function() {
+        const helpSection = document.getElementById('productsHelpSection');
+        const helpText = document.getElementById('productsHelpText');
+        const progressFill = document.getElementById('productsHelpProgressFill');
+        
+        if (helpText && progressFill) {
+            const claimed = window.topikoApp.helpClaimedCount || 47;
+            const total = 75;
+            const remaining = total - claimed;
+            const percentage = (claimed / total) * 100;
+            
+            helpText.innerHTML = `Topiko is helping with free setup for ${total} businesses every month. ${claimed} claimed for January. Click here for help!`;
+            progressFill.style.width = `${percentage}%`;
+            
+            if (remaining <= 5) {
+                helpSection.style.background = 'linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%)';
+                helpSection.style.borderColor = '#f59e0b';
             }
-        });
-    }, 700);
-}
-
-function stopMotivationalMessages() {
-    if (messageInterval) {
-        clearInterval(messageInterval);
-        messageInterval = null;
-        addDebugLog('🔄 Dynamic messages stopped', 'info');
-    }
-}
-
-// ========================================
-// PRODUCTS HELP SECTION UTILITIES
-// ========================================
-
-function updateProductsHelpSection() {
-    if (!window.topikoApp) return;
-    
-    const dayOfMonth = new Date().getDate();
-    const totalDaysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-    
-    // Calculate claimed percentage based on day (30-90%)
-    const minPercentage = 30;
-    const maxPercentage = 90;
-    const dailyIncrease = (maxPercentage - minPercentage) / totalDaysInMonth;
-    const currentPercentage = Math.min(minPercentage + (dailyIncrease * dayOfMonth), maxPercentage);
-    
-    const claimedCount = Math.floor((currentPercentage / 100) * 75);
-    const remainingSlots = 75 - claimedCount;
-    const isUrgent = remainingSlots <= 15;
-    
-    // Update DOM elements
-    const helpSection = document.getElementById('productsHelpSection');
-    const titleEl = document.getElementById('productsHelpTitle');
-    const progressFillEl = document.getElementById('productsHelpProgressFill');
-    const textEl = document.getElementById('productsHelpText');
-    const claimedCountEl = document.getElementById('productsClaimedCount');
-    const monthEl = document.getElementById('productsCurrentMonth');
-    
-    if (helpSection && titleEl && progressFillEl && textEl && claimedCountEl && monthEl) {
-        // Update urgency styling
-        if (isUrgent) {
-            helpSection.classList.add('urgent');
-            titleEl.innerHTML = `🚨 Free Professional Setup Available! <span class="urgent-text">Only ${remainingSlots} spots left!</span>`;
-        } else {
-            helpSection.classList.remove('urgent');
-            titleEl.textContent = '🎯 Free Professional Setup Available!';
         }
-        
-        // Update progress bar
-        progressFillEl.style.width = `${currentPercentage}%`;
-        
-        // Update text content
-        claimedCountEl.textContent = claimedCount;
-        monthEl.textContent = new Date().toLocaleString('en-US', { month: 'long' });
-        
-        if (isUrgent) {
-            textEl.innerHTML = `Topiko is helping with free setup for 75 businesses every month. <span class="urgent-text">${claimedCount} claimed for ${monthEl.textContent}. Only ${remainingSlots} spots left!</span> Click here for help!`;
-        } else {
-            textEl.innerHTML = `Topiko is helping with free setup for 75 businesses every month. ${claimedCount} claimed for ${monthEl.textContent}. Click here for help!`;
-        }
-        
-        addDebugLog(`📊 Help section updated: ${claimedCount}/75 claimed`, 'info');
     }
-}
+};
 
-// ========================================
-// SESSION MANAGEMENT UTILITIES
-// ========================================
-
-function saveSessionData() {
-    if (!window.topikoApp) return;
-    
-    const currentData = {
-        selectedGoals: window.topikoApp.selectedGoals,
-        selectedLanguage: window.topikoApp.selectedLanguage,
-        selectedCategories: window.topikoApp.selectedCategories,
-        selectedSubcategories: window.topikoApp.selectedSubcategories,
-        userProducts: window.topikoApp.userProducts,
-        selectedProductIds: window.topikoApp.selectedProductIds || [],
-        selectedTheme: window.topikoApp.selectedTheme,
-        qualifyingAnswers: window.topikoApp.qualifyingAnswers,
-        leadScore: window.topikoApp.leadScore,
-        formProgress: window.topikoApp.formProgress,
-        sessionStartTime: window.topikoApp.sessionStartTime,
-        currentStep: window.topikoApp.currentStep,
-        navigationHistory: window.topikoApp.navigationHistory,
-        userName: window.topikoApp.userName,
-        businessName: window.topikoApp.businessName,
-        productsLoaded: window.topikoApp.productsLoaded,
-        lastSaved: Date.now()
-    };
-    localStorage.setItem('topiko_current_session', JSON.stringify(currentData));
-}
-
-function loadSessionData() {
-    try {
-        const savedData = localStorage.getItem('topiko_current_session');
-        if (savedData) {
-            return JSON.parse(savedData);
-        }
-    } catch (error) {
-        addDebugLog(`❌ Error loading session data: ${error.message}`, 'error');
-    }
-    return null;
-}
-
-// ========================================
-// INITIALIZATION UTILITIES
-// ========================================
-
-function initializeTopikoApp() {
-    addDebugLog('🚀 Initializing Topiko App...', 'info');
-    
-    // Initialize global app state
-    window.topikoApp = {
-        // Core variables
-        sessionStartTime: Date.now(),
-        selectedGoals: [],
-        selectedLanguage: 'en',
-        selectedCategories: [],
-        selectedSubcategories: [],
-        userProducts: [],
-        currentUserId: null,
-        selectedTheme: null,
-        pageViews: 1,
-        leadScore: 0,
-        formProgress: 0,
-        userName: '',
-        businessName: '',
-
-        // Navigation tracking
-        currentStep: 'welcome',
-        navigationHistory: ['welcome'],
-
-        // Qualifying Questions Data
-        qualifyingAnswers: {
-            online_presence: '',
-            budget: '',
-            decision_maker: '',
-            timeline: ''
-        },
-
-        // Product Selection System
-        selectedProductIds: [],
-        productsLoaded: false,
-
-        // FOMO system - safe defaults
-        fomoActive: true,
-        fomoTimer: null,
-        businessCounter: window.TopikoConfig?.DEFAULTS?.BUSINESS_COUNTER || 247,
-        lastFomoShow: 0,
-        helpClaimedCount: window.TopikoConfig?.DEFAULTS?.HELP_CLAIMED_COUNT || 47
-    };
-
-    addDebugLog('✅ Topiko App State initialized successfully', 'success');
-}
-
-// ========================================
-// ERROR HANDLING
-// ========================================
-
-window.addEventListener('error', function(e) {
-    addDebugLog(`❌ Global Error: ${e.error?.message || e.message}`, 'error');
-});
-
-// ========================================
-// EXPORT UTILITIES
-// ========================================
-
-// Attach utilities to window for global access
-if (typeof window !== 'undefined') {
-    window.TopikoUtils = {
-        // Debug & Logging
-        addDebugLog,
-        toggleDebugPanel,
-        
-        // Notifications & Modals
-        showNotification,
-        showModal,
-        closeModal,
-        
-        // Database
-        saveToSupabase,
-        testDatabaseConnection,
-        
-        // Navigation
-        showScreen,
-        updateProgressBar,
-        updateBackButton,
-        goBack,
-        navigateToStep,
-        
-        // Personalization
-        addPersonalization,
-        
-        // Lead Scoring
-        calculateLeadScore,
-        updateLeadScoreWidget,
-        toggleScoreDetails,
-        
-        // FOMO System
-        getRandomBusinessData,
-        showFomoNotification,
-        updateBusinessCounter,
-        showBusinessCounter,
-        startFomoSystem,
-        
-        // Products
-        getDefaultProductImage,
-        displayProducts,
-        
-        // Themes
-        populateThemePreviews,
-        
-        // Motivational Messages
-        updateMotivationalMessages,
-        showNextMessage,
-        generatePersonalizedMessage,
-        showNewMessage,
-        stopMotivationalMessages,
-        
-        // Products Help
-        updateProductsHelpSection,
-        
-        // Session Management
-        saveSessionData,
-        loadSessionData,
-        
-        // Initialization
-        initializeTopikoApp
-    };
-    
-    // Make test function globally available
-    window.testDatabaseConnection = testDatabaseConnection;
-}
-
-// Initialize debug system immediately
-addDebugLog('📱 FIXED Topiko Utils loaded successfully', 'success');
-console.log('✅ DEBUG LOGS INITIALIZED - No more debugLogs errors!');
+// Initialize utilities
+window.TopikoUtils.addDebugLog('🛠️ TopikoUtils with Navigation Tracking loaded successfully', 'success');

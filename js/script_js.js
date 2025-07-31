@@ -1,5 +1,5 @@
 /* ========================================
-   TOPIKO LEAD FORM - MAIN APPLICATION LOGIC - COMPLETE FIXED VERSION
+   TOPIKO LEAD FORM - MAIN APPLICATION LOGIC - WITH NAVIGATION TRACKING
    ======================================== */
 
 // ========================================
@@ -9,12 +9,13 @@
 let selectedOffer = null;
 
 // ========================================
-// APPLICATION INITIALIZATION
+// APPLICATION INITIALIZATION WITH NAVIGATION TRACKING
 // ========================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    window.TopikoUtils.addDebugLog('📱 DOM loaded - starting enhanced app');
+    window.TopikoUtils.addDebugLog('📱 DOM loaded - starting enhanced app with navigation tracking');
     initializeApp();
+    initializeNavigationTracking();
     
     // Auto-save session data every 30 seconds
     setInterval(() => {
@@ -29,7 +30,6 @@ function initializeApp() {
     window.TopikoUtils.initializeTopikoApp();
     
     // Initialize widgets and UI
-    //window.TopikoUtils.updateLeadScoreWidget();
     window.TopikoUtils.updateProgressBar(window.topikoApp.currentStep);
     window.TopikoUtils.updateBackButton();
     
@@ -39,24 +39,74 @@ function initializeApp() {
     window.TopikoUtils.addDebugLog('✅ Enhanced app initialized successfully', 'success');
 }
 
+// NEW: Initialize navigation tracking system
+function initializeNavigationTracking() {
+    // Set initial page
+    window.topikoApp.currentPage = 'welcome';
+    window.topikoApp.pageStartTime = Date.now();
+    
+    // Track initial page load
+    setTimeout(async () => {
+        await window.TopikoUtils.trackPageNavigationSafe('welcome', 'initial_load', {
+            referrer: document.referrer,
+            userAgent: navigator.userAgent,
+            timestamp: new Date().toISOString()
+        });
+    }, 1000);
+    
+    // Sync any stored navigation data
+    setTimeout(() => {
+        window.TopikoUtils.syncLocalNavigationData();
+    }, 2000);
+    
+    // Track page refreshes and exits
+    window.addEventListener('beforeunload', async function() {
+        if (window.topikoApp.currentPage) {
+            const pageData = window.TopikoUtils.getPageSpecificData(window.topikoApp.currentPage);
+            await window.TopikoUtils.trackPageNavigationSafe(window.topikoApp.currentPage, 'page_exit', pageData);
+        }
+        // Flush any pending navigation events
+        window.TopikoUtils.flushNavigationQueue();
+    });
+    
+    // Initialize interaction tracking
+    ['click', 'focus', 'blur', 'change', 'input'].forEach(eventType => {
+        document.addEventListener(eventType, function(event) {
+            window.TopikoUtils.trackPageInteraction(eventType, {
+                tag: event.target.tagName,
+                id: event.target.id,
+                className: event.target.className,
+                type: event.target.type
+            });
+        }, true);
+    });
+    
+    // Set up periodic queue flushing
+    setInterval(() => {
+        if (window.TopikoUtils.navigationQueue && window.TopikoUtils.navigationQueue.length > 0) {
+            window.TopikoUtils.flushNavigationQueue();
+        }
+    }, 30000);
+    
+    window.TopikoUtils.addDebugLog('✅ Navigation tracking initialized', 'success');
+}
+
 // Save data on page unload
 window.addEventListener('beforeunload', function(e) {
     window.TopikoUtils.saveSessionData();
-    
-    // Clean up intervals
     window.TopikoUtils.stopMotivationalMessages();
 });
 
 // ========================================
-// LEAD FLOW FUNCTIONS
+// LEAD FLOW FUNCTIONS - WITH NAVIGATION TRACKING
 // ========================================
 
-function startLeadFlow() {
+function startLeadFlow(navigationType = 'forward') {
     window.TopikoUtils.addDebugLog('🚀 Lead flow started');
-    window.TopikoUtils.showScreen('language');
+    window.TopikoUtils.showScreen('language', navigationType);
 }
 
-function selectLanguage(lang, element) {
+function selectLanguage(lang, element, navigationType = 'forward') {
     window.topikoApp.selectedLanguage = lang;
     
     document.querySelectorAll('.language-option').forEach(option => {
@@ -68,7 +118,11 @@ function selectLanguage(lang, element) {
     window.TopikoUtils.showNotification(`Language: ${languageNames[lang]}`, 'success');
     window.TopikoUtils.calculateLeadScore();
     
-    setTimeout(() => window.TopikoUtils.showScreen('goals'), 1500);
+    setTimeout(() => window.TopikoUtils.showScreen('goals', navigationType), 1500);
+}
+
+function selectLanguageWithTranslation(lang, element, navigationType = 'forward') {
+    selectLanguage(lang, element, navigationType);
 }
 
 function updateGoalsTracking() {
@@ -78,7 +132,7 @@ function updateGoalsTracking() {
     window.TopikoUtils.calculateLeadScore();
 }
 
-function showGoalsTransitionModal() {
+function showGoalsTransitionModal(navigationType = 'forward') {
     if (window.topikoApp.selectedGoals.length === 0) {
         window.TopikoUtils.showNotification('Please select at least one goal', 'error');
         return;
@@ -96,12 +150,12 @@ function showGoalsTransitionModal() {
     }, 1500);
 }
 
-function submitGoals() {
-    showGoalsTransitionModal();
+function submitGoals(navigationType = 'forward') {
+    showGoalsTransitionModal(navigationType);
 }
 
 // ========================================
-// REGISTRATION FUNCTIONS
+// REGISTRATION FUNCTIONS - WITH NAVIGATION TRACKING
 // ========================================
 
 function trackFormProgress() {
@@ -125,7 +179,7 @@ function trackFormProgress() {
     window.TopikoUtils.calculateLeadScore();
 }
 
-async function submitRegistration() {
+async function submitRegistration(navigationType = 'forward') {
     window.TopikoUtils.addDebugLog('📝 Registration submission');
     
     const name = document.getElementById('fullName').value.trim();
@@ -169,7 +223,6 @@ function showOtpModal() {
 function handleOtpInput(input, index) {
     if (input.value) {
         input.classList.add('filled');
-        // Move to next input
         const nextInput = input.nextElementSibling;
         if (nextInput) {
             nextInput.focus();
@@ -178,7 +231,6 @@ function handleOtpInput(input, index) {
         input.classList.remove('filled');
     }
     
-    // Check if all inputs are filled
     const otpInputs = document.querySelectorAll('.otp-input');
     const otp = Array.from(otpInputs).map(input => input.value).join('');
     const verifyBtn = document.getElementById('verifyOtpBtn');
@@ -218,18 +270,16 @@ async function completeRegistration() {
 
     window.TopikoUtils.showNotification('Creating your free account...', 'info');
     
-    // Complete user data with all new fields
-const userData = {
-    name, email, phone,
-    business_name: business,
-    business_type: type,
-    business_category: category,
-    address: address || null,
-    selected_language: window.topikoApp.selectedLanguage,
-    selected_goals: window.topikoApp.selectedGoals,
-    created_at: new Date().toISOString()
-    // ✅ No lead_status here - REMOVED
-};
+    const userData = {
+        name, email, phone,
+        business_name: business,
+        business_type: type,
+        business_category: category,
+        address: address || null,
+        selected_language: window.topikoApp.selectedLanguage,
+        selected_goals: window.topikoApp.selectedGoals,
+        created_at: new Date().toISOString()
+    };
 
     const userResult = await window.TopikoUtils.saveToSupabase(userData, 'users');
     
@@ -237,7 +287,9 @@ const userData = {
         window.topikoApp.currentUserId = userResult.data[0].id;
         window.TopikoUtils.addDebugLog(`✅ User created: ${window.topikoApp.currentUserId}`, 'success');
         
-        // Complete lead intelligence data with all new fields
+        // NEW: Update navigation records with user_id
+        await updateNavigationWithUserId(window.topikoApp.currentUserId);
+        
         const leadData = {
             user_id: window.topikoApp.currentUserId,
             lead_score: window.topikoApp.leadScore,
@@ -266,6 +318,25 @@ const userData = {
     }
 }
 
+// NEW: Link anonymous navigation to registered user
+async function updateNavigationWithUserId(userId) {
+    try {
+        const { error } = await supabase
+            .from('page_navigation')
+            .update({ user_id: userId })
+            .eq('session_id', window.topikoApp.sessionId)
+            .is('user_id', null);
+            
+        if (error) {
+            window.TopikoUtils.addDebugLog(`❌ Failed to link navigation to user: ${error.message}`, 'error');
+        } else {
+            window.TopikoUtils.addDebugLog(`✅ Navigation data linked to user: ${userId}`, 'success');
+        }
+    } catch (error) {
+        window.TopikoUtils.addDebugLog(`❌ Error linking navigation: ${error.message}`, 'error');
+    }
+}
+
 // ========================================
 // QUALIFYING QUESTIONS FUNCTIONS
 // ========================================
@@ -290,13 +361,12 @@ function updateQualifyingData() {
     }
 }
 
-async function proceedToCategories() {
+async function proceedToCategories(navigationType = 'forward') {
     if (Object.values(window.topikoApp.qualifyingAnswers).some(answer => answer === '')) {
         window.TopikoUtils.showNotification('Please answer all questions', 'error');
         return;
     }
     
-    // 🔥 ADD THIS: Update user record with qualifying answers
     if (window.topikoApp.currentUserId) {
         const qualifyingData = {
             timeline: window.topikoApp.qualifyingAnswers.timeline,
@@ -320,7 +390,7 @@ async function proceedToCategories() {
     
     window.TopikoUtils.addDebugLog(`Qualifying complete: ${JSON.stringify(window.topikoApp.qualifyingAnswers)}`);
     window.TopikoUtils.showNotification('Perfect! Moving to categories...', 'success');
-    setTimeout(() => window.TopikoUtils.showScreen('categories'), 1000);
+    setTimeout(() => window.TopikoUtils.showScreen('categories', navigationType), 1000);
 }
 
 // ========================================
@@ -336,7 +406,6 @@ function loadCategories() {
     if (!businessCategory || !window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory]) {
         categoriesContainer.innerHTML = '<p style="text-align: center; color: #64748b;">Loading categories...</p>';
         
-        // Fix mobile issue - retry after short delay
         setTimeout(() => {
             const retryCategory = document.getElementById('category')?.value;
             if (retryCategory && window.TopikoConfig.BUSINESS_CATEGORIES[retryCategory]) {
@@ -466,7 +535,6 @@ function updateProductCategoriesDropdown() {
     
     if (!productCategorySelect || !productSubcategorySelect) return;
     
-    // Clear existing options
     productCategorySelect.innerHTML = '<option value="">Select from your chosen categories</option>';
     productSubcategorySelect.innerHTML = '<option value="">Select a subcategory</option>';
     
@@ -477,7 +545,6 @@ function updateProductCategoriesDropdown() {
     
     const categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory];
     
-    // Only show selected categories in dropdown
     selectedCategories.forEach(categoryKey => {
         const category = categoryData.categories[categoryKey];
         if (category) {
@@ -485,19 +552,15 @@ function updateProductCategoriesDropdown() {
         }
     });
     
-    // Update subcategory dropdown based on selection
     productCategorySelect.onchange = function() {
         const selectedCat = this.value;
         productSubcategorySelect.innerHTML = '<option value="">Select a subcategory</option>';
         
         if (selectedCat && categoryData.categories[selectedCat]) {
             const category = categoryData.categories[selectedCat];
-            
-            // Only show subcategories that were selected in previous screen
             const selectedSubcategories = window.topikoApp.selectedSubcategories;
             
             category.subcategories.forEach(subcategoryKey => {
-                // Only add if this subcategory was selected
                 if (selectedSubcategories.includes(subcategoryKey)) {
                     const subcategoryName = window.TopikoConfig.SUBCATEGORY_NAMES[subcategoryKey] || 
                         subcategoryKey.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -529,28 +592,26 @@ async function updateUserCategories() {
     }
 }
 
-async function proceedToProducts() {
+async function proceedToProducts(navigationType = 'forward') {
     if (window.topikoApp.selectedCategories.length === 0) {
         window.TopikoUtils.showNotification('Please select at least one category to continue', 'error');
         return;
     }
     await updateUserCategories();
     window.TopikoUtils.showNotification(`Perfect! Moving to products with ${window.topikoApp.selectedCategories.length} categories selected...`, 'success');
-    setTimeout(() => window.TopikoUtils.showScreen('products'), 1000);
+    setTimeout(() => window.TopikoUtils.showScreen('products', navigationType), 1000);
 }
 
 // ========================================
-// PRODUCT SELECTION SYSTEM - FUNCTIONS
+// PRODUCT SELECTION SYSTEM
 // ========================================
 
 function switchProductMode(mode) {
-    // Emergency initialization with better error handling
     if (!window.topikoApp) {
         console.warn('⚠️ Emergency TopikoApp initialization in switchProductMode');
         window.TopikoUtils.initializeTopikoApp();
     }
     
-    // Ensure all required properties exist
     if (!window.topikoApp.productsLoaded) window.topikoApp.productsLoaded = false;
     if (!window.topikoApp.selectedProductIds) window.topikoApp.selectedProductIds = [];
     if (!window.topikoApp.userProducts) window.topikoApp.userProducts = [];
@@ -560,16 +621,13 @@ function switchProductMode(mode) {
     const selectorSection = document.getElementById('productSelectorSection');
     const customForm = document.getElementById('customProductForm');
     
-    // Update button states (with safety checks)
     if (selectMode) selectMode.classList.toggle('active', mode === 'select');
     if (customMode) customMode.classList.toggle('active', mode === 'custom');
     
-    // Show/hide sections (with safety checks)
     if (mode === 'select') {
         if (selectorSection) selectorSection.style.display = 'block';
         if (customForm) customForm.style.display = 'none';
         
-        // Load products if not already loaded
         if (!window.topikoApp.productsLoaded) {
             loadProductSelector();
         }
@@ -578,27 +636,21 @@ function switchProductMode(mode) {
         if (customForm) customForm.style.display = 'block';
     }
     
-    // Safe debug logging
     if (window.TopikoUtils && window.TopikoUtils.addDebugLog) {
         window.TopikoUtils.addDebugLog(`📱 Product mode switched to: ${mode}`);
-    } else {
-        console.log(`📱 Product mode switched to: ${mode}`);
     }
 }
 
 function loadProductSelector() {
     window.TopikoUtils.addDebugLog('🛍️ Loading products for selected categories...');
     
-    // Get selected categories and subcategories from previous screen
     const selectedCategories = window.topikoApp.selectedCategories;
-    const selectedSubcategories = window.topikoApp.selectedSubcategories;
     
     if (selectedCategories.length === 0) {
         window.TopikoUtils.showNotification('Please go back and select categories first', 'warning');
         return;
     }
     
-    // Initialize product selection system with filtered products
     setupProductControls();
     setupQuickFilters();
     loadFilteredProductsGrid();
@@ -608,28 +660,21 @@ function loadProductSelector() {
 }
 
 function loadFilteredProductsGrid() {
-    // Get business category and selected subcategories
     const businessCategory = document.getElementById('category')?.value;
-    const selectedSubcategories = window.topikoApp.selectedSubcategories;
     
     if (!businessCategory || !window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory]) {
         window.TopikoUtils.showNotification('Business category not found. Please complete registration.', 'error');
         return;
     }
     
-    // Filter products to only selected subcategories
     const filteredProducts = getProductsForSelectedCategories();
     
-    // Update products count
     const productsCount = document.getElementById('productsCount');
     if (productsCount) {
         productsCount.textContent = filteredProducts.length;
     }
     
-    // Display filtered products
     displayProductsGrid(filteredProducts);
-    
-    // Update quick filters to only show relevant categories
     updateQuickFiltersForSelection();
     
     window.TopikoUtils.addDebugLog(`🎯 Loaded ${filteredProducts.length} products for selected categories`);
@@ -644,16 +689,12 @@ function getProductsForSelectedCategories() {
     }
     
     let relevantProducts = [];
-    
-    // Get products from the business category database
     const categoryData = window.TopikoConfig.INDIAN_PRODUCTS_DB[businessCategory];
     
-    // If user selected specific subcategories, filter to those
     if (selectedSubcategories.length > 0) {
         Object.keys(categoryData).forEach(categoryKey => {
             const products = categoryData[categoryKey];
             if (Array.isArray(products)) {
-                // Filter products that match selected subcategories
                 const filteredProducts = products.filter(product => 
                     selectedSubcategories.includes(product.subcategory)
                 );
@@ -661,7 +702,6 @@ function getProductsForSelectedCategories() {
             }
         });
     } else {
-        // If no subcategories selected, show all products from selected main categories
         const selectedCategories = window.topikoApp.selectedCategories;
         selectedCategories.forEach(selectedCat => {
             if (categoryData[selectedCat]) {
@@ -680,7 +720,6 @@ function setupProductControls() {
     const minPriceInput = document.getElementById('minPrice');
     const maxPriceInput = document.getElementById('maxPrice');
     
-    // Setup search with debounce
     if (searchInput) {
         let searchTimeout;
         searchInput.addEventListener('input', function() {
@@ -691,7 +730,6 @@ function setupProductControls() {
         });
     }
     
-    // Setup filter and sort changes
     if (categoryFilter) {
         categoryFilter.addEventListener('change', filterAndDisplayProducts);
     }
@@ -700,7 +738,6 @@ function setupProductControls() {
         sortSelect.addEventListener('change', filterAndDisplayProducts);
     }
     
-    // Setup price range
     if (minPriceInput && maxPriceInput) {
         minPriceInput.addEventListener('change', function() {
             updatePriceRangeDisplay();
@@ -719,11 +756,9 @@ function setupQuickFilters() {
     
     quickFilters.forEach(filter => {
         filter.addEventListener('click', function() {
-            // Update active state
             quickFilters.forEach(f => f.classList.remove('active'));
             this.classList.add('active');
             
-            // Update category filter
             const category = this.getAttribute('data-category');
             const categoryFilter = document.getElementById('categoryFilter');
             if (categoryFilter) {
@@ -731,7 +766,6 @@ function setupQuickFilters() {
             }
             
             filterAndDisplayProducts();
-            
             window.TopikoUtils.addDebugLog(`🎯 Quick filter applied: ${category}`);
         });
     });
@@ -754,14 +788,12 @@ function updateQuickFiltersForSelection() {
     }
     
     const selectedCategories = window.topikoApp.selectedCategories;
-    const selectedSubcategories = window.topikoApp.selectedSubcategories;
     
     if (!quickFiltersContainer || !selectedCategories.length) {
         window.TopikoUtils.addDebugLog('⚠️ Quick filters container not found or no categories selected');
         return;
     }
     
-    // Get business category data
     const businessCategory = document.getElementById('category')?.value;
     if (!businessCategory || !window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory]) {
         return;
@@ -769,14 +801,12 @@ function updateQuickFiltersForSelection() {
     
     const categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory];
     
-    // Build quick filter buttons for selected categories only
     let filtersHTML = `
         <button class="quick-filter active" data-category="all" onclick="applyQuickFilter('all', this)">
             All Products
         </button>
     `;
     
-    // Add filters for selected categories
     selectedCategories.forEach(categoryKey => {
         const category = categoryData.categories[categoryKey];
         if (category) {
@@ -789,26 +819,21 @@ function updateQuickFiltersForSelection() {
     });
     
     quickFiltersContainer.innerHTML = filtersHTML;
-    
     window.TopikoUtils.addDebugLog(`🎛️ Quick filters updated for ${selectedCategories.length} categories`);
 }
 
 function applyQuickFilter(category, element) {
-    // Update active state
     document.querySelectorAll('.quick-filter').forEach(filter => {
         filter.classList.remove('active');
     });
     element.classList.add('active');
     
-    // Update category filter dropdown
     const categoryFilter = document.getElementById('categoryFilter');
     if (categoryFilter) {
         categoryFilter.value = category;
     }
     
-    // Apply filter
     filterAndDisplayProducts();
-    
     window.TopikoUtils.addDebugLog(`🎯 Quick filter applied: ${category}`);
 }
 
@@ -821,23 +846,18 @@ function filterAndDisplayProducts() {
     
     const priceRange = { min: minPrice, max: maxPrice };
     
-    // Get products only from selected categories (not all products)
     let baseProducts = getProductsForSelectedCategories();
     
-    // Apply additional filters
     let filteredProducts = baseProducts.filter(product => {
-        // Search filter
         if (searchTerm && !product.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
             !product.description.toLowerCase().includes(searchTerm.toLowerCase())) {
             return false;
         }
         
-        // Category filter
         if (categoryFilter !== 'all' && product.category !== categoryFilter) {
             return false;
         }
         
-        // Price filter
         if (product.suggestedPrice < priceRange.min || product.suggestedPrice > priceRange.max) {
             return false;
         }
@@ -845,7 +865,6 @@ function filterAndDisplayProducts() {
         return true;
     });
     
-    // Sort products
     filteredProducts.sort((a, b) => {
         switch (sortBy) {
             case 'price-low': return a.suggestedPrice - b.suggestedPrice;
@@ -855,15 +874,12 @@ function filterAndDisplayProducts() {
         }
     });
     
-    // Update products count
     const productsCount = document.getElementById('productsCount');
     if (productsCount) {
         productsCount.textContent = filteredProducts.length;
     }
     
-    // Display products
     displayProductsGrid(filteredProducts);
-    
     window.TopikoUtils.addDebugLog(`🔍 Filtered to ${filteredProducts.length} products from selected categories`);
 }
 
@@ -932,18 +948,12 @@ function toggleProductSelection(productId) {
     let product = findProductById(productId);
     
     if (index > -1) {
-        // Remove product
         window.topikoApp.selectedProductIds.splice(index, 1);
-        
-        // Remove from userProducts array
         window.topikoApp.userProducts = window.topikoApp.userProducts.filter(p => p.id !== productId);
-        
         window.TopikoUtils.showNotification(`Removed "${product.name}"`, 'info');
     } else {
-        // Add product
         window.topikoApp.selectedProductIds.push(productId);
         
-        // Add to userProducts array
         const userProduct = {
             id: productId,
             name: product.name,
@@ -958,11 +968,9 @@ function toggleProductSelection(productId) {
         };
         
         window.topikoApp.userProducts.push(userProduct);
-        
         window.TopikoUtils.showNotification(`Added "${product.name}"`, 'success');
     }
     
-    // Update UI
     updateProductCard(productId);
     updateSelectedProductsSection();
     window.TopikoUtils.displayProducts();
@@ -980,15 +988,12 @@ function updateProductCard(productId) {
     const selectBtn = productCard.querySelector('.select-product-btn');
     const editBtn = productCard.querySelector('.edit-product-btn');
     
-    // Update card appearance
     productCard.classList.toggle('selected', isSelected);
     
-    // Update checkmark
     if (checkmark) {
         checkmark.style.opacity = isSelected ? '1' : '0';
     }
     
-    // Update buttons
     if (selectBtn) {
         selectBtn.textContent = isSelected ? 'Remove' : 'Select';
         selectBtn.classList.toggle('remove-btn', isSelected);
@@ -1028,7 +1033,6 @@ function selectPopularProducts() {
     
     window.TopikoUtils.showNotification(`Added ${addedCount} popular products!`, 'success');
     
-    // Refresh the grid to show selections
     setTimeout(() => {
         filterAndDisplayProducts();
     }, 500);
@@ -1042,13 +1046,9 @@ function clearAllSelections() {
     
     const count = window.topikoApp.selectedProductIds.length;
     
-    // Clear selections
     window.topikoApp.selectedProductIds = [];
-    
-    // Clear userProducts from database
     window.topikoApp.userProducts = window.topikoApp.userProducts.filter(p => !p.isFromDatabase);
     
-    // Update UI
     updateSelectedProductsSection();
     window.TopikoUtils.displayProducts();
     filterAndDisplayProducts();
@@ -1089,7 +1089,6 @@ function editProduct(productId) {
     const product = window.topikoApp.userProducts.find(p => p.id === productId);
     if (!product) return;
     
-    // Create inline edit modal or form
     const editHTML = `
         <div class="product-edit-modal" id="productEditModal">
             <div class="edit-modal-content">
@@ -1118,9 +1117,7 @@ function editProduct(productId) {
         </div>
     `;
     
-    // Add to body
     document.body.insertAdjacentHTML('beforeend', editHTML);
-    
     window.TopikoUtils.addDebugLog(`✏️ Editing product: ${product.name}`);
 }
 
@@ -1128,7 +1125,6 @@ function saveProductEdit(productId) {
     const product = window.topikoApp.userProducts.find(p => p.id === productId);
     if (!product) return;
     
-    // Get new values
     const newName = document.getElementById('editProductName').value.trim();
     const newPrice = parseFloat(document.getElementById('editProductPrice').value);
     const newDescription = document.getElementById('editProductDescription').value.trim();
@@ -1138,17 +1134,14 @@ function saveProductEdit(productId) {
         return;
     }
     
-    // Update product
     product.name = newName;
     product.price = newPrice;
     product.description = newDescription;
     product.customPrice = newPrice;
     product.customDescription = newDescription;
     
-    // Close modal
     cancelProductEdit();
     
-    // Update displays
     updateSelectedProductsSection();
     window.TopikoUtils.displayProducts();
     filterAndDisplayProducts();
@@ -1163,10 +1156,6 @@ function cancelProductEdit() {
         modal.remove();
     }
 }
-
-// ========================================
-// CUSTOM PRODUCT FUNCTION (UPDATED)
-// ========================================
 
 async function addCustomProduct() {
     const name = document.getElementById('productName').value.trim();
@@ -1187,7 +1176,7 @@ async function addCustomProduct() {
     }
     
     const product = {
-        id: 'custom-' + Date.now(), // Custom ID
+        id: 'custom-' + Date.now(),
         name, 
         price: parseFloat(price), 
         description, 
@@ -1201,7 +1190,6 @@ async function addCustomProduct() {
     
     window.topikoApp.userProducts.push(product);
     
-    // Save to database if user ID exists
     if (window.topikoApp.currentUserId) {
         const productDbData = {
             user_id: window.topikoApp.currentUserId, 
@@ -1218,7 +1206,6 @@ async function addCustomProduct() {
         await window.TopikoUtils.saveToSupabase(productDbData, 'products');
     }
     
-    // Clear form
     ['productName', 'productPrice', 'productDescription', 'productCategory', 'productSubcategory', 'productImage'].forEach(id => {
         const field = document.getElementById(id);
         if (field) field.value = '';
@@ -1253,7 +1240,6 @@ async function requestFollowup() {
         window.TopikoUtils.updateProductsHelpSection();
         window.TopikoUtils.addDebugLog('✅ Followup requested successfully', 'success');
         
-        // Update help section text
         const helpSection = document.getElementById('productsHelpSection');
         if (helpSection) {
             helpSection.innerHTML = `
@@ -1270,7 +1256,7 @@ async function requestFollowup() {
     }
 }
 
-function proceedToThemes() {
+function proceedToThemes(navigationType = 'forward') {
     if (window.topikoApp.userProducts.length === 0) {
         window.TopikoUtils.showNotification('Add at least one product to see how your store will look!', 'warning');
         return;
@@ -1278,7 +1264,7 @@ function proceedToThemes() {
     
     window.TopikoUtils.showNotification('Excellent! Loading beautiful themes for your store...', 'success');
     setTimeout(() => {
-        window.TopikoUtils.showScreen('themes');
+        window.TopikoUtils.showScreen('themes', navigationType);
         window.TopikoUtils.populateThemePreviews();
     }, 1000);
 }
@@ -1309,17 +1295,15 @@ function selectTheme(themeName, element) {
 }
 
 // ========================================
-// COMPLETION SCREEN FUNCTIONS - COMPLETE SET
+// COMPLETION SCREEN FUNCTIONS
 // ========================================
 
-// Function to open call scheduler modal
 function openCallScheduler() {
     if (!selectedOffer) {
         window.TopikoUtils.showNotification('Please select an offer first', 'warning');
         return;
     }
     
-    // Update scheduler modal with selected offer
     const schedulerOfferName = document.getElementById('schedulerOfferName');
     if (schedulerOfferName && selectedOffer) {
         schedulerOfferName.textContent = selectedOffer.title;
@@ -1329,28 +1313,22 @@ function openCallScheduler() {
     window.TopikoUtils.addDebugLog('📅 Call scheduler opened', 'info');
 }
 
-// Function to open explore form modal
 function openExploreForm() {
     window.TopikoUtils.showModal('reasonModal');
     window.TopikoUtils.addDebugLog('💭 Explore form opened', 'info');
 }
 
-// Function to select an offer
 function selectOffer(offerId, element) {
-    // Remove selected class from all offers
     document.querySelectorAll('.special-offer-item').forEach(item => {
         item.classList.remove('selected');
     });
     
-    // Add selected class to clicked offer
     element.classList.add('selected');
     
-    // Find the offer data
     if (window.TopikoConfig && window.TopikoConfig.SPECIAL_OFFERS) {
         selectedOffer = window.TopikoConfig.SPECIAL_OFFERS.find(offer => offer.id === offerId);
     }
     
-    // Show selected offer display
     const selectedDisplay = document.getElementById('selectedOfferDisplay');
     const selectedOfferName = document.getElementById('selectedOfferName');
     
@@ -1362,7 +1340,6 @@ function selectOffer(offerId, element) {
     window.TopikoUtils.addDebugLog(`🎁 Offer selected: ${selectedOffer?.title}`, 'info');
 }
 
-// Enhanced displayRandomOffers function
 function displayRandomOffers() {
     if (!window.TopikoConfig || !window.TopikoConfig.SPECIAL_OFFERS) {
         console.warn('Special offers configuration not found');
@@ -1372,12 +1349,10 @@ function displayRandomOffers() {
     const offersContainer = document.getElementById('specialOffersContainer');
     if (!offersContainer) return;
     
-    // Select 3-4 random offers
     const allOffers = window.TopikoConfig.SPECIAL_OFFERS;
     const numberOfOffers = Math.min(4, allOffers.length);
     const selectedOffers = getRandomOffers(allOffers, numberOfOffers);
     
-    // Display the offers as selectable items
     offersContainer.innerHTML = selectedOffers.map(offer => `
         <div class="special-offer-item" onclick="selectOffer('${offer.id}', this)">
             <div class="offer-title">
@@ -1388,24 +1363,19 @@ function displayRandomOffers() {
         </div>
     `).join('');
     
-    // Start the timer
     startOfferTimer();
-    
     window.TopikoUtils.addDebugLog(`✅ Special offers displayed: ${selectedOffers.length} offers`);
 }
 
-// Function to get random offers
 function getRandomOffers(offers, count) {
     const shuffled = offers.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
 }
 
-// Function to start offer timer
 function startOfferTimer() {
     const timerElement = document.getElementById('offerTimer');
     if (!timerElement) return;
     
-    // Set initial time (23 hours, 45 minutes, random seconds)
     let totalSeconds = (23 * 3600) + (45 * 60) + Math.floor(Math.random() * 60);
     
     const timerInterval = setInterval(() => {
@@ -1426,25 +1396,20 @@ function startOfferTimer() {
     }, 1000);
 }
 
-// Enhanced initializeCompletionScreen function
 function initializeCompletionScreen() {
     console.log('🎉 Initializing completion screen...');
     
-    // Set business name
     const completionBusinessName = document.getElementById('completionBusinessName');
     if (completionBusinessName && window.topikoApp && window.topikoApp.businessName) {
         completionBusinessName.textContent = window.topikoApp.businessName;
     }
     
-    // Display random selectable offers
     displayRandomOffers();
     
-    // Reset selections
     selectedOffer = null;
     window.selectedTimeSlot = null;
     window.selectedReason = null;
     
-    // Hide selected offer display initially
     const selectedDisplay = document.getElementById('selectedOfferDisplay');
     if (selectedDisplay) {
         selectedDisplay.style.display = 'none';
@@ -1453,28 +1418,20 @@ function initializeCompletionScreen() {
     window.TopikoUtils.addDebugLog('✅ Interactive completion screen initialized');
 }
 
-// Enhanced Time Slot Selection
 function selectTimeSlot(element, slotId) {
-    // Remove selected class from all slots
     document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
-    
-    // Add selected class to clicked slot
     element.classList.add('selected');
     
-    // Enable confirm button
     const confirmBtn = document.getElementById('confirmScheduleBtn');
     if (confirmBtn) {
         confirmBtn.disabled = false;
         confirmBtn.style.opacity = '1';
     }
     
-    // Store selected slot
     window.selectedTimeSlot = slotId;
-    
     window.TopikoUtils.addDebugLog(`⏰ Time slot selected: ${slotId}`);
 }
 
-// Confirm Schedule and Complete
 function confirmScheduleAndComplete() {
     const selectedSlot = window.selectedTimeSlot;
     const offer = selectedOffer;
@@ -1489,7 +1446,6 @@ function confirmScheduleAndComplete() {
         return;
     }
     
-    // Save scheduling data
     const schedulingData = {
         user_id: window.topikoApp?.currentUserId,
         business_name: window.topikoApp?.businessName,
@@ -1501,43 +1457,28 @@ function confirmScheduleAndComplete() {
         scheduled_at: new Date().toISOString()
     };
     
-    // Save to database
     if (window.topikoApp?.currentUserId) {
         window.TopikoUtils.saveToSupabase(schedulingData, 'completion_actions');
     }
     
-    // Close modal and show success
     window.TopikoUtils.closeModal('dateTimeModal');
-    
-    // Show completion message
     window.TopikoUtils.showNotification(`🎉 Perfect! Call scheduled to claim "${offer.title}". Our team will contact you at the selected time.`, 'success');
     
-    // Update completion screen to show success state
     showCompletionSuccess('call_scheduled', offer.title, selectedSlot);
-    
     window.TopikoUtils.addDebugLog(`✅ Call scheduled successfully: ${offer.title} at ${selectedSlot}`);
 }
 
-// Enhanced Reason Selection
 function selectReason(reasonType, element) {
-    // Remove selected class from all reasons
     document.querySelectorAll('.reason-option').forEach(opt => opt.classList.remove('selected'));
-    
-    // Add selected class to clicked reason
     element.classList.add('selected');
-    
-    // Store selected reason
     window.selectedReason = reasonType;
-    
     window.TopikoUtils.addDebugLog(`💭 Reason selected: ${reasonType}`);
 }
 
-// Submit Reason and Complete
 function submitReasonAndComplete() {
     const reasonType = window.selectedReason;
     const comment = document.getElementById('reasonText')?.value || '';
     
-    // Save exploration data
     const explorationData = {
         user_id: window.topikoApp?.currentUserId,
         business_name: window.topikoApp?.businessName,
@@ -1549,24 +1490,17 @@ function submitReasonAndComplete() {
         submitted_at: new Date().toISOString()
     };
     
-    // Save to database
     if (window.topikoApp?.currentUserId) {
         window.TopikoUtils.saveToSupabase(explorationData, 'completion_actions');
     }
     
-    // Close modal and show success
     window.TopikoUtils.closeModal('reasonModal');
-    
-    // Show completion message
     window.TopikoUtils.showNotification('🚀 Thank you for your feedback! We\'ll use this to improve our service.', 'success');
     
-    // Update completion screen to show success state
     showCompletionSuccess('self_explore', reasonType, comment);
-    
     window.TopikoUtils.addDebugLog(`✅ Exploration form submitted: ${reasonType}`);
 }
 
-// Show Completion Success State
 function showCompletionSuccess(actionType, primaryData, secondaryData) {
     const completionContent = document.querySelector('#completion .content-card');
     if (!completionContent) return;
@@ -1616,11 +1550,9 @@ function showCompletionSuccess(actionType, primaryData, secondaryData) {
     `;
 }
 
-// MAIN COMPLETION FUNCTION - ENHANCED
-async function completeSetup() {
+async function completeSetup(navigationType = 'forward') {
     const finalScore = window.TopikoUtils.calculateLeadScore() + 10;
     
-    // Save completion data
     const leadData = {
         user_id: window.topikoApp.currentUserId,
         name: window.topikoApp.userName,
@@ -1643,7 +1575,6 @@ async function completeSetup() {
         completed_at: new Date().toISOString()
     };
     
-    // Save to database
     if (window.topikoApp.currentUserId) {
         const finalUserData = {
             selected_categories: window.topikoApp.selectedCategories,
@@ -1658,7 +1589,6 @@ async function completeSetup() {
         await window.TopikoUtils.saveToSupabase(finalUserData, 'users', 'update', window.topikoApp.currentUserId);
     }
     
-    // Save locally as backup
     const existingLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
     existingLeads.push(leadData);
     localStorage.setItem('topiko_local_leads', JSON.stringify(existingLeads));
@@ -1666,8 +1596,7 @@ async function completeSetup() {
     window.TopikoUtils.showNotification(`🎉 Congratulations ${window.topikoApp.userName}! Your business is ready for final touches!`, 'success');
     
     setTimeout(() => {
-        window.TopikoUtils.showScreen('completion');
-        // Initialize completion screen with offers after a short delay
+        window.TopikoUtils.showScreen('completion', navigationType);
         setTimeout(() => {
             initializeCompletionScreen();
         }, 500);
@@ -1678,11 +1607,9 @@ async function completeSetup() {
 // MODAL FUNCTIONS
 // ========================================
 
-// Goals transition modal
 function displayGoalsTransitionModal() {
     const goalNames = window.TopikoConfig.GOAL_NAMES;
 
-    // Populate the goals text with actual selected goals
     const selectedGoalsText = document.getElementById('selectedGoalsText');
     if (selectedGoalsText) {
         const goalsList = window.topikoApp.selectedGoals.map(goal => goalNames[goal] || goal).join(', ');
@@ -1702,14 +1629,12 @@ function displayGoalsTransitionModal() {
 
 function proceedFromGoalsModal() {
     window.TopikoUtils.closeModal('goalsTransitionModal');
-    setTimeout(() => window.TopikoUtils.showScreen('registration'), 500);
+    setTimeout(() => window.TopikoUtils.showScreen('registration', 'forward'), 500);
 }
 
-// Setup intro modal
 function displaySetupIntroModal() {
     const goalNames = window.TopikoConfig.GOAL_NAMES;
 
-    // Populate the user name and business name
     const setupUserName = document.getElementById('setupUserName');
     const setupBusinessName = document.getElementById('setupBusinessName');
     
@@ -1736,10 +1661,9 @@ function displaySetupIntroModal() {
 
 function proceedFromSetupModal() {
     window.TopikoUtils.closeModal('setupIntroModal');
-    setTimeout(() => window.TopikoUtils.showScreen('qualifying-questions'), 500);
+    setTimeout(() => window.TopikoUtils.showScreen('qualifying-questions', 'forward'), 500);
 }
 
-// Helper function for modal goals update
 function updateGoalsModal(selectedGoals) {
     const goalsInlineText = document.getElementById('selectedGoalsInlineText');
     if (goalsInlineText && selectedGoals && selectedGoals.length > 0) {
@@ -1751,46 +1675,82 @@ function updateGoalsModal(selectedGoals) {
             'brand': '⭐ Establish Brand'
         };
         
-        // Create goals with line breaks
         const goalsText = selectedGoals.map(goal => goalIcons[goal] || goal).join('<br>');
         goalsInlineText.innerHTML = goalsText;
     }
 }
 
 // ========================================
-// GLOBAL INITIALIZATION
+// NAVIGATION FUNCTIONS - WITH TRACKING
 // ========================================
 
-// Auto-initialize product selector when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    // Set default mode to select
-    setTimeout(() => {
-        if (document.getElementById('selectMode')) {
-            switchProductMode('select');
-        }
-    }, 1000);
-});
+function goBack(navigationType = 'back') {
+    const steps = ['welcome', 'language', 'goals', 'registration', 'qualifying-questions', 'categories', 'products', 'themes', 'completion'];
+    const currentIndex = steps.indexOf(window.topikoApp.currentStep);
+    
+    if (currentIndex > 0) {
+        const previousStep = steps[currentIndex - 1];
+        window.TopikoUtils.showScreen(previousStep, navigationType);
+    }
+}
+
+function navigateToStep(stepId, navigationType = 'direct_click') {
+    window.TopikoUtils.showScreen(stepId, navigationType);
+}
+
+function toggleScoreDetails() {
+    const widget = document.getElementById('leadWidget');
+    if (widget) {
+        widget.classList.toggle('expanded');
+    }
+}
+
+function toggleDebugPanel() {
+    const debugPanel = document.getElementById('debugPanel');
+    if (debugPanel) {
+        debugPanel.classList.toggle('visible');
+        updateNavigationStats();
+    }
+}
+
+// NEW: Update navigation stats in debug panel
+function updateNavigationStats() {
+    if (!window.topikoApp || !window.TopikoUtils) return;
+    
+    const summary = window.TopikoUtils.getNavigationSummary();
+    const currentTime = Date.now();
+    const pageTime = Math.round((currentTime - window.topikoApp.pageStartTime) / 1000);
+    
+    const currentPageStat = document.getElementById('currentPageStat');
+    const pagesVisitedStat = document.getElementById('pagesVisitedStat');
+    const sessionTimeStat = document.getElementById('sessionTimeStat');
+    const pageTimeStat = document.getElementById('pageTimeStat');
+    
+    if (currentPageStat) currentPageStat.textContent = window.topikoApp.currentPage || '-';
+    if (pagesVisitedStat) pagesVisitedStat.textContent = summary.uniquePagesVisited || 0;
+    if (sessionTimeStat) sessionTimeStat.textContent = summary.sessionDuration + 's';
+    if (pageTimeStat) pageTimeStat.textContent = pageTime + 's';
+}
+
+// Update stats every 2 seconds
+setInterval(updateNavigationStats, 2000);
 
 // ========================================
-// MAKE ALL FUNCTIONS GLOBALLY AVAILABLE
+// GLOBAL FUNCTION EXPORT
 // ========================================
 
 if (typeof window !== 'undefined') {
-    // Product Selection Functions
-    window.switchProductMode = switchProductMode;
-    window.selectPopularProducts = selectPopularProducts;
-    window.clearAllSelections = clearAllSelections;
-    window.toggleProductSelection = toggleProductSelection;
-    window.editProduct = editProduct;
-    window.saveProductEdit = saveProductEdit;
-    window.cancelProductEdit = cancelProductEdit;
-    window.addCustomProduct = addCustomProduct;
-    window.updateQuickFiltersForSelection = updateQuickFiltersForSelection;
-    window.applyQuickFilter = applyQuickFilter;
+    // Navigation Functions
+    window.goBack = goBack;
+    window.navigateToStep = navigateToStep;
+    window.toggleScoreDetails = toggleScoreDetails;
+    window.toggleDebugPanel = toggleDebugPanel;
+    window.updateNavigationStats = updateNavigationStats;
     
     // Lead Flow Functions
     window.startLeadFlow = startLeadFlow;
     window.selectLanguage = selectLanguage;
+    window.selectLanguageWithTranslation = selectLanguageWithTranslation;
     window.updateGoalsTracking = updateGoalsTracking;
     window.showGoalsTransitionModal = showGoalsTransitionModal;
     window.submitGoals = submitGoals;
@@ -1808,6 +1768,17 @@ if (typeof window !== 'undefined') {
     window.selectTheme = selectTheme;
     window.completeSetup = completeSetup;
     
+    // Product Functions
+    window.switchProductMode = switchProductMode;
+    window.selectPopularProducts = selectPopularProducts;
+    window.clearAllSelections = clearAllSelections;
+    window.toggleProductSelection = toggleProductSelection;
+    window.editProduct = editProduct;
+    window.saveProductEdit = saveProductEdit;
+    window.cancelProductEdit = cancelProductEdit;
+    window.addCustomProduct = addCustomProduct;
+    window.applyQuickFilter = applyQuickFilter;
+    
     // Modal Functions
     window.displayGoalsTransitionModal = displayGoalsTransitionModal;
     window.proceedFromGoalsModal = proceedFromGoalsModal;
@@ -1815,7 +1786,7 @@ if (typeof window !== 'undefined') {
     window.proceedFromSetupModal = proceedFromSetupModal;
     window.updateGoalsModal = updateGoalsModal;
     
-    // Completion Screen Functions
+    // Completion Functions
     window.openCallScheduler = openCallScheduler;
     window.openExploreForm = openExploreForm;
     window.selectOffer = selectOffer;
@@ -1828,16 +1799,9 @@ if (typeof window !== 'undefined') {
     window.selectReason = selectReason;
     window.submitReasonAndComplete = submitReasonAndComplete;
     window.showCompletionSuccess = showCompletionSuccess;
-    
-    // Navigation Functions
-    window.goBack = goBack;
-    window.navigateToStep = navigateToStep;
-    window.toggleScoreDetails = toggleScoreDetails;
-    window.toggleDebugPanel = toggleDebugPanel;
 }
 
-window.TopikoUtils.addDebugLog('📱 COMPLETE FIXED Topiko Lead Form loaded - ALL FUNCTIONS AVAILABLE', 'success');
-console.log('📱 COMPLETE FIXED Topiko Lead Form Ready');
-console.log('✅ ALL COMPLETION SCREEN FUNCTIONS LOADED');
-console.log('✅ ALL MISSING FUNCTIONS ADDED');
-console.log('✅ GLOBAL AVAILABILITY CONFIRMED');
+window.TopikoUtils.addDebugLog('📱 COMPLETE Topiko Lead Form with Navigation Tracking loaded - ALL FUNCTIONS AVAILABLE', 'success');
+console.log('📱 ✅ Navigation Tracking Integration Complete');
+console.log('📊 ✅ Page Journey Analytics Ready');
+console.log('🎯 ✅ CRM Data Collection Enhanced');
