@@ -1647,16 +1647,16 @@
     </div>
 
     <!-- FOLLOWUP DATE MODAL -->
-    <div class="followup-modal" id="followupModal">
-        <div class="followup-content">
+    <div class="followup-modal" id="followupModal" onclick="event.target === this && closeFollowupModal()">
+        <div class="followup-content" onclick="event.stopPropagation()">
             <h3 style="margin-bottom: 1rem; color: #1e293b;">Set Next Followup Date</h3>
             <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">
                 When should we follow up with <span id="followupLeadName">this lead</span>?
             </p>
             <input type="datetime-local" id="followupDateInput" class="followup-input">
             <div class="followup-buttons">
-                <button class="btn-cancel" onclick="closeFollowupModal()">Cancel</button>
-                <button class="btn-save" onclick="saveFollowupDate()">Set Followup</button>
+                <button class="btn-cancel" onclick="event.stopPropagation(); closeFollowupModal();">Cancel</button>
+                <button class="btn-save" onclick="event.stopPropagation(); saveFollowupDate();">Set Followup</button>
             </div>
         </div>
     </div>
@@ -1751,6 +1751,11 @@
 
         function saveLeadChanges(leadId, changes) {
             try {
+                if (!leadId) {
+                    console.error('❌ Cannot save changes: leadId is null or undefined');
+                    return false;
+                }
+                
                 const allChanges = loadSavedChanges();
                 
                 // Merge new changes with existing changes for this lead
@@ -2687,7 +2692,7 @@
                         <div class="detail-item">
                             <span class="detail-label">Next Followup:</span>
                             <span style="cursor: pointer; color: #8b5cf6; text-decoration: underline;" 
-                                  onclick="setFollowupDate('${lead.id}')">${nextFollowup}</span>
+                                  onclick="event.stopPropagation(); setFollowupDate('${lead.id}'); console.log('🔧 Clicked followup for lead:', '${lead.id}');">${nextFollowup}</span>
                         </div>
                     </div>
                 </div>
@@ -3267,10 +3272,13 @@
             const lead = allLeads.find(l => l.id === leadId);
             if (!lead) {
                 console.error('❌ Lead not found for followup:', leadId);
+                showNotification('Lead not found', 'error');
                 return;
             }
             
+            // Set the current selected lead
             currentSelectedLead = lead;
+            console.log('✅ Set currentSelectedLead to:', lead.name);
             
             const followupLeadName = document.getElementById('followupLeadName');
             if (followupLeadName) {
@@ -3278,11 +3286,23 @@
             }
             
             // Set current followup date if exists
-            if (lead.next_followup_date) {
-                const date = new Date(lead.next_followup_date);
-                const localDateTime = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-                const dateInput = document.getElementById('followupDateInput');
-                if (dateInput) {
+            const dateInput = document.getElementById('followupDateInput');
+            if (dateInput) {
+                if (lead.next_followup_date) {
+                    try {
+                        const date = new Date(lead.next_followup_date);
+                        const localDateTime = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+                        dateInput.value = localDateTime;
+                    } catch (error) {
+                        console.warn('Error parsing existing followup date:', error);
+                        dateInput.value = '';
+                    }
+                } else {
+                    // Set default to tomorrow at 10 AM
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    tomorrow.setHours(10, 0, 0, 0);
+                    const localDateTime = new Date(tomorrow.getTime() - tomorrow.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
                     dateInput.value = localDateTime;
                 }
             }
@@ -3290,23 +3310,33 @@
             const modal = document.getElementById('followupModal');
             if (modal) {
                 modal.classList.add('show');
-                console.log('✅ Followup modal shown');
+                console.log('✅ Followup modal shown for:', lead.name);
             } else {
                 console.error('❌ Followup modal not found');
             }
         }
 
         function closeFollowupModal() {
+            console.log('🔒 Closing followup modal');
             const modal = document.getElementById('followupModal');
             if (modal) {
                 modal.classList.remove('show');
             }
-            currentSelectedLead = null;
+            // Don't reset currentSelectedLead immediately - let save function handle it
+            setTimeout(() => {
+                if (currentSelectedLead) {
+                    console.log('🔄 Clearing currentSelectedLead after modal close');
+                    currentSelectedLead = null;
+                }
+            }, 100);
         }
 
         function saveFollowupDate() {
+            console.log('💾 Starting saveFollowupDate, currentSelectedLead:', currentSelectedLead);
+            
             if (!currentSelectedLead) {
                 console.error('❌ No lead selected for followup');
+                showNotification('Error: No lead selected', 'error');
                 return;
             }
             
@@ -3316,27 +3346,39 @@
                 return;
             }
             
-            const followupDate = new Date(dateInput.value).toISOString();
+            // Store lead reference to prevent null reference issues
+            const leadToUpdate = currentSelectedLead;
+            const leadName = leadToUpdate.name;
+            const leadId = leadToUpdate.id;
             
-            // Save changes separately
-            const changes = {
-                next_followup_date: followupDate,
-                followup_set_at: new Date().toISOString()
-            };
-            
-            // Apply changes to local lead object
-            Object.assign(currentSelectedLead, changes);
-            
-            // Save changes to localStorage for persistence
-            saveLeadChanges(currentSelectedLead.id, changes);
-            
-            closeFollowupModal();
-            showNotification(`Followup scheduled for ${currentSelectedLead.name}`, 'success');
-            
-            // Re-render leads to show updated followup date
-            renderLeads();
-            
-            console.log('✅ Followup date saved successfully');
+            try {
+                const followupDate = new Date(dateInput.value).toISOString();
+                
+                // Save changes separately
+                const changes = {
+                    next_followup_date: followupDate,
+                    followup_set_at: new Date().toISOString()
+                };
+                
+                // Apply changes to local lead object
+                Object.assign(leadToUpdate, changes);
+                
+                // Save changes to localStorage for persistence
+                saveLeadChanges(leadId, changes);
+                
+                // Close modal and show success
+                closeFollowupModal();
+                showNotification(`Followup scheduled for ${leadName}`, 'success');
+                
+                // Re-render leads to show updated followup date
+                renderLeads();
+                
+                console.log('✅ Followup date saved successfully for:', leadName);
+                
+            } catch (error) {
+                console.error('❌ Error saving followup date:', error);
+                showNotification('Error saving followup date', 'error');
+            }
         }
 
         function initiateCall() {
