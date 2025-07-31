@@ -29,7 +29,7 @@ function initializeApp() {
     window.TopikoUtils.initializeTopikoApp();
     
     // Initialize widgets and UI
-    window.TopikoUtils.updateLeadScoreWidget();
+    //window.TopikoUtils.updateLeadScoreWidget();
     window.TopikoUtils.updateProgressBar(window.topikoApp.currentStep);
     window.TopikoUtils.updateBackButton();
     
