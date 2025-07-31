@@ -182,7 +182,7 @@
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" 
                         data-translate="language.title">Choose Your Language</h2>
                     <p style="text-align: center; margin-bottom: 2rem; font-size: 0.9rem;" 
-                       data-translate="language.subtitle">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெडுक्कवும्</p>
+                       data-translate="language.subtitle">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெடুक्কवும्</p>
                     
                     <div class="language-grid">
                         <div class="language-option" onclick="selectLanguageWithTranslation('en', this, 'forward')">
@@ -205,7 +205,7 @@
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
                                 <h3>తెలుగు</h3>
-                                <p data-translate="language.options.te">తెలుగులో కొনసాగించండి</p>
+                                <p data-translate="language.options.te">తెలుగులో కొనసాగించండి</p>
                             </div>
                         </div>
 
@@ -213,7 +213,7 @@
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
                                 <h3>தமிழ்</h3>
-                                <p data-translate="language.options.ta">தமிழில் தொடরવ</p>
+                                <p data-translate="language.options.ta">தமிழில் தொடரवும்</p>
                             </div>
                         </div>
                     </div>
@@ -1223,45 +1223,39 @@
     <script src="translations.js"></script>     <!-- THIRD - Translation System -->
     <script src="js/script_js.js"></script>     <!-- FOURTH - Main Application -->
 
-    <!-- Additional Initialization Script -->
+    <!-- ENHANCED INITIALIZATION SCRIPT - UPDATED WITH FIXES -->
     <script>
-    // Additional initialization and safety checks
+    // ENHANCED INITIALIZATION SCRIPT - Replace the existing one
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('🔧 Running HTML compatibility fixes...');
+        console.log('🔧 Enhanced DOM loaded - starting safe initialization...');
         
-        // Fix 1: Ensure completion screen business name is populated
-        setTimeout(() => {
-            const completionBusinessName = document.getElementById('completionBusinessName');
-            if (completionBusinessName && window.topikoApp && window.topikoApp.businessName) {
-                completionBusinessName.textContent = window.topikoApp.businessName;
+        // Initialize with safety checks
+        initializeAppSafely();
+        
+        // Auto-save session data every 30 seconds
+        setInterval(() => {
+            if (window.TopikoUtils && window.TopikoUtils.saveSessionData) {
+                window.TopikoUtils.saveSessionData();
             }
-        }, 1000);
+        }, 30000);
         
-        // Fix 2: Initialize product mode correctly
-        setTimeout(() => {
-            if (typeof switchProductMode === 'function') {
-                try {
-                    switchProductMode('select');
-                    console.log('✅ Product mode initialized');
-                } catch (error) {
-                    console.warn('⚠️ Product mode initialization failed:', error);
-                }
+        // Enhanced error handling for uncaught errors
+        window.addEventListener('error', function(event) {
+            console.error('🚨 Uncaught error:', event.error);
+            
+            if (window.TopikoUtils && window.TopikoUtils.addDebugLog) {
+                window.TopikoUtils.addDebugLog(`❌ Uncaught error: ${event.error?.message || 'Unknown error'}`, 'error');
             }
-        }, 2000);
+        });
         
-        // Fix 3: Initialize translations
-        if (window.TopikoTranslations && window.TopikoTranslations.initializeTranslations) {
-            window.TopikoTranslations.initializeTranslations();
-            console.log('✅ Translation system initialized');
-        }
-        
-        // Fix 4: Initialize navigation analytics display
-        if (window.TopikoNavigation && window.TopikoNavigation.initializeDebugDisplay) {
-            window.TopikoNavigation.initializeDebugDisplay();
-            console.log('✅ Navigation analytics initialized');
-        }
-        
-        console.log('✅ HTML compatibility fixes completed');
+        // Enhanced error handling for unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('🚨 Unhandled promise rejection:', event.reason);
+            
+            if (window.TopikoUtils && window.TopikoUtils.addDebugLog) {
+                window.TopikoUtils.addDebugLog(`❌ Promise rejection: ${event.reason?.message || 'Unknown rejection'}`, 'error');
+            }
+        });
     });
 
     // Global function to close modals
@@ -1281,24 +1275,6 @@
         }
         if (scoreLabel && !scoreLabel.textContent) {
             scoreLabel.textContent = 'Score';
-        }
-    }
-
-    // Update goals display in modal to show inline with line breaks
-    function updateGoalsModal(selectedGoals) {
-        const goalsInlineText = document.getElementById('selectedGoalsInlineText');
-        if (goalsInlineText && selectedGoals && selectedGoals.length > 0) {
-            const goalIcons = {
-                'ecommerce': '🛒 Sell Online',
-                'customers': '📈 Reach More Customers', 
-                'manage': '👥 Manage Customers',
-                'search': '🔍 Appear in Search Results',
-                'brand': '⭐ Establish Brand'
-            };
-            
-            // Create goals with line breaks
-            const goalsText = selectedGoals.map(goal => goalIcons[goal] || goal).join('<br>');
-            goalsInlineText.innerHTML = goalsText;
         }
     }
 
@@ -1642,51 +1618,6 @@
             });
         }
     }
-    
-    // Product filtering functions
-    window.applyQuickFilter = function(category, buttonElement) {
-        // Update active button
-        document.querySelectorAll('.quick-filter').forEach(btn => btn.classList.remove('active'));
-        buttonElement.classList.add('active');
-        
-        // Filter products
-        const productCards = document.querySelectorAll('.product-card');
-        productCards.forEach(card => {
-            if (category === 'all' || card.getAttribute('data-category') === category) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-        
-        console.log(`🔍 Applied filter: ${category}`);
-    };
-    
-    window.selectPopularProducts = function() {
-        if (!window.TopikoConfig || !window.TopikoConfig.getPopularProducts) {
-            console.warn('⚠️ Popular products function not available');
-            return;
-        }
-        
-        const popularProducts = window.TopikoConfig.getPopularProducts(10);
-        popularProducts.forEach(product => {
-            selectProduct(product.id, product.name, product.suggestedPrice, product.parentCategory);
-        });
-        
-        showNotification('🔥 Added popular products to your catalog!', 'success');
-    };
-    
-    window.clearAllSelections = function() {
-        if (window.selectedProducts) {
-            window.selectedProducts.forEach(product => {
-                updateProductButton(product.id, false);
-            });
-            window.selectedProducts = [];
-            updateSelectedProductsDisplay();
-            updateProductsCatalogDisplay();
-            showNotification('🗑️ Cleared all product selections', 'warning');
-        }
-    };
 
     // Initialize when products screen is shown
     document.addEventListener('DOMContentLoaded', function() {
@@ -1744,151 +1675,251 @@
             };
         }
         
-        // Add search functionality
-        const productSearch = document.getElementById('productSearch');
-        if (productSearch) {
-            productSearch.addEventListener('input', function(e) {
-                const searchTerm = e.target.value.toLowerCase();
-                const productCards = document.querySelectorAll('.product-card');
-                
-                productCards.forEach(card => {
-                    const productName = card.querySelector('h4').textContent.toLowerCase();
-                    const productDesc = card.querySelector('p').textContent.toLowerCase();
-                    
-                    if (productName.includes(searchTerm) || productDesc.includes(searchTerm)) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
-        }
-        
-        // Add price filter functionality
-        const minPrice = document.getElementById('minPrice');
-        const maxPrice = document.getElementById('maxPrice');
-        
-        if (minPrice && maxPrice) {
-            [minPrice, maxPrice].forEach(input => {
-                input.addEventListener('input', function() {
-                    const min = parseInt(minPrice.value) || 0;
-                    const max = parseInt(maxPrice.value) || 100000;
-                    
-                    document.getElementById('priceRangeDisplay').textContent = `${min} - ₹${max}`;
-                    
-                    const productCards = document.querySelectorAll('.product-card');
-                    productCards.forEach(card => {
-                        const price = parseInt(card.getAttribute('data-price'));
-                        if (price >= min && price <= max) {
-                            card.style.display = 'block';
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    });
-                });
-            });
-        }
-        
         // Initialize lead score widget text
         updateLeadScoreWidget();
         
         // Initialize FOMO notifications
         initializeFOMONotifications();
     });
-    </script>
-    
-    <!-- Emergency Language Selection Fix -->
-    <script>
-    // EMERGENCY FIX for selectLanguageWithTranslation function
-    console.log('🚨 Loading emergency language selection fix...');
 
-    // Check if function exists in TopikoTranslations
-    if (window.TopikoTranslations && window.TopikoTranslations.selectLanguageWithTranslation) {
-        console.log('✅ Found function in TopikoTranslations, making it global');
-        window.selectLanguageWithTranslation = window.TopikoTranslations.selectLanguageWithTranslation;
-    } else {
-        console.log('⚠️ Creating emergency selectLanguageWithTranslation function');
+    // ENHANCED: Supabase client validation
+    function validateSupabaseClient() {
+        if (!window.supabase) {
+            console.error('❌ Supabase client not available');
+            return false;
+        }
         
-        // Emergency implementation with navigation tracking
-        window.selectLanguageWithTranslation = function(lang, element, navigationType = 'forward') {
-            console.log('🚨 Emergency language selection:', lang, 'Type:', navigationType);
-            
-            try {
-                // Basic validation
-                if (!lang || !element) {
-                    console.error('Missing parameters');
-                    return;
-                }
-                
-                // Track navigation if available
-                if (window.TopikoNavigation && window.TopikoNavigation.trackNavigation) {
-                    window.TopikoNavigation.trackNavigation('language', 'goals', navigationType, {
-                        selectedLanguage: lang,
-                        trigger: 'language_selection'
-                    });
-                }
-                
-                // Update UI
-                document.querySelectorAll('.language-option').forEach(opt => {
-                    opt.classList.remove('selected');
-                });
-                element.classList.add('selected');
-                
-                // Set language if TopikoTranslations is available
-                if (window.TopikoTranslations && window.TopikoTranslations.setLanguage) {
-                    window.TopikoTranslations.setLanguage(lang);
-                }
-                
-                // Store selection
-                if (!window.topikoApp) window.topikoApp = {};
-                window.topikoApp.selectedLanguage = lang;
-                
-                // Simple text updates for Hindi
-                if (lang === 'hi') {
-                    setTimeout(() => {
-                        // Update key elements manually
-                        const tagline = document.querySelector('[data-translate="welcome.tagline"]');
-                        if (tagline) {
-                            tagline.textContent = 'भारतीय SMBs के लिए संपूर्ण बिजनेस प्लेटफॉर्म';
-                        }
-                        
-                        const tryButton = document.querySelector('[data-translate="welcome.tryFreeButton"]');
-                        if (tryButton) {
-                            tryButton.textContent = 'मुफ्त में शुरू करें';
-                        }
-                    }, 100);
-                }
-                
-                // Navigate to goals screen
-                setTimeout(() => {
-                    if (window.TopikoUtils && window.TopikoUtils.showScreen) {
-                        window.TopikoUtils.showScreen('goals');
-                    } else {
-                        // Manual navigation
-                        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                        const goalsScreen = document.getElementById('goals');
-                        if (goalsScreen) {
-                            goalsScreen.classList.add('active');
-                        }
-                    }
-                }, 1500);
-                
-                console.log('✅ Emergency language selection completed');
-                
-            } catch (error) {
-                console.error('❌ Emergency function error:', error);
-            }
-        };
+        if (typeof window.supabase.from !== 'function') {
+            console.error('❌ Supabase client malformed - from() not available');
+            return false;
+        }
+        
+        console.log('✅ Supabase client validated');
+        return true;
     }
 
-    // Test the function
+    // Test Supabase after a delay
     setTimeout(() => {
-        if (typeof selectLanguageWithTranslation === 'function') {
-            console.log('✅ selectLanguageWithTranslation is now available globally');
-        } else {
-            console.error('❌ selectLanguageWithTranslation still not available');
-        }
+        validateSupabaseClient();
     }, 2000);
+    </script>
+
+    <!-- DEBUG AND SAFETY HELPERS SCRIPT -->
+    <script>
+    // DEBUG AND SAFETY HELPERS - Enhanced version
+    window.topikoDebug = {
+        
+        // Check system health
+        checkSystemHealth: function() {
+            const health = {
+                timestamp: new Date().toISOString(),
+                topikoApp: !!window.topikoApp,
+                topikoUtils: !!window.TopikoUtils,
+                topikoConfig: !!window.TopikoConfig,
+                supabase: !!window.supabase,
+                supabaseFrom: !!(window.supabase && window.supabase.from),
+                goalNames: !!(window.TopikoConfig && window.TopikoConfig.GOAL_NAMES),
+                navigationQueue: window.TopikoUtils ? (window.TopikoUtils.navigationQueue || []).length : 0,
+                errors: []
+            };
+            
+            // Test each component
+            try {
+                if (window.topikoApp) {
+                    health.currentPage = window.topikoApp.currentPage;
+                    health.sessionId = window.topikoApp.sessionId;
+                    health.selectedGoals = (window.topikoApp.selectedGoals || []).length;
+                }
+            } catch (error) {
+                health.errors.push(`TopikoApp error: ${error.message}`);
+            }
+            
+            try {
+                if (window.TopikoConfig) {
+                    health.configKeys = Object.keys(window.TopikoConfig);
+                }
+            } catch (error) {
+                health.errors.push(`TopikoConfig error: ${error.message}`);
+            }
+            
+            try {
+                if (window.supabase) {
+                    health.supabaseUrl = window.supabase.supabaseUrl ? 'set' : 'missing';
+                }
+            } catch (error) {
+                health.errors.push(`Supabase error: ${error.message}`);
+            }
+            
+            console.log('🏥 System Health Check:', health);
+            return health;
+        },
+        
+        // Test navigation tracking
+        testNavigationTracking: async function() {
+            console.log('🧪 Testing navigation tracking...');
+            
+            if (!window.TopikoUtils || !window.TopikoUtils.trackPageNavigationSafe) {
+                console.error('❌ Navigation tracking not available');
+                return false;
+            }
+            
+            try {
+                const testData = {
+                    testField: 'test_value',
+                    timestamp: new Date().toISOString()
+                };
+                
+                await window.TopikoUtils.trackPageNavigationSafe('test_page', 'test_navigation', testData);
+                console.log('✅ Navigation tracking test completed');
+                return true;
+            } catch (error) {
+                console.error('❌ Navigation tracking test failed:', error);
+                return false;
+            }
+        },
+        
+        // Test Supabase connection
+        testSupabaseConnection: async function() {
+            console.log('🧪 Testing Supabase connection...');
+            
+            if (!window.supabase) {
+                console.error('❌ Supabase client not available');
+                return false;
+            }
+            
+            try {
+                // Test a simple query (this will fail if table doesn't exist, but connection works)
+                const { data, error } = await window.supabase
+                    .from('page_navigation')
+                    .select('*')
+                    .limit(1);
+                    
+                if (error) {
+                    console.warn('⚠️ Supabase query error (may be expected):', error.message);
+                    // Check if it's a connection error vs table/permission error
+                    if (error.message.includes('relation') || error.message.includes('permission')) {
+                        console.log('✅ Supabase connection OK (table/permission issue)');
+                        return true;
+                    } else {
+                        console.error('❌ Supabase connection failed');
+                        return false;
+                    }
+                }
+                
+                console.log('✅ Supabase connection test passed');
+                return true;
+            } catch (error) {
+                console.error('❌ Supabase connection test failed:', error);
+                return false;
+            }
+        },
+        
+        // Fix common issues
+        fixCommonIssues: function() {
+            console.log('🔧 Attempting to fix common issues...');
+            
+            // Fix 1: Ensure TopikoApp exists
+            if (!window.topikoApp) {
+                console.log('🔧 Creating missing TopikoApp...');
+                window.topikoApp = {
+                    currentStep: 'welcome',
+                    currentUserId: null,
+                    sessionStartTime: Date.now(),
+                    leadScore: 0,
+                    pageViews: 1,
+                    selectedLanguage: 'en',
+                    userName: '',
+                    businessName: '',
+                    selectedGoals: [],
+                    selectedCategories: [],
+                    selectedSubcategories: [],
+                    selectedProductIds: [],
+                    userProducts: [],
+                    selectedTheme: '',
+                    qualifyingAnswers: {
+                        online_presence: '',
+                        budget: '',
+                        decision_maker: '',
+                        timeline: ''
+                    },
+                    sessionId: 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    currentPage: 'welcome',
+                    pageStartTime: Date.now(),
+                    pageSequenceNumber: 1,
+                    navigationHistory: [],
+                    currentPageInteractions: [],
+                    productsLoaded: false
+                };
+            }
+            
+            // Fix 2: Initialize navigation queue
+            if (window.TopikoUtils && !window.TopikoUtils.navigationQueue) {
+                console.log('🔧 Initializing navigation queue...');
+                window.TopikoUtils.navigationQueue = [];
+            }
+            
+            // Fix 3: Set session ID if missing
+            if (window.topikoApp && !window.topikoApp.sessionId) {
+                console.log('🔧 Setting missing session ID...');
+                window.topikoApp.sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+            
+            // Fix 4: Ensure current page is set
+            if (window.topikoApp && !window.topikoApp.currentPage) {
+                console.log('🔧 Setting current page to welcome...');
+                window.topikoApp.currentPage = 'welcome';
+                window.topikoApp.pageStartTime = Date.now();
+            }
+            
+            console.log('✅ Common issues fix completed');
+        },
+        
+        // Export debug data
+        exportDebugData: function() {
+            const debugData = {
+                timestamp: new Date().toISOString(),
+                systemHealth: this.checkSystemHealth(),
+                topikoApp: window.topikoApp ? JSON.parse(JSON.stringify(window.topikoApp)) : null,
+                navigationQueue: window.TopikoUtils ? (window.TopikoUtils.navigationQueue || []) : [],
+                localStorage: {
+                    sessionData: localStorage.getItem('topiko_session_data'),
+                    navigationQueue: localStorage.getItem('topiko_navigation_queue')
+                },
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            };
+            
+            console.log('📊 Debug Data Export:', debugData);
+            
+            // Copy to clipboard if possible
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(JSON.stringify(debugData, null, 2))
+                    .then(() => console.log('📋 Debug data copied to clipboard'))
+                    .catch(() => console.log('❌ Failed to copy to clipboard'));
+            }
+            
+            return debugData;
+        }
+    };
+
+    // Automatically run health check and fixes after a delay
+    setTimeout(() => {
+        console.log('🏁 Running automatic system check...');
+        window.topikoDebug.checkSystemHealth();
+        window.topikoDebug.fixCommonIssues();
+    }, 5000);
+
+    // Add global debug commands
+    window.debugTopiko = window.topikoDebug.checkSystemHealth;
+    window.fixTopiko = window.topikoDebug.fixCommonIssues;
+    window.exportTopikoData = window.topikoDebug.exportDebugData;
+
+    console.log('🛠️ Debug helpers loaded. Available commands:');
+    console.log('  - debugTopiko() - Check system health');
+    console.log('  - fixTopiko() - Fix common issues');  
+    console.log('  - exportTopikoData() - Export debug data');
+    console.log('  - window.topikoDebug.testNavigationTracking() - Test navigation');
+    console.log('  - window.topikoDebug.testSupabaseConnection() - Test database');
     </script>
 </body>
 </html>
