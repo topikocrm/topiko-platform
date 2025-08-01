@@ -496,6 +496,13 @@ async function callTopikoAPI(jsonString) {
     }
 }
 
+function callTopikoAPISafe() {
+    if (window.currentPreviewData) {
+        callTopikoAPI(window.currentPreviewData);
+    } else {
+        window.TopikoUtils.showNotification('❌ No preview data available', 'error');
+    }
+}
 // ========================================
 // VARIANT DISPLAY FUNCTIONS - FIXED PRICE DISPLAY
 // ========================================
