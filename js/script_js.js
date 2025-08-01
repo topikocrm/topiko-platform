@@ -224,6 +224,15 @@ function determineVariantType(variants, product) {
     const productName = (product.name || '').toLowerCase();
     const categoryKey = (product.categoryKey || product.category || '').toLowerCase();
     
+    // NEW: Color variants detection
+    const colorKeywords = ['black', 'brown', 'white', 'blue', 'red', 'green', 'tan', 'navy', 'gray', 'grey', 'silver', 'gold'];
+    const hasColors = variants.some(variant => 
+        colorKeywords.some(color => variant.toLowerCase().includes(color))
+    );
+    if (hasColors) {
+        return { name: 'color', basePrice: true };
+    }
+    
     // Size variants (clothing, etc.)
     if (variantString.includes('s') && variantString.includes('m') && variantString.includes('l')) {
         return { name: 'size', basePrice: true };
