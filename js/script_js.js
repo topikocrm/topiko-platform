@@ -214,7 +214,7 @@ function convertSimpleVariantsToObjects(variants, product) {
     return variants.map(variant => ({
         variant_name: variantType.name,
         variant_detail: variant,
-        variant_price: calculateVariantPrice(product.price || product.suggestedPrice, variant, variantType)
+        variant_price: calculateVariantPrice(product.suggestedPrice || product.price || 0, variant, variantType)
     }));
 }
 
