@@ -361,8 +361,26 @@ function createProductCardWithVariants(product) {
     const selectedClass = isSelected ? 'selected' : '';
     const checkmarkStyle = isSelected ? 'opacity: 1' : 'opacity: 0';
     
-    // Fix: Handle price from different sources
-    const productPrice = product.suggestedPrice || product.price || 0;
+ // DEBUG: Check what price data we have
+console.log('🔍 Product Debug:', {
+    name: product.name,
+    suggestedPrice: product.suggestedPrice,
+    price: product.price,
+    productObject: product
+});
+// More aggressive price extraction
+let productPrice = 0;
+if (product.suggestedPrice) {
+    productPrice = product.suggestedPrice;
+} else if (product.price) {
+    productPrice = product.price;
+} else {
+    console.warn('⚠️ No price found for product:', product.name);
+    productPrice = 999; // Fallback price for testing
+}
+
+console.log('💰 Using price:', productPrice, 'for product:', product.name);
+console.log('💰 Final productPrice:', productPrice);
     
     // Process variants for pricing
     const variantType = product.variants ? determineVariantType(product.variants, product) : null;
