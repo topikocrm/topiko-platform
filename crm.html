@@ -3,511 +3,4030 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Topiko CRM - Mobile First</title>
+    <title>Topiko CRM v5.0 - Mobile-First Professional Dashboard</title>
     <style>
-        /* Add this to your existing CRM CSS - Missing Functions Fix */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ===== MOBILE-FIRST DESIGN ===== */
         
-        /* AI Recommendations Panel Styles */
-        .ai-recommendations {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .crm-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ===== MOBILE-FIRST SIDEBAR (BOTTOM NAV) ===== */
+        .crm-sidebar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 0.75rem 0 env(safe-area-inset-bottom);
+            box-shadow: 0 -4px 20px rgba(30, 41, 59, 0.2);
+            z-index: 1000;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .crm-logo {
+            display: none;
+        }
+
+        .crm-nav {
+            list-style: none;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .crm-nav-item {
+            flex: 1;
+            margin: 0;
+            padding: 0;
+        }
+
+        .crm-nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            color: #94a3b8;
+            text-decoration: none;
             border-radius: 8px;
-            padding: 16px;
-            margin: 16px 0;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            cursor: pointer;
+            min-height: 60px;
+            text-align: center;
+        }
+
+        .crm-nav-link:hover,
+        .crm-nav-link.active {
+            color: #f8fafc;
+            background: rgba(59, 130, 246, 0.2);
+            transform: none;
+        }
+
+        .crm-nav-icon {
+            font-size: 1.5rem;
+            margin: 0 0 0.25rem 0;
+            display: block;
+        }
+
+        .crm-nav-link span:last-child {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== MOBILE-FIRST MAIN CONTENT ===== */
+        .crm-main {
+            flex: 1;
+            padding: 1rem;
+            padding-bottom: calc(80px + env(safe-area-inset-bottom));
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .crm-section {
+            display: none;
+        }
+
+        .crm-section.active {
+            display: block;
+        }
+
+        .crm-header {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .crm-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1.2;
+        }
+
+        .crm-user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            align-self: flex-start;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* ===== MOBILE-FIRST DASHBOARD STATS ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-card.clickable {
+            cursor: pointer;
+            -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .stat-card.clickable:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.active {
+            border: 2px solid #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-icon {
+            font-size: 1.2rem;
+        }
+
+        .stat-title {
+            color: #64748b;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1;
+        }
+
+        .stat-change {
+            font-size: 0.7rem;
+            margin-top: 0.25rem;
+            color: #64748b;
+            line-height: 1.2;
+        }
+
+        .stat-positive { color: #059669; }
+        .stat-negative { color: #dc2626; }
+
+        /* Special stat cards */
+        .stat-card.priority {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-color: #f87171;
+        }
+
+        .stat-card.high-budget {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-color: #34d399;
+        }
+
+        /* ===== MOBILE-FIRST FILTERS SECTION ===== */
+        .filters-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .filters-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-select, .filter-input {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            min-height: 48px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .filter-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+            color: #64748b;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .filter-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .filter-btn:active {
+            transform: scale(0.98);
+        }
+
+        .clear-filters-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 48px;
+            -webkit-tap-highlight-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .clear-filters-btn:active {
+            transform: scale(0.98);
+            background: #dc2626;
+        }
+
+        /* ===== MOBILE-FIRST LEAD CARDS ===== */
+        .leads-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .section-header {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .section-header > div:last-child {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .section-header select,
+        .section-header button {
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 0.9rem;
+            min-height: 48px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .leads-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        /* ===== MOBILE-OPTIMIZED LEAD CARD DESIGN ===== */
+        .lead-card {
+            background: #fafafa;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .lead-card:active {
+            transform: scale(0.99);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .lead-card.priority {
+            border-left: 4px solid #ef4444;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        }
+
+        .lead-card.high-budget {
+            border-left: 4px solid #10b981;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        }
+
+        /* Card Header */
+        .lead-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+
+        .lead-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .lead-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            word-break: break-word;
+        }
+
+        .lead-business {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            word-break: break-word;
+        }
+
+        .lead-contact {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+            word-break: break-all;
+        }
+
+        .lead-score-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .score-hot { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .score-warm { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .score-cold { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); }
+
+        /* Card Body */
+        .lead-card-body {
+            margin-bottom: 1rem;
+        }
+
+        .card-section {
+            margin-bottom: 0.75rem;
+        }
+
+        .card-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .card-section-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+        }
+
+        .card-tag {
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .goal-tag {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .category-tag {
+            background: #f3e8ff;
+            color: #7c3aed;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .badge-priority {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-high-budget {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .badge-decision-maker {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .badge-timeline {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .badge-timeline.immediate {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .badge-timeline.week {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        /* Card Details */
+        .card-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            font-size: 0.75rem;
+            color: #64748b;
+            line-height: 1.3;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #374151;
+            display: block;
+        }
+
+        /* Card Status */
+        .card-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .status-new { background: #dbeafe; color: #1e40af; }
+        .status-contacted { background: #fef3c7; color: #b45309; }
+        .status-qualified { background: #d1fae5; color: #059669; }
+        .status-assigned { background: #e0f2fe; color: #0369a1; }
+
+        .assigned-sdr {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* Card Actions - Mobile Optimized */
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.75rem 0.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-assign {
+            background: #3b82f6;
             color: white;
         }
-        
-        .ai-recommendations h4 {
-            margin: 0 0 12px 0;
-            font-size: 16px;
+
+        .btn-assign.reassign {
+            background: #f59e0b;
+        }
+
+        .btn-intel {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-status {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-followup {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        /* ===== MOBILE-FIRST LEAD INTELLIGENCE PANEL ===== */
+        .lead-intelligence-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            padding: 1rem;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 2000;
+            display: none;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .lead-intelligence-panel.show {
+            display: block;
+            animation: slideInUp 0.3s ease;
+        }
+
+        @keyframes slideInUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .intelligence-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .intelligence-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .intelligence-close {
+            background: #f1f5f9;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #64748b;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .intelligence-close:active {
+            background: #e2e8f0;
+            transform: scale(0.95);
+        }
+
+        .intelligence-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .intelligence-section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.75rem;
+        }
+
+        .intelligence-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .intelligence-item:last-child {
+            border-bottom: none;
+        }
+
+        .intelligence-label {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .intelligence-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .score-display {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .action-button {
+            width: 100%;
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 48px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .action-button:active {
+            background: #059669;
+            transform: scale(0.98);
+        }
+
+        /* ===== MOBILE-FIRST MODALS ===== */
+        .score-breakdown-modal,
+        .followup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 2000;
+            padding: 0;
+        }
+
+        .score-breakdown-modal.show,
+        .followup-modal.show {
+            display: flex;
+        }
+
+        .score-breakdown-content,
+        .followup-content {
+            background: white;
+            border-radius: 16px 16px 0 0;
+            padding: 1.5rem;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            animation: slideInUp 0.3s ease;
+        }
+
+        .score-breakdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .score-breakdown-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .score-close {
+            background: #f1f5f9;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .score-close:active {
+            background: #e2e8f0;
+            transform: scale(0.95);
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .score-item:last-child {
+            border-bottom: none;
+        }
+
+        .score-item-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .score-item-value {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .score-total {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .score-total-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1;
+        }
+
+        .score-total-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 0.5rem;
+        }
+
+        /* ===== MOBILE-FIRST FOLLOWUP MODAL ===== */
+        .followup-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            min-height: 48px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .followup-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .followup-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-save, .btn-cancel {
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            min-height: 48px;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-save {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-save:active {
+            background: #059669;
+            transform: scale(0.98);
+        }
+
+        .btn-cancel {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn-cancel:active {
+            background: #475569;
+            transform: scale(0.98);
+        }
+
+        /* ===== MOBILE-FIRST SDR SUMMARY ===== */
+        .sdr-summary-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sdr-summary-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .sdr-summary-card:active {
+            transform: scale(0.99);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .sdr-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .sdr-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .sdr-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sdr-name {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            word-break: break-word;
+        }
+
+        .sdr-email {
+            font-size: 0.8rem;
+            color: #64748b;
+            word-break: break-all;
+        }
+
+        .sdr-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .sdr-stat {
+            text-align: center;
+            padding: 0.75rem 0.5rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sdr-stat:active {
+            background: #e2e8f0;
+            transform: scale(0.98);
+        }
+
+        .sdr-stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            line-height: 1;
+        }
+
+        .sdr-stat-label {
+            font-size: 0.65rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        /* Status-specific colors */
+        .sdr-stat.total {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 1px solid #93c5fd;
+        }
+
+        .sdr-stat.contacted {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #f59e0b;
+        }
+
+        .sdr-stat.qualified {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border: 1px solid #10b981;
+        }
+
+        .sdr-stat.converted {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border: 1px solid #059669;
+        }
+
+        .sdr-stat.followup {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border: 1px solid #8b5cf6;
+        }
+
+        .sdr-stat.demo {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border: 1px solid #0284c7;
+        }
+
+        .sdr-extended-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .sdr-mini-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            background: #f8fafc;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sdr-mini-stat:active {
+            background: #e2e8f0;
+            transform: scale(0.98);
+        }
+
+        .sdr-mini-stat-label {
+            color: #64748b;
             font-weight: 600;
         }
-        
-        .ai-recommendation-item {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            padding: 12px;
-            margin: 8px 0;
-            border-left: 3px solid #00ff88;
+
+        .sdr-mini-stat-value {
+            color: #1e293b;
+            font-weight: 700;
         }
-        
-        .ai-recommendation-item strong {
+
+        /* ===== ENHANCED LEAD CARD WITH DATE/TIME ===== */
+        .lead-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            font-size: 0.75rem;
+            color: #64748b;
+            gap: 0.5rem;
+        }
+
+        .lead-date {
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .lead-assigned-sdr {
+            font-weight: 500;
+            color: #3b82f6;
+            text-align: right;
+            line-height: 1.3;
+        }
+
+        /* Enhanced status grid for mobile */
+        .card-status-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .card-status-section .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+
+        /* ===== MOBILE-FIRST DROPDOWNS (FIXED) ===== */
+        .sdr-dropdown,
+        .status-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .sdr-dropdown-content,
+        .status-dropdown-content {
+            display: none;
+            position: fixed;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            z-index: 2001;
+            max-height: 60vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .sdr-dropdown-content.show,
+        .status-dropdown-content.show {
             display: block;
-            margin-bottom: 4px;
-            font-size: 14px;
+            animation: fadeInScale 0.2s ease;
         }
-        
-        .ai-recommendation-item span {
-            font-size: 13px;
-            opacity: 0.9;
-        }
-        
-        /* Mobile specific */
-        @media (max-width: 767px) {
-            .ai-recommendations {
-                margin: 12px 0;
-                padding: 12px;
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-10px);
             }
-            
-            .ai-recommendation-item {
-                padding: 10px;
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .sdr-option,
+        .status-option {
+            padding: 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #374151;
+            font-weight: 500;
+            -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+            user-select: none;
+        }
+
+        .sdr-option:active,
+        .status-option:active {
+            background-color: #f8fafc;
+            transform: scale(0.98);
+        }
+
+        .sdr-option:last-child,
+        .status-option:last-child {
+            border-bottom: none;
+        }
+
+        /* ===== MOBILE-FIRST NOTIFICATIONS ===== */
+        .notification {
+            position: fixed;
+            top: env(safe-area-inset-top, 20px);
+            left: 1rem;
+            right: 1rem;
+            background: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 2001;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification.error {
+            background: #ef4444;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .notification.info {
+            background: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* ===== LOADING STATES ===== */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .loading::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.75rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== UTILITIES ===== */
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .text-center { text-align: center; }
+        .font-bold { font-weight: 700; }
+        .text-sm { font-size: 0.85rem; }
+        .text-xs { font-size: 0.75rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .p-4 { padding: 1rem; }
+
+        /* ===== TABLET BREAKPOINT (768px+) ===== */
+        @media (min-width: 768px) {
+            .crm-main {
+                padding: 1.5rem;
+                padding-bottom: calc(80px + env(safe-area-inset-bottom));
+            }
+
+            .crm-title {
+                font-size: 1.75rem;
+            }
+
+            .crm-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.25rem;
+            }
+
+            .stat-card {
+                padding: 1.25rem;
+                min-height: 100px;
+            }
+
+            .stat-value {
+                font-size: 1.75rem;
+            }
+
+            .filters-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .leads-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.25rem;
+            }
+
+            .sdr-summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.25rem;
+            }
+
+            .lead-intelligence-panel {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                left: auto;
+                bottom: auto;
+                width: 400px;
+                max-width: 90vw;
+                border-radius: 16px;
+                animation: slideInRight 0.3s ease;
+            }
+
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+
+            .score-breakdown-modal,
+            .followup-modal {
+                align-items: center;
+                padding: 2rem;
+            }
+
+            .score-breakdown-content,
+            .followup-content {
+                border-radius: 16px;
+                max-width: 500px;
+                width: 90%;
+                animation: fadeInScale 0.3s ease;
+            }
+
+            .notification {
+                top: 20px;
+                left: auto;
+                right: 20px;
+                width: 350px;
+                text-align: left;
+            }
+        }
+
+        /* ===== DESKTOP BREAKPOINT (1024px+) ===== */
+        @media (min-width: 1024px) {
+            .crm-container {
+                flex-direction: row;
+            }
+
+            .crm-sidebar {
+                position: static;
+                width: 280px;
+                padding: 2rem 0;
+                border-top: none;
+                box-shadow: 4px 0 20px rgba(30, 41, 59, 0.15);
+            }
+
+            .crm-logo {
+                display: block;
+                text-align: center;
+                margin-bottom: 3rem;
+                padding: 0 2rem;
+            }
+
+            .crm-logo h1 {
+                color: #f8fafc;
+                font-size: 1.8rem;
+                font-weight: 700;
+            }
+
+            .crm-logo p {
+                color: #94a3b8;
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
+            }
+
+            .crm-nav {
+                flex-direction: column;
+            }
+
+            .crm-nav-item {
+                flex: none;
+                margin: 0.3rem 0;
+                padding: 0 1.5rem;
+            }
+
+            .crm-nav-link {
+                flex-direction: row;
+                padding: 1rem 1.5rem;
+                border-radius: 12px;
+                min-height: auto;
+                text-align: left;
+            }
+
+            .crm-nav-link:hover,
+            .crm-nav-link.active {
+                transform: translateX(4px);
+            }
+
+            .crm-nav-icon {
+                font-size: 1.1rem;
+                margin: 0 0.8rem 0 0;
+            }
+
+            .crm-nav-link span:last-child {
+                font-size: 0.9rem;
+            }
+
+            .crm-main {
+                padding: 2rem;
+                padding-bottom: 2rem;
+            }
+
+            .crm-title {
+                font-size: 2rem;
+            }
+
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .stat-card {
+                padding: 1.5rem;
+                min-height: 120px;
+            }
+
+            .stat-card.clickable:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .filters-section {
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .filters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .leads-section {
+                padding: 2rem;
+            }
+
+            .leads-grid {
+                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .lead-card {
+                padding: 1.5rem;
+            }
+
+            .lead-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+            .sdr-summary-grid {
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .sdr-summary-card {
+                padding: 2rem;
+                min-height: 280px;
+            }
+
+            .sdr-summary-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            }
+
+            .sdr-stat:hover {
+                background: #e2e8f0;
+                transform: translateY(-1px);
+            }
+
+            .card-status-section {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .action-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .filter-btn:hover {
+                border-color: #3b82f6;
+                color: #3b82f6;
+            }
+
+            .clear-filters-btn:hover {
+                background: #dc2626;
+            }
+
+            .sdr-dropdown-content,
+            .status-dropdown-content {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                margin-top: 4px;
+            }
+
+            .sdr-option:hover,
+            .status-option:hover {
+                background-color: #f8fafc;
+                color: #3b82f6;
+                transform: none;
+            }
+        }
+
+        /* ===== LARGE DESKTOP BREAKPOINT (1440px+) ===== */
+        @media (min-width: 1440px) {
+            .crm-main {
+                padding: 2.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+
+            .leads-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .sdr-summary-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
     </style>
 </head>
 <body>
-
-<script>
-// Add these missing functions to your CRM JavaScript
-
-// MISSING FUNCTION 1: Generate AI Recommendations
-function generateAIRecommendations(lead) {
-    console.log('🤖 Generating AI recommendations for lead:', lead.company);
-    
-    const recommendations = [];
-    
-    try {
-        // Score-based recommendations
-        if (lead.score >= 80) {
-            recommendations.push({
-                type: 'High Priority',
-                message: 'This lead has excellent potential. Schedule a demo within 24 hours.',
-                priority: 'high'
-            });
-        } else if (lead.score >= 60) {
-            recommendations.push({
-                type: 'Follow Up',
-                message: 'Good prospect. Send personalized follow-up with case studies.',
-                priority: 'medium'
-            });
-        } else {
-            recommendations.push({
-                type: 'Nurture',
-                message: 'Add to nurture sequence. Share valuable content to build trust.',
-                priority: 'low'
-            });
-        }
-        
-        // Industry-specific recommendations
-        const industryAdvice = {
-            'Technology': 'Emphasize integration capabilities and API documentation.',
-            'Healthcare': 'Focus on compliance (HIPAA) and security features.',
-            'Finance': 'Highlight security, compliance, and ROI metrics.',
-            'Education': 'Stress affordability and ease of use for administrators.',
-            'Manufacturing': 'Emphasize efficiency gains and cost savings.',
-            'Retail': 'Focus on customer experience improvements and analytics.'
-        };
-        
-        if (industryAdvice[lead.industry]) {
-            recommendations.push({
-                type: 'Industry Focus',
-                message: industryAdvice[lead.industry],
-                priority: 'medium'
-            });
-        }
-        
-        // Activity-based recommendations
-        if (lead.lastActivity) {
-            const daysSinceActivity = Math.floor((Date.now() - new Date(lead.lastActivity).getTime()) / (1000 * 60 * 60 * 24));
+    <div class="crm-container">
+        <!-- SIDEBAR -->
+        <nav class="crm-sidebar">
+            <div class="crm-logo">
+                <h1>Topiko CRM v5.0</h1>
+                <p>Mobile-First Professional Dashboard</p>
+            </div>
             
-            if (daysSinceActivity > 7) {
-                recommendations.push({
-                    type: 'Re-engagement',
-                    message: `No activity for ${daysSinceActivity} days. Send a check-in email with value proposition.`,
-                    priority: 'high'
+            <ul class="crm-nav">
+                <li class="crm-nav-item">
+                    <div class="crm-nav-link active" onclick="showSection('dashboard')">
+                        <span class="crm-nav-icon">📊</span>
+                        <span>Dashboard</span>
+                    </div>
+                </li>
+                <li class="crm-nav-item">
+                    <div class="crm-nav-link" onclick="showSection('assigned-leads')">
+                        <span class="crm-nav-icon">👨‍💼</span>
+                        <span>Assigned Leads</span>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="crm-main">
+            <!-- DASHBOARD SECTION -->
+            <section id="dashboard" class="crm-section active" style="display: block;">
+                <div class="crm-header">
+                    <h1 class="crm-title">Mobile-First Lead Management</h1>
+                    <div class="crm-user-info">
+                        <div class="user-avatar">S</div>
+                        <div>
+                            <div style="font-weight: 600;">SDR Manager</div>
+                            <div style="font-size: 0.85rem; color: #64748b;">Sales Team</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STATS GRID -->
+                <div class="stats-grid">
+                    <!-- Row 1: Time-based metrics -->
+                    <div class="stat-card clickable" onclick="filterByTimeframe('today')">
+                        <div class="stat-header">
+                            <div class="stat-title">Today's Leads</div>
+                            <div class="stat-icon">📅</div>
+                        </div>
+                        <div class="stat-value" id="todayLeads">0</div>
+                        <div class="stat-change stat-positive">Last 24 hours</div>
+                    </div>
+
+                    <div class="stat-card clickable" onclick="filterByTimeframe('month')">
+                        <div class="stat-header">
+                            <div class="stat-title">This Month</div>
+                            <div class="stat-icon">📊</div>
+                        </div>
+                        <div class="stat-value" id="monthLeads">0</div>
+                        <div class="stat-change stat-positive">Month to date</div>
+                    </div>
+
+                    <div class="stat-card clickable" onclick="filterByTimeframe('all')">
+                        <div class="stat-header">
+                            <div class="stat-title">Total Leads</div>
+                            <div class="stat-icon">👥</div>
+                        </div>
+                        <div class="stat-value" id="totalLeads">0</div>
+                        <div class="stat-change">All time</div>
+                    </div>
+
+                    <!-- Row 2: Quality-based metrics -->
+                    <div class="stat-card priority clickable" onclick="filterByQuality('priority')">
+                        <div class="stat-header">
+                            <div class="stat-title">Priority Leads</div>
+                            <div class="stat-icon">⚡</div>
+                        </div>
+                        <div class="stat-value" id="priorityLeads">0</div>
+                        <div class="stat-change">Immediate + Decision Makers</div>
+                    </div>
+
+                    <div class="stat-card clickable" onclick="filterByQuality('hot')" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-color: #f87171;">
+                        <div class="stat-header">
+                            <div class="stat-title">Hot Leads (65+)</div>
+                            <div class="stat-icon">🔥</div>
+                        </div>
+                        <div class="stat-value" id="hotLeads">0</div>
+                        <div class="stat-change stat-positive">Ready for contact</div>
+                    </div>
+
+                    <div class="stat-card clickable" onclick="filterByQuality('warm')" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #f59e0b;">
+                        <div class="stat-header">
+                            <div class="stat-title">Warm Leads (41-65)</div>
+                            <div class="stat-icon">🌡️</div>
+                        </div>
+                        <div class="stat-value" id="warmLeads">0</div>
+                        <div class="stat-change">Follow-up needed</div>
+                    </div>
+                </div>
+
+                <!-- FILTERS SECTION -->
+                <div class="filters-section">
+                    <div class="filters-header">
+                        <h2 class="filters-title">Smart Filters</h2>
+                        <button class="clear-filters-btn" onclick="clearAllFilters()">Clear All</button>
+                    </div>
+
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label class="filter-label">Search Leads</label>
+                            <input type="text" class="filter-input" id="searchInput" placeholder="Name, email, business..." oninput="applyFilters()">
+                        </div>
+
+                        <div class="filter-group">
+                            <label class="filter-label">Lead Status</label>
+                            <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                                <option value="">All Statuses</option>
+                                <option value="New">New</option>
+                                <option value="Contacted">Contacted</option>
+                                <option value="Qualified">Qualified</option>
+                                <option value="Assigned">Assigned</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label class="filter-label">Lead Quality</label>
+                            <select class="filter-select" id="qualityFilter" onchange="applyFilters()">
+                                <option value="">All Qualities</option>
+                                <option value="Hot">Hot (65+)</option>
+                                <option value="Warm">Warm (41-65)</option>
+                                <option value="Cold">Cold (<41)</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label class="filter-label">Timeline</label>
+                            <select class="filter-select" id="timelineFilter" onchange="applyFilters()">
+                                <option value="">All Timelines</option>
+                                <option value="immediately">Immediately</option>
+                                <option value="within_week">Within Week</option>
+                                <option value="this_month">This Month</option>
+                                <option value="just_checking">Just Checking</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label class="filter-label">Budget Range</label>
+                            <select class="filter-select" id="budgetFilter" onchange="applyFilters()">
+                                <option value="">All Budgets</option>
+                                <option value="high">₹25,000+ (Premium)</option>
+                                <option value="qualified">₹10,000-₹25,000</option>
+                                <option value="budget_unqualified">₹5,000-₹10,000</option>
+                                <option value="low"><₹5,000</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label class="filter-label">Business Category</label>
+                            <select class="filter-select" id="categoryFilter" onchange="applyFilters()">
+                                <option value="">All Categories</option>
+                                <option value="boutique">Boutique & Fashion</option>
+                                <option value="home-foods">Home Foods</option>
+                                <option value="salons">Salons & Beauty</option>
+                                <option value="grocery">Grocery</option>
+                                <option value="electronics">Electronics</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="toggleFilter('all', this)">All Leads</button>
+                        <button class="filter-btn" onclick="toggleFilter('priority', this)">⚡ Priority</button>
+                        <button class="filter-btn" onclick="toggleFilter('high-budget', this)">💰 High Budget</button>
+                        <button class="filter-btn" onclick="toggleFilter('decision-makers', this)">👑 Decision Makers</button>
+                        <button class="filter-btn" onclick="toggleFilter('unassigned', this)">📋 Unassigned</button>
+                    </div>
+                </div>
+
+                <!-- LEADS SECTION -->
+                <div class="leads-section">
+                    <div class="section-header">
+                        <div>
+                            <h2 class="section-title">Lead Management</h2>
+                            <p style="color: #64748b; font-size: 0.9rem; margin-top: 0.25rem;" id="leadCount">Loading leads...</p>
+                        </div>
+                        <div>
+                            <select id="sortBy" onchange="applySorting()">
+                                <option value="created_at">Sort by Date</option>
+                                <option value="lead_score">Sort by Score</option>
+                                <option value="name">Sort by Name</option>
+                                <option value="timeline">Sort by Timeline</option>
+                            </select>
+                            <button onclick="toggleSortOrder()" id="sortOrderBtn">
+                                ↓ Desc
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- LEADS GRID -->
+                    <div class="leads-grid" id="leadsGrid">
+                        <div class="loading">Loading leads...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ASSIGNED LEADS SECTION -->
+            <section id="assigned-leads" class="crm-section" style="display: none;">
+                <div class="crm-header">
+                    <h1 class="crm-title">Assigned Leads Management</h1>
+                    <div class="crm-user-info">
+                        <div class="user-avatar">S</div>
+                        <div>
+                            <div style="font-weight: 600;">SDR Manager</div>
+                            <div style="font-size: 0.85rem; color: #64748b;">Sales Team</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SDR Summary Cards -->
+                <div class="sdr-summary-grid" id="sdrSummaryGrid">
+                    <div class="loading">Loading SDR assignments...</div>
+                </div>
+
+                <!-- Leads by SDR -->
+                <div class="leads-section">
+                    <div class="section-header">
+                        <div>
+                            <h2 class="section-title">Leads by SDR</h2>
+                            <p style="color: #64748b; font-size: 0.9rem; margin-top: 0.25rem;" id="assignedLeadCount">Loading assigned leads...</p>
+                        </div>
+                        <div>
+                            <select id="sdrFilterSelect" onchange="filterBySDR()">
+                                <option value="">All SDRs</option>
+                            </select>
+                            <select id="statusFilterSelect" onchange="filterByStatus()">
+                                <option value="">All Statuses</option>
+                                <option value="New">New</option>
+                                <option value="Contacted">Contacted</option>
+                                <option value="Not Reachable">Not Reachable</option>
+                                <option value="Demo Requested">Demo Requested</option>
+                                <option value="Samples Requested">Samples Requested</option>
+                                <option value="Qualified">Qualified</option>
+                                <option value="Converted">Converted</option>
+                                <option value="Dropped-Budget">Dropped-Budget</option>
+                            </select>
+                            <button onclick="clearAssignedFilters()">
+                                Clear Filters
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Assigned Leads Grid -->
+                    <div class="leads-grid" id="assignedLeadsGrid">
+                        <div class="loading">Loading assigned leads...</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- LEAD INTELLIGENCE PANEL - ENHANCED WITH ANALYTICS -->
+    <div class="lead-intelligence-panel" id="leadIntelligencePanel">
+        <div class="intelligence-header">
+            <h3 class="intelligence-title">Lead Analytics & Insights</h3>
+            <button class="intelligence-close" onclick="closeIntelligencePanel()">×</button>
+        </div>
+
+        <div class="score-display" id="scoreDisplay">
+            <div class="score-value" id="leadScoreValue">0</div>
+            <div class="score-label" id="leadScoreLabel">Analytics Score</div>
+        </div>
+
+        <div class="intelligence-section">
+            <div class="intelligence-section-title">💡 AI Recommendations</div>
+            <div id="aiRecommendations" style="background: #f0fdf4; padding: 1rem; border-radius: 8px; border-left: 4px solid #10b981; margin-bottom: 1rem;">
+                <div style="font-size: 0.85rem; color: #059669; line-height: 1.5;" id="recommendationText">
+                    Loading personalized recommendations...
+                </div>
+            </div>
+        </div>
+
+        <div class="intelligence-section">
+            <div class="intelligence-section-title">📊 Behavioral Analytics</div>
+            <div class="intelligence-item">
+                <span class="intelligence-label">Engagement Level:</span>
+                <span class="intelligence-value" id="engagementLevel">-</span>
+            </div>
+            <div class="intelligence-item">
+                <span class="intelligence-label">Time Spent:</span>
+                <span class="intelligence-value" id="timeSpent">-</span>
+            </div>
+            <div class="intelligence-item">
+                <span class="intelligence-label">Page Views:</span>
+                <span class="intelligence-value" id="pageViews">-</span>
+            </div>
+            <div class="intelligence-item">
+                <span class="intelligence-label">Last Activity:</span>
+                <span class="intelligence-value" id="lastActivity">-</span>
+            </div>
+        </div>
+
+        <div class="intelligence-section">
+            <div class="intelligence-section-title">🎯 Conversion Probability</div>
+            <div id="conversionMeter" style="background: #f8fafc; padding: 1rem; border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #1e293b;" id="conversionScore">0%</div>
+                <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">Based on similar leads</div>
+                <div id="conversionBar" style="width: 100%; height: 8px; background: #e5e7eb; border-radius: 4px; margin-top: 0.5rem; overflow: hidden;">
+                    <div id="conversionProgress" style="height: 100%; background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981); width: 0%; transition: width 0.5s ease;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="intelligence-section">
+            <div class="intelligence-section-title">📈 Lead Journey</div>
+            <div id="leadJourney" style="font-size: 0.85rem;">
+                <div class="journey-step" style="display: flex; align-items: center; margin: 0.5rem 0; padding: 0.5rem; background: #f8fafc; border-radius: 6px;">
+                    <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; margin-right: 0.75rem;"></div>
+                    <div>
+                        <div style="font-weight: 500; color: #1e293b;">Form Submitted</div>
+                        <div style="color: #64748b; font-size: 0.75rem;" id="journeyFormDate">-</div>
+                    </div>
+                </div>
+                <div class="journey-step" style="display: flex; align-items: center; margin: 0.5rem 0; padding: 0.5rem; background: #f8fafc; border-radius: 6px;">
+                    <div style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; margin-right: 0.75rem;"></div>
+                    <div>
+                        <div style="font-weight: 500; color: #1e293b;">Profile Completed</div>
+                        <div style="color: #64748b; font-size: 0.75rem;" id="journeyProfileDate">-</div>
+                    </div>
+                </div>
+                <div class="journey-step" style="display: flex; align-items: center; margin: 0.5rem 0; padding: 0.5rem; background: #f8fafc; border-radius: 6px;">
+                    <div style="width: 8px; height: 8px; background: #f59e0b; border-radius: 50%; margin-right: 0.75rem;"></div>
+                    <div>
+                        <div style="font-weight: 500; color: #1e293b;">Categories Selected</div>
+                        <div style="color: #64748b; font-size: 0.75rem;" id="journeyCategoriesDate">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="intelligence-section">
+            <div class="intelligence-section-title">📝 Quick Notes</div>
+            <textarea id="leadNotes" placeholder="Add notes about this lead..." 
+                      style="width: 100%; min-height: 80px; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.85rem; resize: vertical; font-family: inherit;">
+            </textarea>
+            <button onclick="saveLeadNotes()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
+                Save Notes
+            </button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem;">
+            <button class="action-button" onclick="initiateCall()" id="callButton">
+                📞 Call Lead
+            </button>
+            <button class="action-button" onclick="sendEmail()" style="background: #8b5cf6;">
+                📧 Send Email
+            </button>
+        </div>
+    </div>
+
+    <!-- SCORE BREAKDOWN MODAL -->
+    <div class="score-breakdown-modal" id="scoreBreakdownModal">
+        <div class="score-breakdown-content">
+            <div class="score-breakdown-header">
+                <h3 class="score-breakdown-title">Lead Score Breakdown</h3>
+                <button class="score-close" onclick="closeScoreBreakdown()">×</button>
+            </div>
+            
+            <div id="scoreBreakdownItems">
+                <!-- Score items will be populated here -->
+            </div>
+            
+            <div class="score-total">
+                <div class="score-total-value" id="totalScoreValue">0</div>
+                <div class="score-total-label">Total Lead Score</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOLLOWUP DATE MODAL -->
+    <div class="followup-modal" id="followupModal" onclick="event.target === this && closeFollowupModal()">
+        <div class="followup-content" onclick="event.stopPropagation()">
+            <h3 style="margin-bottom: 1rem; color: #1e293b;">Set Next Followup Date</h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">
+                When should we follow up with <span id="followupLeadName">this lead</span>?
+            </p>
+            <input type="datetime-local" id="followupDateInput" class="followup-input" 
+                   step="1" min="" max="" required>
+            <div class="followup-buttons">
+                <button class="btn-cancel" onclick="event.stopPropagation(); closeFollowupModal();">Cancel</button>
+                <button class="btn-save" onclick="event.stopPropagation(); saveFollowupDate();">Set Followup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SUPABASE CONFIGURATION
+        const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k';
+
+        // GLOBAL STATE - Same as original
+        let allLeads = [];
+        let filteredLeads = [];
+        let sdrTeam = [];
+        let currentSelectedLead = null;
+        let currentSort = { field: 'created_at', order: 'desc' };
+        let activeFilters = {
+            search: '',
+            status: '',
+            quality: '',
+            timeline: '',
+            budget: '',
+            category: '',
+            filterType: 'all',
+            timeframe: 'all',
+            sdr: '',
+            assignedStatus: ''
+        };
+
+        // UTILITY FUNCTIONS (Same as original but mobile-optimized)
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type} show`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 400);
+            }, 3000);
+        }
+
+        function getTimeAgo(dateString) {
+            if (!dateString) {
+                console.warn('getTimeAgo: No date provided');
+                return 'Unknown';
+            }
+            
+            try {
+                const now = new Date();
+                const past = new Date(dateString);
+                
+                if (isNaN(past.getTime())) {
+                    console.warn('getTimeAgo: Invalid date string:', dateString);
+                    return 'Unknown';
+                }
+                
+                const diffMs = now - past;
+                
+                if (diffMs < 0) {
+                    return 'In the future';
+                }
+                
+                const diffSecs = Math.floor(diffMs / 1000);
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+                
+                if (diffSecs < 30) return 'Just now';
+                if (diffSecs < 60) return `${diffSecs}s ago`;
+                if (diffMins < 60) return `${diffMins}m ago`;
+                if (diffHours < 24) return `${diffHours}h ago`;
+                if (diffDays < 30) return `${diffDays}d ago`;
+                if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
+                return `${Math.floor(diffDays / 365)}y ago`;
+                
+            } catch (error) {
+                console.error('getTimeAgo: Error calculating time ago:', error, dateString);
+                return 'Unknown';
+            }
+        }
+
+        function isPriorityLead(lead) {
+            return lead.timeline === 'immediately' && lead.decision_maker === true;
+        }
+
+        function isHighBudgetLead(lead) {
+            return lead.budget_range === 'high';
+        }
+
+        // PERSISTENCE FUNCTIONS (RESTORED)
+        function loadSavedChanges() {
+            try {
+                const savedChanges = localStorage.getItem('topiko_crm_changes');
+                return savedChanges ? JSON.parse(savedChanges) : {};
+            } catch (error) {
+                console.warn('❌ Saved changes read failed:', error);
+                return {};
+            }
+        }
+
+        function saveLeadChanges(leadId, changes) {
+            try {
+                if (!leadId) {
+                    console.error('❌ Cannot save changes: leadId is null or undefined');
+                    return false;
+                }
+                
+                const allChanges = loadSavedChanges();
+                
+                if (!allChanges[leadId]) {
+                    allChanges[leadId] = {};
+                }
+                
+                Object.assign(allChanges[leadId], changes);
+                
+                localStorage.setItem('topiko_crm_changes', JSON.stringify(allChanges));
+                
+                return true;
+            } catch (error) {
+                console.error('❌ Error saving lead changes:', error);
+                return false;
+            }
+        }
+
+        function processCombinedLeadsWithChanges(sources, savedChanges) {
+            console.log('🔄 Processing leads with saved changes merge...');
+            
+            return sources.map(source => {
+                const processedLead = processLeadData(source);
+                const leadKey = processedLead.id || processedLead.user_id || processedLead.email;
+                
+                if (savedChanges[leadKey]) {
+                    const changes = savedChanges[leadKey];
+                    const originalCreatedAt = processedLead.created_at;
+                    Object.assign(processedLead, changes);
+                    
+                    if (originalCreatedAt && !changes.created_at) {
+                        processedLead.created_at = originalCreatedAt;
+                    }
+                    
+                    processedLead.has_local_changes = true;
+                }
+                
+                return processedLead;
+            });
+        }
+
+        // DATA FETCHING FUNCTIONS (RESTORED)
+        async function fetchLeads() {
+            try {
+                console.log('🔍 Fetching leads with persistence merge...');
+                
+                let allSources = [];
+                let successCount = 0;
+                let errorCount = 0;
+                
+                const savedChanges = loadSavedChanges();
+                console.log(`💾 Loaded ${Object.keys(savedChanges).length} saved lead changes`);
+                
+                // Try localStorage for original form data
+                const localLeads = loadOriginalLocalStorage();
+                if (localLeads.length > 0) {
+                    allSources.push(...localLeads);
+                    console.log(`📱 Loaded ${localLeads.length} leads from original localStorage`);
+                    successCount++;
+                }
+                
+                // Try Supabase sources
+                try {
+                    const users = await fetchUsers();
+                    if (users.length > 0) {
+                        allSources.push(...users);
+                        console.log(`👥 Loaded ${users.length} users from Supabase`);
+                        successCount++;
+                    }
+                } catch (error) {
+                    console.warn('❌ Users fetch failed:', error.message);
+                    errorCount++;
+                }
+                
+                try {
+                    const intelligence = await fetchLeadIntelligence();
+                    console.log(`🧠 Loaded ${intelligence.length} intelligence records`);
+                } catch (error) {
+                    console.warn('❌ Intelligence fetch failed:', error.message);
+                }
+                
+                try {
+                    const crmLeads = await fetchCRMLeads();
+                    if (crmLeads.length > 0) {
+                        allSources.push(...crmLeads);
+                        console.log(`📊 Loaded ${crmLeads.length} CRM leads`);
+                        successCount++;
+                    }
+                } catch (error) {
+                    console.warn('❌ CRM leads fetch failed:', error.message);
+                    errorCount++;
+                }
+                
+                // If no data from any source, load demo data
+                if (allSources.length === 0) {
+                    console.log('📋 No data found, loading demo data...');
+                    allSources = generateDemoLeads();
+                    showNotification('Demo data loaded - Connect to database for live data', 'info');
+                }
+                
+                // Process and merge with saved changes
+                const processedLeads = processCombinedLeadsWithChanges(allSources, savedChanges);
+                allLeads = processedLeads;
+                
+                console.log(`✅ Total processed leads: ${allLeads.length}`);
+                
+                if (Object.keys(savedChanges).length > 0) {
+                    console.log(`💾 Applied saved changes to ${Object.keys(savedChanges).length} leads`);
+                }
+                
+                updateDashboardStats();
+                applyFilters();
+                
+                if (errorCount > 0 && successCount > 0) {
+                    showNotification(`Loaded ${allLeads.length} leads (some sources failed)`, 'info');
+                } else if (errorCount === 0 && successCount > 0) {
+                    showNotification(`Successfully loaded ${allLeads.length} leads`, 'success');
+                }
+                
+                return allLeads.length;
+                
+            } catch (error) {
+                console.error('❌ Critical error in fetchLeads:', error);
+                
+                console.log('🚨 Loading emergency demo data...');
+                allLeads = generateDemoLeads();
+                updateDashboardStats();
+                applyFilters();
+                
+                showNotification('Using demo data - Check network connection', 'error');
+                return allLeads.length;
+            }
+        }
+
+        function loadOriginalLocalStorage() {
+            try {
+                const storedLeads = localStorage.getItem('topiko_local_leads');
+                return storedLeads ? JSON.parse(storedLeads) : [];
+            } catch (error) {
+                console.warn('❌ Original localStorage read failed:', error);
+                return [];
+            }
+        }
+
+        async function fetchUsers() {
+            console.log('👥 Fetching users from Supabase...');
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*&order=created_at.desc&limit=100`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                clearTimeout(timeoutId);
+                if (error.name === 'AbortError') {
+                    throw new Error('Request timeout');
+                }
+                throw error;
+            }
+        }
+
+        async function fetchLeadIntelligence() {
+            console.log('🧠 Fetching lead intelligence...');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence?select=*&order=created_at.desc&limit=100`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) return [];
+                return await response.json();
+            } catch (error) {
+                console.warn('❌ Lead intelligence table not accessible');
+                return [];
+            }
+        }
+
+        async function fetchCRMLeads() {
+            console.log('📊 Fetching CRM leads...');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/crm_leads?select=*&order=created_at.desc&limit=50`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) return [];
+                return await response.json();
+            } catch (error) {
+                console.warn('❌ CRM leads table not accessible');
+                return [];
+            }
+        }
+
+        async function fetchSDRTeam() {
+            console.log('👨‍💼 Fetching SDR team...');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/sdr_users?select=*&order=name.asc`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    sdrTeam = await response.json();
+                    console.log(`✅ Loaded ${sdrTeam.length} SDRs`);
+                } else {
+                    sdrTeam = generateDemoSDRs();
+                    console.log('📋 Using demo SDR data');
+                }
+                
+                updateSDRDropdowns();
+                return sdrTeam;
+                
+            } catch (error) {
+                console.warn('❌ SDR fetch failed, using demo data:', error);
+                sdrTeam = generateDemoSDRs();
+                updateSDRDropdowns();
+                return sdrTeam;
+            }
+        }
+
+        function generateDemoSDRs() {
+            return [
+                { id: 'sdr_001', name: 'Rahul Sharma', email: 'rahul@topiko.com', is_active: true, current_leads: 0 },
+                { id: 'sdr_002', name: 'Priya Patel', email: 'priya@topiko.com', is_active: true, current_leads: 0 },
+                { id: 'sdr_003', name: 'Vikram Singh', email: 'vikram@topiko.com', is_active: true, current_leads: 0 },
+                { id: 'sdr_004', name: 'Anita Kumar', email: 'anita@topiko.com', is_active: true, current_leads: 0 },
+                { id: 'sdr_005', name: 'Ravi Mehta', email: 'ravi@topiko.com', is_active: true, current_leads: 0 }
+            ];
+        }
+
+        function processLeadData(rawLead) {
+            const intel = rawLead.lead_intelligence || {};
+            
+            const leadScore = calculateLeadScore(rawLead);
+            const leadQuality = getQualityFromScore(leadScore);
+            
+            return {
+                id: rawLead.user_id || rawLead.id || generateId(),
+                user_id: rawLead.user_id || rawLead.id,
+                
+                name: rawLead.name || 'Unknown Lead',
+                email: rawLead.email || '',
+                phone: rawLead.phone || '',
+                business_name: rawLead.business_name || 'Unknown Business',
+                address: rawLead.address || '',
+                business_type: rawLead.business_type || '',
+                business_category: rawLead.business_category || '',
+                
+                lead_score: leadScore,
+                lead_quality: leadQuality,
+                
+                selected_goals: rawLead.selected_goals || [],
+                goals_display: formatGoalsForDisplay(rawLead.selected_goals || []),
+                selected_categories: rawLead.selected_categories || intel.selected_categories || [],
+                selected_subcategories: rawLead.selected_subcategories || intel.selected_subcategories || [],
+                
+                timeline: rawLead.timeline || intel.timeline || 'just_checking',
+                budget_range: rawLead.budget_range || intel.budget_range || 'low',
+                decision_maker: rawLead.decision_maker || intel.decision_maker || false,
+                online_presence: rawLead.online_presence || intel.online_presence || 'none',
+                
+                session_duration_minutes: intel.session_duration_minutes || 0,
+                page_views: intel.page_views || 1,
+                utm_source: intel.utm_source || 'Direct',
+                device_type: intel.device_type || 'Unknown',
+                
+                products_count: rawLead.products_count || 0,
+                
+                lead_status: intel.lead_status || 'New',
+                assigned_sdr_id: intel.assigned_sdr_id || rawLead.assigned_sdr_id || null,
+                lead_pipeline_status: rawLead.lead_pipeline_status || intel.lead_pipeline_status || 'New',
+                next_followup_date: rawLead.next_followup_date || intel.next_followup_date || null,
+                lead_notes: rawLead.lead_notes || intel.lead_notes || '',
+                
+                created_at: rawLead.created_at || new Date().toISOString(),
+                
+                data_source: rawLead.lead_intelligence ? 'supabase' : 'crm'
+            };
+        }
+
+        function calculateLeadScore(lead) {
+            let score = 0;
+            
+            if (lead.name && lead.email && lead.phone && lead.business_name) {
+                score += 20;
+            }
+            
+            const goals = lead.selected_goals || [];
+            score += Math.min(goals.length * 5, 25);
+            
+            const categories = lead.selected_categories || [];
+            const subcategories = lead.selected_subcategories || [];
+            score += Math.min((categories.length + subcategories.length) * 2, 20);
+            
+            score += Math.min((lead.products_count || 0) * 5, 25);
+            
+            if (lead.budget_range === 'qualified' || lead.budget_range === 'high') {
+                score += 5;
+            }
+            
+            if (lead.decision_maker) {
+                score += 5;
+            }
+            
+            if (lead.timeline === 'immediately') {
+                score += 10;
+            } else if (lead.timeline === 'within_week') {
+                score += 5;
+            }
+            
+            return Math.min(score, 100);
+        }
+
+        function getQualityFromScore(score) {
+            if (score >= 65) return 'Hot';
+            if (score >= 41) return 'Warm';
+            return 'Cold';
+        }
+
+        function formatGoalsForDisplay(goals) {
+            const goalLabels = {
+                'ecommerce': 'Sell Online (E-commerce)',
+                'customers': 'Reach More Customers',
+                'manage': 'Manage Customers',
+                'search': 'Appear in Search Results',
+                'brand': 'Establish my Brand'
+            };
+            
+            return goals.map(goal => goalLabels[goal] || goal);
+        }
+
+        function generateId() {
+            return 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function updateSDRDropdowns() {
+            const sdrFilterSelect = document.getElementById('sdrFilterSelect');
+            if (sdrFilterSelect) {
+                while (sdrFilterSelect.children.length > 1) {
+                    sdrFilterSelect.removeChild(sdrFilterSelect.lastChild);
+                }
+                
+                sdrTeam.forEach(sdr => {
+                    if (sdr.is_active) {
+                        const option = document.createElement('option');
+                        option.value = sdr.id;
+                        option.textContent = sdr.name;
+                        sdrFilterSelect.appendChild(option);
+                    }
                 });
             }
         }
-        
-        // Contact method recommendations
-        if (lead.phone && !lead.lastCall) {
-            recommendations.push({
-                type: 'Contact Strategy',
-                message: 'Consider a phone call - higher conversion than email alone.',
-                priority: 'medium'
-            });
-        }
-        
-        // Company size recommendations
-        if (lead.companySize === 'Enterprise') {
-            recommendations.push({
-                type: 'Enterprise Focus',
-                message: 'Prepare enterprise demo. Involve solution engineer if needed.',
-                priority: 'high'
-            });
-        }
-        
-    } catch (error) {
-        console.error('Error generating AI recommendations:', error);
-        recommendations.push({
-            type: 'Default',
-            message: 'Review lead details and follow standard qualification process.',
-            priority: 'medium'
-        });
-    }
-    
-    return recommendations;
-}
 
-// MISSING FUNCTION 2: Calculate Lead Velocity
-function calculateLeadVelocity(leads) {
-    console.log('📈 Calculating lead velocity');
-    
-    try {
-        const now = new Date();
-        const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
-        
-        const recentLeads = leads.filter(lead => {
-            const leadDate = new Date(lead.dateAdded || lead.created_at || now);
-            return leadDate >= thirtyDaysAgo;
-        });
-        
-        const velocity = {
-            total: recentLeads.length,
-            weekly: Math.round(recentLeads.length / 4.3), // 30 days / 7 days
-            daily: Math.round(recentLeads.length / 30),
-            trend: recentLeads.length > 0 ? 'positive' : 'neutral'
-        };
-        
-        console.log('📊 Lead velocity calculated:', velocity);
-        return velocity;
-        
-    } catch (error) {
-        console.error('Error calculating lead velocity:', error);
-        return { total: 0, weekly: 0, daily: 0, trend: 'neutral' };
-    }
-}
-
-// MISSING FUNCTION 3: Generate Score Breakdown Details
-function generateScoreBreakdownDetails(lead) {
-    console.log('🔍 Generating detailed score breakdown for:', lead.company);
-    
-    try {
-        const breakdown = {
-            companyScore: 0,
-            industryScore: 0,
-            engagementScore: 0,
-            fitScore: 0,
-            details: []
-        };
-        
-        // Company Score (0-25 points)
-        if (lead.companySize === 'Enterprise') breakdown.companyScore += 25;
-        else if (lead.companySize === 'Mid-Market') breakdown.companyScore += 20;
-        else if (lead.companySize === 'Small Business') breakdown.companyScore += 15;
-        else breakdown.companyScore += 10;
-        
-        breakdown.details.push({
-            category: 'Company Size',
-            score: breakdown.companyScore,
-            max: 25,
-            reason: `${lead.companySize || 'Unknown'} company size`
-        });
-        
-        // Industry Score (0-25 points)
-        const highValueIndustries = ['Technology', 'Finance', 'Healthcare'];
-        if (highValueIndustries.includes(lead.industry)) breakdown.industryScore = 25;
-        else if (lead.industry) breakdown.industryScore = 20;
-        else breakdown.industryScore = 10;
-        
-        breakdown.details.push({
-            category: 'Industry Fit',
-            score: breakdown.industryScore,
-            max: 25,
-            reason: `${lead.industry || 'Unknown'} industry alignment`
-        });
-        
-        // Engagement Score (0-25 points)
-        let engagementPoints = 0;
-        if (lead.email) engagementPoints += 10;
-        if (lead.phone) engagementPoints += 10;
-        if (lead.website) engagementPoints += 5;
-        breakdown.engagementScore = engagementPoints;
-        
-        breakdown.details.push({
-            category: 'Contact Info',
-            score: breakdown.engagementScore,
-            max: 25,
-            reason: `${lead.email ? 'Email' : ''}${lead.phone ? ' + Phone' : ''}${lead.website ? ' + Website' : ''} available`
-        });
-        
-        // Fit Score (0-25 points)
-        const totalEmployees = parseInt(lead.employees) || 0;
-        if (totalEmployees > 1000) breakdown.fitScore = 25;
-        else if (totalEmployees > 100) breakdown.fitScore = 20;
-        else if (totalEmployees > 10) breakdown.fitScore = 15;
-        else breakdown.fitScore = 10;
-        
-        breakdown.details.push({
-            category: 'Company Size',
-            score: breakdown.fitScore,
-            max: 25,
-            reason: `${totalEmployees || 'Unknown'} employees`
-        });
-        
-        const totalScore = breakdown.companyScore + breakdown.industryScore + breakdown.engagementScore + breakdown.fitScore;
-        
-        return {
-            ...breakdown,
-            totalScore,
-            maxScore: 100,
-            percentage: Math.round((totalScore / 100) * 100)
-        };
-        
-    } catch (error) {
-        console.error('Error generating score breakdown:', error);
-        return {
-            totalScore: 50,
-            maxScore: 100,
-            percentage: 50,
-            details: [{ category: 'Error', score: 50, max: 100, reason: 'Unable to calculate detailed breakdown' }]
-        };
-    }
-}
-
-// MISSING FUNCTION 4: Enhanced Mobile Touch Handler
-function handleMobileTouch(element, callback) {
-    if (!element || typeof callback !== 'function') return;
-    
-    let touchStart = { x: 0, y: 0 };
-    let touchMoved = false;
-    
-    element.addEventListener('touchstart', function(e) {
-        touchStart.x = e.touches[0].clientX;
-        touchStart.y = e.touches[0].clientY;
-        touchMoved = false;
-        
-        // Add touch feedback
-        element.style.transform = 'scale(0.95)';
-        element.style.transition = 'transform 0.1s ease';
-    }, { passive: true });
-    
-    element.addEventListener('touchmove', function(e) {
-        const touch = e.touches[0];
-        const deltaX = Math.abs(touch.clientX - touchStart.x);
-        const deltaY = Math.abs(touch.clientY - touchStart.y);
-        
-        if (deltaX > 10 || deltaY > 10) {
-            touchMoved = true;
-            // Remove touch feedback if moved
-            element.style.transform = '';
+        function generateDemoLeads() {
+            // Generate demo data for testing
+            const demoLeads = [];
+            for (let i = 0; i < 10; i++) {
+                demoLeads.push({
+                    id: `demo_${i}`,
+                    name: `Demo Lead ${i}`,
+                    email: `demo${i}@example.com`,
+                    phone: `+91 9876543${i}${i}${i}`,
+                    business_name: `Demo Business ${i}`,
+                    lead_score: Math.floor(Math.random() * 100),
+                    lead_quality: i % 3 === 0 ? 'Hot' : i % 3 === 1 ? 'Warm' : 'Cold',
+                    timeline: ['immediately', 'within_week', 'this_month'][Math.floor(Math.random() * 3)],
+                    budget_range: ['high', 'qualified', 'low'][Math.floor(Math.random() * 3)],
+                    decision_maker: Math.random() > 0.5,
+                    created_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    selected_goals: ['ecommerce'],
+                    goals_display: ['Sell Online (E-commerce)'],
+                    selected_categories: ['boutique'],
+                    session_duration_minutes: Math.floor(Math.random() * 10) + 1,
+                    products_count: Math.floor(Math.random() * 5),
+                    utm_source: 'Direct',
+                    lead_status: 'New',
+                    lead_pipeline_status: 'New',
+                    assigned_sdr_id: null,
+                    next_followup_date: null,
+                    lead_notes: ''
+                });
+            }
+            return demoLeads;
         }
-    }, { passive: true });
-    
-    element.addEventListener('touchend', function(e) {
-        // Remove touch feedback
-        element.style.transform = '';
-        
-        if (!touchMoved) {
-            e.preventDefault();
-            callback(e);
-        }
-    });
-    
-    // Fallback for desktop
-    element.addEventListener('click', function(e) {
-        if (!e.isTrusted) return; // Prevent double firing on mobile
-        callback(e);
-    });
-}
 
-// MISSING FUNCTION 5: Mobile Dropdown Positioning Fix
-function positionMobileDropdown(dropdown, trigger) {
-    if (!dropdown || !trigger) return;
-    
-    const isMobile = window.innerWidth < 768;
-    
-    if (isMobile) {
-        // Center dropdown on mobile
-        dropdown.style.position = 'fixed';
-        dropdown.style.top = '50%';
-        dropdown.style.left = '50%';
-        dropdown.style.transform = 'translate(-50%, -50%)';
-        dropdown.style.width = '90vw';
-        dropdown.style.maxWidth = '300px';
-        dropdown.style.zIndex = '10000';
-        
-        // Add backdrop
-        const backdrop = document.createElement('div');
-        backdrop.className = 'mobile-dropdown-backdrop';
-        backdrop.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-        `;
-        
-        document.body.appendChild(backdrop);
-        
-        // Close on backdrop click
-        backdrop.addEventListener('click', function() {
-            dropdown.style.display = 'none';
-            backdrop.remove();
-        });
-        
-        // Store backdrop reference for cleanup
-        dropdown._backdrop = backdrop;
-        
-    } else {
-        // Desktop positioning
-        const rect = trigger.getBoundingClientRect();
-        dropdown.style.position = 'absolute';
-        dropdown.style.top = (rect.bottom + 5) + 'px';
-        dropdown.style.left = rect.left + 'px';
-        dropdown.style.transform = 'none';
-        dropdown.style.width = 'auto';
-        dropdown.style.zIndex = '1000';
-    }
-}
-
-// MISSING FUNCTION 6: Clean up mobile dropdown
-function cleanupMobileDropdown(dropdown) {
-    if (dropdown && dropdown._backdrop) {
-        dropdown._backdrop.remove();
-        dropdown._backdrop = null;
-    }
-}
-
-// MISSING FUNCTION 7: Enhanced Error Handler
-function handleCRMError(error, context = 'Unknown') {
-    console.error(`❌ CRM Error in ${context}:`, error);
-    
-    // Show user-friendly error message
-    const notification = document.createElement('div');
-    notification.className = 'error-notification';
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #ff4757;
-        color: white;
-        padding: 12px 16px;
-        border-radius: 6px;
-        z-index: 10001;
-        max-width: 300px;
-        box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
-    `;
-    
-    notification.innerHTML = `
-        <strong>Error in ${context}</strong><br>
-        <small>Check console for details</small>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        if (notification.parentNode) {
-            notification.remove();
-        }
-    }, 5000);
-    
-    return false; // Prevent further execution
-}
-
-// MISSING FUNCTION 8: Debug Mobile Buttons (Enhanced)
-function debugMobileButtons() {
-    console.log('🔧 Debugging mobile buttons...');
-    
-    const buttons = document.querySelectorAll('button, .btn, [onclick]');
-    console.log(`Found ${buttons.length} interactive elements`);
-    
-    buttons.forEach((btn, index) => {
-        const rect = btn.getBoundingClientRect();
-        const hasClick = btn.onclick || btn.addEventListener;
-        const isVisible = rect.width > 0 && rect.height > 0;
-        
-        console.log(`Button ${index + 1}:`, {
-            text: btn.textContent?.trim().substring(0, 20) || 'No text',
-            size: `${Math.round(rect.width)}x${Math.round(rect.height)}`,
-            hasClick: !!hasClick,
-            isVisible,
-            classes: btn.className
-        });
-        
-        // Highlight buttons temporarily
-        if (isVisible) {
-            const originalBorder = btn.style.border;
-            btn.style.border = '2px solid red';
-            setTimeout(() => {
-                btn.style.border = originalBorder;
-            }, 2000);
-        }
-    });
-    
-    return `Debugged ${buttons.length} buttons - check console and red highlights`;
-}
-
-// Update existing functions to use error handling
-const originalShowLeadIntelligence = window.showLeadIntelligence;
-window.showLeadIntelligence = function(leadId) {
-    try {
-        console.log('🔍 Opening lead intelligence for lead:', leadId);
-        
-        const lead = allLeads.find(l => l.id === leadId);
-        if (!lead) {
-            throw new Error(`Lead with ID ${leadId} not found`);
-        }
-        
-        // Generate AI recommendations
-        const recommendations = generateAIRecommendations(lead);
-        
-        // Get score breakdown
-        const scoreBreakdown = generateScoreBreakdownDetails(lead);
-        
-        // Continue with original function logic...
-        if (originalShowLeadIntelligence) {
-            return originalShowLeadIntelligence.call(this, leadId);
-        }
-        
-        // If no original function, create the intelligence panel
-        const intelligencePanel = document.getElementById('leadIntelligencePanel');
-        if (intelligencePanel) {
-            intelligencePanel.style.display = 'block';
+        function updateDashboardStats() {
+            // Update dashboard statistics
+            document.getElementById('todayLeads').textContent = allLeads.filter(lead => {
+                const today = new Date();
+                const leadDate = new Date(lead.created_at);
+                return leadDate.toDateString() === today.toDateString();
+            }).length;
             
-            // Add recommendations to panel
-            const recommendationsHTML = `
-                <div class="ai-recommendations">
-                    <h4>🤖 AI Recommendations</h4>
-                    ${recommendations.map(rec => `
-                        <div class="ai-recommendation-item">
-                            <strong>${rec.type}</strong>
-                            <span>${rec.message}</span>
+            document.getElementById('monthLeads').textContent = allLeads.filter(lead => {
+                const thisMonth = new Date();
+                const leadDate = new Date(lead.created_at);
+                return leadDate.getMonth() === thisMonth.getMonth() && leadDate.getFullYear() === thisMonth.getFullYear();
+            }).length;
+            
+            document.getElementById('totalLeads').textContent = allLeads.length;
+            document.getElementById('hotLeads').textContent = allLeads.filter(lead => lead.lead_score >= 65).length;
+            document.getElementById('warmLeads').textContent = allLeads.filter(lead => lead.lead_score >= 41 && lead.lead_score < 65).length;
+            document.getElementById('priorityLeads').textContent = allLeads.filter(lead => isPriorityLead(lead)).length;
+        }
+
+        function renderLeads() {
+            const leadsGrid = document.getElementById('leadsGrid');
+            const leadCount = document.getElementById('leadCount');
+            
+            leadCount.textContent = `${filteredLeads.length} leads found`;
+            
+            if (filteredLeads.length === 0) {
+                leadsGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #64748b;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+                        <h3 style="margin-bottom: 0.5rem;">No leads found</h3>
+                        <p>Try adjusting your filters or check back later</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const leadsHTML = filteredLeads.slice(0, 20).map(lead => createLeadCard(lead)).join('');
+            leadsGrid.innerHTML = leadsHTML;
+        }
+
+        function createLeadCard(lead) {
+            const budgetLabels = {
+                'high': '₹25,000+',
+                'qualified': '₹10,000-₹25,000',
+                'budget_unqualified': '₹5,000-₹10,000',
+                'low': '<₹5,000'
+            };
+            
+            const timelineLabels = {
+                'immediately': 'Immediately',
+                'within_week': 'Within Week',
+                'this_month': 'This Month',
+                'just_checking': 'Just Checking'
+            };
+            
+            let cardClasses = 'lead-card fade-in';
+            if (isPriorityLead(lead)) cardClasses += ' priority';
+            else if (isHighBudgetLead(lead)) cardClasses += ' high-budget';
+            
+            const goalsHTML = lead.goals_display.slice(0, 3).map(goal => 
+                `<span class="card-tag goal-tag">${goal}</span>`
+            ).join('');
+            
+            const categoriesHTML = lead.selected_categories.slice(0, 2).map(cat => 
+                `<span class="card-tag category-tag">${cat}</span>`
+            ).join('');
+            
+            let badges = '';
+            if (isPriorityLead(lead)) badges += '<span class="badge badge-priority">Priority</span>';
+            if (isHighBudgetLead(lead)) badges += '<span class="badge badge-high-budget">High Budget</span>';
+            if (lead.decision_maker) badges += '<span class="badge badge-decision-maker">Decision Maker</span>';
+            
+            const timelineClass = lead.timeline === 'immediately' ? 'immediate' : 
+                                 lead.timeline === 'within_week' ? 'week' : '';
+            badges += `<span class="badge badge-timeline ${timelineClass}">${timelineLabels[lead.timeline]}</span>`;
+            
+            let formattedDate = 'Unknown Date';
+            let formattedTime = '';
+            
+            if (lead.created_at) {
+                try {
+                    const leadDate = new Date(lead.created_at);
+                    if (!isNaN(leadDate.getTime())) {
+                        formattedDate = leadDate.toLocaleDateString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                        });
+                        formattedTime = leadDate.toLocaleTimeString('en-IN', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error parsing created_at date for lead:', lead.name, error);
+                }
+            }
+            
+            const assignedSDR = lead.assigned_sdr_id ? 
+                sdrTeam.find(sdr => sdr.id === lead.assigned_sdr_id)?.name || 'Unknown SDR' : 
+                'Unassigned';
+
+            const currentStatus = lead.lead_pipeline_status || 'New';
+            const nextFollowup = lead.next_followup_date ? 
+                new Date(lead.next_followup_date).toLocaleDateString('en-IN') : 
+                'Not set';
+            
+            const timeAgoText = getTimeAgo(lead.created_at);
+            
+            return `
+                <div class="${cardClasses}">
+                    <div class="lead-card-top">
+                        <div class="lead-date">${formattedDate}${formattedTime ? ' • ' + formattedTime : ''}</div>
+                        <div class="lead-assigned-sdr">${assignedSDR}</div>
+                    </div>
+                    
+                    <div class="lead-card-header">
+                        <div class="lead-info">
+                            <div class="lead-name">${lead.name}</div>
+                            <div class="lead-business">${lead.business_name}</div>
+                            <div class="lead-contact">📧 ${lead.email}</div>
+                            <div class="lead-contact">📞 ${lead.phone}</div>
                         </div>
-                    `).join('')}
+                        <div class="lead-score-badge score-${lead.lead_quality.toLowerCase()}" 
+                             onclick="showScoreBreakdown('${lead.id}')" 
+                             style="cursor: pointer;" 
+                             title="Click to see score breakdown">
+                            ${lead.lead_score}
+                        </div>
+                    </div>
+                    
+                    <div class="lead-card-body">
+                        ${goalsHTML ? `
+                        <div class="card-section">
+                            <div class="card-section-title">Goals</div>
+                            <div class="card-tags">${goalsHTML}</div>
+                        </div>` : ''}
+                        
+                        ${categoriesHTML ? `
+                        <div class="card-section">
+                            <div class="card-section-title">Categories</div>
+                            <div class="card-tags">${categoriesHTML}</div>
+                        </div>` : ''}
+                        
+                        ${badges ? `
+                        <div class="card-section">
+                            <div class="card-section-title">Qualification</div>
+                            <div class="card-tags">${badges}</div>
+                        </div>` : ''}
+                        
+                        <div class="card-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Budget:</span>
+                                ${budgetLabels[lead.budget_range] || lead.budget_range}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Source:</span>
+                                ${lead.utm_source}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Session:</span>
+                                ${lead.session_duration_minutes}min
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Products:</span>
+                                ${lead.products_count}
+                            </div>
+                        </div>
+                        
+                        <div class="card-status">
+                            <span class="status-badge status-${lead.lead_status.toLowerCase().replace(' ', '-')}">
+                                ${lead.lead_status}
+                            </span>
+                            <span class="assigned-sdr">
+                                ${timeAgoText}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-actions">
+                        <div class="sdr-dropdown">
+                            <button class="action-btn btn-assign ${lead.assigned_sdr_id ? 'reassign' : ''}" 
+                                    onclick="toggleSDRDropdown('${lead.id}', event)">
+                                ${lead.assigned_sdr_id ? '↻ Re-assign' : '👨‍💼 Assign'}
+                            </button>
+                            <div class="sdr-dropdown-content" id="sdrDropdown-${lead.id}">
+                                ${sdrTeam.map(sdr => `
+                                    <div class="sdr-option" onclick="assignLeadToSDR('${lead.id}', '${sdr.id}')">
+                                        ${sdr.name}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="status-dropdown">
+                            <button class="action-btn btn-status" onclick="toggleStatusDropdown('${lead.id}', event)">
+                                📊 Status
+                            </button>
+                            <div class="status-dropdown-content" id="statusDropdown-${lead.id}">
+                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Contacted')">Contacted</div>
+                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Not Reachable')">Not Reachable</div>
+                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Demo Requested')">Demo Requested</div>
+                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Samples Requested')">Samples Requested</div>
+                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Dropped-Budget')">Dropped-Budget</div>
+                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Converted')">Converted</div>
+                            </div>
+                        </div>
+                        
+                        <button class="action-btn btn-intel" onclick="showLeadIntelligence('${lead.id}')">
+                            📈 Analytics
+                        </button>
+                    </div>
+
+                    <div class="card-status-section">
+                        <div class="detail-item">
+                            <span class="detail-label">Pipeline Status:</span>
+                            <span style="font-weight: 600; color: #3b82f6;">${currentStatus}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Next Followup:</span>
+                            <span style="cursor: pointer; color: #8b5cf6; text-decoration: underline;" 
+                                  onclick="event.stopPropagation(); setFollowupDate('${lead.id}');">${nextFollowup}</span>
+                        </div>
+                    </div>
                 </div>
             `;
-            
-            const existingContent = intelligencePanel.innerHTML;
-            intelligencePanel.innerHTML = recommendationsHTML + existingContent;
         }
-        
-    } catch (error) {
-        handleCRMError(error, 'Lead Intelligence');
-    }
-};
 
-// Add enhanced debugging to window object
-window.debugCRM = window.debugCRM || {};
-window.debugCRM.testMobileButtons = debugMobileButtons;
-window.debugCRM.fixMissingFunctions = function() {
-    console.log('✅ All missing functions have been added!');
-    console.log('Available functions:', [
-        'generateAIRecommendations',
-        'calculateLeadVelocity', 
-        'generateScoreBreakdownDetails',
-        'handleMobileTouch',
-        'positionMobileDropdown',
-        'handleCRMError'
-    ]);
-};
+        function showLeadIntelligence(leadId) {
+            console.log('📈 Opening lead intelligence for:', leadId);
+            
+            const lead = allLeads.find(l => l.id === leadId);
+            if (!lead) {
+                console.error('❌ Lead not found:', leadId);
+                showNotification('Lead not found', 'error');
+                return;
+            }
+            
+            currentSelectedLead = lead;
+            console.log('✅ Lead found:', lead.name);
+            
+            // Update score display
+            document.getElementById('leadScoreValue').textContent = lead.lead_score;
+            document.getElementById('leadScoreLabel').textContent = `${lead.lead_quality} Lead Analytics`;
+            
+            // Update behavioral analytics
+            document.getElementById('engagementLevel').textContent = getEngagementLevel(lead);
+            document.getElementById('timeSpent').textContent = `${lead.session_duration_minutes} minutes`;
+            document.getElementById('pageViews').textContent = lead.page_views || 1;
+            document.getElementById('lastActivity').textContent = getTimeAgo(lead.created_at);
+            
+            // Update conversion probability
+            const conversionProb = calculateConversionProbability(lead);
+            document.getElementById('conversionScore').textContent = `${conversionProb}%`;
+            document.getElementById('conversionProgress').style.width = `${conversionProb}%`;
+            
+            // Update journey dates
+            document.getElementById('journeyFormDate').textContent = new Date(lead.created_at).toLocaleDateString('en-IN');
+            document.getElementById('journeyProfileDate').textContent = new Date(lead.created_at).toLocaleDateString('en-IN');
+            document.getElementById('journeyCategoriesDate').textContent = new Date(lead.created_at).toLocaleDateString('en-IN');
+            
+            // Load AI recommendations
+            generateAIRecommendations(lead);
+            
+            // Load notes
+            document.getElementById('leadNotes').value = lead.lead_notes || '';
+            
+            // Update score display color
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            if (lead.lead_score >= 65) {
+                scoreDisplay.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+            } else if (lead.lead_score >= 41) {
+                scoreDisplay.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+            } else {
+                scoreDisplay.style.background = 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
+            }
+            
+            // Show the panel
+            const panel = document.getElementById('leadIntelligencePanel');
+            if (panel) {
+                panel.classList.add('show');
+                console.log('✅ Lead intelligence panel shown');
+            } else {
+                console.error('❌ Lead intelligence panel not found');
+            }
+        }
 
-console.log('✅ Missing CRM functions have been restored!');
-console.log('🔧 Run window.debugCRM.fixMissingFunctions() to verify');
+        function showScoreBreakdown(leadId) {
+            console.log('🔍 Showing score breakdown for lead:', leadId);
+            
+            const lead = allLeads.find(l => l.id === leadId);
+            if (!lead) {
+                console.error('❌ Lead not found:', leadId);
+                showNotification('Lead not found', 'error');
+                return;
+            }
+            
+            console.log('📊 Lead found, calculating score breakdown...');
+            
+            const scoreItems = calculateDetailedScore(lead);
+            const breakdownContainer = document.getElementById('scoreBreakdownItems');
+            
+            if (!breakdownContainer) {
+                console.error('❌ Score breakdown container not found');
+                return;
+            }
+            
+            let itemsHTML = '';
+            scoreItems.forEach(item => {
+                itemsHTML += `
+                    <div class="score-item">
+                        <span class="score-item-label">${item.label}</span>
+                        <span class="score-item-value">${item.points} pts</span>
+                    </div>
+                `;
+            });
+            
+            breakdownContainer.innerHTML = itemsHTML;
+            
+            const totalScoreElement = document.getElementById('totalScoreValue');
+            if (totalScoreElement) {
+                totalScoreElement.textContent = lead.lead_score;
+            }
+            
+            const modal = document.getElementById('scoreBreakdownModal');
+            if (modal) {
+                modal.classList.add('show');
+                console.log('✅ Score breakdown modal shown');
+            } else {
+                console.error('❌ Score breakdown modal not found');
+            }
+        }
 
-</script>
+        function showSection(sectionId) {
+            console.log('📄 Switching to section:', sectionId);
+            
+            // Hide all sections
+            document.querySelectorAll('.crm-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            } else {
+                console.error('❌ Section not found:', sectionId);
+                return;
+            }
+            
+            // Update navigation
+            document.querySelectorAll('.crm-nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Find and activate the clicked nav link
+            const clickedLink = event?.target?.closest('.crm-nav-link');
+            if (clickedLink) {
+                clickedLink.classList.add('active');
+            }
+            
+            // Load section-specific data
+            if (sectionId === 'assigned-leads') {
+                console.log('🔄 Loading assigned leads section...');
+                // Small delay to ensure DOM is ready
+                setTimeout(() => {
+                    renderAssignedLeads();
+                }, 100);
+            }
+            
+            console.log('✅ Section switched successfully');
+        }
 
+        function applyFilters() {
+            filteredLeads = [...allLeads];
+            renderLeads();
+        }
+
+        function filterByTimeframe(timeframe) {
+            activeFilters.timeframe = timeframe;
+            showNotification(`Showing ${timeframe} leads`, 'info');
+            applyFilters();
+        }
+
+        function filterByQuality(quality) {
+            activeFilters.filterType = quality;
+            showNotification(`Showing ${quality} leads`, 'info');
+            applyFilters();
+        }
+
+        function toggleFilter(filterType, element) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            activeFilters.filterType = filterType;
+            applyFilters();
+        }
+
+        function clearAllFilters() {
+            activeFilters = {
+                search: '', status: '', quality: '', timeline: '', budget: '', category: '', filterType: 'all'
+            };
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.filter-btn').classList.add('active');
+            applyFilters();
+            showNotification('All filters cleared', 'info');
+        }
+
+        function applySorting() {
+            renderLeads();
+        }
+
+        function toggleSortOrder() {
+            currentSort.order = currentSort.order === 'desc' ? 'asc' : 'desc';
+            const btn = document.getElementById('sortOrderBtn');
+            btn.textContent = currentSort.order === 'desc' ? '↓ Desc' : '↑ Asc';
+            applySorting();
+        }
+
+        // ASSIGNED LEADS FUNCTIONS (FIXED FOR MOBILE)
+        function renderAssignedLeads() {
+            console.log('👨‍💼 Rendering assigned leads page...');
+            
+            let assignedLeads = allLeads.filter(lead => lead.assigned_sdr_id);
+            console.log(`📊 Found ${assignedLeads.length} assigned leads total`);
+            
+            if (activeFilters.sdr) {
+                assignedLeads = assignedLeads.filter(lead => lead.assigned_sdr_id === activeFilters.sdr);
+                console.log(`🔍 Filtered to ${assignedLeads.length} leads for SDR: ${activeFilters.sdr}`);
+            }
+            
+            if (activeFilters.assignedStatus) {
+                assignedLeads = assignedLeads.filter(lead => lead.lead_pipeline_status === activeFilters.assignedStatus);
+                console.log(`📋 Filtered to ${assignedLeads.length} leads with status: ${activeFilters.assignedStatus}`);
+            }
+            
+            const assignedLeadCount = document.getElementById('assignedLeadCount');
+            const sdrName = activeFilters.sdr ? 
+                sdrTeam.find(sdr => sdr.id === activeFilters.sdr)?.name || 'Unknown SDR' : 
+                'all SDRs';
+            const statusText = activeFilters.assignedStatus ? 
+                ` with status "${activeFilters.assignedStatus}"` : '';
+            
+            if (assignedLeadCount) {
+                assignedLeadCount.textContent = `${assignedLeads.length} assigned leads for ${sdrName}${statusText}`;
+            }
+            
+            // ALWAYS render SDR summary first
+            console.log('🔄 Rendering SDR summary...');
+            renderSDRSummary();
+            
+            const assignedLeadsGrid = document.getElementById('assignedLeadsGrid');
+            if (!assignedLeadsGrid) {
+                console.error('❌ Assigned leads grid not found');
+                return;
+            }
+            
+            if (assignedLeads.length === 0) {
+                const emptyMessage = activeFilters.sdr || activeFilters.assignedStatus ? 
+                    'No leads match the current filters' : 'No assigned leads found';
+                const emptySubtext = activeFilters.sdr || activeFilters.assignedStatus ? 
+                    'Try adjusting the filters or assign leads from the dashboard' : 'Assign leads to SDRs from the dashboard';
+                
+                assignedLeadsGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #64748b;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍💼</div>
+                        <h3 style="margin-bottom: 0.5rem;">${emptyMessage}</h3>
+                        <p>${emptySubtext}</p>
+                        ${activeFilters.sdr || activeFilters.assignedStatus ? `
+                            <button onclick="clearAssignedFilters()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                Clear Filters
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort leads by priority (overdue followups first, then by followup date, then by creation date)
+            assignedLeads.sort((a, b) => {
+                const aFollowup = a.next_followup_date ? new Date(a.next_followup_date) : null;
+                const bFollowup = b.next_followup_date ? new Date(b.next_followup_date) : null;
+                const now = new Date();
+                
+                const aOverdue = aFollowup && aFollowup < now;
+                const bOverdue = bFollowup && bFollowup < now;
+                
+                if (aOverdue && !bOverdue) return -1;
+                if (!aOverdue && bOverdue) return 1;
+                
+                if (aFollowup && bFollowup) return aFollowup - bFollowup;
+                if (aFollowup && !bFollowup) return -1;
+                if (!aFollowup && bFollowup) return 1;
+                
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+            
+            const leadsHTML = assignedLeads.map(lead => createLeadCard(lead)).join('');
+            assignedLeadsGrid.innerHTML = leadsHTML;
+            
+            console.log('✅ Assigned leads rendered successfully');
+        }
+
+        function renderSDRSummary() {
+            console.log('👨‍💼 Rendering SDR summary...');
+            
+            const sdrSummaryGrid = document.getElementById('sdrSummaryGrid');
+            if (!sdrSummaryGrid) {
+                console.error('❌ SDR summary grid not found');
+                return;
+            }
+            
+            if (!sdrTeam || sdrTeam.length === 0) {
+                console.warn('⚠️ No SDR team data available');
+                sdrSummaryGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #64748b;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">👨‍💼</div>
+                        <h3>No SDR team data</h3>
+                        <p>Loading SDR team information...</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            console.log(`📊 Processing ${sdrTeam.length} SDRs with ${allLeads.length} total leads`);
+            
+            const sdrStats = sdrTeam.map(sdr => {
+                const sdrLeads = allLeads.filter(lead => lead.assigned_sdr_id === sdr.id);
+                console.log(`👤 ${sdr.name}: ${sdrLeads.length} assigned leads`);
+                
+                const statusCounts = {
+                    total: sdrLeads.length,
+                    new: sdrLeads.filter(lead => lead.lead_pipeline_status === 'New').length,
+                    contacted: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Contacted').length,
+                    not_reachable: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Not Reachable').length,
+                    demo_requested: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Demo Requested').length,
+                    samples_requested: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Samples Requested').length,
+                    qualified: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Qualified').length,
+                    converted: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Converted').length,
+                    dropped_budget: sdrLeads.filter(lead => lead.lead_pipeline_status === 'Dropped-Budget').length
+                };
+                
+                const now = new Date();
+                const upcomingFollowups = sdrLeads.filter(lead => {
+                    if (!lead.next_followup_date) return false;
+                    const followupDate = new Date(lead.next_followup_date);
+                    return followupDate >= now;
+                }).length;
+                
+                const overdueFollowups = sdrLeads.filter(lead => {
+                    if (!lead.next_followup_date) return false;
+                    const followupDate = new Date(lead.next_followup_date);
+                    return followupDate < now;
+                }).length;
+                
+                console.log(`📈 ${sdr.name} stats:`, statusCounts);
+                
+                return {
+                    ...sdr,
+                    ...statusCounts,
+                    upcomingFollowups,
+                    overdueFollowups,
+                    totalFollowups: upcomingFollowups + overdueFollowups
+                };
+            });
+            
+            const sdrCardsHTML = sdrStats.map(sdr => `
+                <div class="sdr-summary-card">
+                    <div class="sdr-header">
+                        <div class="sdr-avatar">${sdr.name.charAt(0)}</div>
+                        <div class="sdr-info">
+                            <div class="sdr-name">${sdr.name}</div>
+                            <div class="sdr-email">${sdr.email}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sdr-stats">
+                        <div class="sdr-stat total" onclick="filterSDRLeads('${sdr.id}', 'all')" title="View all assigned leads">
+                            <div class="sdr-stat-value">${sdr.total}</div>
+                            <div class="sdr-stat-label">Total</div>
+                        </div>
+                        <div class="sdr-stat contacted" onclick="filterSDRLeads('${sdr.id}', 'Contacted')" title="View contacted leads">
+                            <div class="sdr-stat-value">${sdr.contacted}</div>
+                            <div class="sdr-stat-label">Contacted</div>
+                        </div>
+                        <div class="sdr-stat qualified" onclick="filterSDRLeads('${sdr.id}', 'Qualified')" title="View qualified leads">
+                            <div class="sdr-stat-value">${sdr.qualified}</div>
+                            <div class="sdr-stat-label">Qualified</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sdr-stats">
+                        <div class="sdr-stat demo" onclick="filterSDRLeads('${sdr.id}', 'Demo Requested')" title="View demo requests">
+                            <div class="sdr-stat-value">${sdr.demo_requested}</div>
+                            <div class="sdr-stat-label">Demo Req</div>
+                        </div>
+                        <div class="sdr-stat converted" onclick="filterSDRLeads('${sdr.id}', 'Converted')" title="View converted leads">
+                            <div class="sdr-stat-value">${sdr.converted}</div>
+                            <div class="sdr-stat-label">Converted</div>
+                        </div>
+                        <div class="sdr-stat followup" onclick="filterSDRFollowups('${sdr.id}')" title="View pending followups">
+                            <div class="sdr-stat-value">${sdr.totalFollowups}</div>
+                            <div class="sdr-stat-label">Followups</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sdr-extended-stats">
+                        <div class="sdr-mini-stat" onclick="filterSDRLeads('${sdr.id}', 'New')" title="View new leads">
+                            <span class="sdr-mini-stat-label">New</span>
+                            <span class="sdr-mini-stat-value">${sdr.new}</span>
+                        </div>
+                        <div class="sdr-mini-stat" onclick="filterSDRLeads('${sdr.id}', 'Not Reachable')" title="View unreachable leads">
+                            <span class="sdr-mini-stat-label">Not Reachable</span>
+                            <span class="sdr-mini-stat-value">${sdr.not_reachable}</span>
+                        </div>
+                        <div class="sdr-mini-stat" onclick="filterSDRLeads('${sdr.id}', 'Samples Requested')" title="View sample requests">
+                            <span class="sdr-mini-stat-label">Samples Req</span>
+                            <span class="sdr-mini-stat-value">${sdr.samples_requested}</span>
+                        </div>
+                        <div class="sdr-mini-stat" onclick="filterSDRLeads('${sdr.id}', 'Dropped-Budget')" title="View budget drops">
+                            <span class="sdr-mini-stat-label">Dropped</span>
+                            <span class="sdr-mini-stat-value">${sdr.dropped_budget}</span>
+                        </div>
+                    </div>
+                    
+                    ${sdr.totalFollowups > 0 ? `
+                    <div style="margin-top: 1rem; padding: 0.75rem; background: ${sdr.overdueFollowups > 0 ? '#fef2f2' : '#f0fdf4'}; border-radius: 8px; border-left: 4px solid ${sdr.overdueFollowups > 0 ? '#ef4444' : '#10b981'};">
+                        <div style="font-size: 0.8rem; color: #374151; font-weight: 500;">
+                            📅 Followups: ${sdr.upcomingFollowups} upcoming${sdr.overdueFollowups > 0 ? `, ${sdr.overdueFollowups} overdue` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `).join('');
+            
+            sdrSummaryGrid.innerHTML = sdrCardsHTML;
+            console.log('✅ SDR summary rendered successfully');
+        }
+
+        function filterSDRLeads(sdrId, status) {
+            console.log(`🔍 Filtering leads for SDR ${sdrId} with status: ${status}`);
+            
+            activeFilters.sdr = sdrId;
+            activeFilters.assignedStatus = status === 'all' ? '' : status;
+            
+            const sdrSelect = document.getElementById('sdrFilterSelect');
+            const statusSelect = document.getElementById('statusFilterSelect');
+            
+            if (sdrSelect) sdrSelect.value = sdrId;
+            if (statusSelect) statusSelect.value = status === 'all' ? '' : status;
+            
+            renderAssignedLeads();
+            
+            const sdr = sdrTeam.find(s => s.id === sdrId);
+            const sdrName = sdr ? sdr.name : 'Unknown SDR';
+            const statusText = status === 'all' ? 'all leads' : `${status} leads`;
+            
+            showNotification(`Showing ${statusText} for ${sdrName}`, 'info');
+            
+            document.getElementById('assignedLeadsGrid').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function filterSDRFollowups(sdrId) {
+            console.log(`📅 Filtering followups for SDR ${sdrId}`);
+            
+            const sdr = sdrTeam.find(s => s.id === sdrId);
+            const sdrName = sdr ? sdr.name : 'Unknown SDR';
+            
+            const now = new Date();
+            let sdrLeadsWithFollowups = allLeads.filter(lead => {
+                return lead.assigned_sdr_id === sdrId && lead.next_followup_date;
+            });
+            
+            const assignedLeadsGrid = document.getElementById('assignedLeadsGrid');
+            const assignedLeadCount = document.getElementById('assignedLeadCount');
+            
+            if (sdrLeadsWithFollowups.length === 0) {
+                assignedLeadsGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #64748b;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
+                        <h3 style="margin-bottom: 0.5rem;">No followups scheduled</h3>
+                        <p>${sdrName} has no pending followups</p>
+                        <button onclick="renderAssignedLeads()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                            Show All Leads
+                        </button>
+                    </div>
+                `;
+                assignedLeadCount.textContent = `0 followups for ${sdrName}`;
+                return;
+            }
+            
+            sdrLeadsWithFollowups.sort((a, b) => {
+                const dateA = new Date(a.next_followup_date);
+                const dateB = new Date(b.next_followup_date);
+                return dateA - dateB;
+            });
+            
+            const upcoming = sdrLeadsWithFollowups.filter(lead => new Date(lead.next_followup_date) >= now);
+            const overdue = sdrLeadsWithFollowups.filter(lead => new Date(lead.next_followup_date) < now);
+            
+            const createFollowupCard = (lead, isOverdue = false) => {
+                const baseCard = createLeadCard(lead);
+                const followupDate = new Date(lead.next_followup_date);
+                const followupStatus = isOverdue ? 
+                    `🚨 OVERDUE: ${getTimeAgo(lead.next_followup_date)}` : 
+                    `📅 Due: ${followupDate.toLocaleDateString('en-IN')} at ${followupDate.toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'})}`;
+                
+                return baseCard.replace(
+                    '<div class="lead-card fade-in',
+                    `<div class="lead-card fade-in${isOverdue ? ' priority' : ''}`
+                ).replace(
+                    '<div class="lead-card-top">',
+                    `<div class="lead-card-top">
+                        <div style="background: ${isOverdue ? '#fee2e2' : '#f0fdf4'}; color: ${isOverdue ? '#dc2626' : '#059669'}; padding: 0.5rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem; margin-bottom: 0.5rem;">
+                            ${followupStatus}
+                        </div>`
+                );
+            };
+            
+            let leadsHTML = '';
+            
+            if (overdue.length > 0) {
+                leadsHTML += `
+                    <div style="grid-column: 1 / -1; background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                        <h3 style="color: #dc2626; font-size: 1.1rem; margin-bottom: 0.5rem;">🚨 Overdue Followups (${overdue.length})</h3>
+                        <p style="color: #7f1d1d; font-size: 0.9rem;">These leads need immediate attention</p>
+                    </div>
+                `;
+                leadsHTML += overdue.map(lead => createFollowupCard(lead, true)).join('');
+            }
+            
+            if (upcoming.length > 0) {
+                leadsHTML += `
+                    <div style="grid-column: 1 / -1; background: #f0fdf4; border: 1px solid #a7f3d0; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; ${overdue.length > 0 ? 'margin-top: 2rem;' : ''}">
+                        <h3 style="color: #059669; font-size: 1.1rem; margin-bottom: 0.5rem;">📅 Upcoming Followups (${upcoming.length})</h3>
+                        <p style="color: #064e3b; font-size: 0.9rem;">Scheduled followups for ${sdrName}</p>
+                    </div>
+                `;
+                leadsHTML += upcoming.map(lead => createFollowupCard(lead, false)).join('');
+            }
+            
+            assignedLeadsGrid.innerHTML = leadsHTML;
+            assignedLeadCount.textContent = `${sdrLeadsWithFollowups.length} followups for ${sdrName} (${overdue.length} overdue, ${upcoming.length} upcoming)`;
+            
+            showNotification(`Showing followups for ${sdrName}`, 'info');
+            assignedLeadsGrid.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function filterBySDR() {
+            const selectedSDR = document.getElementById('sdrFilterSelect')?.value;
+            activeFilters.sdr = selectedSDR;
+            renderAssignedLeads();
+        }
+
+        function filterByStatus() {
+            const selectedStatus = document.getElementById('statusFilterSelect')?.value;
+            activeFilters.assignedStatus = selectedStatus;
+            renderAssignedLeads();
+        }
+
+        // SDR ASSIGNMENT & STATUS MANAGEMENT FUNCTIONS (FIXED FOR MOBILE)
+        function toggleSDRDropdown(leadId, event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            console.log('🔧 Toggling SDR dropdown for lead:', leadId);
+            
+            // Close all other dropdowns first
+            document.querySelectorAll('.sdr-dropdown-content, .status-dropdown-content').forEach(dropdown => {
+                if (dropdown.id !== `sdrDropdown-${leadId}`) {
+                    dropdown.classList.remove('show');
+                }
+            });
+            
+            const dropdown = document.getElementById(`sdrDropdown-${leadId}`);
+            if (!dropdown) {
+                console.error('❌ SDR dropdown not found:', `sdrDropdown-${leadId}`);
+                return false;
+            }
+            
+            const button = event.target.closest('.action-btn');
+            const card = button.closest('.lead-card');
+            
+            // Position dropdown for mobile/desktop
+            const rect = button.getBoundingClientRect();
+            const isSmallScreen = window.innerWidth < 768;
+            
+            if (isSmallScreen) {
+                // On mobile, position dropdown at center of screen
+                dropdown.style.position = 'fixed';
+                dropdown.style.top = '50%';
+                dropdown.style.left = '50%';
+                dropdown.style.transform = 'translate(-50%, -50%)';
+                dropdown.style.zIndex = '2001';
+                dropdown.style.maxHeight = '60vh';
+                dropdown.style.width = '80vw';
+                dropdown.style.maxWidth = '300px';
+            } else {
+                // On desktop, position relative to button
+                dropdown.style.position = 'absolute';
+                dropdown.style.top = '100%';
+                dropdown.style.left = '0';
+                dropdown.style.transform = 'none';
+                dropdown.style.zIndex = '1000';
+                dropdown.style.width = '200px';
+                dropdown.style.maxWidth = 'none';
+            }
+            
+            dropdown.classList.toggle('show');
+            
+            if (dropdown.classList.contains('show')) {
+                card.style.zIndex = '999';
+                console.log('✅ SDR dropdown opened');
+                
+                // Close dropdown when clicking outside
+                setTimeout(() => {
+                    const closeHandler = (e) => {
+                        if (!dropdown.contains(e.target) && !button.contains(e.target)) {
+                            dropdown.classList.remove('show');
+                            card.style.zIndex = '1';
+                            document.removeEventListener('click', closeHandler);
+                            document.removeEventListener('touchstart', closeHandler);
+                            console.log('🔒 SDR dropdown closed');
+                        }
+                    };
+                    
+                    document.addEventListener('click', closeHandler);
+                    document.addEventListener('touchstart', closeHandler);
+                }, 100);
+            } else {
+                card.style.zIndex = '1';
+                console.log('🔒 SDR dropdown closed');
+            }
+            
+            return false;
+        }
+
+        function assignLeadToSDR(leadId, sdrId) {
+            console.log('👨‍💼 Assigning lead to SDR:', leadId, sdrId);
+            
+            const lead = allLeads.find(l => l.id === leadId);
+            const sdr = sdrTeam.find(s => s.id === sdrId);
+            
+            if (!lead || !sdr) {
+                console.error('❌ Lead or SDR not found');
+                return;
+            }
+            
+            const changes = {
+                assigned_sdr_id: sdrId,
+                lead_status: 'Assigned',
+                assignment_date: new Date().toISOString()
+            };
+            
+            Object.assign(lead, changes);
+            saveLeadChanges(leadId, changes);
+            
+            // Close dropdown
+            const dropdown = document.getElementById(`sdrDropdown-${leadId}`);
+            const card = dropdown?.closest('.lead-card');
+            
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+            if (card) {
+                card.style.zIndex = '1';
+            }
+            
+            showNotification(`${lead.name} assigned to ${sdr.name}`, 'success');
+            
+            renderLeads();
+            updateDashboardStats();
+            
+            if (document.getElementById('assigned-leads').style.display !== 'none') {
+                renderAssignedLeads();
+            }
+            
+            console.log('✅ Lead assigned successfully');
+        }
+
+        function toggleStatusDropdown(leadId, event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            console.log('📊 Toggling status dropdown for lead:', leadId);
+            
+            // Close all other dropdowns first
+            document.querySelectorAll('.sdr-dropdown-content, .status-dropdown-content').forEach(dropdown => {
+                if (dropdown.id !== `statusDropdown-${leadId}`) {
+                    dropdown.classList.remove('show');
+                }
+            });
+            
+            const dropdown = document.getElementById(`statusDropdown-${leadId}`);
+            if (!dropdown) {
+                console.error('❌ Status dropdown not found:', `statusDropdown-${leadId}`);
+                return false;
+            }
+            
+            const button = event.target.closest('.action-btn');
+            const card = button.closest('.lead-card');
+            
+            // Position dropdown for mobile/desktop
+            const rect = button.getBoundingClientRect();
+            const isSmallScreen = window.innerWidth < 768;
+            
+            if (isSmallScreen) {
+                // On mobile, position dropdown at center of screen
+                dropdown.style.position = 'fixed';
+                dropdown.style.top = '50%';
+                dropdown.style.left = '50%';
+                dropdown.style.transform = 'translate(-50%, -50%)';
+                dropdown.style.zIndex = '2001';
+                dropdown.style.maxHeight = '60vh';
+                dropdown.style.width = '80vw';
+                dropdown.style.maxWidth = '300px';
+            } else {
+                // On desktop, position relative to button
+                dropdown.style.position = 'absolute';
+                dropdown.style.top = '100%';
+                dropdown.style.left = '0';
+                dropdown.style.transform = 'none';
+                dropdown.style.zIndex = '1000';
+                dropdown.style.width = '160px';
+                dropdown.style.maxWidth = 'none';
+            }
+            
+            dropdown.classList.toggle('show');
+            
+            if (dropdown.classList.contains('show')) {
+                card.style.zIndex = '999';
+                console.log('✅ Status dropdown opened');
+                
+                // Close dropdown when clicking outside
+                setTimeout(() => {
+                    const closeHandler = (e) => {
+                        if (!dropdown.contains(e.target) && !button.contains(e.target)) {
+                            dropdown.classList.remove('show');
+                            card.style.zIndex = '1';
+                            document.removeEventListener('click', closeHandler);
+                            document.removeEventListener('touchstart', closeHandler);
+                            console.log('🔒 Status dropdown closed');
+                        }
+                    };
+                    
+                    document.addEventListener('click', closeHandler);
+                    document.addEventListener('touchstart', closeHandler);
+                }, 100);
+            } else {
+                card.style.zIndex = '1';
+                console.log('🔒 Status dropdown closed');
+            }
+            
+            return false;
+        }
+
+        function updateLeadStatus(leadId, status) {
+            console.log('📊 Updating lead status:', leadId, status);
+            
+            const lead = allLeads.find(l => l.id === leadId);
+            if (!lead) {
+                console.error('❌ Lead not found for status update:', leadId);
+                return;
+            }
+            
+            const changes = {
+                lead_pipeline_status: status,
+                status_updated_at: new Date().toISOString()
+            };
+            
+            Object.assign(lead, changes);
+            saveLeadChanges(leadId, changes);
+            
+            // Close dropdown
+            const dropdown = document.getElementById(`statusDropdown-${leadId}`);
+            const card = dropdown?.closest('.lead-card');
+            
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+            if (card) {
+                card.style.zIndex = '1';
+            }
+            
+            showNotification(`${lead.name} status updated to: ${status}`, 'success');
+            
+            renderLeads();
+            
+            if (document.getElementById('assigned-leads').style.display !== 'none') {
+                renderAssignedLeads();
+            }
+            
+            console.log('✅ Lead status updated successfully');
+        }
+
+        // FOLLOWUP DATE FUNCTIONS (RESTORED)
+        function setFollowupDate(leadId) {
+            console.log('📅 Setting followup date for lead:', leadId);
+            
+            const lead = allLeads.find(l => l.id === leadId);
+            if (!lead) {
+                console.error('❌ Lead not found for followup:', leadId);
+                showNotification('Lead not found', 'error');
+                return;
+            }
+            
+            currentSelectedLead = lead;
+            console.log('✅ Set currentSelectedLead to:', lead.name);
+            
+            const followupLeadName = document.getElementById('followupLeadName');
+            if (followupLeadName) {
+                followupLeadName.textContent = lead.name;
+            }
+            
+            const dateInput = document.getElementById('followupDateInput');
+            if (dateInput) {
+                if (lead.next_followup_date) {
+                    try {
+                        const date = new Date(lead.next_followup_date);
+                        const localDateTime = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+                        dateInput.value = localDateTime;
+                    } catch (error) {
+                        console.warn('Error parsing existing followup date:', error);
+                        dateInput.value = '';
+                    }
+                } else {
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    tomorrow.setHours(10, 0, 0, 0);
+                    const localDateTime = new Date(tomorrow.getTime() - tomorrow.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+                    dateInput.value = localDateTime;
+                }
+            }
+            
+            const modal = document.getElementById('followupModal');
+            if (modal) {
+                modal.classList.add('show');
+                console.log('✅ Followup modal shown for:', lead.name);
+            } else {
+                console.error('❌ Followup modal not found');
+            }
+        }
+
+        function closeFollowupModal() {
+            console.log('🔒 Closing followup modal');
+            const modal = document.getElementById('followupModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+            setTimeout(() => {
+                if (currentSelectedLead) {
+                    console.log('🔄 Clearing currentSelectedLead after modal close');
+                    currentSelectedLead = null;
+                }
+            }, 100);
+        }
+
+        function saveFollowupDate() {
+            console.log('💾 Starting saveFollowupDate...');
+            console.log('💾 currentSelectedLead:', currentSelectedLead);
+            
+            if (!currentSelectedLead) {
+                console.error('❌ No lead selected for followup');
+                showNotification('Error: No lead selected. Please try again.', 'error');
+                return;
+            }
+            
+            const dateInput = document.getElementById('followupDateInput');
+            console.log('💾 dateInput element:', dateInput);
+            console.log('💾 dateInput value:', dateInput?.value);
+            
+            if (!dateInput || !dateInput.value) {
+                showNotification('Please select a date and time', 'error');
+                return;
+            }
+            
+            const leadToUpdate = currentSelectedLead;
+            const leadName = leadToUpdate.name;
+            const leadId = leadToUpdate.id;
+            
+            try {
+                const inputValue = dateInput.value;
+                console.log('💾 Raw input value:', inputValue);
+                
+                const followupDate = new Date(inputValue).toISOString();
+                console.log('💾 Converted to ISO:', followupDate);
+                
+                if (isNaN(new Date(followupDate).getTime())) {
+                    throw new Error('Invalid date format');
+                }
+                
+                const changes = {
+                    next_followup_date: followupDate,
+                    followup_set_at: new Date().toISOString()
+                };
+                
+                console.log('💾 Changes to save:', changes);
+                
+                Object.assign(leadToUpdate, changes);
+                console.log('💾 Updated lead object:', leadToUpdate);
+                
+                const leadInArray = allLeads.find(l => l.id === leadId);
+                if (leadInArray) {
+                    Object.assign(leadInArray, changes);
+                    console.log('💾 Updated lead in main array');
+                }
+                
+                const saveResult = saveLeadChanges(leadId, changes);
+                console.log('💾 Save result:', saveResult);
+                
+                if (!saveResult) {
+                    throw new Error('Failed to save to localStorage');
+                }
+                
+                closeFollowupModal();
+                showNotification(`Followup scheduled for ${leadName}`, 'success');
+                
+                console.log('💾 Re-rendering leads...');
+                renderLeads();
+                
+                if (document.getElementById('assigned-leads').style.display !== 'none') {
+                    renderAssignedLeads();
+                }
+                
+                console.log('✅ Followup date saved successfully for:', leadName);
+                
+            } catch (error) {
+                console.error('❌ Error saving followup date:', error);
+                showNotification('Error saving followup date: ' + error.message, 'error');
+            }
+        }
+
+        // ENHANCED INTELLIGENCE FUNCTIONS (RESTORED)
+        function saveLeadNotes() {
+            if (!currentSelectedLead) return;
+            
+            const notes = document.getElementById('leadNotes').value;
+            
+            const changes = {
+                lead_notes: notes,
+                notes_updated_at: new Date().toISOString()
+            };
+            
+            Object.assign(currentSelectedLead, changes);
+            saveLeadChanges(currentSelectedLead.id, changes);
+            
+            showNotification('Notes saved', 'success');
+        }
+
+        function sendEmail() {
+            if (!currentSelectedLead) return;
+            
+            const emailSubject = `Follow-up: ${currentSelectedLead.business_name} - Topiko Business Setup`;
+            const emailBody = `Hi ${currentSelectedLead.name.split(' ')[0]},\n\nI hope this email finds you well. I wanted to follow up on your interest in setting up ${currentSelectedLead.business_name} online with Topiko.\n\nBased on your requirements, I believe we can help you achieve your goals of ${currentSelectedLead.goals_display.join(', ').toLowerCase()}.\n\nWould you be available for a brief call to discuss the next steps?\n\nBest regards,\nYour Topiko Team`;
+            
+            const mailtoLink = `mailto:${currentSelectedLead.email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+            window.open(mailtoLink);
+            
+            showNotification(`Email composed for ${currentSelectedLead.name}`, 'info');
+        }
+
+        function initiateCall() {
+            if (!currentSelectedLead) return;
+            
+            const lead = currentSelectedLead;
+            const phoneUrl = `tel:${lead.phone}`;
+            
+            window.open(phoneUrl);
+            
+            lead.lead_status = 'Contacted';
+            
+            showNotification(`📞 Calling ${lead.name}...`, 'info');
+            
+            console.log(`💬 CONVERSATION STARTER FOR ${lead.name}:`);
+            console.log(`Hi ${lead.name.split(' ')[0]}, this is [Your Name] from Topiko.`);
+            console.log(`I see you're interested in ${lead.goals_display.join(', ').toLowerCase()} for your ${lead.business_name}.`);
+            
+            if (lead.timeline === 'immediately') {
+                console.log(`🔥 URGENT: You mentioned you need this IMMEDIATELY - let's get you set up today!`);
+            }
+            
+            if (lead.budget_range === 'high') {
+                console.log(`💰 With your premium budget range, we can offer you our full enterprise solution.`);
+            }
+            
+            if (lead.decision_maker) {
+                console.log(`👑 Since you're the decision maker, we can move quickly on this.`);
+            }
+            
+            console.log(`Lead Score: ${lead.lead_score}/100 (${lead.lead_quality})`);
+            
+            renderLeads();
+        }
+
+        // SCORE BREAKDOWN FUNCTIONS (RESTORED)
+        function calculateDetailedScore(lead) {
+            const items = [];
+            
+            if (lead.name && lead.email && lead.phone && lead.business_name) {
+                items.push({ label: 'Profile Completed', points: 20 });
+            }
+            
+            const goalsPoints = Math.min((lead.selected_goals || []).length * 5, 25);
+            if (goalsPoints > 0) {
+                items.push({ label: `Goals Selected (${(lead.selected_goals || []).length})`, points: goalsPoints });
+            }
+            
+            const categoriesPoints = Math.min(((lead.selected_categories || []).length + (lead.selected_subcategories || []).length) * 2, 20);
+            if (categoriesPoints > 0) {
+                items.push({ label: 'Categories & Subcategories', points: categoriesPoints });
+            }
+            
+            const productsPoints = Math.min((lead.products_count || 0) * 5, 25);
+            if (productsPoints > 0) {
+                items.push({ label: `Products Added (${lead.products_count})`, points: productsPoints });
+            }
+            
+            if (lead.budget_range === 'qualified' || lead.budget_range === 'high') {
+                items.push({ label: 'Budget Qualified', points: 5 });
+            }
+            
+            if (lead.decision_maker) {
+                items.push({ label: 'Decision Maker', points: 5 });
+            }
+            
+            if (lead.timeline === 'immediately') {
+                items.push({ label: 'Immediate Timeline', points: 10 });
+            } else if (lead.timeline === 'within_week') {
+                items.push({ label: 'Weekly Timeline', points: 5 });
+            }
+            
+            return items;
+        }
+
+        function getEngagementLevel(lead) {
+            const score = lead.lead_score;
+            const sessionTime = lead.session_duration_minutes;
+            const pageViews = lead.page_views || 1;
+            
+            if (score >= 65 || sessionTime >= 5 || pageViews >= 5) return 'High';
+            if (score >= 41 || sessionTime >= 2 || pageViews >= 3) return 'Medium';
+            return 'Low';
+        }
+
+        function calculateConversionProbability(lead) {
+            let probability = 0;
+            
+            probability += (lead.lead_score / 100) * 40;
+            
+            if (lead.timeline === 'immediately') probability += 20;
+            else if (lead.timeline === 'within_week') probability += 15;
+            else if (lead.timeline === 'this_month') probability += 10;
+            
+            if (lead.budget_range === 'high') probability += 20;
+            else if (lead.budget_range === 'qualified') probability += 15;
+            else if (lead.budget_range === 'budget_unqualified') probability += 10;
+            
+            if (lead.decision_maker) probability += 10;
+            
+            if (lead.products_count > 5) probability += 10;
+            else if (lead.products_count > 0) probability += 5;
+            
+            return Math.min(Math.round(probability), 95);
+        }
+
+        // FILTERING FUNCTIONS (RESTORED)
+        function applyFilters() {
+            activeFilters.search = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            activeFilters.status = document.getElementById('statusFilter')?.value || '';
+            activeFilters.quality = document.getElementById('qualityFilter')?.value || '';
+            activeFilters.timeline = document.getElementById('timelineFilter')?.value || '';
+            activeFilters.budget = document.getElementById('budgetFilter')?.value || '';
+            activeFilters.category = document.getElementById('categoryFilter')?.value || '';
+            
+            filteredLeads = [...allLeads];
+            
+            // Apply timeframe filter
+            if (activeFilters.timeframe && activeFilters.timeframe !== 'all') {
+                const now = new Date();
+                let startDate;
+                
+                if (activeFilters.timeframe === 'today') {
+                    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                } else if (activeFilters.timeframe === 'month') {
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                }
+                
+                if (startDate) {
+                    filteredLeads = filteredLeads.filter(lead => new Date(lead.created_at) >= startDate);
+                }
+            }
+            
+            // Apply search filter
+            if (activeFilters.search) {
+                filteredLeads = filteredLeads.filter(lead => 
+                    lead.name.toLowerCase().includes(activeFilters.search) ||
+                    lead.email.toLowerCase().includes(activeFilters.search) ||
+                    lead.business_name.toLowerCase().includes(activeFilters.search) ||
+                    lead.phone.includes(activeFilters.search)
+                );
+            }
+            
+            // Apply other filters
+            if (activeFilters.status) {
+                filteredLeads = filteredLeads.filter(lead => lead.lead_status === activeFilters.status);
+            }
+            
+            if (activeFilters.quality) {
+                filteredLeads = filteredLeads.filter(lead => lead.lead_quality === activeFilters.quality);
+            }
+            
+            if (activeFilters.timeline) {
+                filteredLeads = filteredLeads.filter(lead => lead.timeline === activeFilters.timeline);
+            }
+            
+            if (activeFilters.budget) {
+                filteredLeads = filteredLeads.filter(lead => lead.budget_range === activeFilters.budget);
+            }
+            
+            if (activeFilters.category) {
+                filteredLeads = filteredLeads.filter(lead => lead.business_category === activeFilters.category);
+            }
+            
+            // Apply special filters
+            switch (activeFilters.filterType) {
+                case 'priority':
+                    filteredLeads = filteredLeads.filter(lead => isPriorityLead(lead));
+                    break;
+                case 'hot':
+                    filteredLeads = filteredLeads.filter(lead => lead.lead_score >= 65);
+                    break;
+                case 'warm':
+                    filteredLeads = filteredLeads.filter(lead => lead.lead_score >= 41 && lead.lead_score < 65);
+                    break;
+                case 'high-budget':
+                    filteredLeads = filteredLeads.filter(lead => isHighBudgetLead(lead));
+                    break;
+                case 'decision-makers':
+                    filteredLeads = filteredLeads.filter(lead => lead.decision_maker === true);
+                    break;
+                case 'unassigned':
+                    filteredLeads = filteredLeads.filter(lead => !lead.assigned_sdr_id);
+                    break;
+            }
+            
+            applySorting();
+        }
+
+        function applySorting() {
+            const sortBy = document.getElementById('sortBy')?.value || currentSort.field;
+            currentSort.field = sortBy;
+            
+            filteredLeads.sort((a, b) => {
+                let aVal, bVal;
+                
+                switch (sortBy) {
+                    case 'lead_score':
+                        aVal = a.lead_score || 0;
+                        bVal = b.lead_score || 0;
+                        break;
+                    case 'name':
+                        aVal = a.name.toLowerCase();
+                        bVal = b.name.toLowerCase();
+                        break;
+                    case 'timeline':
+                        const timelineOrder = { 'immediately': 4, 'within_week': 3, 'this_month': 2, 'just_checking': 1 };
+                        aVal = timelineOrder[a.timeline] || 0;
+                        bVal = timelineOrder[b.timeline] || 0;
+                        break;
+                    case 'created_at':
+                    default:
+                        aVal = new Date(a.created_at);
+                        bVal = new Date(b.created_at);
+                        break;
+                }
+                
+                if (currentSort.order === 'asc') {
+                    return aVal > bVal ? 1 : -1;
+                } else {
+                    return aVal < bVal ? 1 : -1;
+                }
+            });
+            
+            renderLeads();
+        }
+
+        function closeIntelligencePanel() {
+            document.getElementById('leadIntelligencePanel').classList.remove('show');
+            currentSelectedLead = null;
+        }
+
+        function closeScoreBreakdown() {
+            document.getElementById('scoreBreakdownModal').classList.remove('show');
+        }
+
+        // INITIALIZATION (ENHANCED WITH DEBUGGING)
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Mobile-First Topiko CRM v5.0 Initialized');
+            
+            // Add debugging tools
+            window.debugCRM = {
+                clearLocalStorage: () => {
+                    localStorage.removeItem('topiko_crm_changes');
+                    localStorage.removeItem('topiko_crm_leads');
+                    localStorage.removeItem('topiko_local_leads');
+                    console.log('🧹 Cleared all localStorage data');
+                    location.reload();
+                },
+                regenerateDemo: () => {
+                    localStorage.removeItem('topiko_crm_leads');
+                    console.log('🔄 Regenerating demo data...');
+                    location.reload();
+                },
+                showLeadDates: () => {
+                    console.log('📅 All lead dates:');
+                    allLeads.forEach(lead => {
+                        console.log(`${lead.name}: ${lead.created_at} (${getTimeAgo(lead.created_at)})`);
+                    });
+                },
+                fixDemoData: () => {
+                    console.log('🔧 Fixing demo data dates...');
+                    const now = new Date();
+                    allLeads.forEach((lead, index) => {
+                        if (lead.data_source === 'demo') {
+                            const daysAgo = Math.floor(Math.random() * 45);
+                            const hoursAgo = Math.floor(Math.random() * 24);
+                            const minutesAgo = Math.floor(Math.random() * 60);
+                            
+                            const newDate = new Date(now);
+                            newDate.setDate(newDate.getDate() - daysAgo);
+                            newDate.setHours(newDate.getHours() - hoursAgo);
+                            newDate.setMinutes(newDate.getMinutes() - minutesAgo);
+                            
+                            lead.created_at = newDate.toISOString();
+                            console.log(`Fixed ${lead.name}: ${lead.created_at}`);
+                        }
+                    });
+                    renderLeads();
+                    console.log('✅ Demo data dates fixed!');
+                },
+                testMobileButtons: () => {
+                    console.log('🔧 Testing mobile button functionality...');
+                    const buttons = document.querySelectorAll('.action-btn');
+                    console.log(`Found ${buttons.length} action buttons`);
+                    buttons.forEach((btn, index) => {
+                        console.log(`Button ${index}: ${btn.textContent.trim()} - onclick: ${btn.onclick ? 'YES' : 'NO'}`);
+                    });
+                },
+                showSDRData: () => {
+                    console.log('👨‍💼 Current SDR team data:');
+                    console.log('SDR Team:', sdrTeam);
+                    console.log('All Leads:', allLeads.length);
+                    console.log('Assigned Leads:', allLeads.filter(l => l.assigned_sdr_id).length);
+                }
+            };
+            
+            console.log('🔧 Debug tools available:');
+            console.log('  - window.debugCRM.clearLocalStorage() // Clear all saved data');
+            console.log('  - window.debugCRM.regenerateDemo() // Regenerate demo data');
+            console.log('  - window.debugCRM.showLeadDates() // Show all lead dates');
+            console.log('  - window.debugCRM.fixDemoData() // Fix existing demo data dates');
+            console.log('  - window.debugCRM.testMobileButtons() // Test button functionality');
+            console.log('  - window.debugCRM.showSDRData() // Show SDR and lead data');
+            
+            try {
+                // Load SDR team first
+                console.log('👨‍💼 Loading SDR team...');
+                await fetchSDRTeam();
+                console.log(`✅ SDR team loaded: ${sdrTeam.length} members`);
+                
+                // Load leads from database/sources
+                console.log('📊 Loading leads...');
+                await fetchLeads();
+                console.log(`✅ Leads loaded: ${allLeads.length} total`);
+                
+                // Auto-refresh every 30 seconds
+                setInterval(async () => {
+                    try {
+                        await fetchLeads();
+                        
+                        // Update assigned leads if on that page
+                        if (document.getElementById('assigned-leads').style.display !== 'none') {
+                            renderAssignedLeads();
+                        }
+                    } catch (error) {
+                        console.error('❌ Auto-refresh failed:', error);
+                    }
+                }, 30000);
+                
+                showNotification('Mobile-First CRM v5.0 ready! Database connected. 📱', 'success');
+                
+                console.log('✅ Mobile-First CRM v5.0 ready with full database connectivity');
+                
+                // Test mobile functionality after a short delay
+                setTimeout(() => {
+                    if (window.innerWidth < 768) {
+                        console.log('📱 Mobile device detected - UI optimized for touch');
+                    } else {
+                        console.log('🖥️ Desktop device detected - Full functionality available');
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('❌ Initialization error:', error);
+                showNotification('CRM loaded with limited functionality - Check console for details', 'error');
+            }
+        });
+    </script>
 </body>
 </html>
