@@ -1,5 +1,5 @@
 /* ========================================
-   TOPIKO LEAD FORM - MAIN APPLICATION LOGIC - COMPLETE FIXED VERSION
+   TOPIKO LEAD FORM - MAIN APPLICATION LOGIC - COMPLETE FIXED VERSION WITH PREVIEW
    ======================================== */
 
 // ========================================
@@ -46,6 +46,227 @@ window.addEventListener('beforeunload', function(e) {
     // Clean up intervals
     window.TopikoUtils.stopMotivationalMessages();
 });
+
+// ========================================
+// PREVIEW DATA FUNCTIONS - NEW FUNCTIONALITY
+// ========================================
+
+function generatePreviewData() {
+    window.TopikoUtils.addDebugLog('🔍 Generating preview data...', 'info');
+    
+    try {
+        // Validate required data
+        if (!validatePreviewData()) {
+            return;
+        }
+        
+        // Collect all form data
+        const previewData = composePreviewJSON();
+        
+        // Display options to user
+        showPreviewModal(previewData);
+        
+        window.TopikoUtils.addDebugLog('✅ Preview data generated successfully', 'success');
+        
+    } catch (error) {
+        window.TopikoUtils.addDebugLog(`❌ Preview generation failed: ${error.message}`, 'error');
+        window.TopikoUtils.showNotification('Failed to generate preview data. Please try again.', 'error');
+    }
+}
+
+function validatePreviewData() {
+    const requiredFields = [
+        { id: 'fullName', name: 'Full Name' },
+        { id: 'email', name: 'Email' },
+        { id: 'phoneNumber', name: 'Phone Number' }, 
+        { id: 'businessName', name: 'Business Name' },
+        { id: 'businessType', name: 'Business Type' },
+        { id: 'category', name: 'Business Category' }
+    ];
+    
+    for (const field of requiredFields) {
+        const element = document.getElementById(field.id);
+        if (!element || !element.value.trim()) {
+            window.TopikoUtils.showNotification(`Please fill ${field.name} before preview`, 'error');
+            return false;
+        }
+    }
+    
+    if (!window.topikoApp.selectedCategories || window.topikoApp.selectedCategories.length === 0) {
+        window.TopikoUtils.showNotification('Please select at least one category before preview', 'error');
+        return false;
+    }
+    
+    return true;
+}
+
+function composePreviewJSON() {
+    // Generate subdomain URL
+    const businessName = document.getElementById('businessName').value.trim();
+    const subdomainUrl = generateSubdomainUrl(businessName);
+    
+    // Map categories to subcategories
+    const selectedSubcategoryDetails = mapSubcategoriesToCategories();
+    
+    // Process selected products
+    const processedProducts = processSelectedProducts();
+    
+    // Compose final JSON
+    const previewData = {
+        user_name: document.getElementById('fullName').value.trim(),
+        user_phone: document.getElementById('phoneNumber').value.trim(),
+        user_email: document.getElementById('email').value.trim(),
+        business_name: businessName,
+        business_type: document.getElementById('businessType').value,
+        business_address: document.getElementById('address').value.trim(),
+        business_category: document.getElementById('category').value,
+        subdomain_url: subdomainUrl,
+        selected_category_name: window.topikoApp.selectedCategories || [],
+        selected_subcategoryname: selectedSubcategoryDetails,
+        selected_products: processedProducts,
+        selected_goals: window.topikoApp.selectedGoals || [],
+        selected_language: window.topikoApp.selectedLanguage || 'en',
+        selected_theme: window.topikoApp.selectedTheme || null,
+        qualifying_answers: window.topikoApp.qualifyingAnswers || {}
+    };
+    
+    return previewData;
+}
+
+function generateSubdomainUrl(businessName) {
+    if (!businessName) return "";
+    
+    return businessName
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+        + '.topiko.com';
+}
+
+function mapSubcategoriesToCategories() {
+    const businessCategory = document.getElementById('category').value;
+    const selectedSubcategories = window.topikoApp.selectedSubcategories || [];
+    
+    if (!businessCategory || !window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory]) {
+        return [];
+    }
+    
+    const categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory];
+    const mappedSubcategories = [];
+    
+    // Find which category each subcategory belongs to
+    selectedSubcategories.forEach(subcategoryKey => {
+        Object.keys(categoryData.categories).forEach(categoryKey => {
+            const category = categoryData.categories[categoryKey];
+            if (category.subcategories.includes(subcategoryKey)) {
+                mappedSubcategories.push({
+                    subcategory_name: subcategoryKey,
+                    categorey_name: categoryKey  // Note: keeping original typo as per spec
+                });
+            }
+        });
+    });
+    
+    return mappedSubcategories;
+}
+
+function processSelectedProducts() {
+    const userProducts = window.topikoApp.userProducts || [];
+    
+    return userProducts.map(product => ({
+        product_title: product.name,
+        product_price: product.price,
+        product_image_url: product.imageUrl || product.image,
+        product_description: product.description,
+        product_variants: product.variants || [],
+        category_name: product.categoryKey || product.category,
+        subcategory_name: product.subcategoryKey || product.subcategory
+    }));
+}
+
+function showPreviewModal(previewData) {
+    const jsonString = JSON.stringify(previewData, null, 2);
+    
+    // Create modal HTML
+    const modalHTML = `
+        <div class="modal-overlay show" id="previewModal">
+            <div class="modal-content" style="max-width: 800px; max-height: 90vh;">
+                <button class="modal-close" onclick="closePreviewModal()">×</button>
+                <h3 style="color: #6b46c1; margin-bottom: 1rem;">🔍 Preview Data - JSON Format</h3>
+                
+                <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; max-height: 400px; overflow-y: auto;">
+                    <pre style="margin: 0; font-size: 0.8rem; line-height: 1.4; white-space: pre-wrap;">${escapeHtml(jsonString)}</pre>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button onclick="copyToClipboard('${escapeForAttribute(jsonString)}')" style="background: #10b981; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer;">
+                        📋 Copy to Clipboard
+                    </button>
+                    <button onclick="downloadJSON('${escapeForAttribute(jsonString)}')" style="background: #6366f1; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer;">
+                        💾 Download JSON
+                    </button>
+                    <button onclick="logToConsole('${escapeForAttribute(jsonString)}')" style="background: #64748b; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer;">
+                        🖥️ Log to Console
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add to body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+function closePreviewModal() {
+    const modal = document.getElementById('previewModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function escapeForAttribute(text) {
+    return text.replace(/'/g, "\\'").replace(/"/g, '\\"');
+}
+
+function copyToClipboard(jsonString) {
+    navigator.clipboard.writeText(jsonString).then(() => {
+        window.TopikoUtils.showNotification('✅ JSON copied to clipboard!', 'success');
+    }).catch(() => {
+        window.TopikoUtils.showNotification('❌ Failed to copy to clipboard', 'error');
+    });
+}
+
+function downloadJSON(jsonString) {
+    const businessName = document.getElementById('businessName').value.trim() || 'business';
+    const filename = `${businessName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-preview-data.json`;
+    
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    window.TopikoUtils.showNotification(`💾 JSON downloaded as ${filename}`, 'success');
+}
+
+function logToConsole(jsonString) {
+    console.log('🔍 TOPIKO PREVIEW DATA:');
+    console.log(JSON.parse(jsonString));
+    window.TopikoUtils.showNotification('🖥️ Data logged to browser console', 'info');
+}
 
 // ========================================
 // LEAD FLOW FUNCTIONS
@@ -1776,6 +1997,21 @@ document.addEventListener('DOMContentLoaded', function() {
 // ========================================
 
 if (typeof window !== 'undefined') {
+    // Preview Functions - NEW
+    window.generatePreviewData = generatePreviewData;
+    window.validatePreviewData = validatePreviewData;
+    window.composePreviewJSON = composePreviewJSON;
+    window.generateSubdomainUrl = generateSubdomainUrl;
+    window.mapSubcategoriesToCategories = mapSubcategoriesToCategories;
+    window.processSelectedProducts = processSelectedProducts;
+    window.showPreviewModal = showPreviewModal;
+    window.closePreviewModal = closePreviewModal;
+    window.escapeHtml = escapeHtml;
+    window.escapeForAttribute = escapeForAttribute;
+    window.copyToClipboard = copyToClipboard;
+    window.downloadJSON = downloadJSON;
+    window.logToConsole = logToConsole;
+    
     // Product Selection Functions
     window.switchProductMode = switchProductMode;
     window.selectPopularProducts = selectPopularProducts;
@@ -1836,8 +2072,9 @@ if (typeof window !== 'undefined') {
     window.toggleDebugPanel = toggleDebugPanel;
 }
 
-window.TopikoUtils.addDebugLog('📱 COMPLETE FIXED Topiko Lead Form loaded - ALL FUNCTIONS AVAILABLE', 'success');
-console.log('📱 COMPLETE FIXED Topiko Lead Form Ready');
+window.TopikoUtils.addDebugLog('📱 COMPLETE FIXED Topiko Lead Form loaded with PREVIEW functionality - ALL FUNCTIONS AVAILABLE', 'success');
+console.log('📱 COMPLETE FIXED Topiko Lead Form Ready with Preview Button');
 console.log('✅ ALL COMPLETION SCREEN FUNCTIONS LOADED');
-console.log('✅ ALL MISSING FUNCTIONS ADDED');
+console.log('✅ ALL MISSING FUNCTIONS ADDED'); 
+console.log('✅ PREVIEW FUNCTIONALITY INTEGRATED');
 console.log('✅ GLOBAL AVAILABILITY CONFIRMED');
