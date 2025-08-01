@@ -305,7 +305,7 @@ function calculateVariantPrice(basePrice, variant, variantType) {
 function showPreviewModal(previewData) {
     const jsonString = JSON.stringify(previewData, null, 2);
     
-    // Create modal HTML
+    // Create modal HTML with API call button
     const modalHTML = `
         <div class="modal-overlay show" id="previewModal">
             <div class="modal-content" style="max-width: 800px; max-height: 90vh;">
@@ -316,7 +316,16 @@ function showPreviewModal(previewData) {
                     <pre style="margin: 0; font-size: 0.8rem; line-height: 1.4; white-space: pre-wrap;">${escapeHtml(jsonString)}</pre>
                 </div>
                 
+                <!-- API Response Section (Initially Hidden) -->
+                <div id="apiResponseSection" style="display: none; background: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                    <h4 style="color: #1e40af; margin-bottom: 0.5rem;">🔗 API Response:</h4>
+                    <div id="apiResponseContent" style="background: white; border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.8rem; max-height: 200px; overflow-y: auto;"></div>
+                </div>
+                
                 <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button id="callApiBtn" onclick="callTopikoAPI('${escapeForAttribute(jsonString)}')" style="background: #dc2626; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                        🚀 Call API
+                    </button>
                     <button onclick="copyToClipboard('${escapeForAttribute(jsonString)}')" style="background: #10b981; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer;">
                         📋 Copy to Clipboard
                     </button>
@@ -382,6 +391,106 @@ function logToConsole(jsonString) {
     console.log('🔍 TOPIKO PREVIEW DATA:');
     console.log(JSON.parse(jsonString));
     window.TopikoUtils.showNotification('🖥️ Data logged to browser console', 'info');
+}
+
+// NEW FUNCTION: Call Topiko API with JSON data
+async function callTopikoAPI(jsonString) {
+    const apiButton = document.getElementById('callApiBtn');
+    const responseSection = document.getElementById('apiResponseSection');
+    const responseContent = document.getElementById('apiResponseContent');
+    
+    // Show loading state
+    apiButton.disabled = true;
+    apiButton.innerHTML = '⏳ Calling API...';
+    apiButton.style.opacity = '0.7';
+    
+    try {
+        // Parse JSON data
+        const jsonData = JSON.parse(jsonString);
+        
+        // API endpoint
+        const apiUrl = 'https://topiko.com/demoapis/demo_insertDemoData.php';
+        
+        window.TopikoUtils.addDebugLog(`🚀 Calling API: ${apiUrl}`, 'info');
+        
+        // Make API call
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: jsonString
+        });
+        
+        // Get response text (might be JSON or plain text)
+        const responseText = await response.text();
+        
+        // Try to parse as JSON, fallback to plain text
+        let responseData;
+        try {
+            responseData = JSON.parse(responseText);
+        } catch (e) {
+            responseData = responseText;
+        }
+        
+        // Show response section
+        responseSection.style.display = 'block';
+        
+        if (response.ok) {
+            // Success response
+            responseContent.innerHTML = `
+                <div style="color: #059669; font-weight: 600; margin-bottom: 0.5rem;">✅ API Call Successful (${response.status})</div>
+                <div style="color: #374151;">
+                    <strong>Response:</strong><br>
+                    <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${typeof responseData === 'object' ? JSON.stringify(responseData, null, 2) : responseData}</pre>
+                </div>
+            `;
+            
+            window.TopikoUtils.showNotification('✅ API call successful!', 'success');
+            window.TopikoUtils.addDebugLog('✅ API call completed successfully', 'success');
+            
+        } else {
+            // Error response
+            responseContent.innerHTML = `
+                <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">❌ API Call Failed (${response.status})</div>
+                <div style="color: #374151;">
+                    <strong>Error:</strong><br>
+                    <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${typeof responseData === 'object' ? JSON.stringify(responseData, null, 2) : responseData}</pre>
+                </div>
+            `;
+            
+            window.TopikoUtils.showNotification(`❌ API call failed: ${response.status}`, 'error');
+            window.TopikoUtils.addDebugLog(`❌ API call failed: ${response.status}`, 'error');
+        }
+        
+    } catch (error) {
+        // Network or other error
+        responseSection.style.display = 'block';
+        responseContent.innerHTML = `
+            <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">❌ API Call Error</div>
+            <div style="color: #374151;">
+                <strong>Error Message:</strong><br>
+                <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${error.message}</pre>
+                <br>
+                <strong>Possible Causes:</strong><br>
+                • Network connection issue<br>
+                • CORS policy blocking the request<br>
+                • API endpoint not available<br>
+                • Invalid JSON format
+            </div>
+        `;
+        
+        window.TopikoUtils.showNotification(`❌ API call error: ${error.message}`, 'error');
+        window.TopikoUtils.addDebugLog(`❌ API call error: ${error.message}`, 'error');
+        
+        console.error('API Call Error:', error);
+    } finally {
+        // Reset button state
+        apiButton.disabled = false;
+        apiButton.innerHTML = '🚀 Call API';
+        apiButton.style.opacity = '1';
+    }
 }
 
 // ========================================
@@ -2477,6 +2586,9 @@ if (typeof window !== 'undefined') {
     window.copyToClipboard = copyToClipboard;
     window.downloadJSON = downloadJSON;
     window.logToConsole = logToConsole;
+    
+    // NEW API Function
+    window.callTopikoAPI = callTopikoAPI;
     
     // NEW Variant Processing Functions
     window.processProductVariants = processProductVariants;
