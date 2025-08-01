@@ -409,8 +409,9 @@ function createProductCardWithVariants(product) {
         `;
     }
     
-    const basePrice = processedVariants.length > 0 ? processedVariants[0].variant_price : product.suggestedPrice;
-    
+  const productPrice = product.suggestedPrice || product.price || 0;
+const basePrice = processedVariants.length > 0 ? processedVariants[0].variant_price : productPrice;
+   
     return `
         <div class="product-card-selector ${selectedClass}" data-product-id="${product.id}">
             <div class="product-selector-image" style="background-image: url('${product.image}');">
