@@ -305,7 +305,10 @@ function calculateVariantPrice(basePrice, variant, variantType) {
 function showPreviewModal(previewData) {
     const jsonString = JSON.stringify(previewData, null, 2);
     
-    // Create modal HTML with API call button
+    // Store JSON data globally to avoid onclick parameter issues
+    window.currentPreviewData = jsonString;
+    
+    // Create modal HTML WITHOUT passing large strings in onclick
     const modalHTML = `
         <div class="modal-overlay show" id="previewModal">
             <div class="modal-content" style="max-width: 800px; max-height: 90vh;">
@@ -323,16 +326,16 @@ function showPreviewModal(previewData) {
                 </div>
                 
                 <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <button id="callApiBtn" onclick="callTopikoAPI('${escapeForAttribute(jsonString)}')" style="background: #dc2626; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    <button id="callApiBtn" onclick="callTopikoAPISafe()" style="background: #dc2626; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
                         🚀 Call API
                     </button>
-                    <button onclick="copyToClipboard('${escapeForAttribute(jsonString)}')" style="background: #10b981; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer;">
+                    <button onclick="copyToClipboardSafe()" style="background: #10b981; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer;">
                         📋 Copy to Clipboard
                     </button>
-                    <button onclick="downloadJSON('${escapeForAttribute(jsonString)}')" style="background: #6366f1; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer;">
+                    <button onclick="downloadJSONSafe()" style="background: #6366f1; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer;">
                         💾 Download JSON
                     </button>
-                    <button onclick="logToConsole('${escapeForAttribute(jsonString)}')" style="background: #64748b; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer;">
+                    <button onclick="logToConsoleSafe()" style="background: #64748b; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer;">
                         🖥️ Log to Console
                     </button>
                 </div>
