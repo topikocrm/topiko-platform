@@ -2030,6 +2030,35 @@
             assignedStatus: ''
         };
 
+        function generateAIRecommendations(lead) {
+    const recommendations = [];
+    
+    if (!lead) return recommendations;
+    
+    const score = lead.score || 50;
+    if (score >= 80) {
+        recommendations.push({
+            type: 'High Priority',
+            message: 'Excellent lead! Contact within 24 hours.',
+            priority: 'high'
+        });
+    } else if (score >= 60) {
+        recommendations.push({
+            type: 'Good Prospect', 
+            message: 'Send personalized follow-up.',
+            priority: 'medium'
+        });
+    } else {
+        recommendations.push({
+            type: 'Nurture Lead',
+            message: 'Add to nurture campaign.',
+            priority: 'low'
+        });
+    }
+    
+    return recommendations;
+}
+
         // UTILITY FUNCTIONS (Same as original but mobile-optimized)
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
