@@ -269,6 +269,38 @@ function determineVariantType(variants, product) {
     return { name: 'size', basePrice: true };
 }
 
+// NEW FUNCTION: Calculate variant price based on base price and variant type
+function calculateVariantPrice(basePrice, variant, variantType) {
+    const variantLower = variant.toLowerCase();
+    
+    if (variantType.basePrice) {
+        // For color/pattern variants, usually same price except premium
+        if (variantLower.includes('soda') || variantLower.includes('premium')) {
+            return basePrice + 10;
+        }
+        return basePrice;
+    }
+    
+    if (variantType.priceIncrease) {
+        // For portion/serving variants, adjust price
+        if (variantLower.includes('large') || variantLower.includes('double') || variantLower.includes('xl') || variantLower.includes('full')) {
+            return Math.round(basePrice * 1.25); // 25% increase
+        }
+        if (variantLower.includes('medium') || variantLower.includes('regular') || variantLower.includes('single') || variantLower.includes('half')) {
+            return basePrice;
+        }
+        if (variantLower.includes('small') || variantLower.includes('mini')) {
+            return Math.round(basePrice * 0.8); // 20% decrease
+        }
+        
+        // Special cases
+        if (variantLower.includes('soda') || variantLower.includes('premium')) {
+            return basePrice + 10;
+        }
+    }
+    
+    return basePrice;
+}
 function showPreviewModal(previewData) {
     const jsonString = JSON.stringify(previewData, null, 2);
     
