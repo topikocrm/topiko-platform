@@ -3811,7 +3811,181 @@ body {
         margin-bottom: 0; /* Remove extra spacing for print */
     }
 }
+/* ========================================
+   VARIANT SELECTION STYLING - NEW
+   ======================================== */
 
+.variant-selector {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    background: rgba(107, 70, 193, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(107, 70, 193, 0.1);
+}
+
+.variant-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6b46c1;
+    margin-bottom: 0.5rem;
+}
+
+.variant-options {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.variant-btn {
+    padding: 0.4rem 0.8rem;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 60px;
+    text-align: center;
+}
+
+.variant-btn:hover {
+    border-color: #6b46c1;
+    color: #6b46c1;
+    transform: translateY(-1px);
+}
+
+.variant-btn.active {
+    border-color: #6b46c1;
+    background: #6b46c1;
+    color: white;
+    font-weight: 600;
+}
+
+.product-price-tag {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(34, 197, 94, 0.9);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.price-updating {
+    animation: priceUpdate 0.3s ease;
+    background: rgba(99, 102, 241, 0.9) !important;
+}
+
+@keyframes priceUpdate {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Product grid with variants - increased height */
+.products-grid.with-variants .product-card-selector {
+    min-height: 420px; /* Increased from default for variant selector */
+}
+
+/* Mobile responsive variants */
+@media (max-width: 768px) {
+    .variant-options {
+        flex-direction: column;
+    }
+    
+    .variant-btn {
+        width: 100%;
+        padding: 0.6rem;
+    }
+    
+    .variant-selector {
+        margin: 0.75rem 0;
+        padding: 0.5rem;
+    }
+    
+    .products-grid.with-variants .product-card-selector {
+        min-height: 450px; /* Even more height on mobile */
+    }
+}
+
+/* Tablet responsive */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .variant-options {
+        gap: 0.3rem;
+    }
+    
+    .variant-btn {
+        padding: 0.5rem 0.7rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Enhanced product selection overlay for variants */
+.product-card-selector.selected .variant-selector {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.3);
+}
+
+.product-card-selector.selected .variant-btn.active {
+    background: #10b981;
+    border-color: #10b981;
+}
+
+/* Price tag improvements */
+.product-price-tag {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4px);
+}
+
+/* Loading state for price updates */
+.variant-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Accessibility improvements */
+.variant-btn:focus {
+    outline: 2px solid #6b46c1;
+    outline-offset: 2px;
+}
+
+.variant-btn:focus-visible {
+    outline: 2px solid #6b46c1;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .variant-btn {
+        border-width: 3px;
+    }
+    
+    .variant-btn.active {
+        border-width: 3px;
+        font-weight: 700;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .variant-btn {
+        transition: none;
+    }
+    
+    .price-updating {
+        animation: none;
+    }
+    
+    .product-price-tag {
+        transition: none;
+    }
+}
 /* ========================================
    END OF STYLES
    ======================================== */
