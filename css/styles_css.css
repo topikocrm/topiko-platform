@@ -1,5 +1,5 @@
 /* ========================================
-   TOPIKO LEAD FORM - COMPREHENSIVE LIGHT PINK + PURPLE THEME
+   TOPIKO LEAD FORM - COMPREHENSIVE LIGHT PINK + PURPLE THEME WITH PREVIEW
    ======================================== */
 
 /* ========================================
@@ -1986,7 +1986,7 @@ body {
 }
 
 /* ========================================
-   15. MODAL STYLES
+   15. MODAL STYLES (INCLUDING PREVIEW MODAL)
    ======================================== */
 
 .modal-overlay {
@@ -2127,6 +2127,188 @@ body {
 .otp-input.filled {
     background: rgba(168, 85, 247, 0.1);
     border-color: #a855f7;
+}
+
+/* ========================================
+   PREVIEW MODAL STYLES - NEW SECTION
+   ======================================== */
+
+/* Preview Modal Specific Styles */
+#previewModal .modal-content {
+    max-width: 800px;
+    max-height: 90vh;
+}
+
+#previewModal .modal-content h3 {
+    color: #6b46c1;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* JSON Display Container */
+#previewModal .json-display-container {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+    position: relative;
+}
+
+#previewModal pre {
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    color: #374151;
+    background: transparent;
+}
+
+/* JSON Syntax Highlighting */
+#previewModal pre .json-key {
+    color: #7c3aed;
+    font-weight: 600;
+}
+
+#previewModal pre .json-string {
+    color: #059669;
+}
+
+#previewModal pre .json-number {
+    color: #dc2626;
+}
+
+#previewModal pre .json-boolean {
+    color: #ea580c;
+    font-weight: 600;
+}
+
+#previewModal pre .json-null {
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Action Buttons Container */
+#previewModal .preview-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+#previewModal .preview-actions button {
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    min-width: 140px;
+    justify-content: center;
+}
+
+#previewModal .preview-actions button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Copy Button */
+#previewModal .copy-btn {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+#previewModal .copy-btn:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+/* Download Button */
+#previewModal .download-btn {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+}
+
+#previewModal .download-btn:hover {
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+/* Console Button */
+#previewModal .console-btn {
+    background: linear-gradient(135deg, #64748b, #475569);
+    color: white;
+}
+
+#previewModal .console-btn:hover {
+    background: linear-gradient(135deg, #475569, #334155);
+    box-shadow: 0 4px 15px rgba(100, 116, 139, 0.3);
+}
+
+/* Preview Modal Animation */
+#previewModal.show .modal-content {
+    animation: modalSlideIn 0.4s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Scrollbar Styling for JSON Display */
+#previewModal .json-display-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+#previewModal .json-display-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+#previewModal .json-display-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+#previewModal .json-display-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Loading State for Preview */
+#previewModal .loading-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #6b46c1;
+    font-weight: 600;
+    padding: 2rem;
+}
+
+#previewModal .loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e5e7eb;
+    border-top: 2px solid #6b46c1;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
 /* ========================================
@@ -2457,6 +2639,362 @@ body {
 }
 
 /* ========================================
+   COMPLETION SCREEN SPECIAL OFFERS STYLES
+   ======================================== */
+
+/* Special Offers Container */
+#specialOffersContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Individual Offer Items */
+.special-offer-item {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(245, 158, 11, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: left;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.special-offer-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
+}
+
+.special-offer-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.25);
+    border-color: #f59e0b;
+}
+
+.special-offer-item:hover::before {
+    left: 100%;
+}
+
+/* Offer Title */
+.offer-title {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Offer Description */
+.offer-description {
+    color: #92400e;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* FREE Value Badge */
+.offer-value {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: white;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(5, 150, 105, 0.3);
+    animation: pulse-value 2s infinite;
+}
+
+@keyframes pulse-value {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Offer Timer Styling */
+#offerTimer {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #dc2626;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    animation: timer-blink 1s infinite;
+}
+
+@keyframes timer-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.7; }
+}
+
+/* Enhanced Completion Choice Buttons */
+.offer-option {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.offer-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.15);
+}
+
+.offer-option.selected {
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+}
+
+.offer-option.selected label {
+    border-color: #6366f1 !important;
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%) !important;
+    color: #3730a3 !important;
+}
+
+/* Completion Button Enhanced */
+#completionChoiceBtn {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    width: 100%;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#completionChoiceBtn:not(:disabled):hover {
+    background: linear-gradient(135deg, #4f46e5, #4338ca);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+#completionChoiceBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ========================================
+   INTERACTIVE COMPLETION SCREEN STYLES
+   ======================================== */
+
+/* Enhanced Action Buttons */
+.action-button {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.action-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.action-button:active {
+    transform: translateY(-1px);
+}
+
+/* Selectable Offers Enhancement */
+.special-offer-item {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.special-offer-item.selected {
+    border-color: #10b981 !important;
+    background: rgba(16, 185, 129, 0.1) !important;
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+}
+
+.special-offer-item.selected .offer-title {
+    color: #047857 !important;
+}
+
+.special-offer-item.selected .offer-description {
+    color: #065f46 !important;
+}
+
+/* Enhanced Time Slots Grid */
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.time-slot {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.time-slot:hover {
+    border-color: #6366f1;
+    background: #f0f4ff;
+    transform: translateY(-2px);
+}
+
+.time-slot.selected {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    color: #047857;
+    font-weight: 600;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.slot-date {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.slot-time {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.time-slot.selected .slot-date,
+.time-slot.selected .slot-time {
+    color: #047857;
+}
+
+/* Enhanced Reason Options Grid */
+.reason-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+}
+
+.reason-option {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.reason-option:hover {
+    border-color: #6366f1;
+    background: #f0f4ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+
+.reason-option.selected {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    color: #047857;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.2);
+}
+
+.reason-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.reason-option:hover .reason-icon {
+    transform: scale(1.1);
+}
+
+.reason-text {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #374151;
+    transition: color 0.3s ease;
+}
+
+.reason-option.selected .reason-text {
+    color: #047857;
+}
+
+/* Enhanced Selected Offer Display */
+#selectedOfferDisplay {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced Modal Buttons */
+.modal-content button:not(.modal-close) {
+    transition: all 0.3s ease;
+}
+
+.modal-content button:not(.modal-close):hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced Confirm Buttons */
+#confirmScheduleBtn:not(:disabled) {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+}
+
+#confirmScheduleBtn:not(:disabled):hover {
+    background: linear-gradient(135deg, #059669, #047857) !important;
+}
+
+#submitReasonBtn {
+    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+}
+
+#submitReasonBtn:hover {
+    background: linear-gradient(135deg, #4f46e5, #4338ca) !important;
+}
+
+/* Enhanced Completion Success Animation */
+.completion-success-enter {
+    animation: successFadeIn 0.6s ease;
+}
+
+@keyframes successFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ========================================
    16. ANIMATIONS
    ======================================== */
 
@@ -2636,6 +3174,16 @@ body {
 
     .motivational-messages {
         text-align: right;
+    }
+    
+    /* Preview Modal Desktop Enhancements */
+    #previewModal .preview-actions {
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+    }
+    
+    #previewModal .preview-actions button {
+        min-width: 160px;
     }
 }
 
@@ -3041,6 +3589,70 @@ body {
         padding: 0.75rem;
         font-size: 0.9rem;
     }
+    
+    /* Preview Modal Mobile Styles */
+    #previewModal .modal-content {
+        max-width: none;
+        width: calc(100% - 1rem);
+        margin: 0.5rem;
+        padding: 1rem;
+        max-height: 85vh;
+    }
+    
+    #previewModal h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    #previewModal .json-display-container {
+        max-height: 250px;
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+    }
+    
+    #previewModal pre {
+        font-size: 0.7rem;
+        line-height: 1.3;
+    }
+    
+    #previewModal .preview-actions {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    #previewModal .preview-actions button {
+        min-width: auto;
+        width: 100%;
+        font-size: 0.8rem;
+        padding: 0.6rem 0.8rem;
+    }
+    
+    /* Mobile Responsive Enhancements */
+    .reason-options {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .reason-option {
+        padding: 0.75rem;
+        flex-direction: row;
+        text-align: left;
+        gap: 0.75rem;
+    }
+    
+    .reason-icon {
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+    
+    .reason-text {
+        font-size: 0.85rem;
+    }
+    
+    .action-button {
+        padding: 1rem !important;
+        font-size: 0.9rem !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -3141,6 +3753,32 @@ body {
     .main-content {
         margin-bottom: 10rem; /* More space for FOMO elements on very small screens */
     }
+    
+    /* Preview Modal Very Small Screens */
+    #previewModal .modal-content {
+        width: calc(100% - 0.5rem);
+        margin: 0.25rem;
+        padding: 0.8rem;
+        max-height: 90vh;
+    }
+    
+    #previewModal h3 {
+        font-size: 1rem;
+    }
+    
+    #previewModal .json-display-container {
+        max-height: 200px;
+        padding: 0.6rem;
+    }
+    
+    #previewModal pre {
+        font-size: 0.65rem;
+    }
+    
+    #previewModal .preview-actions button {
+        font-size: 0.75rem;
+        padding: 0.5rem;
+    }
 }
 
 /* ========================================
@@ -3154,7 +3792,8 @@ body {
     .debug-panel,
     .notification,
     .fomo-notification,
-    .fomo-counter {
+    .fomo-counter,
+    #previewModal {
         display: none !important;
     }
 
@@ -3172,479 +3811,7 @@ body {
         margin-bottom: 0; /* Remove extra spacing for print */
     }
 }
-/* ========================================
-   COMPLETION SCREEN SPECIAL OFFERS STYLES - ADD TO styles_css.css  
-   ======================================== */
 
-/* Special Offers Container */
-#specialOffersContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-/* Individual Offer Items */
-.special-offer-item {
-    background: rgba(255, 255, 255, 0.95);
-    border: 2px solid rgba(245, 158, 11, 0.3);
-    border-radius: 12px;
-    padding: 1rem;
-    text-align: left;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.special-offer-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    transition: left 0.5s ease;
-}
-
-.special-offer-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.25);
-    border-color: #f59e0b;
-}
-
-.special-offer-item:hover::before {
-    left: 100%;
-}
-
-/* Offer Title */
-.offer-title {
-    font-weight: 700;
-    color: #d97706;
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-/* Offer Description */
-.offer-description {
-    color: #92400e;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    margin: 0;
-}
-
-/* FREE Value Badge */
-.offer-value {
-    background: linear-gradient(135deg, #059669, #047857);
-    color: white;
-    padding: 0.25rem 0.6rem;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 4px rgba(5, 150, 105, 0.3);
-    animation: pulse-value 2s infinite;
-}
-
-@keyframes pulse-value {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-/* Offer Timer Styling */
-#offerTimer {
-    font-family: 'Courier New', monospace;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #dc2626;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    animation: timer-blink 1s infinite;
-}
-
-@keyframes timer-blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.7; }
-}
-
-/* Completion Choice Buttons Enhanced */
-.offer-option {
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-.offer-option:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.15);
-}
-
-.offer-option.selected {
-    transform: scale(1.02);
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
-}
-
-.offer-option.selected label {
-    border-color: #6366f1 !important;
-    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%) !important;
-    color: #3730a3 !important;
-}
-
-/* Completion Button Enhanced */
-#completionChoiceBtn {
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    color: white;
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 1rem;
-    width: 100%;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-#completionChoiceBtn:not(:disabled):hover {
-    background: linear-gradient(135deg, #4f46e5, #4338ca);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-}
-
-#completionChoiceBtn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* Mobile Responsiveness for Offers */
-@media (max-width: 768px) {
-    #specialOffersContainer {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-    }
-    
-    .special-offer-item {
-        padding: 0.75rem;
-    }
-    
-    .offer-title {
-        font-size: 0.9rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .offer-description {
-        font-size: 0.8rem;
-    }
-    
-    .offer-value {
-        font-size: 0.65rem;
-        padding: 0.2rem 0.5rem;
-    }
-    
-    #offerTimer {
-        font-size: 1rem;
-    }
-}
-
-/* Special Gradient Background for Offers Section */
-.offers-section-background {
-    background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 50%, #fde68a 100%);
-    border: 2px solid #f59e0b;
-    border-radius: 16px;
-    padding: 2rem;
-    margin: 2rem 0;
-    position: relative;
-    overflow: hidden;
-}
-
-.offers-section-background::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    animation: offers-shimmer 4s ease-in-out infinite;
-}
-
-@keyframes offers-shimmer {
-    0%, 100% { transform: rotate(0deg); }
-    50% { transform: rotate(180deg); }
-}
-/* ========================================
-   INTERACTIVE COMPLETION SCREEN STYLES - ADD TO END OF styles_css.css
-   ======================================== */
-
-/* Enhanced Action Buttons */
-.action-button {
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.action-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.action-button:active {
-    transform: translateY(-1px);
-}
-
-/* Selectable Offers Enhancement */
-.special-offer-item {
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.special-offer-item.selected {
-    border-color: #10b981 !important;
-    background: rgba(16, 185, 129, 0.1) !important;
-    transform: scale(1.02);
-    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
-}
-
-.special-offer-item.selected .offer-title {
-    color: #047857 !important;
-}
-
-.special-offer-item.selected .offer-description {
-    color: #065f46 !important;
-}
-
-/* Enhanced Time Slots Grid */
-.time-slots-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-}
-
-.time-slot {
-    background: #f8fafc;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 0.75rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.time-slot:hover {
-    border-color: #6366f1;
-    background: #f0f4ff;
-    transform: translateY(-2px);
-}
-
-.time-slot.selected {
-    border-color: #10b981;
-    background: rgba(16, 185, 129, 0.1);
-    color: #047857;
-    font-weight: 600;
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-}
-
-.slot-date {
-    font-size: 0.8rem;
-    color: #64748b;
-    margin-bottom: 0.25rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.slot-time {
-    font-weight: 600;
-    color: #1e293b;
-}
-
-.time-slot.selected .slot-date,
-.time-slot.selected .slot-time {
-    color: #047857;
-}
-
-/* Enhanced Reason Options Grid */
-.reason-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 0.75rem;
-}
-
-.reason-option {
-    background: #f8fafc;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 1rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.reason-option:hover {
-    border-color: #6366f1;
-    background: #f0f4ff;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
-}
-
-.reason-option.selected {
-    border-color: #10b981;
-    background: rgba(16, 185, 129, 0.1);
-    color: #047857;
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.2);
-}
-
-.reason-icon {
-    font-size: 1.5rem;
-    transition: transform 0.3s ease;
-}
-
-.reason-option:hover .reason-icon {
-    transform: scale(1.1);
-}
-
-.reason-text {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: #374151;
-    transition: color 0.3s ease;
-}
-
-.reason-option.selected .reason-text {
-    color: #047857;
-}
-
-/* Enhanced Selected Offer Display */
-#selectedOfferDisplay {
-    animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Enhanced Modal Buttons */
-.modal-content button:not(.modal-close) {
-    transition: all 0.3s ease;
-}
-
-.modal-content button:not(.modal-close):hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Enhanced Confirm Buttons */
-#confirmScheduleBtn:not(:disabled) {
-    background: linear-gradient(135deg, #10b981, #059669) !important;
-}
-
-#confirmScheduleBtn:not(:disabled):hover {
-    background: linear-gradient(135deg, #059669, #047857) !important;
-}
-
-#submitReasonBtn {
-    background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
-}
-
-#submitReasonBtn:hover {
-    background: linear-gradient(135deg, #4f46e5, #4338ca) !important;
-}
-
-/* Mobile Responsiveness Enhancements */
-@media (max-width: 768px) {
-    .time-slots-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
-    }
-    
-    .time-slot {
-        padding: 0.5rem;
-    }
-    
-    .slot-date {
-        font-size: 0.7rem;
-    }
-    
-    .slot-time {
-        font-size: 0.9rem;
-    }
-    
-    .reason-options {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-    }
-    
-    .reason-option {
-        padding: 0.75rem;
-        flex-direction: row;
-        text-align: left;
-        gap: 0.75rem;
-    }
-    
-    .reason-icon {
-        font-size: 1.25rem;
-        flex-shrink: 0;
-    }
-    
-    .reason-text {
-        font-size: 0.85rem;
-    }
-    
-    .action-button {
-        padding: 1rem !important;
-        font-size: 0.9rem !important;
-    }
-}
-
-/* Enhanced Completion Success Animation */
-.completion-success-enter {
-    animation: successFadeIn 0.6s ease;
-}
-
-@keyframes successFadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* Enhanced Loading State */
-.special-offer-item:first-child:only-child {
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.7;
-    }
-}
 /* ========================================
    END OF STYLES
    ======================================== */
