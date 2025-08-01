@@ -1,5 +1,5 @@
 /* ========================================
-   TOPIKO LEAD FORM - MAIN APPLICATION LOGIC - COMPLETE FIXED VERSION WITH PREVIEW
+   TOPIKO LEAD FORM - MAIN APPLICATION LOGIC - COMPLETE UPDATED VERSION WITH JSON & VARIANT PRICING
    ======================================== */
 
 // ========================================
@@ -48,7 +48,7 @@ window.addEventListener('beforeunload', function(e) {
 });
 
 // ========================================
-// PREVIEW DATA FUNCTIONS - NEW FUNCTIONALITY
+// PREVIEW DATA FUNCTIONS - UPDATED WITH NEW JSON FORMAT
 // ========================================
 
 function generatePreviewData() {
@@ -133,6 +133,7 @@ function composePreviewJSON() {
     return previewData;
 }
 
+// UPDATED: Remove .topiko.com from subdomain URL
 function generateSubdomainUrl(businessName) {
     if (!businessName) return "";
     
@@ -141,8 +142,8 @@ function generateSubdomainUrl(businessName) {
         .replace(/[^a-z0-9\s-]/g, '')
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '')
-        + '.topiko.com';
+        .replace(/^-|-$/g, '');
+        // REMOVED: + '.topiko.com'
 }
 
 function mapSubcategoriesToCategories() {
@@ -172,18 +173,115 @@ function mapSubcategoriesToCategories() {
     return mappedSubcategories;
 }
 
+// UPDATED: Process selected products with new variant format
 function processSelectedProducts() {
     const userProducts = window.topikoApp.userProducts || [];
     
     return userProducts.map(product => ({
         product_title: product.name,
-        product_price: product.price,
+        product_price: product.selectedVariantPrice || product.price,
         product_image_url: product.imageUrl || product.image,
         product_description: product.description,
-        product_variants: product.variants || [],
+        product_variants: processProductVariants(product),
         category_name: product.categoryKey || product.category,
         subcategory_name: product.subcategoryKey || product.subcategory
     }));
+}
+
+// NEW FUNCTION: Process product variants into new object format
+function processProductVariants(product) {
+    const variants = product.variants || [];
+    
+    // If variants is already in new object format, return as-is
+    if (variants.length > 0 && typeof variants[0] === 'object' && variants[0].variant_name) {
+        return variants;
+    }
+    
+    // Convert simple array variants to new object format
+    if (variants.length > 0 && typeof variants[0] === 'string') {
+        return convertSimpleVariantsToObjects(variants, product);
+    }
+    
+    // Default: return empty array
+    return [];
+}
+
+// NEW FUNCTION: Convert simple variants like ["S", "M", "L"] to object format
+function convertSimpleVariantsToObjects(variants, product) {
+    // Determine variant type based on product category/content
+    const variantType = determineVariantType(variants, product);
+    
+    return variants.map(variant => ({
+        variant_name: variantType.name,
+        variant_detail: variant,
+        variant_price: calculateVariantPrice(product.price || product.suggestedPrice, variant, variantType)
+    }));
+}
+
+// NEW FUNCTION: Determine what type of variant this is (size, flavor, portion, etc.)
+function determineVariantType(variants, product) {
+    const variantString = variants.join(' ').toLowerCase();
+    const productName = (product.name || '').toLowerCase();
+    const categoryKey = (product.categoryKey || product.category || '').toLowerCase();
+    
+    // Size variants (clothing, etc.)
+    if (variantString.includes('s') && variantString.includes('m') && variantString.includes('l')) {
+        return { name: 'size', basePrice: true };
+    }
+    
+    // Food portions
+    if (categoryKey.includes('food') || categoryKey.includes('restaurant') || categoryKey.includes('north-indian') || categoryKey.includes('south-indian') ||
+        productName.includes('dal') || productName.includes('curry') || productName.includes('rice') || productName.includes('biryani')) {
+        return { name: 'portion', priceIncrease: true };
+    }
+    
+    // Beverages - flavor variants
+    if (categoryKey.includes('beverage') || productName.includes('juice') || 
+        productName.includes('tea') || productName.includes('coffee') || productName.includes('water') || productName.includes('lassi')) {
+        return { name: 'flavor', basePrice: true };
+    }
+    
+    // Desserts/Sweets - serving size
+    if (categoryKey.includes('sweet') || categoryKey.includes('dessert') || 
+        productName.includes('cake') || productName.includes('ice') || productName.includes('kheer')) {
+        return { name: 'serving', priceIncrease: true };
+    }
+    
+    // Default: treat as size
+    return { name: 'size', basePrice: true };
+}
+
+// NEW FUNCTION: Calculate variant price based on base price and variant type
+function calculateVariantPrice(basePrice, variant, variantType) {
+    const variantLower = variant.toLowerCase();
+    
+    if (variantType.basePrice) {
+        // For flavor variants, usually same price except premium
+        if (variantLower.includes('soda') || variantLower.includes('premium')) {
+            return basePrice + 10;
+        }
+        return basePrice;
+    }
+    
+    if (variantType.priceIncrease) {
+        // For portion/serving variants, adjust price
+        if (variantLower.includes('large') || variantLower.includes('double') || variantLower.includes('xl') || variantLower.includes('full')) {
+            return Math.round(basePrice * 1.25); // 25% increase
+        }
+        if (variantLower.includes('medium') || variantLower.includes('regular') || variantLower.includes('single') || variantLower.includes('half')) {
+            return basePrice;
+        }
+        if (variantLower.includes('small') || variantLower.includes('mini')) {
+            return Math.round(basePrice * 0.8); // 20% decrease
+        }
+        
+        // Special cases
+        if (variantLower.includes('soda') || variantLower.includes('premium')) {
+            return basePrice + 10;
+        }
+    }
+    
+    return basePrice;
 }
 
 function showPreviewModal(previewData) {
@@ -266,6 +364,108 @@ function logToConsole(jsonString) {
     console.log('🔍 TOPIKO PREVIEW DATA:');
     console.log(JSON.parse(jsonString));
     window.TopikoUtils.showNotification('🖥️ Data logged to browser console', 'info');
+}
+
+// ========================================
+// VARIANT DISPLAY FUNCTIONS - NEW FUNCTIONALITY
+// ========================================
+
+// NEW FUNCTION: Create product card with variant selection
+function createProductCardWithVariants(product) {
+    const isSelected = window.topikoApp.selectedProductIds?.includes(product.id) || false;
+    const selectedClass = isSelected ? 'selected' : '';
+    const checkmarkStyle = isSelected ? 'opacity: 1' : 'opacity: 0';
+    
+    // Process variants for pricing
+    const variantType = product.variants ? determineVariantType(product.variants, product) : null;
+    const processedVariants = product.variants ? 
+        convertSimpleVariantsToObjects(product.variants, product) : [];
+    
+    let variantSelector = '';
+    if (processedVariants.length > 0) {
+        variantSelector = `
+            <div class="variant-selector">
+                <label class="variant-label">Choose ${variantType.name}:</label>
+                <div class="variant-options">
+                    ${processedVariants.map((variant, index) => `
+                        <button class="variant-btn ${index === 0 ? 'active' : ''}" 
+                                data-price="${variant.variant_price}"
+                                data-variant="${variant.variant_detail}"
+                                onclick="selectProductVariant('${product.id}', '${variant.variant_detail}', ${variant.variant_price})">
+                            ${variant.variant_detail}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    const basePrice = processedVariants.length > 0 ? processedVariants[0].variant_price : product.suggestedPrice;
+    
+    return `
+        <div class="product-card-selector ${selectedClass}" data-product-id="${product.id}">
+            <div class="product-selector-image" style="background-image: url('${product.image}');">
+                <div class="product-price-tag" id="price-${product.id}">₹${basePrice.toLocaleString()}</div>
+                <div class="product-selection-overlay">
+                    <div class="selection-checkmark" style="${checkmarkStyle}">✓</div>
+                </div>
+                ${product.isPopular ? '<div class="popular-badge">Popular</div>' : ''}
+            </div>
+            <div class="product-selector-content">
+                <h4 class="product-selector-title">${product.name}</h4>
+                <p class="product-selector-description">${product.description}</p>
+                
+                ${variantSelector}
+                
+                <div class="product-actions">
+                    <button class="select-product-btn" onclick="toggleProductSelection('${product.id}')">
+                        ${isSelected ? 'Remove' : 'Select'}
+                    </button>
+                    <button class="edit-product-btn" onclick="editProduct('${product.id}')" style="display: ${isSelected ? 'inline-block' : 'none'}">
+                        Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// NEW FUNCTION: Handle variant selection
+function selectProductVariant(productId, variantDetail, variantPrice) {
+    // Update UI
+    const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+    if (!productCard) return;
+    
+    // Update active variant button
+    productCard.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('active'));
+    const selectedBtn = productCard.querySelector(`[data-variant="${variantDetail}"]`);
+    if (selectedBtn) selectedBtn.classList.add('active');
+    
+    // Update displayed price
+    const priceTag = document.getElementById(`price-${productId}`);
+    if (priceTag) {
+        priceTag.textContent = `₹${variantPrice.toLocaleString()}`;
+        
+        // Add price change animation
+        priceTag.classList.add('price-updating');
+        setTimeout(() => priceTag.classList.remove('price-updating'), 300);
+    }
+    
+    // Store selected variant in product data
+    const product = window.topikoApp.userProducts.find(p => p.id === productId);
+    if (product) {
+        product.selectedVariant = variantDetail;
+        product.selectedVariantPrice = variantPrice;
+    }
+    
+    // Also update the base product in database if not yet selected
+    const dbProduct = findProductById(productId);
+    if (dbProduct) {
+        dbProduct.selectedVariant = variantDetail;
+        dbProduct.selectedVariantPrice = variantPrice;
+    }
+    
+    window.TopikoUtils.addDebugLog(`🎯 Variant selected: ${variantDetail} (₹${variantPrice}) for ${productId}`);
 }
 
 // ========================================
@@ -761,7 +961,7 @@ async function proceedToProducts() {
 }
 
 // ========================================
-// PRODUCT SELECTION SYSTEM - FUNCTIONS
+// PRODUCT SELECTION SYSTEM - FUNCTIONS - UPDATED WITH VARIANTS
 // ========================================
 
 function switchProductMode(mode) {
@@ -847,8 +1047,8 @@ function loadFilteredProductsGrid() {
         productsCount.textContent = filteredProducts.length;
     }
     
-    // Display filtered products
-    displayProductsGrid(filteredProducts);
+    // Display filtered products with variants
+    displayProductsGridWithVariants(filteredProducts);
     
     // Update quick filters to only show relevant categories
     updateQuickFiltersForSelection();
@@ -1082,13 +1282,14 @@ function filterAndDisplayProducts() {
         productsCount.textContent = filteredProducts.length;
     }
     
-    // Display products
-    displayProductsGrid(filteredProducts);
+    // Display products with variants
+    displayProductsGridWithVariants(filteredProducts);
     
     window.TopikoUtils.addDebugLog(`🔍 Filtered to ${filteredProducts.length} products from selected categories`);
 }
 
-function displayProductsGrid(products) {
+// UPDATED: Display products grid with variant functionality
+function displayProductsGridWithVariants(products) {
     const productsGrid = document.getElementById('productsGrid');
     
     if (!productsGrid) {
@@ -1107,41 +1308,17 @@ function displayProductsGrid(products) {
         return;
     }
     
-    const productsHTML = products.map(product => createProductCard(product)).join('');
+    const productsHTML = products.map(product => createProductCardWithVariants(product)).join('');
     productsGrid.innerHTML = productsHTML;
 }
 
+// Keep original function for backward compatibility
+function displayProductsGrid(products) {
+    displayProductsGridWithVariants(products);
+}
+
 function createProductCard(product) {
-    const isSelected = window.topikoApp.selectedProductIds?.includes(product.id) || false;
-    const selectedClass = isSelected ? 'selected' : '';
-    const checkmarkStyle = isSelected ? 'opacity: 1' : 'opacity: 0';
-    
-    return `
-        <div class="product-card-selector ${selectedClass}" data-product-id="${product.id}">
-            <div class="product-selector-image" style="background-image: url('${product.image}');">
-                <div class="product-price-tag">₹${product.suggestedPrice.toLocaleString()}</div>
-                <div class="product-selection-overlay">
-                    <div class="selection-checkmark" style="${checkmarkStyle}">✓</div>
-                </div>
-                ${product.isPopular ? '<div class="popular-badge">Popular</div>' : ''}
-            </div>
-            <div class="product-selector-content">
-                <h4 class="product-selector-title">${product.name}</h4>
-                <p class="product-selector-description">${product.description}</p>
-                <div class="product-variants">
-                    ${product.variants.map(variant => `<span class="variant-tag">${variant}</span>`).join('')}
-                </div>
-                <div class="product-actions">
-                    <button class="select-product-btn" onclick="toggleProductSelection('${product.id}')">
-                        ${isSelected ? 'Remove' : 'Select'}
-                    </button>
-                    <button class="edit-product-btn" onclick="editProduct('${product.id}')" style="display: ${isSelected ? 'inline-block' : 'none'}">
-                        Edit
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
+    return createProductCardWithVariants(product);
 }
 
 function toggleProductSelection(productId) {
@@ -1155,32 +1332,35 @@ function toggleProductSelection(productId) {
     if (index > -1) {
         // Remove product
         window.topikoApp.selectedProductIds.splice(index, 1);
-        
-        // Remove from userProducts array
         window.topikoApp.userProducts = window.topikoApp.userProducts.filter(p => p.id !== productId);
-        
         window.TopikoUtils.showNotification(`Removed "${product.name}"`, 'info');
     } else {
-        // Add product
+        // Add product with selected variant
         window.topikoApp.selectedProductIds.push(productId);
         
-        // Add to userProducts array
+        // Get currently selected variant or default to first
+        const selectedVariant = product.selectedVariant || (product.variants && product.variants[0]);
+        const selectedPrice = product.selectedVariantPrice || product.suggestedPrice;
+        
         const userProduct = {
             id: productId,
             name: product.name,
-            price: product.suggestedPrice,
+            price: selectedPrice,
             description: product.description,
             categoryKey: product.category,
             subcategoryKey: product.subcategory,
             imageUrl: product.image,
             variants: product.variants,
+            selectedVariant: selectedVariant,
+            selectedVariantPrice: selectedPrice,
             isFromDatabase: true,
             createdAt: new Date().toISOString()
         };
         
         window.topikoApp.userProducts.push(userProduct);
         
-        window.TopikoUtils.showNotification(`Added "${product.name}"`, 'success');
+        const variantText = selectedVariant ? ` - ${selectedVariant}` : '';
+        window.TopikoUtils.showNotification(`Added "${product.name}${variantText}"`, 'success');
     }
     
     // Update UI
@@ -1293,16 +1473,21 @@ function updateSelectedProductsSection() {
     if (selectedCount) selectedCount.textContent = selectedProducts.length;
     
     if (selectedList) {
-        selectedList.innerHTML = selectedProducts.map(product => `
-            <div class="selected-product-item">
-                <img src="${product.imageUrl}" alt="${product.name}" class="selected-product-image">
-                <div class="selected-product-info">
-                    <h5>${product.name}</h5>
-                    <p class="selected-product-price">₹${product.price.toLocaleString()}</p>
+        selectedList.innerHTML = selectedProducts.map(product => {
+            const variantText = product.selectedVariant ? ` (${product.selectedVariant})` : '';
+            const displayPrice = product.selectedVariantPrice || product.price;
+            
+            return `
+                <div class="selected-product-item">
+                    <img src="${product.imageUrl}" alt="${product.name}" class="selected-product-image">
+                    <div class="selected-product-info">
+                        <h5>${product.name}${variantText}</h5>
+                        <p class="selected-product-price">₹${displayPrice.toLocaleString()}</p>
+                    </div>
+                    <button class="remove-selected-btn" onclick="toggleProductSelection('${product.id}')">×</button>
                 </div>
-                <button class="remove-selected-btn" onclick="toggleProductSelection('${product.id}')">×</button>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 }
 
@@ -1323,7 +1508,7 @@ function editProduct(productId) {
                 
                 <div class="edit-form-group">
                     <label>Price (₹)</label>
-                    <input type="number" id="editProductPrice" value="${product.price}">
+                    <input type="number" id="editProductPrice" value="${product.selectedVariantPrice || product.price}">
                 </div>
                 
                 <div class="edit-form-group">
@@ -1362,6 +1547,7 @@ function saveProductEdit(productId) {
     // Update product
     product.name = newName;
     product.price = newPrice;
+    product.selectedVariantPrice = newPrice;
     product.description = newDescription;
     product.customPrice = newPrice;
     product.customDescription = newDescription;
@@ -1997,7 +2183,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ========================================
 
 if (typeof window !== 'undefined') {
-    // Preview Functions - NEW
+    // Preview Functions - UPDATED
     window.generatePreviewData = generatePreviewData;
     window.validatePreviewData = validatePreviewData;
     window.composePreviewJSON = composePreviewJSON;
@@ -2012,7 +2198,17 @@ if (typeof window !== 'undefined') {
     window.downloadJSON = downloadJSON;
     window.logToConsole = logToConsole;
     
-    // Product Selection Functions
+    // NEW Variant Processing Functions
+    window.processProductVariants = processProductVariants;
+    window.convertSimpleVariantsToObjects = convertSimpleVariantsToObjects;
+    window.determineVariantType = determineVariantType;
+    window.calculateVariantPrice = calculateVariantPrice;
+    
+    // NEW Variant Display Functions
+    window.createProductCardWithVariants = createProductCardWithVariants;
+    window.selectProductVariant = selectProductVariant;
+    
+    // Product Selection Functions - UPDATED
     window.switchProductMode = switchProductMode;
     window.selectPopularProducts = selectPopularProducts;
     window.clearAllSelections = clearAllSelections;
@@ -2072,9 +2268,9 @@ if (typeof window !== 'undefined') {
     window.toggleDebugPanel = toggleDebugPanel;
 }
 
-window.TopikoUtils.addDebugLog('📱 COMPLETE FIXED Topiko Lead Form loaded with PREVIEW functionality - ALL FUNCTIONS AVAILABLE', 'success');
-console.log('📱 COMPLETE FIXED Topiko Lead Form Ready with Preview Button');
-console.log('✅ ALL COMPLETION SCREEN FUNCTIONS LOADED');
-console.log('✅ ALL MISSING FUNCTIONS ADDED'); 
-console.log('✅ PREVIEW FUNCTIONALITY INTEGRATED');
+window.TopikoUtils.addDebugLog('📱 COMPLETE UPDATED Topiko Lead Form loaded with JSON FORMAT & VARIANT PRICING', 'success');
+console.log('📱 COMPLETE UPDATED Topiko Lead Form Ready');
+console.log('✅ JSON FORMAT UPDATED - Subdomain and variants');
+console.log('✅ VARIANT PRICING ADDED - Dynamic price updates');
+console.log('✅ ALL FUNCTIONS UPDATED AND AVAILABLE');
 console.log('✅ GLOBAL AVAILABILITY CONFIRMED');
