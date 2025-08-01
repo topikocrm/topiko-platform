@@ -385,6 +385,9 @@ function createProductCardWithVariants(product) {
     const selectedClass = isSelected ? 'selected' : '';
     const checkmarkStyle = isSelected ? 'opacity: 1' : 'opacity: 0';
     
+    // Fix: Handle price from different sources
+    const productPrice = product.suggestedPrice || product.price || 0;
+    
     // Process variants for pricing
     const variantType = product.variants ? determineVariantType(product.variants, product) : null;
     const processedVariants = product.variants ? 
@@ -409,9 +412,9 @@ function createProductCardWithVariants(product) {
         `;
     }
     
-  const productPrice = product.suggestedPrice || product.price || 0;
-const basePrice = processedVariants.length > 0 ? processedVariants[0].variant_price : productPrice;
-   
+    // Fix: Use productPrice as fallback
+    const basePrice = processedVariants.length > 0 ? processedVariants[0].variant_price : productPrice;
+    
     return `
         <div class="product-card-selector ${selectedClass}" data-product-id="${product.id}">
             <div class="product-selector-image" style="background-image: url('${product.image}');">
