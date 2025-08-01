@@ -1183,7 +1183,7 @@
             padding: 0.5rem 0;
         }
 
-        /* ===== MOBILE-FIRST DROPDOWNS ===== */
+        /* ===== MOBILE-FIRST DROPDOWNS (FIXED) ===== */
         .sdr-dropdown,
         .status-dropdown {
             position: relative;
@@ -1199,7 +1199,7 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             border-radius: 8px;
             border: 1px solid #e2e8f0;
-            z-index: 1000;
+            z-index: 2001;
             max-height: 60vh;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -1234,6 +1234,7 @@
             color: #374151;
             font-weight: 500;
             -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+            user-select: none;
         }
 
         .sdr-option:active,
@@ -2749,13 +2750,17 @@
         }
 
         function showLeadIntelligence(leadId) {
+            console.log('📈 Opening lead intelligence for:', leadId);
+            
             const lead = allLeads.find(l => l.id === leadId);
             if (!lead) {
+                console.error('❌ Lead not found:', leadId);
                 showNotification('Lead not found', 'error');
                 return;
             }
             
             currentSelectedLead = lead;
+            console.log('✅ Lead found:', lead.name);
             
             // Update score display
             document.getElementById('leadScoreValue').textContent = lead.lead_score;
@@ -2793,7 +2798,14 @@
                 scoreDisplay.style.background = 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
             }
             
-            document.getElementById('leadIntelligencePanel').classList.add('show');
+            // Show the panel
+            const panel = document.getElementById('leadIntelligencePanel');
+            if (panel) {
+                panel.classList.add('show');
+                console.log('✅ Lead intelligence panel shown');
+            } else {
+                console.error('❌ Lead intelligence panel not found');
+            }
         }
 
         function showScoreBreakdown(leadId) {
@@ -2843,22 +2855,43 @@
         }
 
         function showSection(sectionId) {
+            console.log('📄 Switching to section:', sectionId);
+            
+            // Hide all sections
             document.querySelectorAll('.crm-section').forEach(section => {
                 section.style.display = 'none';
             });
             
-            document.getElementById(sectionId).style.display = 'block';
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            } else {
+                console.error('❌ Section not found:', sectionId);
+                return;
+            }
             
+            // Update navigation
             document.querySelectorAll('.crm-nav-link').forEach(link => {
                 link.classList.remove('active');
             });
-            event.target.closest('.crm-nav-link').classList.add('active');
             
-            if (sectionId === 'assigned-leads') {
-                renderAssignedLeads();
+            // Find and activate the clicked nav link
+            const clickedLink = event?.target?.closest('.crm-nav-link');
+            if (clickedLink) {
+                clickedLink.classList.add('active');
             }
             
-            console.log('📄 Switched to section:', sectionId);
+            // Load section-specific data
+            if (sectionId === 'assigned-leads') {
+                console.log('🔄 Loading assigned leads section...');
+                // Small delay to ensure DOM is ready
+                setTimeout(() => {
+                    renderAssignedLeads();
+                }, 100);
+            }
+            
+            console.log('✅ Section switched successfully');
         }
 
         function applyFilters() {
@@ -2906,16 +2939,21 @@
             applySorting();
         }
 
-        // ASSIGNED LEADS FUNCTIONS (RESTORED)
+        // ASSIGNED LEADS FUNCTIONS (FIXED FOR MOBILE)
         function renderAssignedLeads() {
+            console.log('👨‍💼 Rendering assigned leads page...');
+            
             let assignedLeads = allLeads.filter(lead => lead.assigned_sdr_id);
+            console.log(`📊 Found ${assignedLeads.length} assigned leads total`);
             
             if (activeFilters.sdr) {
                 assignedLeads = assignedLeads.filter(lead => lead.assigned_sdr_id === activeFilters.sdr);
+                console.log(`🔍 Filtered to ${assignedLeads.length} leads for SDR: ${activeFilters.sdr}`);
             }
             
             if (activeFilters.assignedStatus) {
                 assignedLeads = assignedLeads.filter(lead => lead.lead_pipeline_status === activeFilters.assignedStatus);
+                console.log(`📋 Filtered to ${assignedLeads.length} leads with status: ${activeFilters.assignedStatus}`);
             }
             
             const assignedLeadCount = document.getElementById('assignedLeadCount');
@@ -2925,11 +2963,19 @@
             const statusText = activeFilters.assignedStatus ? 
                 ` with status "${activeFilters.assignedStatus}"` : '';
             
-            assignedLeadCount.textContent = `${assignedLeads.length} assigned leads for ${sdrName}${statusText}`;
+            if (assignedLeadCount) {
+                assignedLeadCount.textContent = `${assignedLeads.length} assigned leads for ${sdrName}${statusText}`;
+            }
             
+            // ALWAYS render SDR summary first
+            console.log('🔄 Rendering SDR summary...');
             renderSDRSummary();
             
             const assignedLeadsGrid = document.getElementById('assignedLeadsGrid');
+            if (!assignedLeadsGrid) {
+                console.error('❌ Assigned leads grid not found');
+                return;
+            }
             
             if (assignedLeads.length === 0) {
                 const emptyMessage = activeFilters.sdr || activeFilters.assignedStatus ? 
@@ -2952,6 +2998,7 @@
                 return;
             }
             
+            // Sort leads by priority (overdue followups first, then by followup date, then by creation date)
             assignedLeads.sort((a, b) => {
                 const aFollowup = a.next_followup_date ? new Date(a.next_followup_date) : null;
                 const bFollowup = b.next_followup_date ? new Date(b.next_followup_date) : null;
@@ -2972,13 +3019,36 @@
             
             const leadsHTML = assignedLeads.map(lead => createLeadCard(lead)).join('');
             assignedLeadsGrid.innerHTML = leadsHTML;
+            
+            console.log('✅ Assigned leads rendered successfully');
         }
 
         function renderSDRSummary() {
+            console.log('👨‍💼 Rendering SDR summary...');
+            
             const sdrSummaryGrid = document.getElementById('sdrSummaryGrid');
+            if (!sdrSummaryGrid) {
+                console.error('❌ SDR summary grid not found');
+                return;
+            }
+            
+            if (!sdrTeam || sdrTeam.length === 0) {
+                console.warn('⚠️ No SDR team data available');
+                sdrSummaryGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #64748b;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">👨‍💼</div>
+                        <h3>No SDR team data</h3>
+                        <p>Loading SDR team information...</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            console.log(`📊 Processing ${sdrTeam.length} SDRs with ${allLeads.length} total leads`);
             
             const sdrStats = sdrTeam.map(sdr => {
                 const sdrLeads = allLeads.filter(lead => lead.assigned_sdr_id === sdr.id);
+                console.log(`👤 ${sdr.name}: ${sdrLeads.length} assigned leads`);
                 
                 const statusCounts = {
                     total: sdrLeads.length,
@@ -3004,6 +3074,8 @@
                     const followupDate = new Date(lead.next_followup_date);
                     return followupDate < now;
                 }).length;
+                
+                console.log(`📈 ${sdr.name} stats:`, statusCounts);
                 
                 return {
                     ...sdr,
@@ -3084,6 +3156,7 @@
             `).join('');
             
             sdrSummaryGrid.innerHTML = sdrCardsHTML;
+            console.log('✅ SDR summary rendered successfully');
         }
 
         function filterSDRLeads(sdrId, status) {
@@ -3207,62 +3280,93 @@
             renderAssignedLeads();
         }
 
-        // SDR ASSIGNMENT & STATUS MANAGEMENT FUNCTIONS (RESTORED)
+        // SDR ASSIGNMENT & STATUS MANAGEMENT FUNCTIONS (FIXED FOR MOBILE)
         function toggleSDRDropdown(leadId, event) {
+            event.preventDefault();
             event.stopPropagation();
             
-            document.querySelectorAll('.sdr-dropdown-content').forEach(dropdown => {
+            console.log('🔧 Toggling SDR dropdown for lead:', leadId);
+            
+            // Close all other dropdowns first
+            document.querySelectorAll('.sdr-dropdown-content, .status-dropdown-content').forEach(dropdown => {
                 if (dropdown.id !== `sdrDropdown-${leadId}`) {
                     dropdown.classList.remove('show');
                 }
             });
             
             const dropdown = document.getElementById(`sdrDropdown-${leadId}`);
-            const button = event.target;
-            const card = button.closest('.lead-card');
-            
-            dropdown.classList.remove('dropdown-up', 'dropdown-right');
-            
-            const rect = button.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-            const viewportWidth = window.innerWidth;
-            const dropdownHeight = 200;
-            const dropdownWidth = 200;
-            
-            if (rect.bottom + dropdownHeight > viewportHeight - 20) {
-                dropdown.classList.add('dropdown-up');
+            if (!dropdown) {
+                console.error('❌ SDR dropdown not found:', `sdrDropdown-${leadId}`);
+                return false;
             }
             
-            if (rect.left + dropdownWidth > viewportWidth - 20) {
-                dropdown.classList.add('dropdown-right');
+            const button = event.target.closest('.action-btn');
+            const card = button.closest('.lead-card');
+            
+            // Position dropdown for mobile/desktop
+            const rect = button.getBoundingClientRect();
+            const isSmallScreen = window.innerWidth < 768;
+            
+            if (isSmallScreen) {
+                // On mobile, position dropdown at center of screen
+                dropdown.style.position = 'fixed';
+                dropdown.style.top = '50%';
+                dropdown.style.left = '50%';
+                dropdown.style.transform = 'translate(-50%, -50%)';
+                dropdown.style.zIndex = '2001';
+                dropdown.style.maxHeight = '60vh';
+                dropdown.style.width = '80vw';
+                dropdown.style.maxWidth = '300px';
+            } else {
+                // On desktop, position relative to button
+                dropdown.style.position = 'absolute';
+                dropdown.style.top = '100%';
+                dropdown.style.left = '0';
+                dropdown.style.transform = 'none';
+                dropdown.style.zIndex = '1000';
+                dropdown.style.width = '200px';
+                dropdown.style.maxWidth = 'none';
             }
             
             dropdown.classList.toggle('show');
             
             if (dropdown.classList.contains('show')) {
                 card.style.zIndex = '999';
-            } else {
-                card.style.zIndex = '1';
-            }
-            
-            if (dropdown.classList.contains('show')) {
+                console.log('✅ SDR dropdown opened');
+                
+                // Close dropdown when clicking outside
                 setTimeout(() => {
-                    document.addEventListener('click', function closeDropdown(e) {
+                    const closeHandler = (e) => {
                         if (!dropdown.contains(e.target) && !button.contains(e.target)) {
                             dropdown.classList.remove('show');
                             card.style.zIndex = '1';
-                            document.removeEventListener('click', closeDropdown);
+                            document.removeEventListener('click', closeHandler);
+                            document.removeEventListener('touchstart', closeHandler);
+                            console.log('🔒 SDR dropdown closed');
                         }
-                    });
+                    };
+                    
+                    document.addEventListener('click', closeHandler);
+                    document.addEventListener('touchstart', closeHandler);
                 }, 100);
+            } else {
+                card.style.zIndex = '1';
+                console.log('🔒 SDR dropdown closed');
             }
+            
+            return false;
         }
 
         function assignLeadToSDR(leadId, sdrId) {
+            console.log('👨‍💼 Assigning lead to SDR:', leadId, sdrId);
+            
             const lead = allLeads.find(l => l.id === leadId);
             const sdr = sdrTeam.find(s => s.id === sdrId);
             
-            if (!lead || !sdr) return;
+            if (!lead || !sdr) {
+                console.error('❌ Lead or SDR not found');
+                return;
+            }
             
             const changes = {
                 assigned_sdr_id: sdrId,
@@ -3273,11 +3377,16 @@
             Object.assign(lead, changes);
             saveLeadChanges(leadId, changes);
             
+            // Close dropdown
             const dropdown = document.getElementById(`sdrDropdown-${leadId}`);
-            const card = dropdown.closest('.lead-card');
+            const card = dropdown?.closest('.lead-card');
             
-            dropdown.classList.remove('show');
-            if (card) card.style.zIndex = '1';
+            if (dropdown) {
+                dropdown.classList.remove('show');
+            }
+            if (card) {
+                card.style.zIndex = '1';
+            }
             
             showNotification(`${lead.name} assigned to ${sdr.name}`, 'success');
             
@@ -3287,16 +3396,18 @@
             if (document.getElementById('assigned-leads').style.display !== 'none') {
                 renderAssignedLeads();
             }
+            
+            console.log('✅ Lead assigned successfully');
         }
 
         function toggleStatusDropdown(leadId, event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
             console.log('📊 Toggling status dropdown for lead:', leadId);
             
-            if (event) {
-                event.stopPropagation();
-            }
-            
-            document.querySelectorAll('.status-dropdown-content').forEach(dropdown => {
+            // Close all other dropdowns first
+            document.querySelectorAll('.sdr-dropdown-content, .status-dropdown-content').forEach(dropdown => {
                 if (dropdown.id !== `statusDropdown-${leadId}`) {
                     dropdown.classList.remove('show');
                 }
@@ -3305,49 +3416,64 @@
             const dropdown = document.getElementById(`statusDropdown-${leadId}`);
             if (!dropdown) {
                 console.error('❌ Status dropdown not found:', `statusDropdown-${leadId}`);
-                return;
+                return false;
             }
             
-            const button = event.target;
+            const button = event.target.closest('.action-btn');
             const card = button.closest('.lead-card');
             
-            dropdown.classList.remove('dropdown-up', 'dropdown-right');
-            
+            // Position dropdown for mobile/desktop
             const rect = button.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-            const viewportWidth = window.innerWidth;
-            const dropdownHeight = 200;
-            const dropdownWidth = 160;
+            const isSmallScreen = window.innerWidth < 768;
             
-            if (rect.bottom + dropdownHeight > viewportHeight - 20) {
-                dropdown.classList.add('dropdown-up');
-            }
-            
-            if (rect.left + dropdownWidth > viewportWidth - 20) {
-                dropdown.classList.add('dropdown-right');
+            if (isSmallScreen) {
+                // On mobile, position dropdown at center of screen
+                dropdown.style.position = 'fixed';
+                dropdown.style.top = '50%';
+                dropdown.style.left = '50%';
+                dropdown.style.transform = 'translate(-50%, -50%)';
+                dropdown.style.zIndex = '2001';
+                dropdown.style.maxHeight = '60vh';
+                dropdown.style.width = '80vw';
+                dropdown.style.maxWidth = '300px';
+            } else {
+                // On desktop, position relative to button
+                dropdown.style.position = 'absolute';
+                dropdown.style.top = '100%';
+                dropdown.style.left = '0';
+                dropdown.style.transform = 'none';
+                dropdown.style.zIndex = '1000';
+                dropdown.style.width = '160px';
+                dropdown.style.maxWidth = 'none';
             }
             
             dropdown.classList.toggle('show');
             
             if (dropdown.classList.contains('show')) {
                 card.style.zIndex = '999';
-            } else {
-                card.style.zIndex = '1';
-            }
-            
-            if (dropdown.classList.contains('show')) {
+                console.log('✅ Status dropdown opened');
+                
+                // Close dropdown when clicking outside
                 setTimeout(() => {
-                    document.addEventListener('click', function closeDropdown(e) {
+                    const closeHandler = (e) => {
                         if (!dropdown.contains(e.target) && !button.contains(e.target)) {
                             dropdown.classList.remove('show');
                             card.style.zIndex = '1';
-                            document.removeEventListener('click', closeDropdown);
+                            document.removeEventListener('click', closeHandler);
+                            document.removeEventListener('touchstart', closeHandler);
+                            console.log('🔒 Status dropdown closed');
                         }
-                    });
+                    };
+                    
+                    document.addEventListener('click', closeHandler);
+                    document.addEventListener('touchstart', closeHandler);
                 }, 100);
+            } else {
+                card.style.zIndex = '1';
+                console.log('🔒 Status dropdown closed');
             }
             
-            console.log('✅ Status dropdown toggled');
+            return false;
         }
 
         function updateLeadStatus(leadId, status) {
@@ -3367,6 +3493,7 @@
             Object.assign(lead, changes);
             saveLeadChanges(leadId, changes);
             
+            // Close dropdown
             const dropdown = document.getElementById(`statusDropdown-${leadId}`);
             const card = dropdown?.closest('.lead-card');
             
@@ -3788,7 +3915,7 @@
             document.getElementById('scoreBreakdownModal').classList.remove('show');
         }
 
-        // INITIALIZATION (RESTORED FULL FUNCTIONALITY)
+        // INITIALIZATION (ENHANCED WITH DEBUGGING)
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Mobile-First Topiko CRM v5.0 Initialized');
             
@@ -3832,6 +3959,20 @@
                     });
                     renderLeads();
                     console.log('✅ Demo data dates fixed!');
+                },
+                testMobileButtons: () => {
+                    console.log('🔧 Testing mobile button functionality...');
+                    const buttons = document.querySelectorAll('.action-btn');
+                    console.log(`Found ${buttons.length} action buttons`);
+                    buttons.forEach((btn, index) => {
+                        console.log(`Button ${index}: ${btn.textContent.trim()} - onclick: ${btn.onclick ? 'YES' : 'NO'}`);
+                    });
+                },
+                showSDRData: () => {
+                    console.log('👨‍💼 Current SDR team data:');
+                    console.log('SDR Team:', sdrTeam);
+                    console.log('All Leads:', allLeads.length);
+                    console.log('Assigned Leads:', allLeads.filter(l => l.assigned_sdr_id).length);
                 }
             };
             
@@ -3840,26 +3981,51 @@
             console.log('  - window.debugCRM.regenerateDemo() // Regenerate demo data');
             console.log('  - window.debugCRM.showLeadDates() // Show all lead dates');
             console.log('  - window.debugCRM.fixDemoData() // Fix existing demo data dates');
+            console.log('  - window.debugCRM.testMobileButtons() // Test button functionality');
+            console.log('  - window.debugCRM.showSDRData() // Show SDR and lead data');
             
-            // Load SDR team first
-            await fetchSDRTeam();
-            
-            // Load leads from database/sources
-            await fetchLeads();
-            
-            // Auto-refresh every 30 seconds
-            setInterval(async () => {
-                await fetchLeads();
+            try {
+                // Load SDR team first
+                console.log('👨‍💼 Loading SDR team...');
+                await fetchSDRTeam();
+                console.log(`✅ SDR team loaded: ${sdrTeam.length} members`);
                 
-                // Update assigned leads if on that page
-                if (document.getElementById('assigned-leads').style.display !== 'none') {
-                    renderAssignedLeads();
-                }
-            }, 30000);
-            
-            showNotification('Mobile-First CRM v5.0 ready! Database connected. 📱', 'success');
-            
-            console.log('✅ Mobile-First CRM v5.0 ready with full database connectivity');
+                // Load leads from database/sources
+                console.log('📊 Loading leads...');
+                await fetchLeads();
+                console.log(`✅ Leads loaded: ${allLeads.length} total`);
+                
+                // Auto-refresh every 30 seconds
+                setInterval(async () => {
+                    try {
+                        await fetchLeads();
+                        
+                        // Update assigned leads if on that page
+                        if (document.getElementById('assigned-leads').style.display !== 'none') {
+                            renderAssignedLeads();
+                        }
+                    } catch (error) {
+                        console.error('❌ Auto-refresh failed:', error);
+                    }
+                }, 30000);
+                
+                showNotification('Mobile-First CRM v5.0 ready! Database connected. 📱', 'success');
+                
+                console.log('✅ Mobile-First CRM v5.0 ready with full database connectivity');
+                
+                // Test mobile functionality after a short delay
+                setTimeout(() => {
+                    if (window.innerWidth < 768) {
+                        console.log('📱 Mobile device detected - UI optimized for touch');
+                    } else {
+                        console.log('🖥️ Desktop device detected - Full functionality available');
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('❌ Initialization error:', error);
+                showNotification('CRM loaded with limited functionality - Check console for details', 'error');
+            }
         });
     </script>
 </body>
