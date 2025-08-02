@@ -2193,10 +2193,46 @@ function selectTheme(themeName, element) {
     nextBtn.disabled = false;
     nextBtn.style.opacity = '1';
     
+    // PHASE 1: Enhanced image loading check
+    const img = element.querySelector('.theme-image');
+    if (img && !img.complete) {
+        img.onload = () => {
+            window.TopikoUtils.addDebugLog(`✅ Theme image loaded: ${themeName}`);
+        };
+        img.onerror = () => {
+            window.TopikoUtils.addDebugLog(`⚠️ Theme image failed to load: ${themeName}`, 'warning');
+            // Optional: Set fallback image
+            // img.src = 'images/themes/fallback.jpg';
+        };
+    }
+    
     window.TopikoUtils.showNotification(`Perfect choice! ${themeNames[themeName].name} theme selected!`, 'success');
     window.TopikoUtils.calculateLeadScore();
 }
-
+// PHASE 1: Preload theme images for better performance
+function preloadThemeImages() {
+    const themeImages = [
+        'images/themes/modern.jpg',
+        'images/themes/vibrant.jpg', 
+        'images/themes/professional.jpg',
+        'images/themes/traditional.jpg',
+        'images/themes/creative.jpg',
+        'images/themes/luxury.jpg'
+    ];
+    
+    themeImages.forEach(imageSrc => {
+        const img = new Image();
+        img.onload = () => {
+            window.TopikoUtils.addDebugLog(`✅ Preloaded: ${imageSrc}`);
+        };
+        img.onerror = () => {
+            window.TopikoUtils.addDebugLog(`❌ Failed to preload: ${imageSrc}`, 'error');
+        };
+        img.src = imageSrc;
+    });
+    
+    window.TopikoUtils.addDebugLog('🔄 Started preloading theme images...', 'info');
+}
 // ========================================
 // COMPLETION SCREEN FUNCTIONS - COMPLETE SET
 // ========================================
