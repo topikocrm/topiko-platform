@@ -1200,6 +1200,42 @@ function loadCategories() {
     loadCategoriesContent(businessCategory, categoriesContainer);
 }
 
+// ========================================
+// BACKGROUND IMAGE ERROR HANDLING - FIXED
+// ========================================
+
+function createImageWithFallback(originalUrl, productId, category, subcategory) {
+    return new Promise((resolve) => {
+        const testImg = new Image();
+        
+        testImg.onload = () => {
+            console.log(`✅ Image loaded: ${productId}`);
+            resolve(originalUrl);
+        };
+        
+        testImg.onerror = () => {
+            console.warn(`⚠️ Image failed for ${productId}, using fallback...`);
+            
+            // Get category-specific fallback
+            const fallbackUrl = window.TopikoConfig.getFallbackImage(category, subcategory);
+            
+            // Test the fallback image too
+            const fallbackImg = new Image();
+            fallbackImg.onload = () => {
+                console.log(`✅ Fallback loaded for ${productId}: ${fallbackUrl}`);
+                resolve(fallbackUrl);
+            };
+            fallbackImg.onerror = () => {
+                console.error(`❌ Fallback failed for ${productId}, using placeholder`);
+                resolve(window.TopikoConfig.getPlaceholderImage());
+            };
+            fallbackImg.src = fallbackUrl;
+        };
+        
+        testImg.src = originalUrl;
+    });
+}
+
 function loadCategoriesContent(businessCategory, categoriesContainer) {
     const categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory];
     
