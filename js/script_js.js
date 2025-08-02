@@ -111,7 +111,7 @@ async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
 // ========================================
 
 async function generatePreviewData() {
-    window.TopikoUtils.addDebugLog('🔍 Generating preview and calling template API...', 'info');
+    console.log('🔍 Generating preview and calling template API...');
     
     try {
         // Validate required data
@@ -150,10 +150,10 @@ async function generatePreviewData() {
         const previewData = composePreviewJSON();
         showPreviewModal(previewData);
         
-        window.TopikoUtils.addDebugLog('✅ Preview generation completed', 'success');
+        console.log('✅ Preview generation completed');
         
     } catch (error) {
-        window.TopikoUtils.addDebugLog(`❌ Preview generation failed: ${error.message}`, 'error');
+        console.error(`❌ Preview generation failed: ${error.message}`);
         window.TopikoUtils.showNotification('Failed to generate preview. Please try again.', 'error');
     }
 }
@@ -481,23 +481,26 @@ function logToConsole(jsonString) {
 }
 
 // NEW FUNCTION: Call Topiko API with JSON data
+// 🔧 COMPLETE REPLACEMENT: callTopikoAPI function with safety checks
+
 async function callTopikoAPI(jsonString) {
     const apiButton = document.getElementById('callApiBtn');
     const responseSection = document.getElementById('apiResponseSection');
     const responseContent = document.getElementById('apiResponseContent');
     
-    // Show loading state
-    apiButton.disabled = true;
-    apiButton.innerHTML = '⏳ Calling API...';
-    apiButton.style.opacity = '0.7';
+    // 🆕 SAFETY CHECK: Only update UI elements if they exist (modal context)
+    if (apiButton) {
+        apiButton.disabled = true;
+        apiButton.innerHTML = '⏳ Calling API...';
+        apiButton.style.opacity = '0.7';
+    }
     
     try {
         // Parse JSON data
         const jsonData = JSON.parse(jsonString);
         
         // API endpoint
-      // API endpoint with CORS proxy
-const apiUrl = 'https://topiko.com/demoapis/demo_insertDemoData.php';
+        const apiUrl = 'https://topiko.com/demoapis/demo_insertDemoData.php';
         
         window.TopikoUtils.addDebugLog(`🚀 Calling API: ${apiUrl}`, 'info');
         
@@ -528,65 +531,70 @@ const apiUrl = 'https://topiko.com/demoapis/demo_insertDemoData.php';
             responseData = responseText;
         }
         
-        // Show response section
-        responseSection.style.display = 'block';
+        // 🆕 SAFETY CHECK: Only update response UI if elements exist (modal context)
+        if (responseSection && responseContent) {
+            responseSection.style.display = 'block';
+            
+            if (response.ok) {
+                // Success response
+                responseContent.innerHTML = `
+                    <div style="color: #059669; font-weight: 600; margin-bottom: 0.5rem;">✅ API Call Successful (${response.status})</div>
+                    <div style="color: #374151;">
+                        <strong>Response:</strong><br>
+                        <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${typeof responseData === 'object' ? JSON.stringify(responseData, null, 2) : responseData}</pre>
+                    </div>
+                `;
+            } else {
+                // Error response
+                responseContent.innerHTML = `
+                    <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">❌ API Call Failed (${response.status})</div>
+                    <div style="color: #374151;">
+                        <strong>Error:</strong><br>
+                        <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${typeof responseData === 'object' ? JSON.stringify(responseData, null, 2) : responseData}</pre>
+                    </div>
+                `;
+            }
+        }
         
         if (response.ok) {
-            // Success response
-            responseContent.innerHTML = `
-                <div style="color: #059669; font-weight: 600; margin-bottom: 0.5rem;">✅ API Call Successful (${response.status})</div>
-                <div style="color: #374151;">
-                    <strong>Response:</strong><br>
-                    <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${typeof responseData === 'object' ? JSON.stringify(responseData, null, 2) : responseData}</pre>
-                </div>
-            `;
-            
             window.TopikoUtils.showNotification('✅ API call successful!', 'success');
             window.TopikoUtils.addDebugLog('✅ API call completed successfully', 'success');
-            
         } else {
-            // Error response
-            responseContent.innerHTML = `
-                <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">❌ API Call Failed (${response.status})</div>
-                <div style="color: #374151;">
-                    <strong>Error:</strong><br>
-                    <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${typeof responseData === 'object' ? JSON.stringify(responseData, null, 2) : responseData}</pre>
-                </div>
-            `;
-            
             window.TopikoUtils.showNotification(`❌ API call failed: ${response.status}`, 'error');
             window.TopikoUtils.addDebugLog(`❌ API call failed: ${response.status}`, 'error');
         }
         
     } catch (error) {
-        // Enhanced error handling for CORS
-        responseSection.style.display = 'block';
-        
-        if (error.name === 'AbortError') {
-            responseContent.innerHTML = `
-                <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">⏰ API Call Timeout</div>
-                <div style="color: #374151;">The API call took too long to respond.</div>
-            `;
-        } else if (error.message.includes('CORS') || error.message.includes('fetch')) {
-            responseContent.innerHTML = `
-                <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem;">🚫 CORS Error Detected</div>
-                <div style="color: #374151;">
-                    <strong>Issue:</strong> Cross-Origin Resource Sharing (CORS) is blocking this request.<br><br>
-                    <strong>Solutions:</strong><br>
-                    • Configure the API server to allow CORS requests<br>
-                    • Use a CORS proxy service<br>
-                    • Test the API from the same domain<br><br>
-                    <strong>Data Preview:</strong> Your JSON data is still valid and ready to use!
-                </div>
-            `;
-        } else {
-            responseContent.innerHTML = `
-                <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">❌ API Call Error</div>
-                <div style="color: #374151;">
-                    <strong>Error Message:</strong><br>
-                    <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${error.message}</pre>
-                </div>
-            `;
+        // 🆕 SAFETY CHECK: Only update error UI if elements exist (modal context)
+        if (responseSection && responseContent) {
+            responseSection.style.display = 'block';
+            
+            if (error.name === 'AbortError') {
+                responseContent.innerHTML = `
+                    <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">⏰ API Call Timeout</div>
+                    <div style="color: #374151;">The API call took too long to respond.</div>
+                `;
+            } else if (error.message.includes('CORS') || error.message.includes('fetch')) {
+                responseContent.innerHTML = `
+                    <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem;">🚫 CORS Error Detected</div>
+                    <div style="color: #374151;">
+                        <strong>Issue:</strong> Cross-Origin Resource Sharing (CORS) is blocking this request.<br><br>
+                        <strong>Solutions:</strong><br>
+                        • Configure the API server to allow CORS requests<br>
+                        • Use a CORS proxy service<br>
+                        • Test the API from the same domain<br><br>
+                        <strong>Data Preview:</strong> Your JSON data is still valid and ready to use!
+                    </div>
+                `;
+            } else {
+                responseContent.innerHTML = `
+                    <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">❌ API Call Error</div>
+                    <div style="color: #374151;">
+                        <strong>Error Message:</strong><br>
+                        <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${error.message}</pre>
+                    </div>
+                `;
+            }
         }
         
         window.TopikoUtils.showNotification(`⚠️ API call blocked by CORS. Data preview still works!`, 'warning');
@@ -594,10 +602,12 @@ const apiUrl = 'https://topiko.com/demoapis/demo_insertDemoData.php';
         
         console.error('API Call Error:', error);
     } finally {
-        // Reset button state
-        apiButton.disabled = false;
-        apiButton.innerHTML = '🚀 Call API';
-        apiButton.style.opacity = '1';
+        // 🆕 SAFETY CHECK: Only reset button if it exists (modal context)
+        if (apiButton) {
+            apiButton.disabled = false;
+            apiButton.innerHTML = '🚀 Call API';
+            apiButton.style.opacity = '1';
+        }
     }
 }
 
@@ -608,6 +618,59 @@ function callTopikoAPISafe() {
         window.TopikoUtils.showNotification('❌ No preview data available', 'error');
     }
 }
+
+// 🔧 CHANGE 2: Add this helper function anywhere in script_js.js
+function getFullThemeName(themeId) {
+    const themeDisplayNames = {
+        'modern': 'Modern & Minimalist',
+        'vibrant': 'Colorful & Vibrant', 
+        'professional': 'Professional & Corporate',
+        'traditional': 'Traditional & Classic',
+        'creative': 'Creative & Artistic',
+        'luxury': 'Elegant & Luxury'
+    };
+    
+    return themeDisplayNames[themeId] || 'Modern & Minimalist';
+}
+
+async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
+    const apiUrl = 'https://topiko.com/demoapis/demo_previewTemplate.php';
+    
+    const payload = {
+        subdomain_url: subdomainUrl,
+        template_no: templateNo
+    };
+    
+    console.log(`🎨 Calling Preview Template API: ${apiUrl}`);
+    console.log(`📊 Payload: ${JSON.stringify(payload)}`);
+    
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        const responseData = await response.json();
+        
+        if (response.ok && responseData.status === 'success') {
+            window.TopikoUtils.showNotification(`✅ ${responseData.message}`, 'success');
+            console.log('✅ Preview template API successful');
+            return true;
+        } else {
+            throw new Error(responseData.message || `HTTP ${response.status}`);
+        }
+        
+    } catch (error) {
+        window.TopikoUtils.showNotification(`⚠️ Preview template update failed: ${error.message}`, 'warning');
+        console.error(`❌ Preview template API error: ${error.message}`);
+        return false;
+    }
+}
+
 // ========================================
 // VARIANT DISPLAY FUNCTIONS - FIXED PRICE DISPLAY
 // ========================================
@@ -2345,42 +2408,32 @@ function preloadThemeImages() {
 async function completeSetup() {
     const finalScore = window.TopikoUtils.calculateLeadScore() + 10;
     
-    // Save completion data locally and to database (but NO external API calls)
+    // Save completion data (NO external API calls)
     const leadData = {
-        user_id: window.topikoApp.currentUserId,
-        name: window.topikoApp.userName,
+        user_id: window.topikoApp?.currentUserId,
+        name: window.topikoApp?.userName,
         email: document.getElementById('email')?.value,
         phone: document.getElementById('phoneNumber')?.value,
-        business_name: window.topikoApp.businessName,
-        selected_goals: window.topikoApp.selectedGoals,
-        selected_categories: window.topikoApp.selectedCategories,
-        selected_subcategories: window.topikoApp.selectedSubcategories || [],
-        products_count: window.topikoApp.userProducts.length,
-        selected_theme: window.topikoApp.selectedTheme,
-        qualifying_answers: window.topikoApp.qualifyingAnswers,
-        timeline: window.topikoApp.qualifyingAnswers.timeline,
-        budget_range: window.topikoApp.qualifyingAnswers.budget,
-        decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes',
-        online_presence: window.topikoApp.qualifyingAnswers.online_presence,
+        business_name: window.topikoApp?.businessName,
+        selected_goals: window.topikoApp?.selectedGoals,
+        selected_categories: window.topikoApp?.selectedCategories,
+        selected_subcategories: window.topikoApp?.selectedSubcategories || [],
+        products_count: window.topikoApp?.userProducts?.length || 0,
+        selected_theme: window.topikoApp?.selectedTheme,
+        qualifying_answers: window.topikoApp?.qualifyingAnswers,
         lead_score: finalScore,
-        lead_quality: finalScore >= 70 ? 'Hot' : finalScore >= 40 ? 'Warm' : 'Cold',
         setup_completed: true,
         completed_at: new Date().toISOString()
     };
     
     // Save to internal database only (no external API calls)
-    if (window.topikoApp.currentUserId) {
-        const finalUserData = {
-            selected_categories: window.topikoApp.selectedCategories,
-            selected_subcategories: window.topikoApp.selectedSubcategories,
-            timeline: window.topikoApp.qualifyingAnswers.timeline,
-            budget_range: window.topikoApp.qualifyingAnswers.budget,
-            decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes',
-            online_presence: window.topikoApp.qualifyingAnswers.online_presence,
-            updated_at: new Date().toISOString()
-        };
-        
-        await window.TopikoUtils.saveToSupabase(finalUserData, 'users', 'update', window.topikoApp.currentUserId);
+    if (window.topikoApp?.currentUserId) {
+        try {
+            await window.TopikoUtils.saveToSupabase(leadData, 'lead_completion');
+            console.log('✅ Lead completion data saved to Supabase');
+        } catch (error) {
+            console.warn(`⚠️ Supabase save failed: ${error.message}`);
+        }
     }
     
     // Save locally as backup
@@ -2388,11 +2441,10 @@ async function completeSetup() {
     existingLeads.push(leadData);
     localStorage.setItem('topiko_local_leads', JSON.stringify(existingLeads));
     
-    window.TopikoUtils.showNotification(`🎉 Congratulations ${window.topikoApp.userName}! Your business is ready for final touches!`, 'success');
+    window.TopikoUtils.showNotification(`🎉 Congratulations ${window.topikoApp?.userName}! Your business is ready for final touches!`, 'success');
     
     setTimeout(() => {
         window.TopikoUtils.showScreen('completion');
-        // Initialize completion screen with offers after a short delay
         setTimeout(() => {
             initializeCompletionScreen();
         }, 500);
