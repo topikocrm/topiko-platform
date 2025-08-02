@@ -68,6 +68,7 @@ function getFullThemeName(themeId) {
 // 🆕 NEW: Preview Template API function
 // ========================================
 
+// 🔍 ENHANCED DEBUG VERSION: callPreviewTemplateAPI function
 async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
     const apiUrl = 'https://topiko.com/demoapis/demo_previewTemplate.php';
     
@@ -89,20 +90,30 @@ async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
             body: JSON.stringify(payload)
         });
         
+        console.log(`📡 Response status: ${response.status}`);
+        console.log(`📡 Response ok: ${response.ok}`);
+        
         const responseData = await response.json();
+        console.log(`📡 Response data:`, responseData);
         
         if (response.ok && responseData.status === 'success') {
             window.TopikoUtils.showNotification(`✅ ${responseData.message}`, 'success');
-            console.log('✅ Preview template API successful');
-            return true;
+            console.log('✅ Preview template API successful - RETURNING TRUE');
+            return true; // 🎯 This should trigger window opening
         } else {
+            console.log('❌ API not successful:', {
+                responseOk: response.ok,
+                responseStatus: responseData.status,
+                responseData: responseData
+            });
             throw new Error(responseData.message || `HTTP ${response.status}`);
         }
         
     } catch (error) {
-        window.TopikoUtils.showNotification(`⚠️ Preview template update failed: ${error.message}`, 'warning');
         console.error(`❌ Preview template API error: ${error.message}`);
-        return false;
+        console.error('Full error:', error);
+        window.TopikoUtils.showNotification(`⚠️ Preview template update failed: ${error.message}`, 'warning');
+        return false; // 🎯 This prevents window opening
     }
 }
 
@@ -110,6 +121,7 @@ async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
 // PREVIEW DATA FUNCTIONS - 🔄 UPDATED WITH NEW API CALL
 // ========================================
 
+// 🔍 ENHANCED DEBUG VERSION: generatePreviewData function  
 async function generatePreviewData() {
     console.log('🔍 Generating preview and calling template API...');
     
@@ -124,36 +136,58 @@ async function generatePreviewData() {
         const businessName = document.getElementById('businessName')?.value.trim();
         const subdomainUrl = generateSubdomainUrl(businessName) + '.topiko.com';
         
+        console.log(`🎯 Selected theme: ${selectedTheme}`);
+        console.log(`🎯 Business name: ${businessName}`);
+        console.log(`🎯 Subdomain URL: ${subdomainUrl}`);
+        
         if (!selectedTheme) {
             window.TopikoUtils.showNotification('Please select a theme first', 'error');
             return;
         }
         
-        // 🆕 NEW: Get full theme display name for template_no
+        // Get full theme display name for template_no
         const templateNo = getFullThemeName(selectedTheme);
+        console.log(`🎯 Template number (full name): ${templateNo}`);
         
-        // 🆕 NEW: Call Preview Template API
+        // Call Preview Template API
+        console.log('🚀 About to call Preview Template API...');
         const apiSuccess = await callPreviewTemplateAPI(subdomainUrl, templateNo);
+        console.log(`🎯 API Success result: ${apiSuccess}`);
         
-        // 🆕 NEW: If API call was successful, open subdomain in new window
-        if (apiSuccess) {
+        // If API call was successful, open subdomain in new window
+        if (apiSuccess === true) {
             const fullSubdomainUrl = `https://${subdomainUrl}`;
-            console.log(`🌐 Opening subdomain: ${fullSubdomainUrl}`);
+            console.log(`🌐 API was successful! Opening subdomain: ${fullSubdomainUrl}`);
             
-            // Open in new window/tab
-            window.open(fullSubdomainUrl, '_blank');
+            // Test if popup blockers are preventing window opening
+            const newWindow = window.open(fullSubdomainUrl, '_blank');
             
-            window.TopikoUtils.showNotification(`🚀 Template updated! Opening ${subdomainUrl}...`, 'success');
+            if (newWindow) {
+                console.log('✅ New window opened successfully');
+                window.TopikoUtils.showNotification(`🚀 Template updated! Opening ${subdomainUrl}...`, 'success');
+            } else {
+                console.log('❌ Popup blocked! Window.open returned null');
+                window.TopikoUtils.showNotification(`🚫 Popup blocked! Please allow popups and try again. URL: ${fullSubdomainUrl}`, 'warning');
+                
+                // Fallback: Copy URL to clipboard
+                navigator.clipboard.writeText(fullSubdomainUrl).then(() => {
+                    window.TopikoUtils.showNotification(`📋 URL copied to clipboard: ${fullSubdomainUrl}`, 'info');
+                });
+            }
+        } else {
+            console.log(`❌ API was not successful (returned: ${apiSuccess}), not opening window`);
         }
         
         // Always show preview data modal (regardless of API success/failure)
-        const previewData = composePreviewJSON();
-        showPreviewModal(previewData);
+        // 🚫 COMMENTED OUT: Preview data modal  
+        // const previewData = composePreviewJSON();
+        // showPreviewModal(previewData);
         
         console.log('✅ Preview generation completed');
         
     } catch (error) {
         console.error(`❌ Preview generation failed: ${error.message}`);
+        console.error('Full error:', error);
         window.TopikoUtils.showNotification('Failed to generate preview. Please try again.', 'error');
     }
 }
