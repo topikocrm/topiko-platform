@@ -2923,7 +2923,9 @@ if (typeof window !== 'undefined') {
     window.toggleScoreDetails = toggleScoreDetails;
     window.toggleDebugPanel = toggleDebugPanel;
 }
-
+// 🚨 EMERGENCY GLOBAL ASSIGNMENT - Add at very bottom
+window.startLeadFlow = startLeadFlow;
+console.log('🔧 Emergency startLeadFlow assignment:', typeof window.startLeadFlow);
 window.TopikoUtils.addDebugLog('📱 COMPLETE UPDATED Topiko Lead Form loaded with FIXED PRICE DISPLAY', 'success');
 console.log('📱 COMPLETE UPDATED Topiko Lead Form Ready');
 console.log('✅ JSON FORMAT UPDATED - Subdomain and variants');
