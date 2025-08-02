@@ -2187,7 +2187,7 @@ function selectTheme(themeName, element) {
     
     const themeNames = window.TopikoConfig.THEME_CONFIG;
     
-    document.getElementById('selectedThemeName').textContent = themeNames[themeName].name;
+document.getElementById('selectedThemeName').textContent = themeNames[themeName].name;
     
     const nextBtn = document.getElementById('themeNextBtn');
     nextBtn.disabled = false;
