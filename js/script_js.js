@@ -412,7 +412,8 @@ async function callTopikoAPI(jsonString) {
         const jsonData = JSON.parse(jsonString);
         
         // API endpoint
-        const apiUrl = 'https://topiko.com/demoapis/demo_insertDemoData.php';
+      // API endpoint with CORS proxy
+const apiUrl = 'https://cors-anywhere.herokuapp.com/https://topiko.com/demoapis/demo_insertDemoData.php';
         
         window.TopikoUtils.addDebugLog(`🚀 Calling API: ${apiUrl}`, 'info');
         
