@@ -619,6 +619,31 @@ function createProductCardWithVariants(product) {
     `;
 }
 
+// ========================================
+// CATEGORY-SPECIFIC IMAGE ERROR HANDLING
+// ========================================
+
+function handleImageError(imgElement, productId, category, subcategory) {
+    console.warn(`⚠️ Image failed for product ${productId}, trying category fallback...`);
+    
+    // Get category-specific fallback image
+    const fallbackUrl = window.TopikoConfig.getFallbackImage(category, subcategory);
+    
+    // Prevent infinite loop
+    if (imgElement.style.backgroundImage.includes('unsplash')) {
+        console.log(`📦 Using placeholder for ${productId}`);
+        const placeholder = window.TopikoConfig.getPlaceholderImage();
+        imgElement.style.backgroundImage = `url("${placeholder}")`;
+        return;
+    }
+    
+    // Try category-specific fallback
+    imgElement.style.backgroundImage = `url('${fallbackUrl}')`;
+    
+    // Log successful fallback
+    console.log(`✅ Category fallback loaded for ${productId} (${subcategory || category}): ${fallbackUrl}`);
+}
+
 // NEW FUNCTION: Handle variant selection
 function selectProductVariant(productId, variantDetail, variantPrice) {
     // Update UI
