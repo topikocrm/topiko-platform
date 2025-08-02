@@ -1,5 +1,5 @@
 /* ========================================
-   TOPIKO LEAD FORM - CLEAN WORKING VERSION
+   TOPIKO LEAD FORM - SYNTAX ERROR FIXED VERSION
    ======================================== */
 
 // ========================================
@@ -600,6 +600,69 @@ function selectTheme(themeName, element) {
 }
 
 // ========================================
+// 🆕 NEW: Helper function to get full theme display names
+// ========================================
+
+function getFullThemeName(themeId) {
+    const themeDisplayNames = {
+        'modern': 'Modern & Minimalist',
+        'vibrant': 'Colorful & Vibrant', 
+        'professional': 'Professional & Corporate',
+        'traditional': 'Traditional & Classic',
+        'creative': 'Creative & Artistic',
+        'luxury': 'Elegant & Luxury'
+    };
+    
+    return themeDisplayNames[themeId] || 'Modern & Minimalist';
+}
+
+// ========================================
+// 🆕 NEW: Preview Template API function
+// ========================================
+
+async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
+    const apiUrl = 'https://topiko.com/demoapis/demo_previewTemplate.php';
+    
+    const payload = {
+        subdomain_url: subdomainUrl,
+        template_no: templateNo
+    };
+    
+    console.log(`🎨 Calling Preview Template API: ${apiUrl}`);
+    console.log(`📊 Payload: ${JSON.stringify(payload)}`);
+    
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        const responseData = await response.json();
+        
+        if (response.ok && responseData.status === 'success') {
+            if (window.TopikoUtils) {
+                window.TopikoUtils.showNotification(`✅ ${responseData.message}`, 'success');
+            }
+            console.log('✅ Preview template API successful');
+            return true;
+        } else {
+            throw new Error(responseData.message || `HTTP ${response.status}`);
+        }
+        
+    } catch (error) {
+        if (window.TopikoUtils) {
+            window.TopikoUtils.showNotification(`⚠️ Preview template update failed: ${error.message}`, 'warning');
+        }
+        console.error(`❌ Preview template API error: ${error.message}`);
+        return false;
+    }
+}
+
+// ========================================
 // 🆕 NEW API - PREVIEW DATA CALLS NEW TEMPLATE API + OPENS WINDOW
 // ========================================
 
@@ -654,63 +717,6 @@ async function generatePreviewData() {
         if (window.TopikoUtils) {
             window.TopikoUtils.showNotification('Failed to generate preview. Please try again.', 'error');
         }
-    }
-}
-
-// 🆕 NEW: Helper function to get full theme display names
-function getFullThemeName(themeId) {
-    const themeDisplayNames = {
-        'modern': 'Modern & Minimalist',
-        'vibrant': 'Colorful & Vibrant', 
-        'professional': 'Professional & Corporate',
-        'traditional': 'Traditional & Classic',
-        'creative': 'Creative & Artistic',
-        'luxury': 'Elegant & Luxury'
-    };
-    
-    return themeDisplayNames[themeId] || 'Modern & Minimalist';
-}
-
-// 🆕 NEW: Preview Template API function
-async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
-    const apiUrl = 'https://topiko.com/demoapis/demo_previewTemplate.php';
-    
-    const payload = {
-        subdomain_url: subdomainUrl,
-        template_no: templateNo
-    };
-    
-    console.log(`🎨 Calling Preview Template API: ${apiUrl}`);
-    console.log(`📊 Payload: ${JSON.stringify(payload)}`);
-    
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-        
-        const responseData = await response.json();
-        
-        if (response.ok && responseData.status === 'success') {
-            if (window.TopikoUtils) {
-                window.TopikoUtils.showNotification(`✅ ${responseData.message}`, 'success');
-            }
-            console.log('✅ Preview template API successful');
-            return true;
-        } else {
-            throw new Error(responseData.message || `HTTP ${response.status}`);
-        }
-        
-    } catch (error) {
-        if (window.TopikoUtils) {
-            window.TopikoUtils.showNotification(`⚠️ Preview template update failed: ${error.message}`, 'warning');
-        }
-        console.error(`❌ Preview template API error: ${error.message}`);
-        return false;
     }
 }
 
@@ -1046,97 +1052,69 @@ function toggleDebugPanel() {
 }
 
 // ========================================
-// MAKE ALL FUNCTIONS GLOBALLY AVAILABLE
+// 🚨 EMERGENCY GLOBAL ASSIGNMENTS - FIXES REFERENCE ERRORS
 // ========================================
 
-if (typeof window !== 'undefined') {
-    // Essential Functions
-    window.startLeadFlow = startLeadFlow;
-    window.selectLanguage = selectLanguage;
-    window.updateGoalsTracking = updateGoalsTracking;
-    window.showGoalsTransitionModal = showGoalsTransitionModal;
-    window.displayGoalsTransitionModal = displayGoalsTransitionModal;
-    window.proceedFromGoalsModal = proceedFromGoalsModal;
-    
-    // Registration Functions
-    window.trackFormProgress = trackFormProgress;
-    window.submitRegistration = submitRegistration;
-    window.showOtpModal = showOtpModal;
-    window.handleOtpInput = handleOtpInput;
-    window.verifyOtp = verifyOtp;
-    window.completeRegistration = completeRegistration;
-    window.displaySetupIntroModal = displaySetupIntroModal;
-    window.proceedFromSetupModal = proceedFromSetupModal;
-    
-    // Qualifying Functions
-    window.updateQualifyingData = updateQualifyingData;
-    window.proceedToCategories = proceedToCategories;
-    
-    // Categories Functions
-    window.loadCategories = loadCategories;
-    window.toggleCategorySelection = toggleCategorySelection;
-    window.toggleSubcategorySelection = toggleSubcategorySelection;
-    window.updateSelectionSummary = updateSelectionSummary;
-    window.updateNextButton = updateNextButton;
-    window.proceedToProducts = proceedToProducts;
-    
-    // Product Functions
-    window.switchProductMode = switchProductMode;
-    window.toggleProductSelection = toggleProductSelection;
-    window.addCustomProduct = addCustomProduct;
-    
-    // API Restructured Functions
-    window.proceedToThemes = proceedToThemes;
-    window.generatePreviewData = generatePreviewData;
-    window.getFullThemeName = getFullThemeName;
-    window.callPreviewTemplateAPI = callPreviewTemplateAPI;
-    
-    // Theme Functions
-    window.selectTheme = selectTheme;
-    window.completeSetup = completeSetup;
-    
-    // Preview Functions
-    window.validatePreviewData = validatePreviewData;
-    window.composePreviewJSON = composePreviewJSON;
-    window.generateSubdomainUrl = generateSubdomainUrl;
-    window.showPreviewModal = showPreviewModal;
-    window.closePreviewModal = closePreviewModal;
-    window.escapeHtml = escapeHtml;
-    window.escapeForAttribute = escapeForAttribute;
-    window.copyToClipboard = copyToClipboard;
-    window.downloadJSON = downloadJSON;
-    window.callTopikoAPI = callTopikoAPI;
-    
-    // Completion Functions
-    window.initializeCompletionScreen = initializeCompletionScreen;
-    window.openCallScheduler = openCallScheduler;
-    window.openExploreForm = openExploreForm;
-    window.selectOffer = selectOffer;
-    window.selectTimeSlot = selectTimeSlot;
-    window.confirmScheduleAndComplete = confirmScheduleAndComplete;
-    window.selectReason = selectReason;
-    window.submitReasonAndComplete = submitReasonAndComplete;
-    
-    // Utility Functions
-    window.goBack = goBack;
-    window.navigateToStep = navigateToStep;
-    window.toggleScoreDetails = toggleScoreDetails;
-    window.toggleDebugPanel = toggleDebugPanel;
-    
-    // 🚨 CRITICAL: Emergency global assignment
-    window.startLeadFlow = startLeadFlow;
-    
-    console.log('🔧 startLeadFlow function assigned:', typeof window.startLeadFlow);
-}
+// Make ALL functions immediately available globally 
+window.startLeadFlow = startLeadFlow;
+window.selectLanguage = selectLanguage;
+window.updateGoalsTracking = updateGoalsTracking;
+window.showGoalsTransitionModal = showGoalsTransitionModal;
+window.displayGoalsTransitionModal = displayGoalsTransitionModal;
+window.proceedFromGoalsModal = proceedFromGoalsModal;
+window.trackFormProgress = trackFormProgress;
+window.submitRegistration = submitRegistration;
+window.showOtpModal = showOtpModal;
+window.handleOtpInput = handleOtpInput;
+window.verifyOtp = verifyOtp;
+window.completeRegistration = completeRegistration;
+window.displaySetupIntroModal = displaySetupIntroModal;
+window.proceedFromSetupModal = proceedFromSetupModal;
+window.updateQualifyingData = updateQualifyingData;
+window.proceedToCategories = proceedToCategories;
+window.loadCategories = loadCategories;
+window.toggleCategorySelection = toggleCategorySelection;
+window.toggleSubcategorySelection = toggleSubcategorySelection;
+window.updateSelectionSummary = updateSelectionSummary;
+window.updateNextButton = updateNextButton;
+window.proceedToProducts = proceedToProducts;
+window.switchProductMode = switchProductMode;
+window.toggleProductSelection = toggleProductSelection;
+window.addCustomProduct = addCustomProduct;
+window.proceedToThemes = proceedToThemes;
+window.selectTheme = selectTheme;
+window.getFullThemeName = getFullThemeName;
+window.callPreviewTemplateAPI = callPreviewTemplateAPI;
+window.generatePreviewData = generatePreviewData;
+window.validatePreviewData = validatePreviewData;
+window.composePreviewJSON = composePreviewJSON;
+window.generateSubdomainUrl = generateSubdomainUrl;
+window.showPreviewModal = showPreviewModal;
+window.closePreviewModal = closePreviewModal;
+window.escapeHtml = escapeHtml;
+window.escapeForAttribute = escapeForAttribute;
+window.copyToClipboard = copyToClipboard;
+window.downloadJSON = downloadJSON;
+window.callTopikoAPI = callTopikoAPI;
+window.completeSetup = completeSetup;
+window.initializeCompletionScreen = initializeCompletionScreen;
+window.openCallScheduler = openCallScheduler;
+window.openExploreForm = openExploreForm;
+window.selectOffer = selectOffer;
+window.selectTimeSlot = selectTimeSlot;
+window.confirmScheduleAndComplete = confirmScheduleAndComplete;
+window.selectReason = selectReason;
+window.submitReasonAndComplete = submitReasonAndComplete;
+window.goBack = goBack;
+window.navigateToStep = navigateToStep;
+window.toggleScoreDetails = toggleScoreDetails;
+window.toggleDebugPanel = toggleDebugPanel;
 
 // ========================================
-// FINAL DEBUG AND CONFIRMATION
+// FINAL VERIFICATION
 // ========================================
 
-console.log('📱 CLEAN Topiko Lead Form Ready - Syntax Error Free');
-console.log('✅ startLeadFlow function available:', typeof startLeadFlow);
-console.log('✅ API RESTRUCTURING IMPLEMENTED:');
-console.log('   - Choose Theme 🎨 → Calls Original Topiko API');
-console.log('   - Preview Data → Calls New Preview Template API + Opens Window');
-console.log('   - Complete Setup → Just completion logic');
-console.log('🚀 All functions globally available and working!');
+console.log('🔧 SYNTAX ERROR FIXED VERSION LOADED');
+console.log('✅ startLeadFlow function available:', typeof window.startLeadFlow);
+console.log('✅ All functions globally assigned immediately');
+console.log('🚀 Ready to test - syntax errors resolved!');
