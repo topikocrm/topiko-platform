@@ -51,8 +51,9 @@ window.addEventListener('beforeunload', function(e) {
 // PREVIEW DATA FUNCTIONS - UPDATED WITH NEW JSON FORMAT
 // ========================================
 
-function generatePreviewData() {
-    window.TopikoUtils.addDebugLog('🔍 Generating preview data...', 'info');
+// 🔄 UPDATED: Now calls new Preview Template API + opens window
+async function generatePreviewData() {
+    window.TopikoUtils.addDebugLog('🔍 Generating preview and calling template API...', 'info');
     
     try {
         // Validate required data
@@ -60,17 +61,42 @@ function generatePreviewData() {
             return;
         }
         
-        // Collect all form data
-        const previewData = composePreviewJSON();
+        // Get selected theme and subdomain
+        const selectedTheme = window.topikoApp.selectedTheme;
+        const businessName = document.getElementById('businessName').value.trim();
+        const subdomainUrl = generateSubdomainUrl(businessName) + '.topiko.com';
         
-        // Display options to user
+        if (!selectedTheme) {
+            window.TopikoUtils.showNotification('Please select a theme first', 'error');
+            return;
+        }
+        
+        // Get full theme display name for template_no
+        const templateNo = getFullThemeName(selectedTheme);
+        
+        // Call Preview Template API
+        const apiSuccess = await callPreviewTemplateAPI(subdomainUrl, templateNo);
+        
+        // If API call was successful, open subdomain in new window
+        if (apiSuccess) {
+            const fullSubdomainUrl = `https://${subdomainUrl}`;
+            window.TopikoUtils.addDebugLog(`🌐 Opening subdomain: ${fullSubdomainUrl}`, 'info');
+            
+            // Open in new window/tab
+            window.open(fullSubdomainUrl, '_blank');
+            
+            window.TopikoUtils.showNotification(`🚀 Template updated! Opening ${subdomainUrl}...`, 'success');
+        }
+        
+        // Always show preview data modal (regardless of API success/failure)
+        const previewData = composePreviewJSON();
         showPreviewModal(previewData);
         
-        window.TopikoUtils.addDebugLog('✅ Preview data generated successfully', 'success');
+        window.TopikoUtils.addDebugLog('✅ Preview generation completed', 'success');
         
     } catch (error) {
         window.TopikoUtils.addDebugLog(`❌ Preview generation failed: ${error.message}`, 'error');
-        window.TopikoUtils.showNotification('Failed to generate preview data. Please try again.', 'error');
+        window.TopikoUtils.showNotification('Failed to generate preview. Please try again.', 'error');
     }
 }
 
@@ -1471,7 +1497,19 @@ function switchProductMode(mode) {
         console.log(`📱 Product mode switched to: ${mode}`);
     }
 }
-
+// 🆕 NEW: Helper function to get full theme display names
+function getFullThemeName(themeId) {
+    const themeDisplayNames = {
+        'modern': 'Modern & Minimalist',
+        'vibrant': 'Colorful & Vibrant', 
+        'professional': 'Professional & Corporate',
+        'traditional': 'Traditional & Classic',
+        'creative': 'Creative & Artistic',
+        'luxury': 'Elegant & Luxury'
+    };
+    
+    return themeDisplayNames[themeId] || 'Modern & Minimalist'; // Default fallback
+}
 function loadProductSelector() {
     window.TopikoUtils.addDebugLog('🛍️ Loading products for selected categories...');
     
@@ -2159,17 +2197,78 @@ async function requestFollowup() {
     }
 }
 
-function proceedToThemes() {
-    if (window.topikoApp.userProducts.length === 0) {
-        window.TopikoUtils.showNotification('Add at least one product to see how your store will look!', 'warning');
-        return;
-    }
+// 🔄 UPDATED: Now calls original Topiko API (moved from preview)
+async function proceedToThemes() {
+    window.TopikoUtils.addDebugLog('🎨 Proceeding to themes and calling original API...', 'info');
     
-    window.TopikoUtils.showNotification('Excellent! Loading beautiful themes for your store...', 'success');
-    setTimeout(() => {
+    try {
+        // Validate that we have products selected
+        const selectedProducts = window.topikoApp?.selectedProducts || [];
+        if (selectedProducts.length === 0) {
+            window.TopikoUtils.showNotification('Please select at least one product before choosing themes', 'warning');
+            return;
+        }
+        
+        // Call original Topiko API (moved from generatePreviewData)
+        const businessData = composePreviewJSON();
+        await callTopikoAPI(JSON.stringify(businessData));
+        window.TopikoUtils.addDebugLog('✅ Original Topiko API called successfully', 'success');
+        
+        // Continue with theme navigation
+        window.TopikoUtils.addDebugLog('🎯 Navigating to themes selection...', 'info');
         window.TopikoUtils.showScreen('themes');
-        window.TopikoUtils.populateThemePreviews();
-    }, 1000);
+        
+        // Update progress
+        window.TopikoUtils.updateProgress('themes');
+        
+        // Load theme previews
+        setTimeout(() => {
+            loadThemePreviews();
+        }, 500);
+        
+    } catch (error) {
+        window.TopikoUtils.addDebugLog(`❌ Failed to proceed to themes: ${error.message}`, 'error');
+        window.TopikoUtils.showNotification('Failed to save data. Please try again.', 'error');
+    }
+}
+
+// 🆕 NEW: Preview Template API function
+async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
+    const apiUrl = 'https://topiko.com/demoapis/demo_previewTemplate.php';
+    
+    const payload = {
+        subdomain_url: subdomainUrl,
+        template_no: templateNo
+    };
+    
+    window.TopikoUtils.addDebugLog(`🎨 Calling Preview Template API: ${apiUrl}`, 'info');
+    window.TopikoUtils.addDebugLog(`📊 Payload: ${JSON.stringify(payload)}`, 'info');
+    
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        const responseData = await response.json();
+        
+        if (response.ok && responseData.status === 'success') {
+            window.TopikoUtils.showNotification(`✅ ${responseData.message}`, 'success');
+            window.TopikoUtils.addDebugLog('✅ Preview template API successful', 'success');
+            return true; // Return success status for window opening
+        } else {
+            throw new Error(responseData.message || `HTTP ${response.status}`);
+        }
+        
+    } catch (error) {
+        window.TopikoUtils.showNotification(`⚠️ Preview template update failed: ${error.message}`, 'warning');
+        window.TopikoUtils.addDebugLog(`❌ Preview template API error: ${error.message}`, 'error');
+        return false; // Return failure status
+    }
 }
 
 // ========================================
@@ -2542,46 +2641,49 @@ function showCompletionSuccess(actionType, primaryData, secondaryData) {
 }
 
 // MAIN COMPLETION FUNCTION - ENHANCED
+// 🔄 UPDATED: Remove API calls, keep only completion logic
 async function completeSetup() {
     const finalScore = window.TopikoUtils.calculateLeadScore() + 10;
     
     // Save completion data
     const leadData = {
-        user_id: window.topikoApp.currentUserId,
-        name: window.topikoApp.userName,
-        email: document.getElementById('email')?.value,
-        phone: document.getElementById('phoneNumber')?.value,
-        business_name: window.topikoApp.businessName,
-        selected_goals: window.topikoApp.selectedGoals,
-        selected_categories: window.topikoApp.selectedCategories,
-        selected_subcategories: window.topikoApp.selectedSubcategories || [],
-        products_count: window.topikoApp.userProducts.length,
-        selected_theme: window.topikoApp.selectedTheme,
-        qualifying_answers: window.topikoApp.qualifyingAnswers,
-        timeline: window.topikoApp.qualifyingAnswers.timeline,
-        budget_range: window.topikoApp.qualifyingAnswers.budget,
-        decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes',
-        online_presence: window.topikoApp.qualifyingAnswers.online_presence,
-        lead_score: finalScore,
-        lead_quality: finalScore >= 70 ? 'Hot' : finalScore >= 40 ? 'Warm' : 'Cold',
-        setup_completed: true,
-        completed_at: new Date().toISOString()
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        userName: window.topikoApp.userName,
+        businessName: window.topikoApp.businessName,
+        selectedGoals: window.topikoApp.selectedGoals,
+        selectedCategories: window.topikoApp.selectedCategories,
+        selectedProducts: window.topikoApp.selectedProducts,
+        selectedTheme: window.topikoApp.selectedTheme,
+        qualifyingData: window.topikoApp.qualifyingData,
+        leadScore: finalScore,
+        status: 'completed'
     };
     
     // Save to database
     if (window.topikoApp.currentUserId) {
-        const finalUserData = {
-            selected_categories: window.topikoApp.selectedCategories,
-            selected_subcategories: window.topikoApp.selectedSubcategories,
-            timeline: window.topikoApp.qualifyingAnswers.timeline,
-            budget_range: window.topikoApp.qualifyingAnswers.budget,
-            decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes',
-            online_presence: window.topikoApp.qualifyingAnswers.online_presence,
-            updated_at: new Date().toISOString()
-        };
-        
-        await window.TopikoUtils.saveToSupabase(finalUserData, 'users', 'update', window.topikoApp.currentUserId);
+        try {
+            await window.TopikoUtils.saveToSupabase('leads', leadData);
+            window.TopikoUtils.addDebugLog('✅ Lead data saved to Supabase', 'success');
+        } catch (error) {
+            window.TopikoUtils.addDebugLog(`⚠️ Supabase save failed: ${error.message}`, 'warning');
+        }
     }
+    
+    // Save locally as backup
+    const existingLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
+    existingLeads.push(leadData);
+    localStorage.setItem('topiko_local_leads', JSON.stringify(leadData));
+    
+    window.TopikoUtils.showNotification(`🎉 Congratulations ${window.topikoApp.userName}! Your business is ready for final touches!`, 'success');
+    
+    setTimeout(() => {
+        window.TopikoUtils.showScreen('completion');
+        setTimeout(() => {
+            initializeCompletionScreen();
+        }, 500);
+    }, 2000);
+}
     
     // Save locally as backup
     const existingLeads = JSON.parse(localStorage.getItem('topiko_local_leads') || '[]');
