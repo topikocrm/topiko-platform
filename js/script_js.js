@@ -416,15 +416,21 @@ async function callTopikoAPI(jsonString) {
         
         window.TopikoUtils.addDebugLog(`🚀 Calling API: ${apiUrl}`, 'info');
         
-        // Make API call
+        // Make API call with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            body: jsonString
+            body: jsonString,
+            signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         
         // Get response text (might be JSON or plain text)
         const responseText = await response.text();
@@ -468,23 +474,37 @@ async function callTopikoAPI(jsonString) {
         }
         
     } catch (error) {
-        // Network or other error
+        // Enhanced error handling for CORS
         responseSection.style.display = 'block';
-        responseContent.innerHTML = `
-            <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">❌ API Call Error</div>
-            <div style="color: #374151;">
-                <strong>Error Message:</strong><br>
-                <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${error.message}</pre>
-                <br>
-                <strong>Possible Causes:</strong><br>
-                • Network connection issue<br>
-                • CORS policy blocking the request<br>
-                • API endpoint not available<br>
-                • Invalid JSON format
-            </div>
-        `;
         
-        window.TopikoUtils.showNotification(`❌ API call error: ${error.message}`, 'error');
+        if (error.name === 'AbortError') {
+            responseContent.innerHTML = `
+                <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">⏰ API Call Timeout</div>
+                <div style="color: #374151;">The API call took too long to respond.</div>
+            `;
+        } else if (error.message.includes('CORS') || error.message.includes('fetch')) {
+            responseContent.innerHTML = `
+                <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem;">🚫 CORS Error Detected</div>
+                <div style="color: #374151;">
+                    <strong>Issue:</strong> Cross-Origin Resource Sharing (CORS) is blocking this request.<br><br>
+                    <strong>Solutions:</strong><br>
+                    • Configure the API server to allow CORS requests<br>
+                    • Use a CORS proxy service<br>
+                    • Test the API from the same domain<br><br>
+                    <strong>Data Preview:</strong> Your JSON data is still valid and ready to use!
+                </div>
+            `;
+        } else {
+            responseContent.innerHTML = `
+                <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">❌ API Call Error</div>
+                <div style="color: #374151;">
+                    <strong>Error Message:</strong><br>
+                    <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${error.message}</pre>
+                </div>
+            `;
+        }
+        
+        window.TopikoUtils.showNotification(`⚠️ API call blocked by CORS. Data preview still works!`, 'warning');
         window.TopikoUtils.addDebugLog(`❌ API call error: ${error.message}`, 'error');
         
         console.error('API Call Error:', error);
