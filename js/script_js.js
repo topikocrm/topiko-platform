@@ -413,7 +413,7 @@ async function callTopikoAPI(jsonString) {
         
         // API endpoint
       // API endpoint with CORS proxy
-const apiUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://topiko.com/demoapis/demo_insertDemoData.php');
+const apiUrl = 'https://topiko.com/demoapis/demo_insertDemoData.php';
         
         window.TopikoUtils.addDebugLog(`🚀 Calling API: ${apiUrl}`, 'info');
         
