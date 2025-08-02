@@ -327,7 +327,35 @@ function calculateVariantPrice(basePrice, variant, variantType) {
     
     return basePrice;
 }
-
+// 🆕 ADD: Missing startLeadFlow function
+function startLeadFlow() {
+    console.log('🚀 Starting lead flow...');
+    
+    // Show language selection screen
+    if (window.TopikoUtils && window.TopikoUtils.showScreen) {
+        window.TopikoUtils.showScreen('language');
+    } else {
+        // Fallback manual navigation
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+        const languageScreen = document.getElementById('language');
+        if (languageScreen) {
+            languageScreen.classList.add('active');
+        }
+    }
+    
+    // Update progress
+    if (window.TopikoUtils && window.TopikoUtils.updateProgress) {
+        window.TopikoUtils.updateProgress('language');
+    }
+    
+    // Initialize lead tracking
+    if (!window.topikoApp) {
+        window.topikoApp = {};
+    }
+    window.topikoApp.leadStartTime = new Date().toISOString();
+}
 function showPreviewModal(previewData) {
     const jsonString = JSON.stringify(previewData, null, 2);
     
