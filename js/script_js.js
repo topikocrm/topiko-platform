@@ -591,11 +591,12 @@ function createProductCardWithVariants(product) {
     // Ensure the price is formatted properly
     const formattedPrice = Math.round(basePrice).toLocaleString();
     
-    return `
-        <div class="product-card-selector ${selectedClass}" data-product-id="${product.id}">
-            <div class="product-selector-image" style="background-image: url('${product.image}');">
-                <div class="product-price-tag" id="price-${product.id}">₹${formattedPrice}</div>
-                <div class="product-selection-overlay">
+   return `
+    <div class="product-card-selector ${selectedClass}" data-product-id="${product.id}">
+        <div class="product-selector-image" 
+             style="background-image: url('${product.image}');"
+             onerror="handleImageError(this, '${product.id}', '${product.category}', '${product.subcategory}')">
+            <div class="product-price-tag" id="price-${product.id}">₹${formattedPrice}</div>             <div class="product-selection-overlay">
                     <div class="selection-checkmark" style="${checkmarkStyle}">✓</div>
                 </div>
                 ${product.isPopular ? '<div class="popular-badge">Popular</div>' : ''}
