@@ -4189,7 +4189,41 @@ body {
         margin-bottom: 0; /* Remove extra spacing for print */
     }
 }
+.image-loading {
+    opacity: 0.7;
+    filter: grayscale(50%);
+    transition: all 0.3s ease;
+}
 
+.image-loaded {
+    opacity: 1;
+    filter: none;
+    transition: all 0.3s ease;
+}
+
+.product-price-tag.price-updating {
+    animation: priceUpdate 0.3s ease;
+}
+
+@keyframes priceUpdate {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); background-color: #10b981; color: white; }
+    100% { transform: scale(1); }
+}
+
+.product-selector-image {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-image 0.5s ease;
+}
+*/
+
+console.log('✅ Enhanced Unsplash image system functions ready!');
+console.log('🖼️ 4-layer fallback system implemented');
+console.log('🔄 Automatic retry logic active');
+console.log('🎯 Category-specific search terms loaded');
+console.log('🔍 Image quality validation tools ready');
 /* ========================================
    END OF STYLES
    ======================================== */
