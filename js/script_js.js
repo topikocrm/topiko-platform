@@ -1690,7 +1690,7 @@ function loadProductSelector() {
     window.TopikoUtils.addDebugLog(`✅ Product selector loaded for ${selectedCategories.length} categories`);
 }
 
-ffunction loadFilteredProductsGrid() {
+function loadFilteredProductsGrid() {
     // Get business category and selected subcategories
     const businessCategory = document.getElementById('category')?.value;
     const selectedSubcategories = window.topikoApp.selectedSubcategories;
