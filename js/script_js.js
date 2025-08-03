@@ -715,10 +715,17 @@ function createProductCardWithVariants(product) {
     const selectedClass = isSelected ? 'selected' : '';
     const checkmarkStyle = isSelected ? 'opacity: 1' : 'opacity: 0';
     
-    // ENHANCED: More robust price extraction with comprehensive debugging
+    // ENHANCED: Get reliable image with retry system
+    const reliableImageUrl = window.TopikoConfig.getReliableProductImage(
+        product, 
+        product.category, 
+        product.subcategory, 
+        0
+    );
+    
+    // ENHANCED: More robust price extraction
     let productPrice = 0;
     
-    // Check all possible price fields in order of preference
     if (product.suggestedPrice && typeof product.suggestedPrice === 'number' && product.suggestedPrice > 0) {
         productPrice = product.suggestedPrice;
         console.log(`💰 Using suggestedPrice: ₹${productPrice} for ${product.name}`);
@@ -726,28 +733,17 @@ function createProductCardWithVariants(product) {
         productPrice = product.price;
         console.log(`💰 Using price: ₹${productPrice} for ${product.name}`);
     } else {
-        // Comprehensive debugging for missing prices
-        console.warn('⚠️ Price Debug for:', product.name, {
-            suggestedPrice: product.suggestedPrice,
-            price: product.price,
-            suggestedPriceType: typeof product.suggestedPrice,
-            priceType: typeof product.price,
-            productKeys: Object.keys(product),
-            fullProduct: product
-        });
-        
-        // Use a category-appropriate fallback price
+        // Category-appropriate fallback price
         const categoryKey = (product.categoryKey || product.category || '').toLowerCase();
         if (categoryKey.includes('beverage') || categoryKey.includes('tea') || categoryKey.includes('juice')) {
-            productPrice = 45; // Beverage fallback
+            productPrice = 45;
         } else if (categoryKey.includes('sweet') || categoryKey.includes('dessert')) {
-            productPrice = 180; // Dessert fallback
+            productPrice = 180;
         } else if (categoryKey.includes('north-indian') || categoryKey.includes('south-indian')) {
-            productPrice = 250; // Food fallback
+            productPrice = 250;
         } else {
-            productPrice = 199; // General fallback
+            productPrice = 199;
         }
-        
         console.log(`🔧 Using fallback price: ₹${productPrice} for ${product.name}`);
     }
     
@@ -775,7 +771,7 @@ function createProductCardWithVariants(product) {
         `;
     }
     
-    // FIXED: Better price calculation with strict validation
+    // Better price calculation with strict validation
     let basePrice = productPrice;
     if (processedVariants.length > 0 && processedVariants[0].variant_price && processedVariants[0].variant_price > 0) {
         basePrice = processedVariants[0].variant_price;
@@ -785,20 +781,18 @@ function createProductCardWithVariants(product) {
     // Final price validation
     if (!basePrice || basePrice <= 0 || isNaN(basePrice)) {
         console.error(`❌ Invalid basePrice (${basePrice}) for ${product.name}, using emergency fallback`);
-        basePrice = 299; // Emergency fallback
+        basePrice = 299;
     }
     
-    console.log(`✅ Final display price: ₹${basePrice} for ${product.name} (ID: ${product.id})`);
-    
-    // Ensure the price is formatted properly
     const formattedPrice = Math.round(basePrice).toLocaleString();
     
-   return `
-    <div class="product-card-selector ${selectedClass}" data-product-id="${product.id}">
-        <div class="product-selector-image" 
-             style="background-image: url('${product.image}');"
-             onerror="handleImageError(this, '${product.id}', '${product.category}', '${product.subcategory}')">
-            <div class="product-price-tag" id="price-${product.id}">₹${formattedPrice}</div>             <div class="product-selection-overlay">
+    return `
+        <div class="product-card-selector ${selectedClass}" data-product-id="${product.id}">
+            <div class="product-selector-image" 
+                 style="background-image: url('${reliableImageUrl}');"
+                 onerror="handleImageError(this, '${product.id}', '${product.category}', '${product.subcategory}')">
+                <div class="product-price-tag" id="price-${product.id}">₹${formattedPrice}</div>
+                <div class="product-selection-overlay">
                     <div class="selection-checkmark" style="${checkmarkStyle}">✓</div>
                 </div>
                 ${product.isPopular ? '<div class="popular-badge">Popular</div>' : ''}
@@ -829,22 +823,44 @@ function createProductCardWithVariants(product) {
 function handleImageError(imgElement, productId, category, subcategory) {
     console.warn(`⚠️ Image failed for product ${productId}, trying category fallback...`);
     
-    // Get category-specific fallback image
-    const fallbackUrl = window.TopikoConfig.getFallbackImage(category, subcategory);
+    // Get current attempt count or start from 1
+    let attemptCount = parseInt(imgElement.getAttribute('data-attempt') || '1');
+    
+    // Get the next fallback URL
+    const fallbackUrl = window.TopikoConfig.getReliableProductImage(
+        { id: productId }, 
+        category, 
+        subcategory, 
+        attemptCount
+    );
+    
+    // Store attempt count
+    imgElement.setAttribute('data-attempt', (attemptCount + 1).toString());
     
     // Prevent infinite loop
-    if (imgElement.style.backgroundImage.includes('unsplash')) {
-        console.log(`📦 Using placeholder for ${productId}`);
+    if (attemptCount >= 4) {
+        console.log(`📦 Using final placeholder for ${productId}`);
         const placeholder = window.TopikoConfig.getPlaceholderImage();
         imgElement.style.backgroundImage = `url("${placeholder}")`;
         return;
     }
     
-    // Try category-specific fallback
-    imgElement.style.backgroundImage = `url('${fallbackUrl}')`;
+    // Test the new URL before applying
+    const testImg = new Image();
+    testImg.onload = () => {
+        console.log(`✅ Fallback ${attemptCount + 1} loaded for ${productId}: ${fallbackUrl}`);
+        imgElement.style.backgroundImage = `url('${fallbackUrl}')`;
+    };
     
-    // Log successful fallback
-    console.log(`✅ Category fallback loaded for ${productId} (${subcategory || category}): ${fallbackUrl}`);
+    testImg.onerror = () => {
+        console.log(`❌ Fallback ${attemptCount + 1} failed for ${productId}, trying next...`);
+        // Recursive call with incremented attempt
+        setTimeout(() => {
+            handleImageError(imgElement, productId, category, subcategory);
+        }, 500);
+    };
+    
+    testImg.src = fallbackUrl;
 }
 
 // NEW FUNCTION: Handle variant selection
@@ -1674,7 +1690,7 @@ function loadProductSelector() {
     window.TopikoUtils.addDebugLog(`✅ Product selector loaded for ${selectedCategories.length} categories`);
 }
 
-function loadFilteredProductsGrid() {
+ffunction loadFilteredProductsGrid() {
     // Get business category and selected subcategories
     const businessCategory = document.getElementById('category')?.value;
     const selectedSubcategories = window.topikoApp.selectedSubcategories;
@@ -1687,13 +1703,18 @@ function loadFilteredProductsGrid() {
     // Filter products to only selected subcategories
     const filteredProducts = getProductsForSelectedCategories();
     
+    // ENHANCED: Preload images for better performance
+    if (filteredProducts.length > 0) {
+        preloadProductImages(filteredProducts, businessCategory, selectedSubcategories[0]);
+    }
+    
     // Update products count
     const productsCount = document.getElementById('productsCount');
     if (productsCount) {
         productsCount.textContent = filteredProducts.length;
     }
     
-    // Display filtered products with variants
+    // Display filtered products with enhanced image loading
     displayProductsGridWithVariants(filteredProducts);
     
     // Update quick filters to only show relevant categories
@@ -1940,7 +1961,320 @@ function filterAndDisplayProducts() {
     
     window.TopikoUtils.addDebugLog(`🔍 Filtered to ${filteredProducts.length} products from selected categories`);
 }
+// ========================================
+// ➕ NEW FUNCTIONS - Image Loading & Debugging
+// ========================================
 
+// NEW FUNCTION: Initialize reliable image loading
+function initializeReliableImageLoading() {
+    console.log('🖼️ Initializing reliable image loading system...');
+    
+    const productImages = document.querySelectorAll('.product-selector-image');
+    console.log(`🖼️ Found ${productImages.length} product images to enhance`);
+    
+    if (productImages.length === 0) {
+        console.warn('⚠️ No product images found to enhance');
+        return;
+    }
+    
+    // Setup retry system for each image
+    productImages.forEach((imgElement, index) => {
+        const productId = imgElement.closest('[data-product-id]')?.getAttribute('data-product-id');
+        if (productId) {
+            // Extract category from product data or use defaults
+            const product = findProductById(productId);
+            const category = product?.category || 'default';
+            const subcategory = product?.subcategory || null;
+            
+            setupImageRetrySystem(imgElement, productId, category, subcategory);
+            
+            // Add loading enhancement with delay to spread load
+            setTimeout(() => {
+                enhanceImageElement(imgElement, productId, category, subcategory);
+            }, index * 50); // Stagger loading
+        }
+    });
+    
+    console.log('✅ Enhanced image loading system ready!');
+}
+
+// NEW FUNCTION: Setup image retry system for individual image
+function setupImageRetrySystem(imgElement, productId, category, subcategory) {
+    // Add error handler if not already present
+    if (!imgElement.hasAttribute('data-retry-setup')) {
+        imgElement.setAttribute('data-retry-setup', 'true');
+        imgElement.setAttribute('data-attempt', '0');
+        
+        // Create a more robust error handler
+        const originalOnError = imgElement.onerror;
+        imgElement.onerror = function() {
+            console.log(`🔄 Image error detected for ${productId}, initiating retry...`);
+            handleImageError(this, productId, category, subcategory);
+        };
+        
+        console.log(`🔧 Retry system setup for ${productId}`);
+    }
+}
+
+// NEW FUNCTION: Preload product images for performance
+function preloadProductImages(products, category, subcategory) {
+    console.log(`🚀 Preloading images for ${products.length} products...`);
+    
+    // Limit preloading to first 20 products for performance
+    const productsToPreload = products.slice(0, 20);
+    let preloadedCount = 0;
+    
+    productsToPreload.forEach((product, index) => {
+        // Get the reliable image URL
+        const reliableUrl = window.TopikoConfig.getReliableProductImage(
+            product, 
+            product.category || category, 
+            product.subcategory || subcategory, 
+            0
+        );
+        
+        // Preload with delay to avoid overwhelming the browser
+        setTimeout(() => {
+            const preloadImg = new Image();
+            preloadImg.onload = () => {
+                preloadedCount++;
+                console.log(`✅ Preloaded ${product.name} (${preloadedCount}/${productsToPreload.length})`);
+            };
+            preloadImg.onerror = () => {
+                console.warn(`⚠️ Failed to preload ${product.name}`);
+            };
+            preloadImg.src = reliableUrl;
+        }, index * 100); // Spread load over time
+    });
+}
+
+// NEW FUNCTION: Check image quality and success rate
+function checkImageQuality() {
+    console.log('🔍 CHECKING IMAGE QUALITY...');
+    
+    const productImages = document.querySelectorAll('.product-selector-image');
+    let totalImages = productImages.length;
+    let successfulImages = 0;
+    let failedImages = 0;
+    let placeholderImages = 0;
+    
+    if (totalImages === 0) {
+        console.warn('⚠️ No product images found on page');
+        return { total: 0, successful: 0, failed: 0, placeholder: 0, successRate: 0 };
+    }
+    
+    productImages.forEach((imgElement, index) => {
+        const backgroundImage = imgElement.style.backgroundImage;
+        const productId = imgElement.closest('[data-product-id]')?.getAttribute('data-product-id') || `image-${index}`;
+        
+        if (backgroundImage.includes('data:image/svg+xml')) {
+            placeholderImages++;
+            console.warn(`📦 Placeholder: ${productId}`);
+        } else if (backgroundImage.includes('unsplash') || backgroundImage.includes('http')) {
+            // Verify if image actually loads
+            const testImg = new Image();
+            testImg.onload = () => {
+                successfulImages++;
+                console.log(`✅ Image verified for ${productId}: ${backgroundImage}`);
+            };
+            testImg.onerror = () => {
+                failedImages++;
+                console.error(`❌ Image failed for ${productId}: ${backgroundImage}`);
+            };
+            
+            // Extract URL from background-image style
+            const urlMatch = backgroundImage.match(/url\(["']?([^"']*)["']?\)/);
+            if (urlMatch && urlMatch[1]) {
+                testImg.src = urlMatch[1];
+            } else {
+                failedImages++;
+                console.error(`❌ Invalid background image format for ${productId}`);
+            }
+        } else {
+            failedImages++;
+            console.error(`❌ No background image for ${productId}`);
+        }
+    });
+    
+    // Calculate success rate after async checks
+    setTimeout(() => {
+        const successRate = totalImages > 0 ? ((successfulImages / totalImages) * 100).toFixed(1) : 0;
+        
+        console.log('\n📊 IMAGE QUALITY SUMMARY:');
+        console.log(`Total images: ${totalImages}`);
+        console.log(`Successful: ${successfulImages} (${((successfulImages/totalImages)*100).toFixed(1)}%)`);
+        console.log(`Failed: ${failedImages} (${((failedImages/totalImages)*100).toFixed(1)}%)`);
+        console.log(`Placeholders: ${placeholderImages} (${((placeholderImages/totalImages)*100).toFixed(1)}%)`);
+        console.log(`Overall success rate: ${successRate}%`);
+        
+        // Show notification
+        if (successRate >= 95) {
+            window.TopikoUtils?.showNotification(`🎉 Excellent! ${successRate}% image success rate`, 'success');
+        } else if (successRate >= 80) {
+            window.TopikoUtils?.showNotification(`✅ Good! ${successRate}% image success rate`, 'info');
+        } else {
+            window.TopikoUtils?.showNotification(`⚠️ ${successRate}% image success rate - some improvements needed`, 'warning');
+        }
+    }, 2000); // Wait for async image checks
+    
+    return {
+        total: totalImages,
+        successful: successfulImages,
+        failed: failedImages,
+        placeholder: placeholderImages,
+        successRate: totalImages > 0 ? ((successfulImages / totalImages) * 100).toFixed(1) : 0
+    };
+}
+
+// NEW FUNCTION: Refresh all product images
+function refreshAllProductImages() {
+    console.log('🔧 REFRESHING ALL PRODUCT IMAGES...');
+    
+    const productCards = document.querySelectorAll('.product-card-selector');
+    let refreshed = 0;
+    
+    if (productCards.length === 0) {
+        console.warn('⚠️ No product cards found to refresh');
+        window.TopikoUtils?.showNotification('No product images found to refresh', 'info');
+        return 0;
+    }
+    
+    productCards.forEach((card, index) => {
+        const productId = card.getAttribute('data-product-id');
+        const imgElement = card.querySelector('.product-selector-image');
+        
+        if (imgElement && productId) {
+            // Find product in database
+            const dbProduct = findProductById(productId);
+            if (dbProduct) {
+                // Get fresh reliable image URL
+                const freshImageUrl = window.TopikoConfig.getReliableProductImage(
+                    dbProduct, 
+                    dbProduct.category, 
+                    dbProduct.subcategory, 
+                    0
+                );
+                
+                // Reset attempt counter
+                imgElement.setAttribute('data-attempt', '0');
+                
+                // Apply new image with delay to spread load
+                setTimeout(() => {
+                    imgElement.style.backgroundImage = `url('${freshImageUrl}')`;
+                    console.log(`🔄 Refreshed image for ${dbProduct.name}: ${freshImageUrl}`);
+                }, index * 100);
+                
+                refreshed++;
+            }
+        }
+    });
+    
+    console.log(`🔧 Refreshed ${refreshed} product images`);
+    window.TopikoUtils?.showNotification(`🔄 Refreshed ${refreshed} product images`, 'success');
+    
+    // Re-initialize image loading system
+    setTimeout(() => {
+        initializeReliableImageLoading();
+    }, refreshed * 100 + 500);
+    
+    return refreshed;
+}
+
+// HELPER FUNCTION: Enhance individual image element
+function enhanceImageElement(imgElement, productId, category, subcategory) {
+    // Add loading class for smooth transitions
+    imgElement.classList.add('image-loading');
+    
+    // Verify current image loads, if not trigger retry
+    const currentBg = imgElement.style.backgroundImage;
+    if (currentBg) {
+        const urlMatch = currentBg.match(/url\(["']?([^"']*)["']?\)/);
+        if (urlMatch && urlMatch[1]) {
+            const testImg = new Image();
+            testImg.onload = () => {
+                imgElement.classList.remove('image-loading');
+                imgElement.classList.add('image-loaded');
+                console.log(`✅ Enhanced image verified: ${productId}`);
+            };
+            testImg.onerror = () => {
+                console.log(`🔄 Enhanced image check failed, triggering retry: ${productId}`);
+                handleImageError(imgElement, productId, category, subcategory);
+            };
+            testImg.src = urlMatch[1];
+        }
+    }
+}
+
+// ========================================
+// DEBUGGING FUNCTIONS - ENHANCED
+// ========================================
+
+// ENHANCED DEBUG FUNCTION: Comprehensive product price debugging
+function debugProductPrices() {
+    console.log('🔍 DEBUGGING PRODUCT PRICES...');
+    
+    if (!window.TopikoConfig || !window.TopikoConfig.INDIAN_PRODUCTS_DB) {
+        console.error('❌ TopikoConfig.INDIAN_PRODUCTS_DB not found!');
+        return;
+    }
+    
+    const db = window.TopikoConfig.INDIAN_PRODUCTS_DB;
+    let totalProducts = 0;
+    let productsWithPrice = 0;
+    let productsWithoutPrice = 0;
+    let priceStats = { min: Infinity, max: 0, sum: 0 };
+    
+    Object.keys(db).forEach(businessCategory => {
+        console.log(`📁 Business Category: ${businessCategory}`);
+        
+        Object.keys(db[businessCategory]).forEach(categoryKey => {
+            const products = db[businessCategory][categoryKey];
+            
+            if (Array.isArray(products)) {
+                console.log(`  📂 Category: ${categoryKey} (${products.length} products)`);
+                
+                products.forEach(product => {
+                    totalProducts++;
+                    
+                    const hasPrice = product.suggestedPrice || product.price;
+                    if (hasPrice) {
+                        const price = product.suggestedPrice || product.price;
+                        productsWithPrice++;
+                        priceStats.sum += price;
+                        priceStats.min = Math.min(priceStats.min, price);
+                        priceStats.max = Math.max(priceStats.max, price);
+                        console.log(`    ✅ ${product.name}: ₹${price} (${product.suggestedPrice ? 'suggestedPrice' : 'price'})`);
+                    } else {
+                        productsWithoutPrice++;
+                        console.error(`    ❌ ${product.name}: NO PRICE!`, {
+                            id: product.id,
+                            keys: Object.keys(product),
+                            product: product
+                        });
+                    }
+                });
+            }
+        });
+    });
+    
+    console.log('\n📊 PRICE ANALYSIS SUMMARY:');
+    console.log(`Total products: ${totalProducts}`);
+    console.log(`With prices: ${productsWithPrice} (${((productsWithPrice/totalProducts)*100).toFixed(1)}%)`);
+    console.log(`Without prices: ${productsWithoutPrice} (${((productsWithoutPrice/totalProducts)*100).toFixed(1)}%)`);
+    
+    if (productsWithPrice > 0) {
+        const avgPrice = priceStats.sum / productsWithPrice;
+        console.log(`Price range: ₹${priceStats.min} - ₹${priceStats.max}`);
+        console.log(`Average price: ₹${avgPrice.toFixed(2)}`);
+    }
+    
+    return {
+        total: totalProducts,
+        withPrices: productsWithPrice,
+        withoutPrices: productsWithoutPrice,
+        priceStats: priceStats
+    };
+}
 // UPDATED: Display products grid with variant functionality
 function displayProductsGridWithVariants(products) {
     const productsGrid = document.getElementById('productsGrid');
@@ -1963,6 +2297,9 @@ function displayProductsGridWithVariants(products) {
     
     const productsHTML = products.map(product => createProductCardWithVariants(product)).join('');
     productsGrid.innerHTML = productsHTML;
+    
+    // ENHANCED: Initialize reliable image loading after grid update
+    initializeReliableImageLoading();
     
     // Debug: Check if price tags are rendered
     setTimeout(() => {
@@ -2999,3 +3336,22 @@ console.log('✅ VARIANT PRICING ADDED - Dynamic price updates');
 console.log('✅ PRICE DISPLAY FIXED - Enhanced debugging');
 console.log('✅ ALL FUNCTIONS UPDATED AND AVAILABLE');
 console.log('✅ GLOBAL AVAILABILITY CONFIRMED');
+if (typeof window !== 'undefined') {
+    // Enhanced Image Functions - NEW
+    window.initializeReliableImageLoading = initializeReliableImageLoading;
+    window.setupImageRetrySystem = setupImageRetrySystem;
+    window.preloadProductImages = preloadProductImages;
+    window.checkImageQuality = checkImageQuality;
+    window.refreshAllProductImages = refreshAllProductImages;
+    
+    // Updated Display Functions - REPLACED
+    window.displayProductsGridWithVariants = displayProductsGridWithVariants;
+    window.loadFilteredProductsGrid = loadFilteredProductsGrid;
+    window.createProductCardWithVariants = createProductCardWithVariants;
+    window.handleImageError = handleImageError;
+    
+    // Enhanced Debug Functions - UPDATED
+    window.debugProductPrices = debugProductPrices;
+    
+    console.log('✅ Enhanced image loading functions available globally');
+}
