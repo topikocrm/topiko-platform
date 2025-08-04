@@ -95,8 +95,9 @@
             <section class="screen active" id="welcome">
                 <div class="welcome-screen">
                     <h1 class="topiko-logo">Topiko CRM </h1>
-                    <p style="font-size: 1.1rem; color: #6b46c1; margin-bottom: 2rem;" 
-                       data-translate="welcome.tagline">Complete Business Platform for Indian small SMBs</p>
+                    <!-- UPDATED: New engaging message about Namaste and digital growth -->
+                    <p style="font-size: 1.1rem; color: #6b46c1; margin-bottom: 2rem; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto;" 
+                       data-translate="welcome.tagline">Namaste! Ready to grow your business the smart way? With Topiko, you get one easy platform to take your business online, build a strong identity, serve your customers better, and simplify operations—all designed for India's entrepreneurs. Start your digital growth journey with Topiko today!</p>
                     <button class="try-free-button" onclick="startLeadFlow()" 
                             data-translate="welcome.tryFreeButton">
                         Try for Free
@@ -110,7 +111,7 @@
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" 
                         data-translate="language.title">Choose Your Language</h2>
                     <p style="text-align: center; margin-bottom: 2rem; font-size: 0.9rem;" 
-                       data-translate="language.subtitle">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெडுக்கவும்</p>
+                       data-translate="language.subtitle">अपनी भाषा चुनें | మీ భాషను ఎంచుకోండి | உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்</p>
                     
                     <div class="language-grid">
                         <div class="language-option" onclick="selectLanguageWithTranslation('en', this)">
@@ -141,7 +142,7 @@
                             <div class="language-flag">🇮🇳</div>
                             <div class="language-content">
                                 <h3>தமிழ்</h3>
-                                <p data-translate="language.options.ta">தமிழில் தொடরવ</p>
+                                <p data-translate="language.options.ta">தமிழில் தொடரவ</p>
                             </div>
                         </div>
                     </div>
@@ -151,19 +152,21 @@
             <!-- Goals Selection Screen -->
             <section class="screen" id="goals">
                 <div class="content-card">
+                    <!-- UPDATED: New headings for 3-goal limit -->
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" 
-                        data-translate="goals.title">Select Your Goals</h2>
+                        data-translate="goals.title">Select your Business Goals</h2>
                     <p style="text-align: center; margin-bottom: 2rem;" 
-                       data-translate="goals.subtitle">Choose what you want to achieve with Topiko (select all that apply)</p>
+                       data-translate="goals.subtitle">Choose any three from the list</p>
                     
                     <div class="goals-grid">
+                        <!-- UPDATED: All goal descriptions -->
                         <div class="goal-option">
                             <input type="checkbox" id="goal-ecommerce" value="ecommerce" class="goal-checkbox" onchange="updateGoalsTracking()">
                             <label for="goal-ecommerce" class="goal-card">
                                 <div class="goal-icon">🛒</div>
                                 <div class="goal-content">
                                     <h3 data-translate="goals.options.ecommerce.title">Sell Online (E-commerce)</h3>
-                                    <p data-translate="goals.options.ecommerce.description">Start selling your products online with a complete e-commerce solution</p>
+                                    <p data-translate="goals.options.ecommerce.description">Quickly set up your online store and start selling products seamlessly across web and mobile</p>
                                 </div>
                                 <div class="goal-checkmark">✓</div>
                             </label>
@@ -175,7 +178,7 @@
                                 <div class="goal-icon">📈</div>
                                 <div class="goal-content">
                                     <h3 data-translate="goals.options.customers.title">Reach More Customers</h3>
-                                    <p data-translate="goals.options.customers.description">Expand your customer base and grow your market reach</p>
+                                    <p data-translate="goals.options.customers.description">Grow your business by connecting with new audiences through digital marketing and online channels</p>
                                 </div>
                                 <div class="goal-checkmark">✓</div>
                             </label>
@@ -187,7 +190,7 @@
                                 <div class="goal-icon">👥</div>
                                 <div class="goal-content">
                                     <h3 data-translate="goals.options.manage.title">Manage Customers</h3>
-                                    <p data-translate="goals.options.manage.description">Keep track of your customers and build lasting relationships</p>
+                                    <p data-translate="goals.options.manage.description">Effortlessly organize, track, and engage your customers to build strong, lasting relationships</p>
                                 </div>
                                 <div class="goal-checkmark">✓</div>
                             </label>
@@ -199,7 +202,7 @@
                                 <div class="goal-icon">🔍</div>
                                 <div class="goal-content">
                                     <h3 data-translate="goals.options.search.title">Appear in Search Results</h3>
-                                    <p data-translate="goals.options.search.description">Improve your online visibility and get found by potential customers</p>
+                                    <p data-translate="goals.options.search.description">Boost your visibility and get easily discovered by potential buyers on Google and key online platforms</p>
                                 </div>
                                 <div class="goal-checkmark">✓</div>
                             </label>
@@ -211,7 +214,20 @@
                                 <div class="goal-icon">⭐</div>
                                 <div class="goal-content">
                                     <h3 data-translate="goals.options.brand.title">Establish my Brand</h3>
-                                    <p data-translate="goals.options.brand.description">Build a strong brand presence and professional image online</p>
+                                    <p data-translate="goals.options.brand.description">Build a credible brand presence with your own professional website and consistent social media profiles</p>
+                                </div>
+                                <div class="goal-checkmark">✓</div>
+                            </label>
+                        </div>
+
+                        <!-- NEW: 6th goal option -->
+                        <div class="goal-option">
+                            <input type="checkbox" id="goal-operations" value="operations" class="goal-checkbox" onchange="updateGoalsTracking()">
+                            <label for="goal-operations" class="goal-card">
+                                <div class="goal-icon">⚡</div>
+                                <div class="goal-content">
+                                    <h3 data-translate="goals.options.operations.title">Save Time on Business Operations</h3>
+                                    <p data-translate="goals.options.operations.description">Streamline daily tasks and automate operations so you can focus on what matters most</p>
                                 </div>
                                 <div class="goal-checkmark">✓</div>
                             </label>
@@ -275,13 +291,17 @@
 
                     <div class="form-group">
                         <label for="businessType" data-translate="registration.fields.businessType.label">Business Type</label>
+                        <!-- UPDATED: New Indian business type options -->
                         <select id="businessType" onchange="trackFormProgress()">
                             <option value="" data-translate="registration.fields.businessType.placeholder">Select your business type</option>
+                            <option value="llp" data-translate="registration.fields.businessType.options.llp">Limited Liability Partnership (LLP)</option>
+                            <option value="private-limited" data-translate="registration.fields.businessType.options.privateLimited">Private Limited Company (Pvt Ltd)</option>
+                            <option value="public-limited" data-translate="registration.fields.businessType.options.publicLimited">Public Limited Company</option>
+                            <option value="opc" data-translate="registration.fields.businessType.options.opc">One Person Company (OPC)</option>
+                            <option value="franchise" data-translate="registration.fields.businessType.options.franchise">Franchise</option>
                             <option value="startup" data-translate="registration.fields.businessType.options.startup">Startup</option>
-                            <option value="small-business" data-translate="registration.fields.businessType.options.smallBusiness">Small Business</option>
-                            <option value="medium-enterprise" data-translate="registration.fields.businessType.options.mediumEnterprise">Medium Enterprise</option>
-                            <option value="large-enterprise" data-translate="registration.fields.businessType.options.largeEnterprise">Large Enterprise</option>
-                            <option value="freelancer" data-translate="registration.fields.businessType.options.freelancer">Freelancer</option>
+                            <option value="freelancer" data-translate="registration.fields.businessType.options.freelancer">Freelancer/Gig Worker</option>
+                            <option value="others" data-translate="registration.fields.businessType.options.others">Others</option>
                         </select>
                     </div>
 
@@ -683,21 +703,6 @@
                         <div id="selectedProductsList"></div>
                     </div>
 
-                 <!-- Products List (now shows all selected products) 
-                    <div class="products-list">
-                        <h3 style="color: #6b46c1; margin-bottom: 1rem; font-size: 1.1rem;">
-                            <span data-translate="products.selectedProducts.catalogTitle" 
-                                  data-translate-vars='{"count": "0"}'>Your Product Catalog (0)</span>
-                        </h3>
-                        
-                        <div class="product-grid" id="productsList">
-                            <div style="text-align: center; padding: 2rem; color: #64748b; background: rgba(255, 255, 255, 0.5); border-radius: 12px;">
-                                <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
-                                <p data-translate="products.selectedProducts.emptyMessage">No products selected yet. Choose products above or add custom products!</p>
-                            </div>
-                        </div>
-                    </div> -->
-
                     <!-- Navigation buttons -->
                     <div class="flex-buttons">
                         <button onclick="navigateToStep('categories')" class="btn-secondary">
@@ -720,7 +725,6 @@
                     
                     <div class="theme-grid">
                         <!-- Modern & Minimalist Theme -->
-                        <!-- Modern & Minimalist Theme -->
                         <div class="theme-option" onclick="selectTheme('modern', this)">
                             <div class="theme-header">
                                 <h3>
@@ -735,64 +739,62 @@
                         </div>
 
                         <!-- Colorful & Vibrant Theme -->
-                        <!-- Colorful & Vibrant Theme -->
-                            <div class="theme-option" onclick="selectTheme('vibrant', this)">
-                                <div class="theme-header">
-                                    <h3>
-                                        <span style="margin-right: 0.5rem;">🌈</span>
-                                        <span data-translate="themes.options.vibrant.title">Colorful & Vibrant</span>
-                                    </h3>
-                                    <p data-translate="themes.options.vibrant.description">Bold colors and energetic design to attract customers</p>
-                                </div>
-                                <div class="theme-preview">
-                                    <img src="images/themes/vibrant.jpg" alt="Vibrant Theme Preview" class="theme-image" id="vibrant-preview">
-                                </div>
+                        <div class="theme-option" onclick="selectTheme('vibrant', this)">
+                            <div class="theme-header">
+                                <h3>
+                                    <span style="margin-right: 0.5rem;">🌈</span>
+                                    <span data-translate="themes.options.vibrant.title">Colorful & Vibrant</span>
+                                </h3>
+                                <p data-translate="themes.options.vibrant.description">Bold colors and energetic design to attract customers</p>
                             </div>
+                            <div class="theme-preview">
+                                <img src="images/themes/vibrant.jpg" alt="Vibrant Theme Preview" class="theme-image" id="vibrant-preview">
+                            </div>
+                        </div>
 
                        <!-- Professional & Corporate Theme -->
-                            <div class="theme-option" onclick="selectTheme('professional', this)">
-                                <div class="theme-header">
-                                    <h3>
-                                        <span style="margin-right: 0.5rem;">💼</span>
-                                        <span data-translate="themes.options.professional.title">Professional & Corporate</span>
-                                    </h3>
-                                    <p data-translate="themes.options.professional.description">Sophisticated design that builds trust and credibility</p>
-                                </div>
-                                <div class="theme-preview">
-                                    <img src="images/themes/professional.jpg" alt="Professional Theme Preview" class="theme-image" id="professional-preview">
-                                </div>
+                        <div class="theme-option" onclick="selectTheme('professional', this)">
+                            <div class="theme-header">
+                                <h3>
+                                    <span style="margin-right: 0.5rem;">💼</span>
+                                    <span data-translate="themes.options.professional.title">Professional & Corporate</span>
+                                </h3>
+                                <p data-translate="themes.options.professional.description">Sophisticated design that builds trust and credibility</p>
                             </div>
+                            <div class="theme-preview">
+                                <img src="images/themes/professional.jpg" alt="Professional Theme Preview" class="theme-image" id="professional-preview">
+                            </div>
+                        </div>
 
                        <!-- Traditional & Classic Theme -->
-                            <div class="theme-option" onclick="selectTheme('traditional', this)">
-                                <div class="theme-header">
-                                    <h3>
-                                        <span style="margin-right: 0.5rem;">🏛️</span>
-                                        <span data-translate="themes.options.traditional.title">Traditional & Classic</span>
-                                    </h3>
-                                    <p data-translate="themes.options.traditional.description">Timeless design with warm, welcoming feel</p>
-                                </div>
-                                <div class="theme-preview">
-                                    <img src="images/themes/traditional.jpg" alt="Traditional Theme Preview" class="theme-image" id="traditional-preview">
-                                </div>
+                        <div class="theme-option" onclick="selectTheme('traditional', this)">
+                            <div class="theme-header">
+                                <h3>
+                                    <span style="margin-right: 0.5rem;">🏛️</span>
+                                    <span data-translate="themes.options.traditional.title">Traditional & Classic</span>
+                                </h3>
+                                <p data-translate="themes.options.traditional.description">Timeless design with warm, welcoming feel</p>
                             </div>
+                            <div class="theme-preview">
+                                <img src="images/themes/traditional.jpg" alt="Traditional Theme Preview" class="theme-image" id="traditional-preview">
+                            </div>
+                        </div>
 
                      <!-- Creative & Artistic Theme -->
-                            <div class="theme-option" onclick="selectTheme('creative', this)">
-                                <div class="theme-header">
-                                    <h3>
-                                        <span style="margin-right: 0.5rem;">🎨</span>
-                                        <span data-translate="themes.options.creative.title">Creative & Artistic</span>
-                                    </h3>
-                                    <p data-translate="themes.options.creative.description">Unique, artistic design that showcases creativity</p>
-                                </div>
-                                <div class="theme-preview">
-                                    <img src="images/themes/creative.jpg" alt="Creative Theme Preview" class="theme-image" id="creative-preview">
-                                </div>
+                        <div class="theme-option" onclick="selectTheme('creative', this)">
+                            <div class="theme-header">
+                                <h3>
+                                    <span style="margin-right: 0.5rem;">🎨</span>
+                                    <span data-translate="themes.options.creative.title">Creative & Artistic</span>
+                                </h3>
+                                <p data-translate="themes.options.creative.description">Unique, artistic design that showcases creativity</p>
                             </div>
+                            <div class="theme-preview">
+                                <img src="images/themes/creative.jpg" alt="Creative Theme Preview" class="theme-image" id="creative-preview">
+                            </div>
+                        </div>
 
                         <!-- Elegant & Luxury Theme -->
-                       <!-- Elegant & Luxury Theme -->
                         <div class="theme-option" onclick="selectTheme('luxury', this)">
                             <div class="theme-header">
                                 <h3>
@@ -805,6 +807,7 @@
                                 <img src="images/themes/luxury.jpg" alt="Luxury Theme Preview" class="theme-image" id="luxury-preview">
                             </div>
                         </div>
+                    </div>
 
                     <div style="text-align: center; margin: 1.5rem 0; display: none;" id="selectedThemeDisplay">
                         <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 1rem;">
@@ -817,10 +820,10 @@
                         <button onclick="navigateToStep('products')" class="btn-secondary">
                             <span data-translate="themes.navigation.backButton">← Back to Products</span>
                         </button>
-                            <!-- NEW PREVIEW BUTTON -->
-                            <button onclick="generatePreviewData()" class="btn-secondary" id="previewDataBtn">
-                                <span>🔍 Preview Data</span>
-                            </button>
+                        <!-- NEW PREVIEW BUTTON -->
+                        <button onclick="generatePreviewData()" class="btn-secondary" id="previewDataBtn">
+                            <span>🔍 Preview Data</span>
+                        </button>
                         <button onclick="completeSetup()" id="themeNextBtn" disabled style="opacity: 0.5;">
                             <span data-translate="themes.navigation.nextButton">Complete Setup 🚀</span>
                         </button>
@@ -828,7 +831,7 @@
                 </div>
             </section>
 
-            <!-- COMPLETION SCREEN - FIXED VERSION WITH WORKING OFFERS -->
+            <!-- COMPLETION SCREEN - UPDATED WITH COUPON AND TIMER -->
             <section class="screen" id="completion">
                 <div class="content-card">
                     <div style="text-align: center;">
@@ -843,6 +846,15 @@
                            data-translate="completion.subtitle">
                             Your business setup is complete! Our team will now create your professional online presence.
                         </p>
+
+                        <!-- NEW: Coupon Code Section -->
+                        <div style="background: rgba(16, 185, 129, 0.1); border: 2px solid #10b981; border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #047857; font-weight: 600; font-size: 0.95rem; text-align: center;">
+                            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                                <span style="font-size: 1.2rem; margin-right: 0.5rem;">🎫</span>
+                                <span>Use Coupon <span id="randomCoupon" style="background: #10b981; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 700; font-family: monospace;"></span> when you talk to our team</span>
+                            </div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Get discount up to 20% on first year subscription</div>
+                        </div>
 
                         <!-- TODAY'S SPECIAL OFFERS SECTION - SELECTABLE -->
                         <div class="offers-section-background">
@@ -867,8 +879,9 @@
                                 </div>
                             </div>
                             
+                            <!-- UPDATED: Timer set to 6:45:00 -->
                             <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: center;">
-                                <span data-translate="completion.offers.timer" data-translate-vars='{"time": "23:45:12"}'>🔥 Limited Time: These offers expire in 23:45:12</span>
+                                <span data-translate="completion.offers.timer" data-translate-vars='{"time": "6:45:00"}'>🔥 Limited Time: These offers expire in <span id="offerTimer">6:45:00</span></span>
                             </div>
 
                             <!-- Selected Offer Display -->
@@ -927,6 +940,7 @@
                 <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: left; line-height: 1.8;">
                     Topiko helped 5,500+ businesses reach their goals last month — let's do the same for yours! 
                     
+                    <!-- FIXED: Updated emoji in third benefit -->
                     <div style="margin-top: 0.8rem; display: flex; flex-direction: column; gap: 0.3rem;">
                         <div style="display: flex; align-items: center;">
                             <span style="margin-right: 0.5rem;">✨</span>
@@ -937,7 +951,7 @@
                             <span data-translate="modals.goalsTransition.benefits.1">ZERO obligation to continue</span>
                         </div>
                         <div style="display: flex; align-items: center;">
-                            <span style="margin-right: 0.5rem;">🧪</span>
+                            <span style="margin-right: 0.5rem;">🚀</span>
                             <span data-translate="modals.goalsTransition.benefits.2">Try before you decide</span>
                         </div>
                     </div>
@@ -960,19 +974,16 @@
             <div style="text-align: center;">
                 <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
                 
+                <!-- FIXED: Use business name instead of user name -->
                 <h2 style="color: #059669; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;"
-                   data-translate="modals.setupIntro.title" data-translate-vars='{"name": "there"}'>
-                    Excellent, <span id="setupUserName">there</span>! 🎉
+                   data-translate="modals.setupIntro.title" data-translate-vars='{"businessName": "business"}'>
+                    Excellent, <span id="setupBusinessName">business</span>! 🎉
                 </h2>
                 
                 <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.2); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0;">
                     <p style="color: #059669; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;"
                        data-translate="modals.setupIntro.subtitle" data-translate-vars='{"business": "business"}'>
-                        In just 3 simple steps, we'll show you exactly how your <span id="setupBusinessName">business</span> can look and work online — the Topiko way!
-                    </p>
-                    <p style="color: #064e3b; font-size: 0.95rem; margin-bottom: 0;"
-                       data-translate="modals.setupIntro.note">
-                        🔥 Businesses like yours are going live every hour — don't miss the momentum!
+                        In just 3 simple steps, we'll show you exactly how your <span id="setupBusinessNameInText">business</span> can look and work online — the Topiko way!
                     </p>
                 </div>
 
@@ -981,6 +992,12 @@
                         data-translate="modals.setupIntro.button">
                     Let's Create Something Amazing! 🎯
                 </button>
+                
+                <!-- MOVED: Momentum message after button -->
+                <p style="color: #064e3b; font-size: 0.9rem; margin-top: 1rem; font-style: italic;"
+                   data-translate="modals.setupIntro.momentum">
+                    🔥 Businesses like yours are going live every hour — don't miss the momentum!
+                </p>
             </div>
         </div>
     </div>
@@ -1039,43 +1056,12 @@
                    data-translate="modals.callScheduler.subtitle">Select a convenient time for our team to contact you:</p>
             </div>
             
+            <!-- UPDATED: Dynamic time slots will be populated by JavaScript -->
             <div class="time-slots-grid" id="timeSlotsGrid">
-                <!-- Today -->
-                <div class="time-slot" onclick="selectTimeSlot(this, 'today-10am')">
-                    <div class="slot-date" data-translate="modals.callScheduler.timeSlots.today">Today</div>
-                    <div class="slot-time">10:00 AM</div>
-                </div>
-                <div class="time-slot" onclick="selectTimeSlot(this, 'today-2pm')">
-                    <div class="slot-date" data-translate="modals.callScheduler.timeSlots.today">Today</div>
-                    <div class="slot-time">2:00 PM</div>
-                </div>
-                <div class="time-slot" onclick="selectTimeSlot(this, 'today-4pm')">
-                    <div class="slot-date" data-translate="modals.callScheduler.timeSlots.today">Today</div>
-                    <div class="slot-time">4:00 PM</div>
-                </div>
-                
-                <!-- Tomorrow -->
-                <div class="time-slot" onclick="selectTimeSlot(this, 'tomorrow-9am')">
-                    <div class="slot-date" data-translate="modals.callScheduler.timeSlots.tomorrow">Tomorrow</div>
-                    <div class="slot-time">9:00 AM</div>
-                </div>
-                <div class="time-slot" onclick="selectTimeSlot(this, 'tomorrow-11am')">
-                    <div class="slot-date" data-translate="modals.callScheduler.timeSlots.tomorrow">Tomorrow</div>
-                    <div class="slot-time">11:00 AM</div>
-                </div>
-                <div class="time-slot" onclick="selectTimeSlot(this, 'tomorrow-3pm')">
-                    <div class="slot-date" data-translate="modals.callScheduler.timeSlots.tomorrow">Tomorrow</div>
-                    <div class="slot-time">3:00 PM</div>
-                </div>
-                
-                <!-- Day After Tomorrow -->
-                <div class="time-slot" onclick="selectTimeSlot(this, 'dayafter-10am')">
-                    <div class="slot-date" data-translate="modals.callScheduler.timeSlots.dayAfter">Day After</div>
-                    <div class="slot-time">10:00 AM</div>
-                </div>
-                <div class="time-slot" onclick="selectTimeSlot(this, 'dayafter-1pm')">
-                    <div class="slot-date" data-translate="modals.callScheduler.timeSlots.dayAfter">Day After</div>
-                    <div class="slot-time">1:00 PM</div>
+                <!-- Time slots will be dynamically generated -->
+                <div class="time-slot" onclick="selectTimeSlot(this, 'slot-1')">
+                    <div class="slot-date">Loading...</div>
+                    <div class="slot-time">--:--</div>
                 </div>
             </div>
             
@@ -1221,7 +1207,8 @@
                 'customers': '📈 Reach More Customers', 
                 'manage': '👥 Manage Customers',
                 'search': '🔍 Appear in Search Results',
-                'brand': '⭐ Establish Brand'
+                'brand': '⭐ Establish Brand',
+                'operations': '⚡ Save Time on Operations' // NEW goal
             };
             
             // Create goals with line breaks
@@ -1275,90 +1262,91 @@
         initializeFOMONotifications();
     });
     </script>
-    <!-- Add this script right before </body> tag in lead-form.html -->
-<script>
-// EMERGENCY FIX for selectLanguageWithTranslation function
-console.log('🚨 Loading emergency language selection fix...');
-
-// Check if function exists in TopikoTranslations
-if (window.TopikoTranslations && window.TopikoTranslations.selectLanguageWithTranslation) {
-    console.log('✅ Found function in TopikoTranslations, making it global');
-    window.selectLanguageWithTranslation = window.TopikoTranslations.selectLanguageWithTranslation;
-} else {
-    console.log('⚠️ Creating emergency selectLanguageWithTranslation function');
     
-    // Emergency implementation
-    window.selectLanguageWithTranslation = function(lang, element) {
-        console.log('🚨 Emergency language selection:', lang);
-        
-        try {
-            // Basic validation
-            if (!lang || !element) {
-                console.error('Missing parameters');
-                return;
-            }
-            
-            // Update UI
-            document.querySelectorAll('.language-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            element.classList.add('selected');
-            
-            // Set language if TopikoTranslations is available
-            if (window.TopikoTranslations && window.TopikoTranslations.setLanguage) {
-                window.TopikoTranslations.setLanguage(lang);
-            }
-            
-            // Store selection
-            if (!window.topikoApp) window.topikoApp = {};
-            window.topikoApp.selectedLanguage = lang;
-            
-            // Simple text updates for Hindi
-            if (lang === 'hi') {
-                setTimeout(() => {
-                    // Update key elements manually
-                    const tagline = document.querySelector('[data-translate="welcome.tagline"]');
-                    if (tagline) {
-                        tagline.textContent = 'भारतीय SMBs के लिए संपूर्ण बिजनेस प्लेटफॉर्म';
-                    }
-                    
-                    const tryButton = document.querySelector('[data-translate="welcome.tryFreeButton"]');
-                    if (tryButton) {
-                        tryButton.textContent = 'मुफ्त में शुरू करें';
-                    }
-                }, 100);
-            }
-            
-            // Navigate to goals screen
-            setTimeout(() => {
-                if (window.TopikoUtils && window.TopikoUtils.showScreen) {
-                    window.TopikoUtils.showScreen('goals');
-                } else {
-                    // Manual navigation
-                    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                    const goalsScreen = document.getElementById('goals');
-                    if (goalsScreen) {
-                        goalsScreen.classList.add('active');
-                    }
-                }
-            }, 1500);
-            
-            console.log('✅ Emergency language selection completed');
-            
-        } catch (error) {
-            console.error('❌ Emergency function error:', error);
-        }
-    };
-}
+    <!-- Emergency Language Selection Fix -->
+    <script>
+    // EMERGENCY FIX for selectLanguageWithTranslation function
+    console.log('🚨 Loading emergency language selection fix...');
 
-// Test the function
-setTimeout(() => {
-    if (typeof selectLanguageWithTranslation === 'function') {
-        console.log('✅ selectLanguageWithTranslation is now available globally');
+    // Check if function exists in TopikoTranslations
+    if (window.TopikoTranslations && window.TopikoTranslations.selectLanguageWithTranslation) {
+        console.log('✅ Found function in TopikoTranslations, making it global');
+        window.selectLanguageWithTranslation = window.TopikoTranslations.selectLanguageWithTranslation;
     } else {
-        console.error('❌ selectLanguageWithTranslation still not available');
+        console.log('⚠️ Creating emergency selectLanguageWithTranslation function');
+        
+        // Emergency implementation
+        window.selectLanguageWithTranslation = function(lang, element) {
+            console.log('🚨 Emergency language selection:', lang);
+            
+            try {
+                // Basic validation
+                if (!lang || !element) {
+                    console.error('Missing parameters');
+                    return;
+                }
+                
+                // Update UI
+                document.querySelectorAll('.language-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                element.classList.add('selected');
+                
+                // Set language if TopikoTranslations is available
+                if (window.TopikoTranslations && window.TopikoTranslations.setLanguage) {
+                    window.TopikoTranslations.setLanguage(lang);
+                }
+                
+                // Store selection
+                if (!window.topikoApp) window.topikoApp = {};
+                window.topikoApp.selectedLanguage = lang;
+                
+                // Simple text updates for Hindi
+                if (lang === 'hi') {
+                    setTimeout(() => {
+                        // Update key elements manually
+                        const tagline = document.querySelector('[data-translate="welcome.tagline"]');
+                        if (tagline) {
+                            tagline.textContent = 'नमस्ते! क्या आप अपने व्यापार को स्मार्ट तरीके से बढ़ाने के लिए तैयार हैं? टोपिको के साथ, आपको एक आसान प्लेटफॉर्म मिलता है जो आपके व्यापार को ऑनलाइन ले जाने, मजबूत पहचान बनाने, ग्राहकों की बेहतर सेवा करने और संचालन को सरल बनाने के लिए है—सब कुछ भारत के उद्यमियों के लिए डिज़ाइन किया गया है। टोपिको के साथ आज ही अपनी डिजिटल विकास यात्रा शुरू करें!';
+                        }
+                        
+                        const tryButton = document.querySelector('[data-translate="welcome.tryFreeButton"]');
+                        if (tryButton) {
+                            tryButton.textContent = 'मुफ्त में शुरू करें';
+                        }
+                    }, 100);
+                }
+                
+                // Navigate to goals screen
+                setTimeout(() => {
+                    if (window.TopikoUtils && window.TopikoUtils.showScreen) {
+                        window.TopikoUtils.showScreen('goals');
+                    } else {
+                        // Manual navigation
+                        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                        const goalsScreen = document.getElementById('goals');
+                        if (goalsScreen) {
+                            goalsScreen.classList.add('active');
+                        }
+                    }
+                }, 1500);
+                
+                console.log('✅ Emergency language selection completed');
+                
+            } catch (error) {
+                console.error('❌ Emergency function error:', error);
+            }
+        };
     }
-}, 2000);
-</script>
+
+    // Test the function
+    setTimeout(() => {
+        if (typeof selectLanguageWithTranslation === 'function') {
+            console.log('✅ selectLanguageWithTranslation is now available globally');
+        } else {
+            console.error('❌ selectLanguageWithTranslation still not available');
+        }
+    }, 2000);
+    </script>
 </body>
 </html>

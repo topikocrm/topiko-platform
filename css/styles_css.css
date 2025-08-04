@@ -4217,13 +4217,124 @@ body {
     background-repeat: no-repeat;
     transition: background-image 0.5s ease;
 }
-*/
 
+/* Enhanced Category Selection Styles */
+.category-main-selector {
+    margin-bottom: 1rem;
+}
+
+.category-visual-checkbox {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    margin-right: 0.75rem;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.category-checkbox:checked + .category-label .category-visual-checkbox {
+    background: #6b46c1;
+    border-color: #6b46c1;
+}
+
+.category-checkbox:checked + .category-label .category-visual-checkbox .checkbox-icon {
+    color: white;
+    opacity: 1;
+}
+
+.checkbox-icon {
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.category-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.category-label:hover {
+    background: rgba(107, 70, 193, 0.05);
+}
+/* FIXED THEME BUTTONS CSS */
+.flex-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.flex-buttons .btn-secondary,
+.flex-buttons .submit-button {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.875rem 1.5rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.flex-buttons .btn-secondary {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    color: #64748b;
+}
+
+.flex-buttons .btn-secondary:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.flex-buttons .submit-button {
+    background: linear-gradient(135deg, #a855f7, #9333ea);
+    border: none;
+    color: white;
+}
+
+.flex-buttons .submit-button:hover {
+    background: linear-gradient(135deg, #9333ea, #7c3aed);
+    transform: translateY(-1px);
+}
+
+.flex-buttons .submit-button:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Mobile responsiveness for theme buttons */
+@media (max-width: 768px) {
+    .flex-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .flex-buttons .btn-secondary,
+    .flex-buttons .submit-button {
+        flex: none;
+        width: 100%;
+    }
+}
+/*
 console.log('✅ Enhanced Unsplash image system functions ready!');
 console.log('🖼️ 4-layer fallback system implemented');
 console.log('🔄 Automatic retry logic active');
 console.log('🎯 Category-specific search terms loaded');
 console.log('🔍 Image quality validation tools ready');
+*/
+
 /* ========================================
    END OF STYLES
    ======================================== */

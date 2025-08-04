@@ -1,5 +1,5 @@
 /* ========================================
-   TOPIKO LEAD FORM - MAIN APPLICATION LOGIC - WITH API RESTRUCTURING APPLIED
+   TOPIKO LEAD FORM - MAIN APPLICATION LOGIC - WITH ALL 8 ENHANCEMENTS
    ======================================== */
 
 // ========================================
@@ -29,7 +29,6 @@ function initializeApp() {
     window.TopikoUtils.initializeTopikoApp();
     
     // Initialize widgets and UI
-    //window.TopikoUtils.updateLeadScoreWidget();
     window.TopikoUtils.updateProgressBar(window.topikoApp.currentStep);
     window.TopikoUtils.updateBackButton();
     
@@ -48,9 +47,345 @@ window.addEventListener('beforeunload', function(e) {
 });
 
 // ========================================
-// 🆕 NEW: Helper function to get full theme display names
+// ENHANCEMENT 2: 3-GOAL SELECTION LIMIT & UI UPDATES
 // ========================================
 
+function updateGoalsTracking() {
+    const checkedGoals = document.querySelectorAll('.goal-checkbox:checked');
+    const selectedGoals = Array.from(checkedGoals).map(checkbox => checkbox.value);
+    
+    // NEW: Enforce 3-goal limit
+    if (selectedGoals.length > 3) {
+        // Find the last checked goal and uncheck it
+        const lastChecked = checkedGoals[checkedGoals.length - 1];
+        lastChecked.checked = false;
+        
+        // Show limitation message
+        window.TopikoUtils.showNotification('Please select only 3 goals that matter most to your business', 'warning');
+        
+        // Update selected goals array (remove the last one)
+        window.topikoApp.selectedGoals = selectedGoals.slice(0, 3);
+    } else {
+        window.topikoApp.selectedGoals = selectedGoals;
+    }
+    
+    window.TopikoUtils.addDebugLog(`Goals: ${window.topikoApp.selectedGoals.length}/3 selected`);
+    window.TopikoUtils.calculateLeadScore();
+    
+    // Update UI state
+    updateGoalsUIState();
+}
+
+// NEW FUNCTION: Update goals UI state with visual feedback
+function updateGoalsUIState() {
+    const selectedCount = window.topikoApp.selectedGoals.length;
+    const nextButton = document.querySelector('#goals .submit-button');
+    
+    if (nextButton) {
+        if (selectedCount > 0) {
+            nextButton.disabled = false;
+            nextButton.style.opacity = '1';
+            nextButton.textContent = `Next Step (${selectedCount}/3 goals selected)`;
+        } else {
+            nextButton.disabled = true;
+            nextButton.style.opacity = '0.5';
+            nextButton.textContent = 'Select goals to continue';
+        }
+    }
+    
+    // Visual feedback for goal limit
+    const goalOptions = document.querySelectorAll('.goal-option');
+    goalOptions.forEach(option => {
+        const checkbox = option.querySelector('.goal-checkbox');
+        if (!checkbox.checked && selectedCount >= 3) {
+            option.style.opacity = '0.6';
+            option.style.pointerEvents = 'none';
+        } else {
+            option.style.opacity = '1';
+            option.style.pointerEvents = 'auto';
+        }
+    });
+}
+
+// ========================================
+// ENHANCEMENT 7: COUPON GENERATION & TIMER UPDATES
+// ========================================
+
+// NEW FUNCTION: Generate random coupon code
+function generateRandomCoupon() {
+    const prefixes = ['TOPIKO', 'GROW', 'SMART', 'DIGITAL', 'SUCCESS'];
+    const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    const randomNumber = Math.floor(Math.random() * 900) + 100; // 3-digit number
+    
+    return `${randomPrefix}${randomNumber}`;
+}
+
+// UPDATED FUNCTION: Start offer timer with 6:45:00
+function startOfferTimer() {
+    const timerElement = document.getElementById('offerTimer');
+    if (!timerElement) return;
+    
+    // NEW: Set initial time to 6 hours, 45 minutes
+    let totalSeconds = (6 * 3600) + (45 * 60); // 6:45:00
+    
+    const timerInterval = setInterval(() => {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        
+        timerElement.textContent = 
+            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        totalSeconds--;
+        
+        if (totalSeconds < 0) {
+            clearInterval(timerInterval);
+            timerElement.textContent = "00:00:00";
+            timerElement.style.color = "#dc2626";
+        }
+    }, 1000);
+}
+
+// UPDATED: initializeCompletionScreen function with coupon generation
+function initializeCompletionScreen() {
+    console.log('🎉 Initializing completion screen...');
+    
+    // Set business name
+    const completionBusinessName = document.getElementById('completionBusinessName');
+    if (completionBusinessName && window.topikoApp && window.topikoApp.businessName) {
+        completionBusinessName.textContent = window.topikoApp.businessName;
+    }
+    
+    // NEW: Generate and display random coupon
+    const couponElement = document.getElementById('randomCoupon');
+    if (couponElement) {
+        const randomCoupon = generateRandomCoupon();
+        couponElement.textContent = randomCoupon;
+        
+        // Store coupon for later use
+        window.topikoApp.generatedCoupon = randomCoupon;
+    }
+    
+    // Display random selectable offers
+    displayRandomOffers();
+    
+    // Reset selections
+    selectedOffer = null;
+    window.selectedTimeSlot = null;
+    window.selectedReason = null;
+    
+    // Hide selected offer display initially
+    const selectedDisplay = document.getElementById('selectedOfferDisplay');
+    if (selectedDisplay) {
+        selectedDisplay.style.display = 'none';
+    }
+    
+    window.TopikoUtils.addDebugLog('✅ Interactive completion screen initialized with coupon');
+}
+
+// ========================================
+// ENHANCEMENT 8: DYNAMIC TIME SLOT GENERATION
+// ========================================
+
+// NEW FUNCTION: Generate dynamic time slots with 2-hour offset
+function generateDynamicTimeSlots() {
+    const now = new Date();
+    const slots = [];
+    
+    // Start from 2 hours from now
+    let currentTime = new Date(now.getTime() + (2 * 60 * 60 * 1000));
+    
+    // Round to next hour
+    currentTime.setMinutes(0, 0, 0);
+    currentTime.setHours(currentTime.getHours() + 1);
+    
+    // Generate 8 slots
+    for (let i = 0; i < 8; i++) {
+        const slotTime = new Date(currentTime.getTime() + (i * 2 * 60 * 60 * 1000)); // Every 2 hours
+        
+        // Skip if outside business hours (9 AM to 6 PM)
+        const hour = slotTime.getHours();
+        if (hour < 9 || hour > 18) {
+            // Move to next business day
+            slotTime.setDate(slotTime.getDate() + 1);
+            slotTime.setHours(9, 0, 0, 0);
+        }
+        
+        slots.push({
+            id: `slot-${i}`,
+            dateTime: slotTime,
+            dateLabel: getDateLabel(slotTime),
+            timeLabel: slotTime.toLocaleTimeString('en-IN', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            })
+        });
+    }
+    
+    return slots;
+}
+
+// NEW FUNCTION: Get date label for slot
+function getDateLabel(date) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const slotDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    
+    const diffTime = slotDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Tomorrow';
+    if (diffDays === 2) return 'Day After';
+    
+    return date.toLocaleDateString('en-IN', { 
+        weekday: 'short', 
+        month: 'short', 
+        day: 'numeric' 
+    });
+}
+
+// UPDATED: openCallScheduler function with dynamic slots
+function openCallScheduler() {
+    if (!selectedOffer) {
+        window.TopikoUtils.showNotification('Please select an offer first', 'warning');
+        return;
+    }
+    
+    // Generate dynamic time slots
+    const timeSlots = generateDynamicTimeSlots();
+    
+    // Update time slots grid
+    const timeSlotsGrid = document.getElementById('timeSlotsGrid');
+    if (timeSlotsGrid) {
+        timeSlotsGrid.innerHTML = timeSlots.map(slot => `
+            <div class="time-slot" onclick="selectTimeSlot(this, '${slot.id}')">
+                <div class="slot-date">${slot.dateLabel}</div>
+                <div class="slot-time">${slot.timeLabel}</div>
+            </div>
+        `).join('');
+    }
+    
+    // Update scheduler modal with selected offer
+    const schedulerOfferName = document.getElementById('schedulerOfferName');
+    if (schedulerOfferName && selectedOffer) {
+        schedulerOfferName.textContent = selectedOffer.title;
+    }
+    
+    window.TopikoUtils.showModal('dateTimeModal');
+    window.TopikoUtils.addDebugLog('📅 Call scheduler opened with dynamic slots', 'info');
+}
+
+// ========================================
+// ENHANCEMENT 4: MODAL PERSONALIZATION FIXES
+// ========================================
+
+// UPDATED FUNCTION: Use business name instead of user name
+function displaySetupIntroModal() {
+    const goalNames = window.TopikoConfig.GOAL_NAMES;
+
+    // FIXED: Use business name instead of user name
+    const setupBusinessName = document.getElementById('setupBusinessName');
+    const setupBusinessNameInText = document.getElementById('setupBusinessNameInText');
+    
+    if (setupBusinessName) {
+        setupBusinessName.textContent = window.topikoApp.businessName || 'business';
+    }
+    
+    if (setupBusinessNameInText) {
+        setupBusinessNameInText.textContent = window.topikoApp.businessName || 'business';
+    }
+
+    const modalSetupGoalsList = document.getElementById('modalSetupGoalsList');
+    if (modalSetupGoalsList) {
+        modalSetupGoalsList.innerHTML = window.topikoApp.selectedGoals.map(goal => 
+            `<div style="background: rgba(34, 197, 94, 0.15); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 8px; padding: 0.8rem; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: center;">
+                ${goalNames[goal] || goal}
+            </div>`
+        ).join('');
+    }
+    
+    window.TopikoUtils.showModal('setupIntroModal');
+    window.TopikoUtils.addDebugLog(`Setup intro modal shown for business: ${window.topikoApp.businessName}`);
+}
+
+// ========================================
+// ENHANCEMENT 5: CATEGORIES SCREEN CHECKBOX ENHANCEMENT
+// ========================================
+
+// UPDATED FUNCTION: Load categories with visual checkboxes
+function loadCategoriesContent(businessCategory, categoriesContainer) {
+    const categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory];
+    
+    let categoriesHTML = `
+        <div class="category-section">
+            <h3><span style="margin-right: 0.5rem;">${categoryData.icon}</span>${categoryData.name} Categories</h3>
+            <p style="color: #553c9a; margin-bottom: 1.5rem; font-size: 0.9rem;">Select categories that apply to your business (this helps us create your perfect online store):</p>
+            
+            <div class="category-grid">
+    `;
+    
+    Object.keys(categoryData.categories).forEach(categoryKey => {
+        const category = categoryData.categories[categoryKey];
+        const isSelected = window.topikoApp.selectedCategories.includes(categoryKey);
+        
+        // ENHANCED: Visual checkbox structure
+        categoriesHTML += `
+            <div class="category-item">
+                <div class="category-main-selector">
+                    <input type="checkbox" id="cat-${categoryKey}" value="${categoryKey}" class="category-checkbox" 
+                           ${isSelected ? 'checked' : ''} onchange="toggleCategorySelection('${categoryKey}')">
+                    <label for="cat-${categoryKey}" class="category-label">
+                        <div class="category-visual-checkbox">
+                            <span class="checkbox-icon">✓</span>
+                        </div>
+                        <span class="category-icon">${category.icon}</span>
+                        <span class="category-name">${category.name}</span>
+                        <span class="category-checkmark">✓</span>
+                    </label>
+                </div>
+                
+                <div class="subcategory-grid">
+        `;
+        
+        category.subcategories.forEach(subcategoryKey => {
+            const subcategoryName = window.TopikoConfig.SUBCATEGORY_NAMES[subcategoryKey] || subcategoryKey.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const isSubSelected = window.topikoApp.selectedSubcategories.includes(subcategoryKey);
+            
+            categoriesHTML += `
+                <div class="subcategory-item">
+                    <input type="checkbox" id="sub-${subcategoryKey}" value="${subcategoryKey}" class="subcategory-checkbox"
+                           ${isSubSelected ? 'checked' : ''} onchange="toggleSubcategorySelection('${subcategoryKey}')">
+                    <label for="sub-${subcategoryKey}" class="subcategory-label">
+                        ${subcategoryName}
+                        <span class="subcategory-checkmark">✓</span>
+                    </label>
+                </div>
+            `;
+        });
+        
+        categoriesHTML += `
+                </div>
+            </div>
+        `;
+    });
+    
+    categoriesHTML += `
+            </div>
+        </div>
+    `;
+    
+    categoriesContainer.innerHTML = categoriesHTML;
+    updateProductCategoriesDropdown();
+    updateSelectionSummary();
+}
+
+// ========================================
+// HELPER FUNCTIONS FOR ENHANCED FEATURES
+// ========================================
+
+// Helper function to get full theme display names
 function getFullThemeName(themeId) {
     const themeDisplayNames = {
         'modern': 'Modern & Minimalist',
@@ -65,63 +400,10 @@ function getFullThemeName(themeId) {
 }
 
 // ========================================
-// 🆕 NEW: Preview Template API function
+// PREVIEW DATA FUNCTIONS - UPDATED WITH NEW API CALL
 // ========================================
 
-// 🔍 ENHANCED DEBUG VERSION: callPreviewTemplateAPI function
-async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
-    const apiUrl = 'https://topiko.com/demoapis/demo_previewTemplate.php';
-    
-    const payload = {
-        subdomain_url: subdomainUrl,
-        template_no: templateNo
-    };
-    
-    console.log(`🎨 Calling Preview Template API: ${apiUrl}`);
-    console.log(`📊 Payload: ${JSON.stringify(payload)}`);
-    
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-        
-        console.log(`📡 Response status: ${response.status}`);
-        console.log(`📡 Response ok: ${response.ok}`);
-        
-        const responseData = await response.json();
-        console.log(`📡 Response data:`, responseData);
-        
-        if (response.ok && responseData.status === 'success') {
-            window.TopikoUtils.showNotification(`✅ ${responseData.message}`, 'success');
-            console.log('✅ Preview template API successful - RETURNING TRUE');
-            return true; // 🎯 This should trigger window opening
-        } else {
-            console.log('❌ API not successful:', {
-                responseOk: response.ok,
-                responseStatus: responseData.status,
-                responseData: responseData
-            });
-            throw new Error(responseData.message || `HTTP ${response.status}`);
-        }
-        
-    } catch (error) {
-        console.error(`❌ Preview template API error: ${error.message}`);
-        console.error('Full error:', error);
-        window.TopikoUtils.showNotification(`⚠️ Preview template update failed: ${error.message}`, 'warning');
-        return false; // 🎯 This prevents window opening
-    }
-}
-
-// ========================================
-// PREVIEW DATA FUNCTIONS - 🔄 UPDATED WITH NEW API CALL
-// ========================================
-
-// 🔍 ENHANCED DEBUG VERSION: generatePreviewData function  
+// Enhanced generatePreviewData function with template API call
 async function generatePreviewData() {
     console.log('🔍 Generating preview and calling template API...');
     
@@ -178,17 +460,61 @@ async function generatePreviewData() {
             console.log(`❌ API was not successful (returned: ${apiSuccess}), not opening window`);
         }
         
-        // Always show preview data modal (regardless of API success/failure)
-        // 🚫 COMMENTED OUT: Preview data modal  
-        // const previewData = composePreviewJSON();
-        // showPreviewModal(previewData);
-        
         console.log('✅ Preview generation completed');
         
     } catch (error) {
         console.error(`❌ Preview generation failed: ${error.message}`);
         console.error('Full error:', error);
         window.TopikoUtils.showNotification('Failed to generate preview. Please try again.', 'error');
+    }
+}
+
+// Preview Template API call function
+async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
+    const apiUrl = 'https://topiko.com/demoapis/demo_previewTemplate.php';
+    
+    const payload = {
+        subdomain_url: subdomainUrl,
+        template_no: templateNo
+    };
+    
+    console.log(`🎨 Calling Preview Template API: ${apiUrl}`);
+    console.log(`📊 Payload: ${JSON.stringify(payload)}`);
+    
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        console.log(`📡 Response status: ${response.status}`);
+        console.log(`📡 Response ok: ${response.ok}`);
+        
+        const responseData = await response.json();
+        console.log(`📡 Response data:`, responseData);
+        
+        if (response.ok && responseData.status === 'success') {
+            window.TopikoUtils.showNotification(`✅ ${responseData.message}`, 'success');
+            console.log('✅ Preview template API successful - RETURNING TRUE');
+            return true;
+        } else {
+            console.log('❌ API not successful:', {
+                responseOk: response.ok,
+                responseStatus: responseData.status,
+                responseData: responseData
+            });
+            throw new Error(responseData.message || `HTTP ${response.status}`);
+        }
+        
+    } catch (error) {
+        console.error(`❌ Preview template API error: ${error.message}`);
+        console.error('Full error:', error);
+        window.TopikoUtils.showNotification(`⚠️ Preview template update failed: ${error.message}`, 'warning');
+        return false;
     }
 }
 
@@ -251,7 +577,7 @@ function composePreviewJSON() {
     return previewData;
 }
 
-// UPDATED: Remove .topiko.com from subdomain URL
+// Remove .topiko.com from subdomain URL
 function generateSubdomainUrl(businessName) {
     if (!businessName) return "";
     
@@ -261,7 +587,6 @@ function generateSubdomainUrl(businessName) {
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
         .replace(/^-|-$/g, '');
-        // REMOVED: + '.topiko.com'
 }
 
 function mapSubcategoriesToCategories() {
@@ -291,7 +616,7 @@ function mapSubcategoriesToCategories() {
     return mappedSubcategories;
 }
 
-// UPDATED: Process selected products with new variant format
+// Process selected products with new variant format
 function processSelectedProducts() {
     const userProducts = window.topikoApp.userProducts || [];
     
@@ -306,7 +631,7 @@ function processSelectedProducts() {
     }));
 }
 
-// NEW FUNCTION: Process product variants into new object format
+// Process product variants into new object format
 function processProductVariants(product) {
     const variants = product.variants || [];
     
@@ -324,7 +649,7 @@ function processProductVariants(product) {
     return [];
 }
 
-// NEW FUNCTION: Convert simple variants like ["S", "M", "L"] to object format
+// Convert simple variants like ["S", "M", "L"] to object format
 function convertSimpleVariantsToObjects(variants, product) {
     // Determine variant type based on product category/content
     const variantType = determineVariantType(variants, product);
@@ -336,7 +661,7 @@ function convertSimpleVariantsToObjects(variants, product) {
     }));
 }
 
-// NEW FUNCTION: Determine what type of variant this is (size, flavor, portion, etc.)
+// Determine what type of variant this is (size, flavor, portion, etc.)
 function determineVariantType(variants, product) {
     const variantString = variants.join(' ').toLowerCase();
     const productName = (product.name || '').toLowerCase();
@@ -351,7 +676,7 @@ function determineVariantType(variants, product) {
         return { name: 'color', basePrice: true };
     }
     
-    // NEW: Pattern/Style variants detection
+    // Pattern/Style variants detection
     const patternKeywords = ['floral', 'abstract', 'solid', 'striped', 'polka', 'geometric', 'plain', 'printed'];
     const hasPatterns = variants.some(variant => 
         patternKeywords.some(pattern => variant.toLowerCase().includes(pattern))
@@ -387,7 +712,7 @@ function determineVariantType(variants, product) {
     return { name: 'size', basePrice: true };
 }
 
-// NEW FUNCTION: Calculate variant price based on base price and variant type
+// Calculate variant price based on base price and variant type
 function calculateVariantPrice(basePrice, variant, variantType) {
     const variantLower = variant.toLowerCase();
     
@@ -420,680 +745,6 @@ function calculateVariantPrice(basePrice, variant, variantType) {
     return basePrice;
 }
 
-function showPreviewModal(previewData) {
-    const jsonString = JSON.stringify(previewData, null, 2);
-    
-    // Store JSON data globally to avoid onclick parameter issues
-    window.currentPreviewData = jsonString;
-    
-    // Create modal HTML WITHOUT passing large strings in onclick
-    const modalHTML = `
-        <div class="modal-overlay show" id="previewModal">
-            <div class="modal-content" style="max-width: 800px; max-height: 90vh;">
-                <button class="modal-close" onclick="closePreviewModal()">×</button>
-                <h3 style="color: #6b46c1; margin-bottom: 1rem;">🔍 Preview Data - JSON Format</h3>
-                
-                <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; max-height: 400px; overflow-y: auto;">
-                    <pre style="margin: 0; font-size: 0.8rem; line-height: 1.4; white-space: pre-wrap;">${escapeHtml(jsonString)}</pre>
-                </div>
-                
-                <!-- API Response Section (Initially Hidden) -->
-                <div id="apiResponseSection" style="display: none; background: #f0f9ff; border: 2px solid #3b82f6; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-                    <h4 style="color: #1e40af; margin-bottom: 0.5rem;">🔗 API Response:</h4>
-                    <div id="apiResponseContent" style="background: white; border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 0.8rem; max-height: 200px; overflow-y: auto;"></div>
-                </div>
-                
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <button id="callApiBtn" onclick="callTopikoAPISafe()" style="background: #dc2626; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                        🚀 Call API
-                    </button>
-                    <button onclick="copyToClipboardSafe()" style="background: #10b981; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer;">
-                        📋 Copy to Clipboard
-                    </button>
-                    <button onclick="downloadJSONSafe()" style="background: #6366f1; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer;">
-                        💾 Download JSON
-                    </button>
-                    <button onclick="logToConsoleSafe()" style="background: #64748b; color: white; padding: 0.75rem 1rem; border: none; border-radius: 8px; cursor: pointer;">
-                        🖥️ Log to Console
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    // Add to body
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-}
-
-function closePreviewModal() {
-    const modal = document.getElementById('previewModal');
-    if (modal) {
-        modal.remove();
-    }
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-function escapeForAttribute(text) {
-    return text.replace(/'/g, "\\'").replace(/"/g, '\\"');
-}
-
-function copyToClipboard(jsonString) {
-    navigator.clipboard.writeText(jsonString).then(() => {
-        window.TopikoUtils.showNotification('✅ JSON copied to clipboard!', 'success');
-    }).catch(() => {
-        window.TopikoUtils.showNotification('❌ Failed to copy to clipboard', 'error');
-    });
-}
-
-function downloadJSON(jsonString) {
-    const businessName = document.getElementById('businessName').value.trim() || 'business';
-    const filename = `${businessName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-preview-data.json`;
-    
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    window.TopikoUtils.showNotification(`💾 JSON downloaded as ${filename}`, 'success');
-}
-
-function logToConsole(jsonString) {
-    console.log('🔍 TOPIKO PREVIEW DATA:');
-    console.log(JSON.parse(jsonString));
-    window.TopikoUtils.showNotification('🖥️ Data logged to browser console', 'info');
-}
-
-// NEW FUNCTION: Call Topiko API with JSON data
-// 🔧 COMPLETE REPLACEMENT: callTopikoAPI function with safety checks
-
-async function callTopikoAPI(jsonString) {
-    const apiButton = document.getElementById('callApiBtn');
-    const responseSection = document.getElementById('apiResponseSection');
-    const responseContent = document.getElementById('apiResponseContent');
-    
-    // 🆕 SAFETY CHECK: Only update UI elements if they exist (modal context)
-    if (apiButton) {
-        apiButton.disabled = true;
-        apiButton.innerHTML = '⏳ Calling API...';
-        apiButton.style.opacity = '0.7';
-    }
-    
-    try {
-        // Parse JSON data
-        const jsonData = JSON.parse(jsonString);
-        
-        // API endpoint
-        const apiUrl = 'https://topiko.com/demoapis/demo_insertDemoData.php';
-        
-        window.TopikoUtils.addDebugLog(`🚀 Calling API: ${apiUrl}`, 'info');
-        
-        // Make API call with timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: jsonString,
-            signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        // Get response text (might be JSON or plain text)
-        const responseText = await response.text();
-        
-        // Try to parse as JSON, fallback to plain text
-        let responseData;
-        try {
-            responseData = JSON.parse(responseText);
-        } catch (e) {
-            responseData = responseText;
-        }
-        
-        // 🆕 SAFETY CHECK: Only update response UI if elements exist (modal context)
-        if (responseSection && responseContent) {
-            responseSection.style.display = 'block';
-            
-            if (response.ok) {
-                // Success response
-                responseContent.innerHTML = `
-                    <div style="color: #059669; font-weight: 600; margin-bottom: 0.5rem;">✅ API Call Successful (${response.status})</div>
-                    <div style="color: #374151;">
-                        <strong>Response:</strong><br>
-                        <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${typeof responseData === 'object' ? JSON.stringify(responseData, null, 2) : responseData}</pre>
-                    </div>
-                `;
-            } else {
-                // Error response
-                responseContent.innerHTML = `
-                    <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">❌ API Call Failed (${response.status})</div>
-                    <div style="color: #374151;">
-                        <strong>Error:</strong><br>
-                        <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${typeof responseData === 'object' ? JSON.stringify(responseData, null, 2) : responseData}</pre>
-                    </div>
-                `;
-            }
-        }
-        
-        if (response.ok) {
-            window.TopikoUtils.showNotification('✅ API call successful!', 'success');
-            window.TopikoUtils.addDebugLog('✅ API call completed successfully', 'success');
-        } else {
-            window.TopikoUtils.showNotification(`❌ API call failed: ${response.status}`, 'error');
-            window.TopikoUtils.addDebugLog(`❌ API call failed: ${response.status}`, 'error');
-        }
-        
-    } catch (error) {
-        // 🆕 SAFETY CHECK: Only update error UI if elements exist (modal context)
-        if (responseSection && responseContent) {
-            responseSection.style.display = 'block';
-            
-            if (error.name === 'AbortError') {
-                responseContent.innerHTML = `
-                    <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">⏰ API Call Timeout</div>
-                    <div style="color: #374151;">The API call took too long to respond.</div>
-                `;
-            } else if (error.message.includes('CORS') || error.message.includes('fetch')) {
-                responseContent.innerHTML = `
-                    <div style="color: #f59e0b; font-weight: 600; margin-bottom: 0.5rem;">🚫 CORS Error Detected</div>
-                    <div style="color: #374151;">
-                        <strong>Issue:</strong> Cross-Origin Resource Sharing (CORS) is blocking this request.<br><br>
-                        <strong>Solutions:</strong><br>
-                        • Configure the API server to allow CORS requests<br>
-                        • Use a CORS proxy service<br>
-                        • Test the API from the same domain<br><br>
-                        <strong>Data Preview:</strong> Your JSON data is still valid and ready to use!
-                    </div>
-                `;
-            } else {
-                responseContent.innerHTML = `
-                    <div style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">❌ API Call Error</div>
-                    <div style="color: #374151;">
-                        <strong>Error Message:</strong><br>
-                        <pre style="margin: 0.5rem 0; white-space: pre-wrap;">${error.message}</pre>
-                    </div>
-                `;
-            }
-        }
-        
-        window.TopikoUtils.showNotification(`⚠️ API call blocked by CORS. Data preview still works!`, 'warning');
-        window.TopikoUtils.addDebugLog(`❌ API call error: ${error.message}`, 'error');
-        
-        console.error('API Call Error:', error);
-    } finally {
-        // 🆕 SAFETY CHECK: Only reset button if it exists (modal context)
-        if (apiButton) {
-            apiButton.disabled = false;
-            apiButton.innerHTML = '🚀 Call API';
-            apiButton.style.opacity = '1';
-        }
-    }
-}
-
-function callTopikoAPISafe() {
-    if (window.currentPreviewData) {
-        callTopikoAPI(window.currentPreviewData);
-    } else {
-        window.TopikoUtils.showNotification('❌ No preview data available', 'error');
-    }
-}
-
-// 🔧 CHANGE 2: Add this helper function anywhere in script_js.js
-function getFullThemeName(themeId) {
-    const themeDisplayNames = {
-        'modern': 'Modern & Minimalist',
-        'vibrant': 'Colorful & Vibrant', 
-        'professional': 'Professional & Corporate',
-        'traditional': 'Traditional & Classic',
-        'creative': 'Creative & Artistic',
-        'luxury': 'Elegant & Luxury'
-    };
-    
-    return themeDisplayNames[themeId] || 'Modern & Minimalist';
-}
-
-async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
-    const apiUrl = 'https://topiko.com/demoapis/demo_previewTemplate.php';
-    
-    const payload = {
-        subdomain_url: subdomainUrl,
-        template_no: templateNo
-    };
-    
-    console.log(`🎨 Calling Preview Template API: ${apiUrl}`);
-    console.log(`📊 Payload: ${JSON.stringify(payload)}`);
-    
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-        
-        const responseData = await response.json();
-        
-        if (response.ok && responseData.status === 'success') {
-            window.TopikoUtils.showNotification(`✅ ${responseData.message}`, 'success');
-            console.log('✅ Preview template API successful');
-            return true;
-        } else {
-            throw new Error(responseData.message || `HTTP ${response.status}`);
-        }
-        
-    } catch (error) {
-        window.TopikoUtils.showNotification(`⚠️ Preview template update failed: ${error.message}`, 'warning');
-        console.error(`❌ Preview template API error: ${error.message}`);
-        return false;
-    }
-}
-
-// ========================================
-// VARIANT DISPLAY FUNCTIONS - FIXED PRICE DISPLAY
-// ========================================
-
-// UPDATED FUNCTION: Create product card with enhanced price handling
-function createProductCardWithVariants(product) {
-    const isSelected = window.topikoApp.selectedProductIds?.includes(product.id) || false;
-    const selectedClass = isSelected ? 'selected' : '';
-    const checkmarkStyle = isSelected ? 'opacity: 1' : 'opacity: 0';
-    
-    // ENHANCED: Get reliable image with retry system
-    const reliableImageUrl = window.TopikoConfig.getReliableProductImage(
-        product, 
-        product.category, 
-        product.subcategory, 
-        0
-    );
-    
-    // ENHANCED: More robust price extraction
-    let productPrice = 0;
-    
-    if (product.suggestedPrice && typeof product.suggestedPrice === 'number' && product.suggestedPrice > 0) {
-        productPrice = product.suggestedPrice;
-        console.log(`💰 Using suggestedPrice: ₹${productPrice} for ${product.name}`);
-    } else if (product.price && typeof product.price === 'number' && product.price > 0) {
-        productPrice = product.price;
-        console.log(`💰 Using price: ₹${productPrice} for ${product.name}`);
-    } else {
-        // Category-appropriate fallback price
-        const categoryKey = (product.categoryKey || product.category || '').toLowerCase();
-        if (categoryKey.includes('beverage') || categoryKey.includes('tea') || categoryKey.includes('juice')) {
-            productPrice = 45;
-        } else if (categoryKey.includes('sweet') || categoryKey.includes('dessert')) {
-            productPrice = 180;
-        } else if (categoryKey.includes('north-indian') || categoryKey.includes('south-indian')) {
-            productPrice = 250;
-        } else {
-            productPrice = 199;
-        }
-        console.log(`🔧 Using fallback price: ₹${productPrice} for ${product.name}`);
-    }
-    
-    // Process variants for pricing
-    const variantType = product.variants ? determineVariantType(product.variants, product) : null;
-    const processedVariants = product.variants ? 
-        convertSimpleVariantsToObjects(product.variants, product) : [];
-    
-    let variantSelector = '';
-    if (processedVariants.length > 0) {
-        variantSelector = `
-            <div class="variant-selector">
-                <label class="variant-label">Choose ${variantType.name}:</label>
-                <div class="variant-options">
-                    ${processedVariants.map((variant, index) => `
-                        <button class="variant-btn ${index === 0 ? 'active' : ''}" 
-                                data-price="${variant.variant_price}"
-                                data-variant="${variant.variant_detail}"
-                                onclick="selectProductVariant('${product.id}', '${variant.variant_detail}', ${variant.variant_price})">
-                            ${variant.variant_detail}
-                        </button>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-    }
-    
-    // Better price calculation with strict validation
-    let basePrice = productPrice;
-    if (processedVariants.length > 0 && processedVariants[0].variant_price && processedVariants[0].variant_price > 0) {
-        basePrice = processedVariants[0].variant_price;
-        console.log(`🎯 Using variant price: ₹${basePrice} for ${product.name}`);
-    }
-    
-    // Final price validation
-    if (!basePrice || basePrice <= 0 || isNaN(basePrice)) {
-        console.error(`❌ Invalid basePrice (${basePrice}) for ${product.name}, using emergency fallback`);
-        basePrice = 299;
-    }
-    
-    const formattedPrice = Math.round(basePrice).toLocaleString();
-    
-    return `
-        <div class="product-card-selector ${selectedClass}" data-product-id="${product.id}">
-            <div class="product-selector-image" 
-                 style="background-image: url('${reliableImageUrl}');"
-                 onerror="handleImageError(this, '${product.id}', '${product.category}', '${product.subcategory}')">
-                <div class="product-price-tag" id="price-${product.id}">₹${formattedPrice}</div>
-                <div class="product-selection-overlay">
-                    <div class="selection-checkmark" style="${checkmarkStyle}">✓</div>
-                </div>
-                ${product.isPopular ? '<div class="popular-badge">Popular</div>' : ''}
-            </div>
-            <div class="product-selector-content">
-                <h4 class="product-selector-title">${product.name}</h4>
-                <p class="product-selector-description">${product.description}</p>
-                
-                ${variantSelector}
-                
-                <div class="product-actions">
-                    <button class="select-product-btn" onclick="toggleProductSelection('${product.id}')">
-                        ${isSelected ? 'Remove' : 'Select'}
-                    </button>
-                    <button class="edit-product-btn" onclick="editProduct('${product.id}')" style="display: ${isSelected ? 'inline-block' : 'none'}">
-                        Edit
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// ========================================
-// CATEGORY-SPECIFIC IMAGE ERROR HANDLING
-// ========================================
-
-function handleImageError(imgElement, productId, category, subcategory) {
-    console.warn(`⚠️ Image failed for product ${productId}, trying category fallback...`);
-    
-    // Get current attempt count or start from 1
-    let attemptCount = parseInt(imgElement.getAttribute('data-attempt') || '1');
-    
-    // Get the next fallback URL
-    const fallbackUrl = window.TopikoConfig.getReliableProductImage(
-        { id: productId }, 
-        category, 
-        subcategory, 
-        attemptCount
-    );
-    
-    // Store attempt count
-    imgElement.setAttribute('data-attempt', (attemptCount + 1).toString());
-    
-    // Prevent infinite loop
-    if (attemptCount >= 4) {
-        console.log(`📦 Using final placeholder for ${productId}`);
-        const placeholder = window.TopikoConfig.getPlaceholderImage();
-        imgElement.style.backgroundImage = `url("${placeholder}")`;
-        return;
-    }
-    
-    // Test the new URL before applying
-    const testImg = new Image();
-    testImg.onload = () => {
-        console.log(`✅ Fallback ${attemptCount + 1} loaded for ${productId}: ${fallbackUrl}`);
-        imgElement.style.backgroundImage = `url('${fallbackUrl}')`;
-    };
-    
-    testImg.onerror = () => {
-        console.log(`❌ Fallback ${attemptCount + 1} failed for ${productId}, trying next...`);
-        // Recursive call with incremented attempt
-        setTimeout(() => {
-            handleImageError(imgElement, productId, category, subcategory);
-        }, 500);
-    };
-    
-    testImg.src = fallbackUrl;
-}
-
-// NEW FUNCTION: Handle variant selection
-function selectProductVariant(productId, variantDetail, variantPrice) {
-    // Update UI
-    const productCard = document.querySelector(`[data-product-id="${productId}"]`);
-    if (!productCard) {
-        console.error(`❌ Product card not found for ID: ${productId}`);
-        return;
-    }
-    
-    // Update active variant button
-    productCard.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('active'));
-    const selectedBtn = productCard.querySelector(`[data-variant="${variantDetail}"]`);
-    if (selectedBtn) {
-        selectedBtn.classList.add('active');
-    } else {
-        console.warn(`⚠️ Variant button not found for: ${variantDetail}`);
-    }
-    
-    // Update displayed price
-    const priceTag = document.getElementById(`price-${productId}`);
-    if (priceTag) {
-        const formattedPrice = Math.round(variantPrice).toLocaleString();
-        priceTag.textContent = `₹${formattedPrice}`;
-        
-        // Add price change animation
-        priceTag.classList.add('price-updating');
-        setTimeout(() => priceTag.classList.remove('price-updating'), 300);
-        
-        console.log(`✅ Price updated to ₹${formattedPrice} for ${productId}`);
-    } else {
-        console.error(`❌ Price tag not found for product: ${productId}`);
-    }
-    
-    // Store selected variant in product data
-    const product = window.topikoApp.userProducts.find(p => p.id === productId);
-    if (product) {
-        product.selectedVariant = variantDetail;
-        product.selectedVariantPrice = variantPrice;
-    }
-    
-    // Also update the base product in database if not yet selected
-    const dbProduct = findProductById(productId);
-    if (dbProduct) {
-        dbProduct.selectedVariant = variantDetail;
-        dbProduct.selectedVariantPrice = variantPrice;
-    }
-    
-    window.TopikoUtils.addDebugLog(`🎯 Variant selected: ${variantDetail} (₹${variantPrice}) for ${productId}`);
-}
-
-// ========================================
-// DEBUG FUNCTIONS - NEW SECTION
-// ========================================
-
-// DEBUG FUNCTION: Comprehensive product price debugging
-function debugProductPrices() {
-    console.log('🔍 DEBUGGING PRODUCT PRICES...');
-    
-    // Check if config exists
-    if (!window.TopikoConfig || !window.TopikoConfig.INDIAN_PRODUCTS_DB) {
-        console.error('❌ TopikoConfig.INDIAN_PRODUCTS_DB not found!');
-        return;
-    }
-    
-    const db = window.TopikoConfig.INDIAN_PRODUCTS_DB;
-    let totalProducts = 0;
-    let productsWithPrice = 0;
-    let productsWithoutPrice = 0;
-    let priceStats = { min: Infinity, max: 0, sum: 0 };
-    
-    // Check each category
-    Object.keys(db).forEach(businessCategory => {
-        console.log(`📁 Business Category: ${businessCategory}`);
-        
-        Object.keys(db[businessCategory]).forEach(categoryKey => {
-            const products = db[businessCategory][categoryKey];
-            
-            if (Array.isArray(products)) {
-                console.log(`  📂 Category: ${categoryKey} (${products.length} products)`);
-                
-                products.forEach(product => {
-                    totalProducts++;
-                    
-                    const hasPrice = product.suggestedPrice || product.price;
-                    if (hasPrice) {
-                        const price = product.suggestedPrice || product.price;
-                        productsWithPrice++;
-                        priceStats.sum += price;
-                        priceStats.min = Math.min(priceStats.min, price);
-                        priceStats.max = Math.max(priceStats.max, price);
-                        console.log(`    ✅ ${product.name}: ₹${price} (${product.suggestedPrice ? 'suggestedPrice' : 'price'})`);
-                    } else {
-                        productsWithoutPrice++;
-                        console.error(`    ❌ ${product.name}: NO PRICE!`, {
-                            id: product.id,
-                            keys: Object.keys(product),
-                            product: product
-                        });
-                    }
-                });
-            }
-        });
-    });
-    
-    console.log('\n📊 PRICE ANALYSIS SUMMARY:');
-    console.log(`Total products: ${totalProducts}`);
-    console.log(`With prices: ${productsWithPrice} (${((productsWithPrice/totalProducts)*100).toFixed(1)}%)`);
-    console.log(`Without prices: ${productsWithoutPrice} (${((productsWithoutPrice/totalProducts)*100).toFixed(1)}%)`);
-    
-    if (productsWithPrice > 0) {
-        const avgPrice = priceStats.sum / productsWithPrice;
-        console.log(`Price range: ₹${priceStats.min} - ₹${priceStats.max}`);
-        console.log(`Average price: ₹${avgPrice.toFixed(2)}`);
-    }
-    
-    // Test a specific product
-    if (totalProducts > 0) {
-        console.log('\n🧪 TESTING FIRST PRODUCT:');
-        const firstCategory = Object.keys(db)[0];
-        const firstSubCategory = Object.keys(db[firstCategory])[0];
-        const firstProduct = db[firstCategory][firstSubCategory][0];
-        
-        console.log('First product:', firstProduct);
-        console.log('Creating card for:', firstProduct.name);
-        
-        // Test card creation
-        try {
-            const cardHTML = createProductCardWithVariants(firstProduct);
-            console.log('✅ Card created successfully');
-            
-            // Check if price tag exists in HTML
-            if (cardHTML.includes('product-price-tag')) {
-                console.log('✅ Price tag found in HTML');
-                // Extract price from HTML
-                const priceMatch = cardHTML.match(/₹([\d,]+)/);
-                if (priceMatch) {
-                    console.log(`✅ Extracted price from HTML: ${priceMatch[0]}`);
-                }
-            } else {
-                console.error('❌ Price tag NOT found in HTML');
-            }
-        } catch (error) {
-            console.error('❌ Error creating card:', error);
-        }
-    }
-    
-    return {
-        total: totalProducts,
-        withPrices: productsWithPrice,
-        withoutPrices: productsWithoutPrice,
-        priceStats: priceStats
-    };
-}
-
-// DEBUG FUNCTION: Test current products on screen
-function debugCurrentProducts() {
-    console.log('🔍 DEBUGGING CURRENT PRODUCTS ON SCREEN...');
-    
-    const productCards = document.querySelectorAll('.product-card-selector');
-    console.log(`Found ${productCards.length} product cards on screen`);
-    
-    if (productCards.length === 0) {
-        console.warn('⚠️ No product cards found! Check if products are loaded.');
-        return;
-    }
-    
-    productCards.forEach((card, index) => {
-        const priceTag = card.querySelector('.product-price-tag');
-        const productId = card.getAttribute('data-product-id');
-        const title = card.querySelector('.product-selector-title')?.textContent;
-        const image = card.querySelector('.product-selector-image');
-        
-        console.log(`Product ${index + 1}:`, {
-            id: productId,
-            title: title,
-            hasPriceTag: !!priceTag,
-            priceText: priceTag ? priceTag.textContent : 'NOT FOUND',
-            priceTagVisible: priceTag ? window.getComputedStyle(priceTag).display !== 'none' : false,
-            priceTagOpacity: priceTag ? window.getComputedStyle(priceTag).opacity : 'N/A',
-            priceTagPosition: priceTag ? window.getComputedStyle(priceTag).position : 'N/A',
-            hasImage: !!image,
-            imageStyle: image ? image.style.backgroundImage : 'N/A'
-        });
-        
-        if (!priceTag) {
-            console.error(`❌ No price tag found for: ${title} (ID: ${productId})`);
-        } else {
-            // Check if price tag is actually visible
-            const styles = window.getComputedStyle(priceTag);
-            if (styles.display === 'none' || styles.opacity === '0' || styles.visibility === 'hidden') {
-                console.warn(`⚠️ Price tag hidden for: ${title}`, {
-                    display: styles.display,
-                    opacity: styles.opacity,
-                    visibility: styles.visibility
-                });
-            }
-        }
-    });
-    
-    return productCards.length;
-}
-
-// DEBUG FUNCTION: Force refresh all prices
-function forceRefreshPrices() {
-    console.log('🔧 FORCE REFRESHING ALL PRICES...');
-    
-    const productCards = document.querySelectorAll('.product-card-selector');
-    let refreshed = 0;
-    
-    productCards.forEach(card => {
-        const productId = card.getAttribute('data-product-id');
-        const priceTag = card.querySelector('.product-price-tag');
-        
-        if (priceTag && productId) {
-            // Find product in database
-            const dbProduct = findProductById(productId);
-            if (dbProduct) {
-                const price = dbProduct.suggestedPrice || dbProduct.price || 299;
-                priceTag.textContent = `₹${Math.round(price).toLocaleString()}`;
-                priceTag.style.display = 'block';
-                priceTag.style.opacity = '1';
-                refreshed++;
-                console.log(`✅ Refreshed price for ${dbProduct.name}: ₹${price}`);
-            }
-        }
-    });
-    
-    console.log(`🔧 Refreshed ${refreshed} price tags`);
-    return refreshed;
-}
-
 // ========================================
 // LEAD FLOW FUNCTIONS
 // ========================================
@@ -1118,20 +769,13 @@ function selectLanguage(lang, element) {
     setTimeout(() => window.TopikoUtils.showScreen('goals'), 1500);
 }
 
-function updateGoalsTracking() {
-    const checkedGoals = document.querySelectorAll('.goal-checkbox:checked');
-    window.topikoApp.selectedGoals = Array.from(checkedGoals).map(checkbox => checkbox.value);
-    window.TopikoUtils.addDebugLog(`Goals: ${window.topikoApp.selectedGoals.length} selected`);
-    window.TopikoUtils.calculateLeadScore();
-}
-
 function showGoalsTransitionModal() {
     if (window.topikoApp.selectedGoals.length === 0) {
         window.TopikoUtils.showNotification('Please select at least one goal', 'error');
         return;
     }
     
-    // Update goals modal with selected goals
+    // Update goals modal with selected goals (including new 6th goal)
     updateGoalsModal(window.topikoApp.selectedGoals);
     
     window.TopikoUtils.showNotification(`Perfect! ${window.topikoApp.selectedGoals.length} goal${window.topikoApp.selectedGoals.length > 1 ? 's' : ''} selected!`, 'success');
@@ -1266,17 +910,16 @@ async function completeRegistration() {
     window.TopikoUtils.showNotification('Creating your free account...', 'info');
     
     // Complete user data with all new fields
-const userData = {
-    name, email, phone,
-    business_name: business,
-    business_type: type,
-    business_category: category,
-    address: address || null,
-    selected_language: window.topikoApp.selectedLanguage,
-    selected_goals: window.topikoApp.selectedGoals,
-    created_at: new Date().toISOString()
-    // ✅ No lead_status here - REMOVED
-};
+    const userData = {
+        name, email, phone,
+        business_name: business,
+        business_type: type,
+        business_category: category,
+        address: address || null,
+        selected_language: window.topikoApp.selectedLanguage,
+        selected_goals: window.topikoApp.selectedGoals,
+        created_at: new Date().toISOString()
+    };
 
     const userResult = await window.TopikoUtils.saveToSupabase(userData, 'users');
     
@@ -1343,7 +986,7 @@ async function proceedToCategories() {
         return;
     }
     
-    // 🔥 ADD THIS: Update user record with qualifying answers
+    // Update user record with qualifying answers
     if (window.topikoApp.currentUserId) {
         const qualifyingData = {
             timeline: window.topikoApp.qualifyingAnswers.timeline,
@@ -1371,7 +1014,7 @@ async function proceedToCategories() {
 }
 
 // ========================================
-// CATEGORIES FUNCTIONS - KEEP ORIGINAL WORKING VERSION
+// CATEGORIES FUNCTIONS
 // ========================================
 
 function loadCategories() {
@@ -1396,102 +1039,6 @@ function loadCategories() {
     }
     
     loadCategoriesContent(businessCategory, categoriesContainer);
-}
-
-// ========================================
-// BACKGROUND IMAGE ERROR HANDLING - FIXED
-// ========================================
-
-function createImageWithFallback(originalUrl, productId, category, subcategory) {
-    return new Promise((resolve) => {
-        const testImg = new Image();
-        
-        testImg.onload = () => {
-            console.log(`✅ Image loaded: ${productId}`);
-            resolve(originalUrl);
-        };
-        
-        testImg.onerror = () => {
-            console.warn(`⚠️ Image failed for ${productId}, using fallback...`);
-            
-            // Get category-specific fallback
-            const fallbackUrl = window.TopikoConfig.getFallbackImage(category, subcategory);
-            
-            // Test the fallback image too
-            const fallbackImg = new Image();
-            fallbackImg.onload = () => {
-                console.log(`✅ Fallback loaded for ${productId}: ${fallbackUrl}`);
-                resolve(fallbackUrl);
-            };
-            fallbackImg.onerror = () => {
-                console.error(`❌ Fallback failed for ${productId}, using placeholder`);
-                resolve(window.TopikoConfig.getPlaceholderImage());
-            };
-            fallbackImg.src = fallbackUrl;
-        };
-        
-        testImg.src = originalUrl;
-    });
-}
-
-function loadCategoriesContent(businessCategory, categoriesContainer) {
-    const categoryData = window.TopikoConfig.BUSINESS_CATEGORIES[businessCategory];
-    
-    let categoriesHTML = `
-        <div class="category-section">
-            <h3><span style="margin-right: 0.5rem;">${categoryData.icon}</span>${categoryData.name} Categories</h3>
-            <p style="color: #553c9a; margin-bottom: 1.5rem; font-size: 0.9rem;">Select categories that apply to your business (this helps us create your perfect online store):</p>
-            
-            <div class="category-grid">
-    `;
-    
-    Object.keys(categoryData.categories).forEach(categoryKey => {
-        const category = categoryData.categories[categoryKey];
-        const isSelected = window.topikoApp.selectedCategories.includes(categoryKey);
-        
-        categoriesHTML += `
-            <div class="category-item">
-                <input type="checkbox" id="cat-${categoryKey}" value="${categoryKey}" class="category-checkbox" 
-                       ${isSelected ? 'checked' : ''} onchange="toggleCategorySelection('${categoryKey}')">
-                <label for="cat-${categoryKey}" class="category-label">
-                    <span class="category-icon">${category.icon}</span>
-                    ${category.name}
-                    <span class="category-checkmark">✓</span>
-                </label>
-                
-                <div class="subcategory-grid">
-        `;
-        
-        category.subcategories.forEach(subcategoryKey => {
-            const subcategoryName = window.TopikoConfig.SUBCATEGORY_NAMES[subcategoryKey] || subcategoryKey.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
-            const isSubSelected = window.topikoApp.selectedSubcategories.includes(subcategoryKey);
-            
-            categoriesHTML += `
-                <div class="subcategory-item">
-                    <input type="checkbox" id="sub-${subcategoryKey}" value="${subcategoryKey}" class="subcategory-checkbox"
-                           ${isSubSelected ? 'checked' : ''} onchange="toggleSubcategorySelection('${subcategoryKey}')">
-                    <label for="sub-${subcategoryKey}" class="subcategory-label">
-                        ${subcategoryName}
-                        <span class="subcategory-checkmark">✓</span>
-                    </label>
-                </div>
-            `;
-        });
-        
-        categoriesHTML += `
-                </div>
-            </div>
-        `;
-    });
-    
-    categoriesHTML += `
-            </div>
-        </div>
-    `;
-    
-    categoriesContainer.innerHTML = categoriesHTML;
-    updateProductCategoriesDropdown();
-    updateSelectionSummary();
 }
 
 function toggleCategorySelection(categoryKey) {
@@ -1623,7 +1170,7 @@ async function proceedToProducts() {
 }
 
 // ========================================
-// PRODUCT SELECTION SYSTEM - FUNCTIONS - UPDATED WITH VARIANTS
+// PRODUCT SELECTION SYSTEM FUNCTIONS
 // ========================================
 
 function switchProductMode(mode) {
@@ -1690,7 +1237,7 @@ function loadProductSelector() {
     window.TopikoUtils.addDebugLog(`✅ Product selector loaded for ${selectedCategories.length} categories`);
 }
 
-ffunction loadFilteredProductsGrid() {
+function loadFilteredProductsGrid() {
     // Get business category and selected subcategories
     const businessCategory = document.getElementById('category')?.value;
     const selectedSubcategories = window.topikoApp.selectedSubcategories;
@@ -1703,7 +1250,7 @@ ffunction loadFilteredProductsGrid() {
     // Filter products to only selected subcategories
     const filteredProducts = getProductsForSelectedCategories();
     
-    // ENHANCED: Preload images for better performance
+    // Preload images for better performance
     if (filteredProducts.length > 0) {
         preloadProductImages(filteredProducts, businessCategory, selectedSubcategories[0]);
     }
@@ -1961,321 +1508,169 @@ function filterAndDisplayProducts() {
     
     window.TopikoUtils.addDebugLog(`🔍 Filtered to ${filteredProducts.length} products from selected categories`);
 }
+
 // ========================================
-// ➕ NEW FUNCTIONS - Image Loading & Debugging
+// VARIANT DISPLAY FUNCTIONS
 // ========================================
 
-// NEW FUNCTION: Initialize reliable image loading
-function initializeReliableImageLoading() {
-    console.log('🖼️ Initializing reliable image loading system...');
+// Create product card with enhanced price handling
+function createProductCardWithVariants(product) {
+    const isSelected = window.topikoApp.selectedProductIds?.includes(product.id) || false;
+    const selectedClass = isSelected ? 'selected' : '';
+    const checkmarkStyle = isSelected ? 'opacity: 1' : 'opacity: 0';
     
-    const productImages = document.querySelectorAll('.product-selector-image');
-    console.log(`🖼️ Found ${productImages.length} product images to enhance`);
+    // Get reliable image with retry system
+    const reliableImageUrl = window.TopikoConfig.getReliableProductImage(
+        product, 
+        product.category, 
+        product.subcategory, 
+        0
+    );
     
-    if (productImages.length === 0) {
-        console.warn('⚠️ No product images found to enhance');
+    // Enhanced: More robust price extraction
+    let productPrice = 0;
+    
+    if (product.suggestedPrice && typeof product.suggestedPrice === 'number' && product.suggestedPrice > 0) {
+        productPrice = product.suggestedPrice;
+        console.log(`💰 Using suggestedPrice: ₹${productPrice} for ${product.name}`);
+    } else if (product.price && typeof product.price === 'number' && product.price > 0) {
+        productPrice = product.price;
+        console.log(`💰 Using price: ₹${productPrice} for ${product.name}`);
+    } else {
+        // Category-appropriate fallback price
+        const categoryKey = (product.categoryKey || product.category || '').toLowerCase();
+        if (categoryKey.includes('beverage') || categoryKey.includes('tea') || categoryKey.includes('juice')) {
+            productPrice = 45;
+        } else if (categoryKey.includes('sweet') || categoryKey.includes('dessert')) {
+            productPrice = 180;
+        } else if (categoryKey.includes('north-indian') || categoryKey.includes('south-indian')) {
+            productPrice = 250;
+        } else {
+            productPrice = 199;
+        }
+        console.log(`🔧 Using fallback price: ₹${productPrice} for ${product.name}`);
+    }
+    
+    // Process variants for pricing
+    const variantType = product.variants ? determineVariantType(product.variants, product) : null;
+    const processedVariants = product.variants ? 
+        convertSimpleVariantsToObjects(product.variants, product) : [];
+    
+    let variantSelector = '';
+    if (processedVariants.length > 0) {
+        variantSelector = `
+            <div class="variant-selector">
+                <label class="variant-label">Choose ${variantType.name}:</label>
+                <div class="variant-options">
+                    ${processedVariants.map((variant, index) => `
+                        <button class="variant-btn ${index === 0 ? 'active' : ''}" 
+                                data-price="${variant.variant_price}"
+                                data-variant="${variant.variant_detail}"
+                                onclick="selectProductVariant('${product.id}', '${variant.variant_detail}', ${variant.variant_price})">
+                            ${variant.variant_detail}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    // Better price calculation with strict validation
+    let basePrice = productPrice;
+    if (processedVariants.length > 0 && processedVariants[0].variant_price && processedVariants[0].variant_price > 0) {
+        basePrice = processedVariants[0].variant_price;
+        console.log(`🎯 Using variant price: ₹${basePrice} for ${product.name}`);
+    }
+    
+    // Final price validation
+    if (!basePrice || basePrice <= 0 || isNaN(basePrice)) {
+        console.error(`❌ Invalid basePrice (${basePrice}) for ${product.name}, using emergency fallback`);
+        basePrice = 299;
+    }
+    
+    const formattedPrice = Math.round(basePrice).toLocaleString();
+    
+    return `
+        <div class="product-card-selector ${selectedClass}" data-product-id="${product.id}">
+            <div class="product-selector-image" 
+                 style="background-image: url('${reliableImageUrl}');"
+                 onerror="handleImageError(this, '${product.id}', '${product.category}', '${product.subcategory}')">
+                <div class="product-price-tag" id="price-${product.id}">₹${formattedPrice}</div>
+                <div class="product-selection-overlay">
+                    <div class="selection-checkmark" style="${checkmarkStyle}">✓</div>
+                </div>
+                ${product.isPopular ? '<div class="popular-badge">Popular</div>' : ''}
+            </div>
+            <div class="product-selector-content">
+                <h4 class="product-selector-title">${product.name}</h4>
+                <p class="product-selector-description">${product.description}</p>
+                
+                ${variantSelector}
+                
+                <div class="product-actions">
+                    <button class="select-product-btn" onclick="toggleProductSelection('${product.id}')">
+                        ${isSelected ? 'Remove' : 'Select'}
+                    </button>
+                    <button class="edit-product-btn" onclick="editProduct('${product.id}')" style="display: ${isSelected ? 'inline-block' : 'none'}">
+                        Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Handle variant selection
+function selectProductVariant(productId, variantDetail, variantPrice) {
+    // Update UI
+    const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+    if (!productCard) {
+        console.error(`❌ Product card not found for ID: ${productId}`);
         return;
     }
     
-    // Setup retry system for each image
-    productImages.forEach((imgElement, index) => {
-        const productId = imgElement.closest('[data-product-id]')?.getAttribute('data-product-id');
-        if (productId) {
-            // Extract category from product data or use defaults
-            const product = findProductById(productId);
-            const category = product?.category || 'default';
-            const subcategory = product?.subcategory || null;
-            
-            setupImageRetrySystem(imgElement, productId, category, subcategory);
-            
-            // Add loading enhancement with delay to spread load
-            setTimeout(() => {
-                enhanceImageElement(imgElement, productId, category, subcategory);
-            }, index * 50); // Stagger loading
-        }
-    });
-    
-    console.log('✅ Enhanced image loading system ready!');
-}
-
-// NEW FUNCTION: Setup image retry system for individual image
-function setupImageRetrySystem(imgElement, productId, category, subcategory) {
-    // Add error handler if not already present
-    if (!imgElement.hasAttribute('data-retry-setup')) {
-        imgElement.setAttribute('data-retry-setup', 'true');
-        imgElement.setAttribute('data-attempt', '0');
-        
-        // Create a more robust error handler
-        const originalOnError = imgElement.onerror;
-        imgElement.onerror = function() {
-            console.log(`🔄 Image error detected for ${productId}, initiating retry...`);
-            handleImageError(this, productId, category, subcategory);
-        };
-        
-        console.log(`🔧 Retry system setup for ${productId}`);
-    }
-}
-
-// NEW FUNCTION: Preload product images for performance
-function preloadProductImages(products, category, subcategory) {
-    console.log(`🚀 Preloading images for ${products.length} products...`);
-    
-    // Limit preloading to first 20 products for performance
-    const productsToPreload = products.slice(0, 20);
-    let preloadedCount = 0;
-    
-    productsToPreload.forEach((product, index) => {
-        // Get the reliable image URL
-        const reliableUrl = window.TopikoConfig.getReliableProductImage(
-            product, 
-            product.category || category, 
-            product.subcategory || subcategory, 
-            0
-        );
-        
-        // Preload with delay to avoid overwhelming the browser
-        setTimeout(() => {
-            const preloadImg = new Image();
-            preloadImg.onload = () => {
-                preloadedCount++;
-                console.log(`✅ Preloaded ${product.name} (${preloadedCount}/${productsToPreload.length})`);
-            };
-            preloadImg.onerror = () => {
-                console.warn(`⚠️ Failed to preload ${product.name}`);
-            };
-            preloadImg.src = reliableUrl;
-        }, index * 100); // Spread load over time
-    });
-}
-
-// NEW FUNCTION: Check image quality and success rate
-function checkImageQuality() {
-    console.log('🔍 CHECKING IMAGE QUALITY...');
-    
-    const productImages = document.querySelectorAll('.product-selector-image');
-    let totalImages = productImages.length;
-    let successfulImages = 0;
-    let failedImages = 0;
-    let placeholderImages = 0;
-    
-    if (totalImages === 0) {
-        console.warn('⚠️ No product images found on page');
-        return { total: 0, successful: 0, failed: 0, placeholder: 0, successRate: 0 };
+    // Update active variant button
+    productCard.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('active'));
+    const selectedBtn = productCard.querySelector(`[data-variant="${variantDetail}"]`);
+    if (selectedBtn) {
+        selectedBtn.classList.add('active');
+    } else {
+        console.warn(`⚠️ Variant button not found for: ${variantDetail}`);
     }
     
-    productImages.forEach((imgElement, index) => {
-        const backgroundImage = imgElement.style.backgroundImage;
-        const productId = imgElement.closest('[data-product-id]')?.getAttribute('data-product-id') || `image-${index}`;
+    // Update displayed price
+    const priceTag = document.getElementById(`price-${productId}`);
+    if (priceTag) {
+        const formattedPrice = Math.round(variantPrice).toLocaleString();
+        priceTag.textContent = `₹${formattedPrice}`;
         
-        if (backgroundImage.includes('data:image/svg+xml')) {
-            placeholderImages++;
-            console.warn(`📦 Placeholder: ${productId}`);
-        } else if (backgroundImage.includes('unsplash') || backgroundImage.includes('http')) {
-            // Verify if image actually loads
-            const testImg = new Image();
-            testImg.onload = () => {
-                successfulImages++;
-                console.log(`✅ Image verified for ${productId}: ${backgroundImage}`);
-            };
-            testImg.onerror = () => {
-                failedImages++;
-                console.error(`❌ Image failed for ${productId}: ${backgroundImage}`);
-            };
-            
-            // Extract URL from background-image style
-            const urlMatch = backgroundImage.match(/url\(["']?([^"']*)["']?\)/);
-            if (urlMatch && urlMatch[1]) {
-                testImg.src = urlMatch[1];
-            } else {
-                failedImages++;
-                console.error(`❌ Invalid background image format for ${productId}`);
-            }
-        } else {
-            failedImages++;
-            console.error(`❌ No background image for ${productId}`);
-        }
-    });
-    
-    // Calculate success rate after async checks
-    setTimeout(() => {
-        const successRate = totalImages > 0 ? ((successfulImages / totalImages) * 100).toFixed(1) : 0;
+        // Add price change animation
+        priceTag.classList.add('price-updating');
+        setTimeout(() => priceTag.classList.remove('price-updating'), 300);
         
-        console.log('\n📊 IMAGE QUALITY SUMMARY:');
-        console.log(`Total images: ${totalImages}`);
-        console.log(`Successful: ${successfulImages} (${((successfulImages/totalImages)*100).toFixed(1)}%)`);
-        console.log(`Failed: ${failedImages} (${((failedImages/totalImages)*100).toFixed(1)}%)`);
-        console.log(`Placeholders: ${placeholderImages} (${((placeholderImages/totalImages)*100).toFixed(1)}%)`);
-        console.log(`Overall success rate: ${successRate}%`);
-        
-        // Show notification
-        if (successRate >= 95) {
-            window.TopikoUtils?.showNotification(`🎉 Excellent! ${successRate}% image success rate`, 'success');
-        } else if (successRate >= 80) {
-            window.TopikoUtils?.showNotification(`✅ Good! ${successRate}% image success rate`, 'info');
-        } else {
-            window.TopikoUtils?.showNotification(`⚠️ ${successRate}% image success rate - some improvements needed`, 'warning');
-        }
-    }, 2000); // Wait for async image checks
-    
-    return {
-        total: totalImages,
-        successful: successfulImages,
-        failed: failedImages,
-        placeholder: placeholderImages,
-        successRate: totalImages > 0 ? ((successfulImages / totalImages) * 100).toFixed(1) : 0
-    };
-}
-
-// NEW FUNCTION: Refresh all product images
-function refreshAllProductImages() {
-    console.log('🔧 REFRESHING ALL PRODUCT IMAGES...');
-    
-    const productCards = document.querySelectorAll('.product-card-selector');
-    let refreshed = 0;
-    
-    if (productCards.length === 0) {
-        console.warn('⚠️ No product cards found to refresh');
-        window.TopikoUtils?.showNotification('No product images found to refresh', 'info');
-        return 0;
+        console.log(`✅ Price updated to ₹${formattedPrice} for ${productId}`);
+    } else {
+        console.error(`❌ Price tag not found for product: ${productId}`);
     }
     
-    productCards.forEach((card, index) => {
-        const productId = card.getAttribute('data-product-id');
-        const imgElement = card.querySelector('.product-selector-image');
-        
-        if (imgElement && productId) {
-            // Find product in database
-            const dbProduct = findProductById(productId);
-            if (dbProduct) {
-                // Get fresh reliable image URL
-                const freshImageUrl = window.TopikoConfig.getReliableProductImage(
-                    dbProduct, 
-                    dbProduct.category, 
-                    dbProduct.subcategory, 
-                    0
-                );
-                
-                // Reset attempt counter
-                imgElement.setAttribute('data-attempt', '0');
-                
-                // Apply new image with delay to spread load
-                setTimeout(() => {
-                    imgElement.style.backgroundImage = `url('${freshImageUrl}')`;
-                    console.log(`🔄 Refreshed image for ${dbProduct.name}: ${freshImageUrl}`);
-                }, index * 100);
-                
-                refreshed++;
-            }
-        }
-    });
-    
-    console.log(`🔧 Refreshed ${refreshed} product images`);
-    window.TopikoUtils?.showNotification(`🔄 Refreshed ${refreshed} product images`, 'success');
-    
-    // Re-initialize image loading system
-    setTimeout(() => {
-        initializeReliableImageLoading();
-    }, refreshed * 100 + 500);
-    
-    return refreshed;
-}
-
-// HELPER FUNCTION: Enhance individual image element
-function enhanceImageElement(imgElement, productId, category, subcategory) {
-    // Add loading class for smooth transitions
-    imgElement.classList.add('image-loading');
-    
-    // Verify current image loads, if not trigger retry
-    const currentBg = imgElement.style.backgroundImage;
-    if (currentBg) {
-        const urlMatch = currentBg.match(/url\(["']?([^"']*)["']?\)/);
-        if (urlMatch && urlMatch[1]) {
-            const testImg = new Image();
-            testImg.onload = () => {
-                imgElement.classList.remove('image-loading');
-                imgElement.classList.add('image-loaded');
-                console.log(`✅ Enhanced image verified: ${productId}`);
-            };
-            testImg.onerror = () => {
-                console.log(`🔄 Enhanced image check failed, triggering retry: ${productId}`);
-                handleImageError(imgElement, productId, category, subcategory);
-            };
-            testImg.src = urlMatch[1];
-        }
-    }
-}
-
-// ========================================
-// DEBUGGING FUNCTIONS - ENHANCED
-// ========================================
-
-// ENHANCED DEBUG FUNCTION: Comprehensive product price debugging
-function debugProductPrices() {
-    console.log('🔍 DEBUGGING PRODUCT PRICES...');
-    
-    if (!window.TopikoConfig || !window.TopikoConfig.INDIAN_PRODUCTS_DB) {
-        console.error('❌ TopikoConfig.INDIAN_PRODUCTS_DB not found!');
-        return;
+    // Store selected variant in product data
+    const product = window.topikoApp.userProducts.find(p => p.id === productId);
+    if (product) {
+        product.selectedVariant = variantDetail;
+        product.selectedVariantPrice = variantPrice;
     }
     
-    const db = window.TopikoConfig.INDIAN_PRODUCTS_DB;
-    let totalProducts = 0;
-    let productsWithPrice = 0;
-    let productsWithoutPrice = 0;
-    let priceStats = { min: Infinity, max: 0, sum: 0 };
-    
-    Object.keys(db).forEach(businessCategory => {
-        console.log(`📁 Business Category: ${businessCategory}`);
-        
-        Object.keys(db[businessCategory]).forEach(categoryKey => {
-            const products = db[businessCategory][categoryKey];
-            
-            if (Array.isArray(products)) {
-                console.log(`  📂 Category: ${categoryKey} (${products.length} products)`);
-                
-                products.forEach(product => {
-                    totalProducts++;
-                    
-                    const hasPrice = product.suggestedPrice || product.price;
-                    if (hasPrice) {
-                        const price = product.suggestedPrice || product.price;
-                        productsWithPrice++;
-                        priceStats.sum += price;
-                        priceStats.min = Math.min(priceStats.min, price);
-                        priceStats.max = Math.max(priceStats.max, price);
-                        console.log(`    ✅ ${product.name}: ₹${price} (${product.suggestedPrice ? 'suggestedPrice' : 'price'})`);
-                    } else {
-                        productsWithoutPrice++;
-                        console.error(`    ❌ ${product.name}: NO PRICE!`, {
-                            id: product.id,
-                            keys: Object.keys(product),
-                            product: product
-                        });
-                    }
-                });
-            }
-        });
-    });
-    
-    console.log('\n📊 PRICE ANALYSIS SUMMARY:');
-    console.log(`Total products: ${totalProducts}`);
-    console.log(`With prices: ${productsWithPrice} (${((productsWithPrice/totalProducts)*100).toFixed(1)}%)`);
-    console.log(`Without prices: ${productsWithoutPrice} (${((productsWithoutPrice/totalProducts)*100).toFixed(1)}%)`);
-    
-    if (productsWithPrice > 0) {
-        const avgPrice = priceStats.sum / productsWithPrice;
-        console.log(`Price range: ₹${priceStats.min} - ₹${priceStats.max}`);
-        console.log(`Average price: ₹${avgPrice.toFixed(2)}`);
+    // Also update the base product in database if not yet selected
+    const dbProduct = findProductById(productId);
+    if (dbProduct) {
+        dbProduct.selectedVariant = variantDetail;
+        dbProduct.selectedVariantPrice = variantPrice;
     }
     
-    return {
-        total: totalProducts,
-        withPrices: productsWithPrice,
-        withoutPrices: productsWithoutPrice,
-        priceStats: priceStats
-    };
+    window.TopikoUtils.addDebugLog(`🎯 Variant selected: ${variantDetail} (₹${variantPrice}) for ${productId}`);
 }
-// UPDATED: Display products grid with variant functionality
+
+// Display products grid with variant functionality
 function displayProductsGridWithVariants(products) {
     const productsGrid = document.getElementById('productsGrid');
     
@@ -2298,7 +1693,7 @@ function displayProductsGridWithVariants(products) {
     const productsHTML = products.map(product => createProductCardWithVariants(product)).join('');
     productsGrid.innerHTML = productsHTML;
     
-    // ENHANCED: Initialize reliable image loading after grid update
+    // Initialize reliable image loading after grid update
     initializeReliableImageLoading();
     
     // Debug: Check if price tags are rendered
@@ -2310,15 +1705,6 @@ function displayProductsGridWithVariants(products) {
             console.error('❌ No price tags found after rendering!');
         }
     }, 100);
-}
-
-// Keep original function for backward compatibility
-function displayProductsGrid(products) {
-    displayProductsGridWithVariants(products);
-}
-
-function createProductCard(product) {
-    return createProductCardWithVariants(product);
 }
 
 function toggleProductSelection(productId) {
@@ -2491,88 +1877,164 @@ function updateSelectedProductsSection() {
     }
 }
 
-function editProduct(productId) {
-    const product = window.topikoApp.userProducts.find(p => p.id === productId);
-    if (!product) return;
-    
-    // Create inline edit modal or form
-    const editHTML = `
-        <div class="product-edit-modal" id="productEditModal">
-            <div class="edit-modal-content">
-                <h3>Edit Product: ${product.name}</h3>
-                
-                <div class="edit-form-group">
-                    <label>Product Name</label>
-                    <input type="text" id="editProductName" value="${product.name}">
-                </div>
-                
-                <div class="edit-form-group">
-                    <label>Price (₹)</label>
-                    <input type="number" id="editProductPrice" value="${product.selectedVariantPrice || product.price}">
-                </div>
-                
-                <div class="edit-form-group">
-                    <label>Description</label>
-                    <textarea id="editProductDescription">${product.description}</textarea>
-                </div>
-                
-                <div class="edit-modal-actions">
-                    <button onclick="saveProductEdit('${productId}')" class="save-edit-btn">Save Changes</button>
-                    <button onclick="cancelProductEdit()" class="cancel-edit-btn">Cancel</button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    // Add to body
-    document.body.insertAdjacentHTML('beforeend', editHTML);
-    
-    window.TopikoUtils.addDebugLog(`✏️ Editing product: ${product.name}`);
-}
+// ========================================
+// IMAGE LOADING ENHANCEMENT FUNCTIONS
+// ========================================
 
-function saveProductEdit(productId) {
-    const product = window.topikoApp.userProducts.find(p => p.id === productId);
-    if (!product) return;
+// Initialize reliable image loading
+function initializeReliableImageLoading() {
+    console.log('🖼️ Initializing reliable image loading system...');
     
-    // Get new values
-    const newName = document.getElementById('editProductName').value.trim();
-    const newPrice = parseFloat(document.getElementById('editProductPrice').value);
-    const newDescription = document.getElementById('editProductDescription').value.trim();
+    const productImages = document.querySelectorAll('.product-selector-image');
+    console.log(`🖼️ Found ${productImages.length} product images to enhance`);
     
-    if (!newName || !newPrice || !newDescription) {
-        window.TopikoUtils.showNotification('Please fill all fields', 'error');
+    if (productImages.length === 0) {
+        console.warn('⚠️ No product images found to enhance');
         return;
     }
     
-    // Update product
-    product.name = newName;
-    product.price = newPrice;
-    product.selectedVariantPrice = newPrice;
-    product.description = newDescription;
-    product.customPrice = newPrice;
-    product.customDescription = newDescription;
+    // Setup retry system for each image
+    productImages.forEach((imgElement, index) => {
+        const productId = imgElement.closest('[data-product-id]')?.getAttribute('data-product-id');
+        if (productId) {
+            // Extract category from product data or use defaults
+            const product = findProductById(productId);
+            const category = product?.category || 'default';
+            const subcategory = product?.subcategory || null;
+            
+            setupImageRetrySystem(imgElement, productId, category, subcategory);
+            
+            // Add loading enhancement with delay to spread load
+            setTimeout(() => {
+                enhanceImageElement(imgElement, productId, category, subcategory);
+            }, index * 50); // Stagger loading
+        }
+    });
     
-    // Close modal
-    cancelProductEdit();
-    
-    // Update displays
-    updateSelectedProductsSection();
-    window.TopikoUtils.displayProducts();
-    filterAndDisplayProducts();
-    
-    window.TopikoUtils.showNotification(`Updated "${newName}"`, 'success');
-    window.TopikoUtils.addDebugLog(`💾 Product updated: ${newName}`);
+    console.log('✅ Enhanced image loading system ready!');
 }
 
-function cancelProductEdit() {
-    const modal = document.getElementById('productEditModal');
-    if (modal) {
-        modal.remove();
+// Setup image retry system for individual image
+function setupImageRetrySystem(imgElement, productId, category, subcategory) {
+    // Add error handler if not already present
+    if (!imgElement.hasAttribute('data-retry-setup')) {
+        imgElement.setAttribute('data-retry-setup', 'true');
+        imgElement.setAttribute('data-attempt', '0');
+        
+        // Create a more robust error handler
+        const originalOnError = imgElement.onerror;
+        imgElement.onerror = function() {
+            console.log(`🔄 Image error detected for ${productId}, initiating retry...`);
+            handleImageError(this, productId, category, subcategory);
+        };
+        
+        console.log(`🔧 Retry system setup for ${productId}`);
+    }
+}
+
+// Handle image errors with fallback system
+function handleImageError(imgElement, productId, category, subcategory) {
+    console.warn(`⚠️ Image failed for product ${productId}, trying category fallback...`);
+    
+    // Get current attempt count or start from 1
+    let attemptCount = parseInt(imgElement.getAttribute('data-attempt') || '1');
+    
+    // Get the next fallback URL
+    const fallbackUrl = window.TopikoConfig.getReliableProductImage(
+        { id: productId }, 
+        category, 
+        subcategory, 
+        attemptCount
+    );
+    
+    // Store attempt count
+    imgElement.setAttribute('data-attempt', (attemptCount + 1).toString());
+    
+    // Prevent infinite loop
+    if (attemptCount >= 4) {
+        console.log(`📦 Using final placeholder for ${productId}`);
+        const placeholder = window.TopikoConfig.getPlaceholderImage();
+        imgElement.style.backgroundImage = `url("${placeholder}")`;
+        return;
+    }
+    
+    // Test the new URL before applying
+    const testImg = new Image();
+    testImg.onload = () => {
+        console.log(`✅ Fallback ${attemptCount + 1} loaded for ${productId}: ${fallbackUrl}`);
+        imgElement.style.backgroundImage = `url('${fallbackUrl}')`;
+    };
+    
+    testImg.onerror = () => {
+        console.log(`❌ Fallback ${attemptCount + 1} failed for ${productId}, trying next...`);
+        // Recursive call with incremented attempt
+        setTimeout(() => {
+            handleImageError(imgElement, productId, category, subcategory);
+        }, 500);
+    };
+    
+    testImg.src = fallbackUrl;
+}
+
+// Preload product images for performance
+function preloadProductImages(products, category, subcategory) {
+    console.log(`🚀 Preloading images for ${products.length} products...`);
+    
+    // Limit preloading to first 20 products for performance
+    const productsToPreload = products.slice(0, 20);
+    let preloadedCount = 0;
+    
+    productsToPreload.forEach((product, index) => {
+        // Get the reliable image URL
+        const reliableUrl = window.TopikoConfig.getReliableProductImage(
+            product, 
+            product.category || category, 
+            product.subcategory || subcategory, 
+            0
+        );
+        
+        // Preload with delay to avoid overwhelming the browser
+        setTimeout(() => {
+            const preloadImg = new Image();
+            preloadImg.onload = () => {
+                preloadedCount++;
+                console.log(`✅ Preloaded ${product.name} (${preloadedCount}/${productsToPreload.length})`);
+            };
+            preloadImg.onerror = () => {
+                console.warn(`⚠️ Failed to preload ${product.name}`);
+            };
+            preloadImg.src = reliableUrl;
+        }, index * 100); // Spread load over time
+    });
+}
+
+// Enhance individual image element
+function enhanceImageElement(imgElement, productId, category, subcategory) {
+    // Add loading class for smooth transitions
+    imgElement.classList.add('image-loading');
+    
+    // Verify current image loads, if not trigger retry
+    const currentBg = imgElement.style.backgroundImage;
+    if (currentBg) {
+        const urlMatch = currentBg.match(/url\(["']?([^"']*)["']?\)/);
+        if (urlMatch && urlMatch[1]) {
+            const testImg = new Image();
+            testImg.onload = () => {
+                imgElement.classList.remove('image-loading');
+                imgElement.classList.add('image-loaded');
+                console.log(`✅ Enhanced image verified: ${productId}`);
+            };
+            testImg.onerror = () => {
+                console.log(`🔄 Enhanced image check failed, triggering retry: ${productId}`);
+                handleImageError(imgElement, productId, category, subcategory);
+            };
+            testImg.src = urlMatch[1];
+        }
     }
 }
 
 // ========================================
-// CUSTOM PRODUCT FUNCTION (UPDATED)
+// CUSTOM PRODUCT & ADDITIONAL FUNCTIONS
 // ========================================
 
 async function addCustomProduct() {
@@ -2594,7 +2056,7 @@ async function addCustomProduct() {
     }
     
     const product = {
-        id: 'custom-' + Date.now(), // Custom ID
+        id: 'custom-' + Date.now(),
         name, 
         price: parseFloat(price), 
         description, 
@@ -2677,10 +2139,7 @@ async function requestFollowup() {
     }
 }
 
-// ========================================
-// 🔄 UPDATED: proceedToThemes() - NOW CALLS ORIGINAL API FIRST
-// ========================================
-
+// Updated proceedToThemes - calls original API first
 async function proceedToThemes() {
     console.log('🎨 Proceeding to themes and calling original API...');
     
@@ -2692,7 +2151,7 @@ async function proceedToThemes() {
             return;
         }
         
-        // 🔄 MOVED: Call original Topiko API (moved from generatePreviewData)
+        // Call original Topiko API (moved from generatePreviewData)
         const businessData = composePreviewJSON();
         await callTopikoAPI(JSON.stringify(businessData));
         console.log('✅ Original Topiko API called successfully');
@@ -2725,13 +2184,13 @@ function selectTheme(themeName, element) {
     
     const themeNames = window.TopikoConfig.THEME_CONFIG;
     
-document.getElementById('selectedThemeName').textContent = themeNames[themeName].name;
+    document.getElementById('selectedThemeName').textContent = themeNames[themeName].name;
     
     const nextBtn = document.getElementById('themeNextBtn');
     nextBtn.disabled = false;
     nextBtn.style.opacity = '1';
     
-    // PHASE 1: Enhanced image loading check
+    // Enhanced image loading check
     const img = element.querySelector('.theme-image');
     if (img && !img.complete) {
         img.onload = () => {
@@ -2739,43 +2198,14 @@ document.getElementById('selectedThemeName').textContent = themeNames[themeName]
         };
         img.onerror = () => {
             window.TopikoUtils.addDebugLog(`⚠️ Theme image failed to load: ${themeName}`, 'warning');
-            // Optional: Set fallback image
-            // img.src = 'images/themes/fallback.jpg';
         };
     }
     
     window.TopikoUtils.showNotification(`Perfect choice! ${themeNames[themeName].name} theme selected!`, 'success');
     window.TopikoUtils.calculateLeadScore();
 }
-// PHASE 1: Preload theme images for better performance
-function preloadThemeImages() {
-    const themeImages = [
-        'images/themes/modern.jpg',
-        'images/themes/vibrant.jpg', 
-        'images/themes/professional.jpg',
-        'images/themes/traditional.jpg',
-        'images/themes/creative.jpg',
-        'images/themes/luxury.jpg'
-    ];
-    
-    themeImages.forEach(imageSrc => {
-        const img = new Image();
-        img.onload = () => {
-            window.TopikoUtils.addDebugLog(`✅ Preloaded: ${imageSrc}`);
-        };
-        img.onerror = () => {
-            window.TopikoUtils.addDebugLog(`❌ Failed to preload: ${imageSrc}`, 'error');
-        };
-        img.src = imageSrc;
-    });
-    
-    window.TopikoUtils.addDebugLog('🔄 Started preloading theme images...', 'info');
-}
 
-// ========================================
-// 🔄 UPDATED: completeSetup() - NO EXTERNAL API CALLS
-// ========================================
-
+// Updated completeSetup - no external API calls
 async function completeSetup() {
     const finalScore = window.TopikoUtils.calculateLeadScore() + 10;
     
@@ -2823,25 +2253,8 @@ async function completeSetup() {
 }
 
 // ========================================
-// COMPLETION SCREEN FUNCTIONS - COMPLETE SET
+// COMPLETION SCREEN FUNCTIONS
 // ========================================
-
-// Function to open call scheduler modal
-function openCallScheduler() {
-    if (!selectedOffer) {
-        window.TopikoUtils.showNotification('Please select an offer first', 'warning');
-        return;
-    }
-    
-    // Update scheduler modal with selected offer
-    const schedulerOfferName = document.getElementById('schedulerOfferName');
-    if (schedulerOfferName && selectedOffer) {
-        schedulerOfferName.textContent = selectedOffer.title;
-    }
-    
-    window.TopikoUtils.showModal('dateTimeModal');
-    window.TopikoUtils.addDebugLog('📅 Call scheduler opened', 'info');
-}
 
 // Function to open explore form modal
 function openExploreForm() {
@@ -2912,59 +2325,6 @@ function displayRandomOffers() {
 function getRandomOffers(offers, count) {
     const shuffled = offers.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
-}
-
-// Function to start offer timer
-function startOfferTimer() {
-    const timerElement = document.getElementById('offerTimer');
-    if (!timerElement) return;
-    
-    // Set initial time (23 hours, 45 minutes, random seconds)
-    let totalSeconds = (23 * 3600) + (45 * 60) + Math.floor(Math.random() * 60);
-    
-    const timerInterval = setInterval(() => {
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        
-        timerElement.textContent = 
-            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        
-        totalSeconds--;
-        
-        if (totalSeconds < 0) {
-            clearInterval(timerInterval);
-            timerElement.textContent = "00:00:00";
-            timerElement.style.color = "#dc2626";
-        }
-    }, 1000);
-}
-
-// Enhanced initializeCompletionScreen function
-function initializeCompletionScreen() {
-    console.log('🎉 Initializing completion screen...');
-    
-    // Set business name
-    const completionBusinessName = document.getElementById('completionBusinessName');
-    if (completionBusinessName && window.topikoApp && window.topikoApp.businessName) {
-        completionBusinessName.textContent = window.topikoApp.businessName;
-    }
-    
-    // Display random selectable offers
-    displayRandomOffers();
-    
-    // Reset selections
-    selectedOffer = null;
-    window.selectedTimeSlot = null;
-    window.selectedReason = null;
-    
-    // Hide selected offer display initially
-    const selectedDisplay = document.getElementById('selectedOfferDisplay');
-    if (selectedDisplay) {
-        selectedDisplay.style.display = 'none';
-    }
-    
-    window.TopikoUtils.addDebugLog('✅ Interactive completion screen initialized');
 }
 
 // Enhanced Time Slot Selection
@@ -3161,41 +2521,12 @@ function proceedFromGoalsModal() {
     setTimeout(() => window.TopikoUtils.showScreen('registration'), 500);
 }
 
-// Setup intro modal
-function displaySetupIntroModal() {
-    const goalNames = window.TopikoConfig.GOAL_NAMES;
-
-    // Populate the user name and business name
-    const setupUserName = document.getElementById('setupUserName');
-    const setupBusinessName = document.getElementById('setupBusinessName');
-    
-    if (setupUserName) {
-        setupUserName.textContent = window.topikoApp.userName || 'there';
-    }
-    
-    if (setupBusinessName) {
-        setupBusinessName.textContent = window.topikoApp.businessName || 'business';
-    }
-
-    const modalSetupGoalsList = document.getElementById('modalSetupGoalsList');
-    if (modalSetupGoalsList) {
-        modalSetupGoalsList.innerHTML = window.topikoApp.selectedGoals.map(goal => 
-            `<div style="background: rgba(34, 197, 94, 0.15); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 8px; padding: 0.8rem; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: center;">
-                ${goalNames[goal] || goal}
-            </div>`
-        ).join('');
-    }
-    
-    window.TopikoUtils.showModal('setupIntroModal');
-    window.TopikoUtils.addDebugLog(`Setup intro modal shown for: ${window.topikoApp.selectedGoals.join(', ')}`);
-}
-
 function proceedFromSetupModal() {
     window.TopikoUtils.closeModal('setupIntroModal');
     setTimeout(() => window.TopikoUtils.showScreen('qualifying-questions'), 500);
 }
 
-// Helper function for modal goals update
+// Helper function for modal goals update (includes new 6th goal)
 function updateGoalsModal(selectedGoals) {
     const goalsInlineText = document.getElementById('selectedGoalsInlineText');
     if (goalsInlineText && selectedGoals && selectedGoals.length > 0) {
@@ -3204,13 +2535,199 @@ function updateGoalsModal(selectedGoals) {
             'customers': '📈 Reach More Customers', 
             'manage': '👥 Manage Customers',
             'search': '🔍 Appear in Search Results',
-            'brand': '⭐ Establish Brand'
+            'brand': '⭐ Establish Brand',
+            'operations': '⚡ Save Time on Operations' // NEW 6th goal
         };
         
         // Create goals with line breaks
         const goalsText = selectedGoals.map(goal => goalIcons[goal] || goal).join('<br>');
         goalsInlineText.innerHTML = goalsText;
     }
+}
+
+// ========================================
+// API FUNCTIONS
+// ========================================
+
+// Call Topiko API with JSON data (for original API)
+async function callTopikoAPI(jsonString) {
+    const apiUrl = 'https://topiko.com/demoapis/demo_insertDemoData.php';
+    
+    try {
+        console.log(`🚀 Calling original API: ${apiUrl}`);
+        
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: jsonString
+        });
+        
+        const responseData = await response.json();
+        
+        if (response.ok) {
+            window.TopikoUtils.showNotification('✅ Business data saved successfully!', 'success');
+            console.log('✅ Original API call successful');
+            return true;
+        } else {
+            throw new Error(responseData.message || `HTTP ${response.status}`);
+        }
+        
+    } catch (error) {
+        console.error(`❌ Original API error: ${error.message}`);
+        window.TopikoUtils.showNotification(`⚠️ Data save failed: ${error.message}`, 'warning');
+        return false;
+    }
+}
+
+// ========================================
+// DEBUGGING FUNCTIONS
+// ========================================
+
+// Comprehensive product price debugging
+function debugProductPrices() {
+    console.log('🔍 DEBUGGING PRODUCT PRICES...');
+    
+    if (!window.TopikoConfig || !window.TopikoConfig.INDIAN_PRODUCTS_DB) {
+        console.error('❌ TopikoConfig.INDIAN_PRODUCTS_DB not found!');
+        return;
+    }
+    
+    const db = window.TopikoConfig.INDIAN_PRODUCTS_DB;
+    let totalProducts = 0;
+    let productsWithPrice = 0;
+    let productsWithoutPrice = 0;
+    let priceStats = { min: Infinity, max: 0, sum: 0 };
+    
+    Object.keys(db).forEach(businessCategory => {
+        console.log(`📁 Business Category: ${businessCategory}`);
+        
+        Object.keys(db[businessCategory]).forEach(categoryKey => {
+            const products = db[businessCategory][categoryKey];
+            
+            if (Array.isArray(products)) {
+                console.log(`  📂 Category: ${categoryKey} (${products.length} products)`);
+                
+                products.forEach(product => {
+                    totalProducts++;
+                    
+                    const hasPrice = product.suggestedPrice || product.price;
+                    if (hasPrice) {
+                        const price = product.suggestedPrice || product.price;
+                        productsWithPrice++;
+                        priceStats.sum += price;
+                        priceStats.min = Math.min(priceStats.min, price);
+                        priceStats.max = Math.max(priceStats.max, price);
+                        console.log(`    ✅ ${product.name}: ₹${price} (${product.suggestedPrice ? 'suggestedPrice' : 'price'})`);
+                    } else {
+                        productsWithoutPrice++;
+                        console.error(`    ❌ ${product.name}: NO PRICE!`, {
+                            id: product.id,
+                            keys: Object.keys(product),
+                            product: product
+                        });
+                    }
+                });
+            }
+        });
+    });
+    
+    console.log('\n📊 PRICE ANALYSIS SUMMARY:');
+    console.log(`Total products: ${totalProducts}`);
+    console.log(`With prices: ${productsWithPrice} (${((productsWithPrice/totalProducts)*100).toFixed(1)}%)`);
+    console.log(`Without prices: ${productsWithoutPrice} (${((productsWithoutPrice/totalProducts)*100).toFixed(1)}%)`);
+    
+    if (productsWithPrice > 0) {
+        const avgPrice = priceStats.sum / productsWithPrice;
+        console.log(`Price range: ₹${priceStats.min} - ₹${priceStats.max}`);
+        console.log(`Average price: ₹${avgPrice.toFixed(2)}`);
+    }
+    
+    return {
+        total: totalProducts,
+        withPrices: productsWithPrice,
+        withoutPrices: productsWithoutPrice,
+        priceStats: priceStats
+    };
+}
+
+// Test current products on screen
+function debugCurrentProducts() {
+    console.log('🔍 DEBUGGING CURRENT PRODUCTS ON SCREEN...');
+    
+    const productCards = document.querySelectorAll('.product-card-selector');
+    console.log(`Found ${productCards.length} product cards on screen`);
+    
+    if (productCards.length === 0) {
+        console.warn('⚠️ No product cards found! Check if products are loaded.');
+        return;
+    }
+    
+    productCards.forEach((card, index) => {
+        const priceTag = card.querySelector('.product-price-tag');
+        const productId = card.getAttribute('data-product-id');
+        const title = card.querySelector('.product-selector-title')?.textContent;
+        const image = card.querySelector('.product-selector-image');
+        
+        console.log(`Product ${index + 1}:`, {
+            id: productId,
+            title: title,
+            hasPriceTag: !!priceTag,
+            priceText: priceTag ? priceTag.textContent : 'NOT FOUND',
+            priceTagVisible: priceTag ? window.getComputedStyle(priceTag).display !== 'none' : false,
+            priceTagOpacity: priceTag ? window.getComputedStyle(priceTag).opacity : 'N/A',
+            priceTagPosition: priceTag ? window.getComputedStyle(priceTag).position : 'N/A',
+            hasImage: !!image,
+            imageStyle: image ? image.style.backgroundImage : 'N/A'
+        });
+        
+        if (!priceTag) {
+            console.error(`❌ No price tag found for: ${title} (ID: ${productId})`);
+        } else {
+            // Check if price tag is actually visible
+            const styles = window.getComputedStyle(priceTag);
+            if (styles.display === 'none' || styles.opacity === '0' || styles.visibility === 'hidden') {
+                console.warn(`⚠️ Price tag hidden for: ${title}`, {
+                    display: styles.display,
+                    opacity: styles.opacity,
+                    visibility: styles.visibility
+                });
+            }
+        }
+    });
+    
+    return productCards.length;
+}
+
+// Force refresh all prices
+function forceRefreshPrices() {
+    console.log('🔧 FORCE REFRESHING ALL PRICES...');
+    
+    const productCards = document.querySelectorAll('.product-card-selector');
+    let refreshed = 0;
+    
+    productCards.forEach(card => {
+        const productId = card.getAttribute('data-product-id');
+        const priceTag = card.querySelector('.product-price-tag');
+        
+        if (priceTag && productId) {
+            // Find product in database
+            const dbProduct = findProductById(productId);
+            if (dbProduct) {
+                const price = dbProduct.suggestedPrice || dbProduct.price || 299;
+                priceTag.textContent = `₹${Math.round(price).toLocaleString()}`;
+                priceTag.style.display = 'block';
+                priceTag.style.opacity = '1';
+                refreshed++;
+                console.log(`✅ Refreshed price for ${dbProduct.name}: ₹${price}`);
+            }
+        }
+    });
+    
+    console.log(`🔧 Refreshed ${refreshed} price tags`);
+    return refreshed;
 }
 
 // ========================================
@@ -3232,6 +2749,26 @@ document.addEventListener('DOMContentLoaded', function() {
 // ========================================
 
 if (typeof window !== 'undefined') {
+    // Enhanced Goal Functions - UPDATED
+    window.updateGoalsTracking = updateGoalsTracking;
+    window.updateGoalsUIState = updateGoalsUIState;
+    
+    // Coupon & Timer Functions - NEW
+    window.generateRandomCoupon = generateRandomCoupon;
+    window.startOfferTimer = startOfferTimer;
+    window.initializeCompletionScreen = initializeCompletionScreen;
+    
+    // Dynamic Time Slot Functions - NEW
+    window.generateDynamicTimeSlots = generateDynamicTimeSlots;
+    window.getDateLabel = getDateLabel;
+    window.openCallScheduler = openCallScheduler;
+    
+    // Modal Personalization Functions - UPDATED
+    window.displaySetupIntroModal = displaySetupIntroModal;
+    
+    // Category Enhancement Functions - UPDATED
+    window.loadCategoriesContent = loadCategoriesContent;
+    
     // Preview Functions - UPDATED
     window.generatePreviewData = generatePreviewData;
     window.validatePreviewData = validatePreviewData;
@@ -3239,52 +2776,48 @@ if (typeof window !== 'undefined') {
     window.generateSubdomainUrl = generateSubdomainUrl;
     window.mapSubcategoriesToCategories = mapSubcategoriesToCategories;
     window.processSelectedProducts = processSelectedProducts;
-    window.showPreviewModal = showPreviewModal;
-    window.closePreviewModal = closePreviewModal;
-    window.escapeHtml = escapeHtml;
-    window.escapeForAttribute = escapeForAttribute;
-    window.copyToClipboard = copyToClipboard;
-    window.downloadJSON = downloadJSON;
-    window.logToConsole = logToConsole;
-    
-    // NEW API Function
-    window.callTopikoAPI = callTopikoAPI;
-    
-    // 🆕 NEW: API Restructuring Functions
-    window.getFullThemeName = getFullThemeName;
     window.callPreviewTemplateAPI = callPreviewTemplateAPI;
+    window.getFullThemeName = getFullThemeName;
     
-    // NEW Variant Processing Functions
+    // Variant Processing Functions - NEW
     window.processProductVariants = processProductVariants;
     window.convertSimpleVariantsToObjects = convertSimpleVariantsToObjects;
     window.determineVariantType = determineVariantType;
     window.calculateVariantPrice = calculateVariantPrice;
     
-    // NEW Variant Display Functions
+    // Variant Display Functions - NEW
     window.createProductCardWithVariants = createProductCardWithVariants;
     window.selectProductVariant = selectProductVariant;
     
-    // DEBUG Functions - NEW
-    window.debugProductPrices = debugProductPrices;
-    window.debugCurrentProducts = debugCurrentProducts;
-    window.forceRefreshPrices = forceRefreshPrices;
+    // Enhanced Image Functions - NEW
+    window.initializeReliableImageLoading = initializeReliableImageLoading;
+    window.setupImageRetrySystem = setupImageRetrySystem;
+    window.preloadProductImages = preloadProductImages;
+    window.handleImageError = handleImageError;
+    window.enhanceImageElement = enhanceImageElement;
     
     // Product Selection Functions - UPDATED
     window.switchProductMode = switchProductMode;
-    window.selectPopularProducts = selectPopularProducts;
-    window.clearAllSelections = clearAllSelections;
-    window.toggleProductSelection = toggleProductSelection;
-    window.editProduct = editProduct;
-    window.saveProductEdit = saveProductEdit;
-    window.cancelProductEdit = cancelProductEdit;
-    window.addCustomProduct = addCustomProduct;
+    window.loadProductSelector = loadProductSelector;
+    window.loadFilteredProductsGrid = loadFilteredProductsGrid;
+    window.getProductsForSelectedCategories = getProductsForSelectedCategories;
+    window.setupProductControls = setupProductControls;
+    window.setupQuickFilters = setupQuickFilters;
+    window.updatePriceRangeDisplay = updatePriceRangeDisplay;
     window.updateQuickFiltersForSelection = updateQuickFiltersForSelection;
     window.applyQuickFilter = applyQuickFilter;
+    window.filterAndDisplayProducts = filterAndDisplayProducts;
+    window.displayProductsGridWithVariants = displayProductsGridWithVariants;
+    window.toggleProductSelection = toggleProductSelection;
+    window.updateProductCard = updateProductCard;
+    window.findProductById = findProductById;
+    window.selectPopularProducts = selectPopularProducts;
+    window.clearAllSelections = clearAllSelections;
+    window.updateSelectedProductsSection = updateSelectedProductsSection;
     
     // Lead Flow Functions
     window.startLeadFlow = startLeadFlow;
     window.selectLanguage = selectLanguage;
-    window.updateGoalsTracking = updateGoalsTracking;
     window.showGoalsTransitionModal = showGoalsTransitionModal;
     window.submitGoals = submitGoals;
     window.trackFormProgress = trackFormProgress;
@@ -3295,63 +2828,54 @@ if (typeof window !== 'undefined') {
     window.proceedToCategories = proceedToCategories;
     window.toggleCategorySelection = toggleCategorySelection;
     window.toggleSubcategorySelection = toggleSubcategorySelection;
+    window.loadCategories = loadCategories;
+    window.updateSelectionSummary = updateSelectionSummary;
+    window.updateNextButton = updateNextButton;
+    window.updateProductCategoriesDropdown = updateProductCategoriesDropdown;
+    window.updateUserCategories = updateUserCategories;
     window.proceedToProducts = proceedToProducts;
+    window.addCustomProduct = addCustomProduct;
     window.requestFollowup = requestFollowup;
     window.proceedToThemes = proceedToThemes;
     window.selectTheme = selectTheme;
     window.completeSetup = completeSetup;
     
-    // Modal Functions
-    window.displayGoalsTransitionModal = displayGoalsTransitionModal;
-    window.proceedFromGoalsModal = proceedFromGoalsModal;
-    window.displaySetupIntroModal = displaySetupIntroModal;
-    window.proceedFromSetupModal = proceedFromSetupModal;
-    window.updateGoalsModal = updateGoalsModal;
-    
     // Completion Screen Functions
-    window.openCallScheduler = openCallScheduler;
     window.openExploreForm = openExploreForm;
     window.selectOffer = selectOffer;
     window.displayRandomOffers = displayRandomOffers;
     window.getRandomOffers = getRandomOffers;
-    window.startOfferTimer = startOfferTimer;
-    window.initializeCompletionScreen = initializeCompletionScreen;
     window.selectTimeSlot = selectTimeSlot;
     window.confirmScheduleAndComplete = confirmScheduleAndComplete;
     window.selectReason = selectReason;
     window.submitReasonAndComplete = submitReasonAndComplete;
     window.showCompletionSuccess = showCompletionSuccess;
     
-    // Navigation Functions
-    window.goBack = goBack;
-    window.navigateToStep = navigateToStep;
-    window.toggleScoreDetails = toggleScoreDetails;
-    window.toggleDebugPanel = toggleDebugPanel;
+    // Modal Functions
+    window.displayGoalsTransitionModal = displayGoalsTransitionModal;
+    window.proceedFromGoalsModal = proceedFromGoalsModal;
+    window.proceedFromSetupModal = proceedFromSetupModal;
+    window.updateGoalsModal = updateGoalsModal;
+    
+    // API Functions
+    window.callTopikoAPI = callTopikoAPI;
+    
+    // Debug Functions
+    window.debugProductPrices = debugProductPrices;
+    window.debugCurrentProducts = debugCurrentProducts;
+    window.forceRefreshPrices = forceRefreshPrices;
+    
+    console.log('✅ ALL ENHANCED FUNCTIONS AVAILABLE GLOBALLY');
 }
 
-window.TopikoUtils.addDebugLog('📱 COMPLETE UPDATED Topiko Lead Form loaded with FIXED PRICE DISPLAY', 'success');
-console.log('📱 COMPLETE UPDATED Topiko Lead Form Ready');
-console.log('✅ JSON FORMAT UPDATED - Subdomain and variants');
-console.log('✅ VARIANT PRICING ADDED - Dynamic price updates');
-console.log('✅ PRICE DISPLAY FIXED - Enhanced debugging');
-console.log('✅ ALL FUNCTIONS UPDATED AND AVAILABLE');
-console.log('✅ GLOBAL AVAILABILITY CONFIRMED');
-if (typeof window !== 'undefined') {
-    // Enhanced Image Functions - NEW
-    window.initializeReliableImageLoading = initializeReliableImageLoading;
-    window.setupImageRetrySystem = setupImageRetrySystem;
-    window.preloadProductImages = preloadProductImages;
-    window.checkImageQuality = checkImageQuality;
-    window.refreshAllProductImages = refreshAllProductImages;
-    
-    // Updated Display Functions - REPLACED
-    window.displayProductsGridWithVariants = displayProductsGridWithVariants;
-    window.loadFilteredProductsGrid = loadFilteredProductsGrid;
-    window.createProductCardWithVariants = createProductCardWithVariants;
-    window.handleImageError = handleImageError;
-    
-    // Enhanced Debug Functions - UPDATED
-    window.debugProductPrices = debugProductPrices;
-    
-    console.log('✅ Enhanced image loading functions available globally');
-}
+window.TopikoUtils.addDebugLog('📱 COMPLETE ENHANCED Topiko Lead Form loaded with ALL 8 ENHANCEMENTS', 'success');
+console.log('📱 ENHANCED Topiko Lead Form Ready');
+console.log('✅ ENHANCEMENT 1: Welcome Screen Message - UPDATED');
+console.log('✅ ENHANCEMENT 2: Goals Page Overhaul (6 goals, 3-limit) - COMPLETE');
+console.log('✅ ENHANCEMENT 3: Business Type Options - UPDATED');
+console.log('✅ ENHANCEMENT 4: Modal Personalization - FIXED');
+console.log('✅ ENHANCEMENT 5: Categories Checkbox Enhancement - COMPLETE');
+console.log('✅ ENHANCEMENT 6: Themes CSS Fixes - READY FOR CSS UPDATE');
+console.log('✅ ENHANCEMENT 7: Completion Coupon & Timer - COMPLETE');
+console.log('✅ ENHANCEMENT 8: Call Scheduling Logic - COMPLETE');
+console.log('✅ ALL FUNCTIONS UPDATED AND AVAILABLE GLOBALLY');
