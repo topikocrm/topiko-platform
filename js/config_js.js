@@ -388,7 +388,7 @@ const BUSINESS_CATEGORIES = {
             'mens-wear': {
                 name: "Men's Wear",
                 icon: '👔',
-                subcategories: ['shirts', 'pants', 'suits', 'ethnic-wear', 'casual-wear', 'formal-wear', 'kurtas', 'sherwanis']
+                subcategories: ['shirts', 'pants', 'suits', 'ethnic-wear', 'casual-wear', 'formal-wear', 'kurtas', 'sherwanis', 'blazers']
             },
             'womens-wear': {
                 name: "Women's Wear",
@@ -398,12 +398,22 @@ const BUSINESS_CATEGORIES = {
             'accessories': {
                 name: 'Fashion Accessories',
                 icon: '👜',
-                subcategories: ['bags', 'belts', 'wallets', 'scarves', 'hats', 'sunglasses', 'watches', 'jewelry']
+                subcategories: ['bags', 'belts', 'wallets', 'scarves', 'hats', 'sunglasses', 'watches', 'jewelry', 'ties']
             },
             'footwear': {
                 name: 'Footwear',
                 icon: '👠',
-                subcategories: ['mens-shoes', 'womens-shoes', 'sandals', 'boots', 'sneakers', 'ethnic-footwear']
+                subcategories: ['mens-shoes', 'womens-shoes', 'sandals', 'boots', 'sneakers', 'ethnic-footwear', 'loafers', 'heels', 'flats']
+            },
+            'kids-wear': {
+                name: "Kids' Wear",
+                icon: '👶',
+                subcategories: ['baby-clothes', 'boys-clothing', 'girls-clothing', 'school-uniforms', 'party-wear', 'ethnic-kids', 'kids-nightwear', 'kids-swimwear', 'kids-winter-wear']
+            },
+            'designer-collection': {
+                name: 'Designer & Premium',
+                icon: '✨',
+                subcategories: ['designer-sarees', 'designer-lehengas', 'designer-suits', 'bridal-wear', 'groom-wear', 'cocktail-dresses', 'evening-gowns', 'luxury-handbags', 'premium-watches']
             }
         }
     },
@@ -810,12 +820,23 @@ const SUBCATEGORY_NAMES = {
     // Fashion & Boutique
     'shirts': 'Shirts', 'pants': 'Pants', 'suits': 'Suits', 'ethnic-wear': 'Ethnic Wear',
     'casual-wear': 'Casual Wear', 'formal-wear': 'Formal Wear', 'kurtas': 'Kurtas', 'sherwanis': 'Sherwanis',
-    'dresses': 'Dresses', 'tops': 'Tops', 'bottoms': 'Bottoms', 'sarees': 'Sarees',
+    'blazers': 'Blazers', 'dresses': 'Dresses', 'tops': 'Tops', 'bottoms': 'Bottoms', 'sarees': 'Sarees',
     'lehengas': 'Lehengas', 'salwar-suits': 'Salwar Suits', 'western-wear': 'Western Wear', 'kurtis': 'Kurtis',
-    'bags': 'Bags', 'belts': 'Belts', 'wallets': 'Wallets', 'scarves': 'Scarves',
+    'bags': 'Bags', 'belts': 'Belts', 'wallets': 'Wallets', 'scarves': 'Scarves', 'ties': 'Ties',
     'hats': 'Hats', 'sunglasses': 'Sunglasses', 'watches': 'Watches', 'jewelry': 'Jewelry',
     'mens-shoes': "Men's Shoes", 'womens-shoes': "Women's Shoes", 'sandals': 'Sandals',
     'boots': 'Boots', 'sneakers': 'Sneakers', 'ethnic-footwear': 'Ethnic Footwear',
+    'loafers': 'Loafers', 'heels': 'Heels', 'flats': 'Flats',
+    
+    // Kids' Wear - New Category
+    'baby-clothes': 'Baby Clothes', 'boys-clothing': "Boys' Clothing", 'girls-clothing': "Girls' Clothing",
+    'school-uniforms': 'School Uniforms', 'party-wear': 'Party Wear', 'ethnic-kids': 'Ethnic Kids Wear',
+    'kids-nightwear': 'Kids Nightwear', 'kids-swimwear': 'Kids Swimwear', 'kids-winter-wear': 'Kids Winter Wear',
+    
+    // Designer & Premium - New Category
+    'designer-sarees': 'Designer Sarees', 'designer-lehengas': 'Designer Lehengas', 'designer-suits': 'Designer Suits',
+    'bridal-wear': 'Bridal Wear', 'groom-wear': 'Groom Wear', 'cocktail-dresses': 'Cocktail Dresses',
+    'evening-gowns': 'Evening Gowns', 'luxury-handbags': 'Luxury Handbags', 'premium-watches': 'Premium Watches',
 
     // Food & Catering
     'rotis-parathas': 'Rotis & Parathas', 'curries': 'Curries', 'dal-preparations': 'Dal',
