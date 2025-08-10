@@ -197,8 +197,21 @@ const ENHANCED_FALLBACK_IMAGES = {
 function getReliableProductImage(product, category, subcategory, attemptIndex = 0) {
     console.log(`🖼️ Getting reliable image for: ${product.id || 'unknown'} (attempt ${attemptIndex + 1})`);
     
-    // Layer 1: Try Indian Product Images first
+    // Layer 1: Try to get the best available image
     if (attemptIndex === 0) {
+        // Use Better Product Images system first
+        if (window.BetterProductImages && window.BetterProductImages.getBetterProductImage) {
+            const betterImage = window.BetterProductImages.getBetterProductImage(
+                product,
+                category,
+                subcategory
+            );
+            if (betterImage) {
+                console.log(`🎯 Using better product image: ${betterImage}`);
+                return betterImage;
+            }
+        }
+        
         // Check for Indian product images
         if (window.IndianProductImages && window.IndianProductImages.getIndianProductImage) {
             const indianImage = window.IndianProductImages.getIndianProductImage(
@@ -213,32 +226,12 @@ function getReliableProductImage(product, category, subcategory, attemptIndex = 
             }
         }
         
-        // Check Fake Store API images for electronics
-        if (window.FakeStoreAPI && window.FakeStoreAPI.FAKESTORE_IMAGE_MAPPING[product.id]) {
-            const fakeStoreImage = window.FakeStoreAPI.FAKESTORE_IMAGE_MAPPING[product.id];
-            console.log(`🎯 Using Fake Store image: ${fakeStoreImage}`);
-            return fakeStoreImage;
-        }
-        
-        // Check general real product images
-        if (window.RealProductImages && window.RealProductImages.getRealProductImage) {
-            const realImage = window.RealProductImages.getRealProductImage(
-                product.id, 
-                product.name || '', 
-                category, 
-                subcategory
-            );
-            if (realImage) {
-                console.log(`🎯 Using real product image: ${realImage}`);
-                return realImage;
-            }
-        }
-        
-        // Fallback to Picsum with seed for consistency
-        const seed = product.id || `${category}-${subcategory}`;
-        const picsumUrl = `https://picsum.photos/seed/${seed}/300/300`;
-        console.log(`🎯 Using Picsum: ${picsumUrl}`);
-        return picsumUrl;
+        // Never use Picsum as it shows random nature photos
+        // Instead use placeholder with product name
+        const shortName = (product.name || 'Product').substring(0, 15);
+        const placeholderUrl = `https://via.placeholder.com/300x300/6366f1/ffffff?text=${encodeURIComponent(shortName)}`;
+        console.log(`🎯 Using placeholder: ${placeholderUrl}`);
+        return placeholderUrl;
     }
     
     // Layer 2: Use Placehold.co with product name
