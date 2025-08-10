@@ -193,68 +193,21 @@ const ENHANCED_FALLBACK_IMAGES = {
     ]
 };
 
-// Smart image retrieval with 4-layer fallback system
+// SIMPLIFIED image retrieval - direct and reliable
 function getReliableProductImage(product, category, subcategory, attemptIndex = 0) {
-    console.log(`🖼️ Getting reliable image for: ${product.id || 'unknown'} (attempt ${attemptIndex + 1})`);
-    
-    // Layer 1: Try to get the best available image
-    if (attemptIndex === 0) {
-        // Use Better Product Images system first
-        if (window.BetterProductImages && window.BetterProductImages.getBetterProductImage) {
-            const betterImage = window.BetterProductImages.getBetterProductImage(
-                product,
-                category,
-                subcategory
-            );
-            if (betterImage) {
-                console.log(`🎯 Using better product image: ${betterImage}`);
-                return betterImage;
-            }
-        }
-        
-        // Check for Indian product images
-        if (window.IndianProductImages && window.IndianProductImages.getIndianProductImage) {
-            const indianImage = window.IndianProductImages.getIndianProductImage(
-                product.id,
-                product.name || '',
-                category,
-                subcategory
-            );
-            if (indianImage) {
-                console.log(`🎯 Using Indian product image: ${indianImage}`);
-                return indianImage;
-            }
-        }
-        
-        // Never use Picsum as it shows random nature photos
-        // Instead use placeholder with product name
-        const shortName = (product.name || 'Product').substring(0, 15);
-        const placeholderUrl = `https://via.placeholder.com/300x300/6366f1/ffffff?text=${encodeURIComponent(shortName)}`;
-        console.log(`🎯 Using placeholder: ${placeholderUrl}`);
-        return placeholderUrl;
+    // SIMPLE: Just use the simple image system
+    if (window.SimpleProductImages) {
+        const imageUrl = window.SimpleProductImages.getSimpleProductImage(
+            product.id,
+            category,
+            subcategory
+        );
+        console.log(`✅ Image for ${product.id}: ${imageUrl}`);
+        return imageUrl;
     }
     
-    // Layer 2: Use Placehold.co with product name
-    if (attemptIndex === 1 && product.name) {
-        const shortName = product.name.split(' ').slice(0, 2).join(' ').substring(0, 15);
-        const encodedName = encodeURIComponent(shortName);
-        const placeholdUrl = `https://placehold.co/300x300/6366f1/ffffff?text=${encodedName}`;
-        console.log(`🎯 Using Placehold: ${placeholdUrl}`);
-        return placeholdUrl;
-    }
-    
-    // Layer 3: Use DummyImage as backup
-    if (attemptIndex === 2) {
-        const categoryName = category || 'Product';
-        const text = categoryName.substring(0, 10);
-        const dummyUrl = `https://dummyimage.com/300x300/764ba2/fff&text=${text}`;
-        console.log(`🎯 Using DummyImage: ${dummyUrl}`);
-        return dummyUrl;
-    }
-    
-    // Layer 4: SVG placeholder (always works)
-    console.log(`📦 Using final placeholder for: ${product.id || 'unknown'}`);
-    return getPlaceholderImage();
+    // Fallback - should never happen
+    return 'https://m.media-amazon.com/images/I/71sNyvc-9GL._AC_UL320_.jpg';
 }
 
 // Enhanced fallback image function
