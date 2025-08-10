@@ -193,21 +193,21 @@ const ENHANCED_FALLBACK_IMAGES = {
     ]
 };
 
-// SIMPLIFIED image retrieval - direct and reliable
+// Smart image retrieval with retry logic
 function getReliableProductImage(product, category, subcategory, attemptIndex = 0) {
-    // SIMPLE: Just use the simple image system
-    if (window.SimpleProductImages) {
-        const imageUrl = window.SimpleProductImages.getSimpleProductImage(
-            product.id,
-            category,
-            subcategory
+    // Use Smart Image Loader if available
+    if (window.SmartImageLoader) {
+        // Return immediate URL (will be tested and replaced if needed)
+        const imageUrl = window.SmartImageLoader.getProductImageSync(
+            product.name || product.id,
+            product.id
         );
-        console.log(`✅ Image for ${product.id}: ${imageUrl}`);
+        console.log(`🔄 Initial image for ${product.id}: ${imageUrl}`);
         return imageUrl;
     }
     
-    // Fallback - should never happen
-    return 'https://m.media-amazon.com/images/I/71sNyvc-9GL._AC_UL320_.jpg';
+    // Fallback to Fake Store API image
+    return 'https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg';
 }
 
 // Enhanced fallback image function
