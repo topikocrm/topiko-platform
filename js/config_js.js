@@ -197,35 +197,66 @@ const ENHANCED_FALLBACK_IMAGES = {
 function getReliableProductImage(product, category, subcategory, attemptIndex = 0) {
     console.log(`🖼️ Getting reliable image for: ${product.id || 'unknown'} (attempt ${attemptIndex + 1})`);
     
-    if (attemptIndex === 0 && product.image) {
-        // Layer 1: Original image (properly formatted if Unsplash)
-        if (product.image.includes('unsplash.com') && !product.image.includes('ixlib=rb-4.0.3')) {
-            // Extract photo ID and reformat
-            const photoIdMatch = product.image.match(/photo-([a-zA-Z0-9_-]+)/);
-            if (photoIdMatch) {
-                const properUrl = formatUnsplashUrl(photoIdMatch[1]);
-                console.log(`🔧 Reformatted Unsplash URL: ${properUrl}`);
-                return properUrl;
+    // Layer 1: Try Indian Product Images first
+    if (attemptIndex === 0) {
+        // Check for Indian product images
+        if (window.IndianProductImages && window.IndianProductImages.getIndianProductImage) {
+            const indianImage = window.IndianProductImages.getIndianProductImage(
+                product.id,
+                product.name || '',
+                category,
+                subcategory
+            );
+            if (indianImage) {
+                console.log(`🎯 Using Indian product image: ${indianImage}`);
+                return indianImage;
             }
         }
-        return product.image;
+        
+        // Check Fake Store API images for electronics
+        if (window.FakeStoreAPI && window.FakeStoreAPI.FAKESTORE_IMAGE_MAPPING[product.id]) {
+            const fakeStoreImage = window.FakeStoreAPI.FAKESTORE_IMAGE_MAPPING[product.id];
+            console.log(`🎯 Using Fake Store image: ${fakeStoreImage}`);
+            return fakeStoreImage;
+        }
+        
+        // Check general real product images
+        if (window.RealProductImages && window.RealProductImages.getRealProductImage) {
+            const realImage = window.RealProductImages.getRealProductImage(
+                product.id, 
+                product.name || '', 
+                category, 
+                subcategory
+            );
+            if (realImage) {
+                console.log(`🎯 Using real product image: ${realImage}`);
+                return realImage;
+            }
+        }
+        
+        // Fallback to Picsum with seed for consistency
+        const seed = product.id || `${category}-${subcategory}`;
+        const picsumUrl = `https://picsum.photos/seed/${seed}/300/300`;
+        console.log(`🎯 Using Picsum: ${picsumUrl}`);
+        return picsumUrl;
     }
     
-    // Layer 2: Category-specific fallback images
-    const categoryKey = subcategory || category;
-    if (attemptIndex === 1 && ENHANCED_FALLBACK_IMAGES[categoryKey]) {
-        const fallbacks = ENHANCED_FALLBACK_IMAGES[categoryKey];
-        const fallbackUrl = fallbacks[Math.floor(Math.random() * fallbacks.length)];
-        console.log(`🎯 Using category fallback: ${fallbackUrl}`);
-        return fallbackUrl;
+    // Layer 2: Use Placehold.co with product name
+    if (attemptIndex === 1 && product.name) {
+        const shortName = product.name.split(' ').slice(0, 2).join(' ').substring(0, 15);
+        const encodedName = encodeURIComponent(shortName);
+        const placeholdUrl = `https://placehold.co/300x300/6366f1/ffffff?text=${encodedName}`;
+        console.log(`🎯 Using Placehold: ${placeholdUrl}`);
+        return placeholdUrl;
     }
     
-    // Layer 3: Dynamic Unsplash Source API
+    // Layer 3: Use DummyImage as backup
     if (attemptIndex === 2) {
-        const searchTerms = getCategorySearchTerms(category, subcategory);
-        const dynamicUrl = getUnsplashSourceUrl(searchTerms, 300, 300, `${category}-${Date.now()}`);
-        console.log(`🔍 Using dynamic source: ${dynamicUrl}`);
-        return dynamicUrl;
+        const categoryName = category || 'Product';
+        const text = categoryName.substring(0, 10);
+        const dummyUrl = `https://dummyimage.com/300x300/764ba2/fff&text=${text}`;
+        console.log(`🎯 Using DummyImage: ${dummyUrl}`);
+        return dummyUrl;
     }
     
     // Layer 4: SVG placeholder (always works)
