@@ -119,16 +119,23 @@ async function getWorkingProductImage(productName, productId) {
         return imageCache[productId];
     }
     
-    // Find matching image sources based on product name
-    const nameLower = (productName || '').toLowerCase();
-    let imageSources = IMAGE_SOURCES['default'];
+    // Use FREE image sources first
+    let imageSources = [];
     
-    // Try to find better matching sources
-    for (const [keyword, sources] of Object.entries(IMAGE_SOURCES)) {
-        if (nameLower.includes(keyword)) {
-            imageSources = sources;
-            console.log(`🔍 Found keyword match: ${keyword} for ${productName}`);
-            break;
+    if (window.FreeImageSources) {
+        imageSources = window.FreeImageSources.getFreeImages(productName);
+        console.log(`🆓 Using free images for ${productName}`);
+    } else {
+        // Fallback to old system
+        const nameLower = (productName || '').toLowerCase();
+        imageSources = IMAGE_SOURCES['default'];
+        
+        for (const [keyword, sources] of Object.entries(IMAGE_SOURCES)) {
+            if (nameLower.includes(keyword)) {
+                imageSources = sources;
+                console.log(`🔍 Found keyword match: ${keyword} for ${productName}`);
+                break;
+            }
         }
     }
     
@@ -145,7 +152,7 @@ async function getWorkingProductImage(productName, productId) {
         }
     }
     
-    // If nothing worked, return the last fallback
+    // If nothing worked, return the last fallback (usually placeholder)
     const fallback = imageSources[imageSources.length - 1];
     console.log(`⚠️ Using final fallback for ${productName}`);
     imageCache[productId] = fallback;

@@ -1138,6 +1138,7 @@
     </div>
 
     <!-- SCRIPT LOADING ORDER - CRITICAL -->
+    <script src="js/free_image_sources.js"></script> <!-- FREE Image Sources (No subscription needed) -->
     <script src="js/smart_image_loader.js"></script> <!-- Smart Image Loader with Retry -->
     <script src="js/config_js.js"></script>     <!-- Configuration -->
     <script src="js/utils_js.js"></script>      <!-- Utilities -->  
@@ -1147,6 +1148,59 @@
     <!-- Additional Initialization Script -->
     <script>
     // Additional initialization and safety checks
+    
+    // Add retry logic for images after DOM updates
+    const originalCreateElement = document.createElement;
+    document.createElement = function(tagName) {
+        const element = originalCreateElement.call(document, tagName);
+        
+        // If it's a div that might contain product images
+        if (tagName === 'div') {
+            // Use MutationObserver to watch for product cards
+            setTimeout(() => {
+                if (element.classList && element.classList.contains('product-card-selector')) {
+                    const productId = element.getAttribute('data-product-id');
+                    const imageDiv = element.querySelector('.product-selector-image');
+                    const titleDiv = element.querySelector('.product-selector-title');
+                    
+                    if (imageDiv && titleDiv && window.SmartImageLoader) {
+                        const productName = titleDiv.textContent;
+                        // Update image with retry logic
+                        window.SmartImageLoader.loadImageWithRetry(imageDiv, productName, productId);
+                    }
+                }
+            }, 100);
+        }
+        
+        return element;
+    };
+    
+    // Also check for existing product cards after page load
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+            const productCards = document.querySelectorAll('.product-card-selector');
+            productCards.forEach(card => {
+                const productId = card.getAttribute('data-product-id');
+                const imageDiv = card.querySelector('.product-selector-image');
+                const titleDiv = card.querySelector('.product-selector-title');
+                
+                if (imageDiv && titleDiv && window.SmartImageLoader) {
+                    const productName = titleDiv.textContent;
+                    // Get current background image URL
+                    const currentBg = window.getComputedStyle(imageDiv).backgroundImage;
+                    const currentUrl = currentBg.match(/url\(["']?([^"']*)["']?\)/)?.[1];
+                    
+                    // Test current image and replace if needed
+                    window.SmartImageLoader.getWorkingProductImage(productName, productId).then(newUrl => {
+                        if (newUrl && newUrl !== currentUrl) {
+                            imageDiv.style.backgroundImage = `url('${newUrl}')`;
+                            console.log(`✅ Updated image for ${productName}`);
+                        }
+                    });
+                }
+            });
+        }, 2000); // Wait for products to render
+    });
     document.addEventListener('DOMContentLoaded', function() {
         console.log('🔧 Running HTML compatibility fixes...');
         
