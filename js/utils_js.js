@@ -217,16 +217,28 @@ function showScreen(screenId) {
             
             if (screenId === 'products') {
                 updateProductsHelpSection();
-                // Initialize product selector if not already done
+                // Initialize product selector - reload if category changed or not loaded
                 setTimeout(() => {
-                    if (!window.topikoApp.productsLoaded && typeof window.switchProductMode === 'function') {
+                    const currentBusinessCategory = document.getElementById('category')?.value;
+                    const needsReload = !window.topikoApp.productsLoaded || 
+                                      window.topikoApp.lastLoadedCategory !== currentBusinessCategory;
+                    
+                    if (needsReload && typeof window.switchProductMode === 'function') {
+                        // Mark as not loaded to force refresh
+                        window.topikoApp.productsLoaded = false;
+                        window.topikoApp.lastLoadedCategory = currentBusinessCategory;
                         window.switchProductMode('select');
+                        console.log(`🔄 Reloading products for category: ${currentBusinessCategory}`);
                     }
                 }, 300);
             }
             
             if (screenId === 'themes') {
-                populateThemePreviews();
+                // Always refresh theme previews to reflect current products/categories
+                setTimeout(() => {
+                    populateThemePreviews();
+                    console.log(`🎨 Refreshed theme previews with ${window.topikoApp.userProducts?.length || 0} products`);
+                }, 100);
             }
 
             // Add personalization
