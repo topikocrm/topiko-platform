@@ -387,17 +387,18 @@ function loadCategoriesContent(businessCategory, categoriesContainer) {
 
 // Helper function to get template identifier for API calls
 function getFullThemeName(themeId) {
-    // Try different template identifier formats to see what your API expects
+    // Return the theme ID directly for API calls
+    // The API should receive 'modern', 'vibrant', etc., not display names
     const themeTemplateIds = {
-        'modern': 'Theme1',      // Try Template1, Theme1, etc.
-        'vibrant': 'Theme2', 
-        'professional': 'Theme3',
-        'traditional': 'Theme4',
-        'creative': 'Theme5',
-        'luxury': 'Theme6'
+        'modern': 'modern',
+        'vibrant': 'vibrant', 
+        'professional': 'professional',
+        'traditional': 'traditional',
+        'creative': 'creative',
+        'luxury': 'luxury'
     };
     
-    return themeTemplateIds[themeId] || 'Theme1';
+    return themeTemplateIds[themeId] || 'modern';
 }
 
 // ========================================
