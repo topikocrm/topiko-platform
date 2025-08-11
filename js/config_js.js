@@ -193,27 +193,35 @@ const ENHANCED_FALLBACK_IMAGES = {
     ]
 };
 
-// Smart image retrieval with retry logic
+// Smart image retrieval with SVG fallback
 function getReliableProductImage(product, category, subcategory, attemptIndex = 0) {
-    // FIRST: Try direct mapping (most reliable)
+    // Use SVG system which includes direct mapping check
+    if (window.SVGProductImages) {
+        const imageUrl = window.SVGProductImages.getProductImageWithSVGFallback(
+            product.id,
+            product.name || product.id
+        );
+        console.log(`🎨 Image for ${product.id}: ${imageUrl.substring(0, 50)}...`);
+        return imageUrl;
+    }
+    
+    // Fallback to direct mapping if SVG system not loaded
     if (window.DirectProductImages) {
         const directImage = window.DirectProductImages.getDirectProductImage(product.id);
         console.log(`✅ Direct image for ${product.id}`);
         return directImage;
     }
     
-    // SECOND: Use Smart Image Loader if available
-    if (window.SmartImageLoader) {
-        const imageUrl = window.SmartImageLoader.getProductImageSync(
-            product.name || product.id,
-            product.id
-        );
-        console.log(`🔄 Smart loader image for ${product.id}`);
-        return imageUrl;
-    }
-    
-    // FALLBACK: Flipkart kurta image (always works)
-    return 'https://rukminim2.flixcart.com/image/612/612/xif0q/kurta/x/f/6/xxl-new-white-nofilter-original-imaghzggudfezpr8.jpeg?q=70';
+    // Final fallback: Default SVG
+    const defaultSVG = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <rect width="200" height="200" fill="#f3f4f6"/>
+            <rect x="50" y="50" width="100" height="100" rx="10" fill="#6366f1"/>
+            <text x="100" y="105" text-anchor="middle" fill="white" font-size="14" font-weight="bold">
+                ${(product.name || 'Product').substring(0, 10)}
+            </text>
+        </svg>`)}`;
+    return defaultSVG;
 }
 
 // Enhanced fallback image function

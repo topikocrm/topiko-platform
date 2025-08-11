@@ -92,8 +92,8 @@ const DIRECT_IMAGE_MAP = {
 
 // Get image for product - SUPER SIMPLE
 function getDirectProductImage(productId) {
-    // Return exact mapped image or a safe default
-    return DIRECT_IMAGE_MAP[productId] || 'https://rukminim2.flixcart.com/image/612/612/xif0q/kurta/x/f/6/xxl-new-white-nofilter-original-imaghzggudfezpr8.jpeg?q=70';
+    // Return exact mapped image or null (so SVG fallback can be used)
+    return DIRECT_IMAGE_MAP[productId] || null;
 }
 
 // Export
