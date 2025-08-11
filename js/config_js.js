@@ -195,19 +195,25 @@ const ENHANCED_FALLBACK_IMAGES = {
 
 // Smart image retrieval with retry logic
 function getReliableProductImage(product, category, subcategory, attemptIndex = 0) {
-    // Use Smart Image Loader if available
+    // FIRST: Try direct mapping (most reliable)
+    if (window.DirectProductImages) {
+        const directImage = window.DirectProductImages.getDirectProductImage(product.id);
+        console.log(`✅ Direct image for ${product.id}`);
+        return directImage;
+    }
+    
+    // SECOND: Use Smart Image Loader if available
     if (window.SmartImageLoader) {
-        // Return immediate URL (will be tested and replaced if needed)
         const imageUrl = window.SmartImageLoader.getProductImageSync(
             product.name || product.id,
             product.id
         );
-        console.log(`🔄 Initial image for ${product.id}: ${imageUrl}`);
+        console.log(`🔄 Smart loader image for ${product.id}`);
         return imageUrl;
     }
     
-    // Fallback to Fake Store API image
-    return 'https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg';
+    // FALLBACK: Flipkart kurta image (always works)
+    return 'https://rukminim2.flixcart.com/image/612/612/xif0q/kurta/x/f/6/xxl-new-white-nofilter-original-imaghzggudfezpr8.jpeg?q=70';
 }
 
 // Enhanced fallback image function
