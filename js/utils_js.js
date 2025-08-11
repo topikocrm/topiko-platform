@@ -623,22 +623,75 @@ function populateThemePreviews() {
                 `;
             }
         });
-        return;
+    } else {
+        const previewProducts = window.topikoApp.userProducts.slice(0, 2);
+        
+        themePreviewIds.forEach(previewId => {
+            const previewEl = document.getElementById(previewId);
+            if (previewEl) {
+                previewEl.innerHTML = previewProducts.map(product => 
+                    `<div class="theme-preview-item">
+                        <div style="font-weight: 600; margin-bottom: 2px; font-size: 0.7rem;">${product.name.substring(0, 15)}${product.name.length > 15 ? '...' : ''}</div>
+                        <div style="color: #059669; font-weight: bold; font-size: 0.7rem;">₹${product.price.toLocaleString()}</div>
+                    </div>`
+                ).join('');
+            }
+        });
     }
     
-    const previewProducts = window.topikoApp.userProducts.slice(0, 2);
+    // Restore previously selected theme visual state
+    restoreThemeSelection();
+}
+
+// Restore theme selection visual state when navigating back to themes
+function restoreThemeSelection() {
+    if (!window.topikoApp?.selectedTheme) return;
     
-    themePreviewIds.forEach(previewId => {
-        const previewEl = document.getElementById(previewId);
-        if (previewEl) {
-            previewEl.innerHTML = previewProducts.map(product => 
-                `<div class="theme-preview-item">
-                    <div style="font-weight: 600; margin-bottom: 2px; font-size: 0.7rem;">${product.name.substring(0, 15)}${product.name.length > 15 ? '...' : ''}</div>
-                    <div style="color: #059669; font-weight: bold; font-size: 0.7rem;">₹${product.price.toLocaleString()}</div>
-                </div>`
-            ).join('');
-        }
+    // Remove all selected states first
+    document.querySelectorAll('.theme-option').forEach(option => {
+        option.classList.remove('selected');
     });
+    
+    // Find and mark the previously selected theme
+    const themeMap = {
+        'modern': 0,
+        'vibrant': 1, 
+        'professional': 2,
+        'traditional': 3,
+        'creative': 4,
+        'luxury': 5
+    };
+    
+    const themeOptions = document.querySelectorAll('.theme-option');
+    const selectedIndex = themeMap[window.topikoApp.selectedTheme];
+    
+    if (selectedIndex !== undefined && themeOptions[selectedIndex]) {
+        themeOptions[selectedIndex].classList.add('selected');
+        
+        // Update the selected theme name display
+        const themeNames = {
+            'modern': 'Modern & Minimalist',
+            'vibrant': 'Colorful & Vibrant',
+            'professional': 'Professional & Corporate',
+            'traditional': 'Traditional & Classic', 
+            'creative': 'Creative & Artistic',
+            'luxury': 'Elegant & Luxury'
+        };
+        
+        const selectedThemeNameEl = document.getElementById('selectedThemeName');
+        if (selectedThemeNameEl) {
+            selectedThemeNameEl.textContent = themeNames[window.topikoApp.selectedTheme];
+        }
+        
+        // Enable the Complete Setup button
+        const nextBtn = document.getElementById('themeNextBtn');
+        if (nextBtn) {
+            nextBtn.disabled = false;
+            nextBtn.style.opacity = '1';
+        }
+        
+        console.log(`🎨 Restored theme selection: ${window.topikoApp.selectedTheme}`);
+    }
 }
 
 // ========================================
@@ -980,6 +1033,7 @@ if (typeof window !== 'undefined') {
         
         // Themes
         populateThemePreviews,
+        restoreThemeSelection,
         
         // Motivational Messages
         updateMotivationalMessages,
