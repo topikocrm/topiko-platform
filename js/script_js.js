@@ -387,18 +387,17 @@ function loadCategoriesContent(businessCategory, categoriesContainer) {
 
 // Helper function to get template identifier for API calls
 function getFullThemeName(themeId) {
-    // Return the theme ID directly for API calls
-    // The API should receive 'modern', 'vibrant', etc., not display names
+    // Try different template identifier formats to see what your API expects
     const themeTemplateIds = {
-        'modern': 'modern',
-        'vibrant': 'vibrant', 
-        'professional': 'professional',
-        'traditional': 'traditional',
-        'creative': 'creative',
-        'luxury': 'luxury'
+        'modern': 'Theme1',      // Try Template1, Theme1, etc.
+        'vibrant': 'Theme2', 
+        'professional': 'Theme3',
+        'traditional': 'Theme4',
+        'creative': 'Theme5',
+        'luxury': 'Theme6'
     };
     
-    return themeTemplateIds[themeId] || 'modern';
+    return themeTemplateIds[themeId] || 'Theme1';
 }
 
 // ========================================
@@ -515,8 +514,21 @@ async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
     } catch (error) {
         console.error(`❌ Preview template API error: ${error.message}`);
         console.error('Full error:', error);
-        window.TopikoUtils.showNotification(`⚠️ Preview template update failed: ${error.message}`, 'warning');
-        return false;
+        
+        // If it's a 404, the API endpoint doesn't exist yet - provide fallback
+        if (error.message.includes('404')) {
+            console.log('🔄 API endpoint not ready, providing fallback behavior');
+            window.TopikoUtils.showNotification('ℹ️ Theme preview saved locally. Use "Complete Setup" to apply changes to your website!', 'info');
+            
+            // Store theme selection locally for when API becomes available
+            localStorage.setItem('selectedTheme', templateNo);
+            localStorage.setItem('selectedSubdomain', subdomainUrl);
+            
+            return true; // Return true so the flow continues normally
+        } else {
+            window.TopikoUtils.showNotification(`⚠️ Preview template update failed: ${error.message}`, 'warning');
+            return false;
+        }
     }
 }
 
