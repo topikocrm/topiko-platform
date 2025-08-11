@@ -385,18 +385,20 @@ function loadCategoriesContent(businessCategory, categoriesContainer) {
 // HELPER FUNCTIONS FOR ENHANCED FEATURES
 // ========================================
 
-// Helper function to get full theme display names
+// Helper function to get template identifier for API calls
 function getFullThemeName(themeId) {
-    const themeDisplayNames = {
-        'modern': 'Modern & Minimalist',
-        'vibrant': 'Colorful & Vibrant', 
-        'professional': 'Professional & Corporate',
-        'traditional': 'Traditional & Classic',
-        'creative': 'Creative & Artistic',
-        'luxury': 'Elegant & Luxury'
+    // Return the theme ID directly for API calls
+    // The API should receive 'modern', 'vibrant', etc., not display names
+    const themeTemplateIds = {
+        'modern': 'modern',
+        'vibrant': 'vibrant', 
+        'professional': 'professional',
+        'traditional': 'traditional',
+        'creative': 'creative',
+        'luxury': 'luxury'
     };
     
-    return themeDisplayNames[themeId] || 'Modern & Minimalist';
+    return themeTemplateIds[themeId] || 'modern';
 }
 
 // ========================================
@@ -427,9 +429,9 @@ async function generatePreviewData() {
             return;
         }
         
-        // Get full theme display name for template_no
+        // Get template identifier for API
         const templateNo = getFullThemeName(selectedTheme);
-        console.log(`🎯 Template number (full name): ${templateNo}`);
+        console.log(`🎯 Theme ID: ${selectedTheme} -> Template ID: ${templateNo}`);
         
         // Call Preview Template API
         console.log('🚀 About to call Preview Template API...');
