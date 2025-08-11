@@ -1139,7 +1139,11 @@
 
     <!-- SCRIPT LOADING ORDER - CRITICAL -->
     <script src="js/direct_product_images.js"></script> <!-- DIRECT Product Images (Exact mapping) -->
-    <script src="js/svg_product_images.js"></script> <!-- SVG Vector Images (Fallback) -->
+    <script src="js/svg_product_images.js"></script>   <!-- SVG Fallback Images -->
+    <script src="js/inline_svg_images.js"></script>    <!-- Inline SVG Helpers -->
+    <script src="js/smart_image_loader.js"></script>   <!-- Smart Image Sources -->
+    <script src="js/unified_image_loader.js"></script> <!-- Unified Image System -->
+    <script src="js/image_integration.js"></script>    <!-- Integration Helper -->
     <script src="js/config_js.js"></script>     <!-- Configuration -->
     <script src="js/utils_js.js"></script>      <!-- Utilities -->  
     <script src="translations.js"></script>     <!-- Translation System -->
@@ -1163,10 +1167,10 @@
                     const imageDiv = element.querySelector('.product-selector-image');
                     const titleDiv = element.querySelector('.product-selector-title');
                     
-                    if (imageDiv && titleDiv && window.SmartImageLoader) {
+                    if (imageDiv && titleDiv && window.UnifiedImageLoader) {
                         const productName = titleDiv.textContent;
-                        // Update image with retry logic
-                        window.SmartImageLoader.loadImageWithRetry(imageDiv, productName, productId);
+                        // Update image with unified image loader
+                        window.UnifiedImageLoader.loadImageToElement(imageDiv, productId, productName);
                     }
                 }
             }, 100);
@@ -1184,19 +1188,10 @@
                 const imageDiv = card.querySelector('.product-selector-image');
                 const titleDiv = card.querySelector('.product-selector-title');
                 
-                if (imageDiv && titleDiv && window.SmartImageLoader) {
+                if (imageDiv && titleDiv && window.UnifiedImageLoader) {
                     const productName = titleDiv.textContent;
-                    // Get current background image URL
-                    const currentBg = window.getComputedStyle(imageDiv).backgroundImage;
-                    const currentUrl = currentBg.match(/url\(["']?([^"']*)["']?\)/)?.[1];
-                    
-                    // Test current image and replace if needed
-                    window.SmartImageLoader.getWorkingProductImage(productName, productId).then(newUrl => {
-                        if (newUrl && newUrl !== currentUrl) {
-                            imageDiv.style.backgroundImage = `url('${newUrl}')`;
-                            console.log(`✅ Updated image for ${productName}`);
-                        }
-                    });
+                    // Use unified image loader for better reliability
+                    window.UnifiedImageLoader.loadImageToElement(imageDiv, productId, productName);
                 }
             });
         }, 2000); // Wait for products to render

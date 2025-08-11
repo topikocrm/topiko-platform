@@ -195,33 +195,45 @@ const ENHANCED_FALLBACK_IMAGES = {
 
 // Smart image retrieval with SVG fallback
 function getReliableProductImage(product, category, subcategory, attemptIndex = 0) {
-    // Use SVG system which includes direct mapping check
-    if (window.SVGProductImages) {
-        const imageUrl = window.SVGProductImages.getProductImageWithSVGFallback(
-            product.id,
-            product.name || product.id
-        );
-        console.log(`🎨 Image for ${product.id}: ${imageUrl.substring(0, 50)}...`);
-        return imageUrl;
-    }
-    
-    // Fallback to direct mapping if SVG system not loaded
+    // First check for direct mapped images (real product photos)
     if (window.DirectProductImages) {
         const directImage = window.DirectProductImages.getDirectProductImage(product.id);
-        console.log(`✅ Direct image for ${product.id}`);
-        return directImage;
+        if (directImage) {
+            console.log(`✅ Using real image for ${product.id}`);
+            return directImage;
+        }
     }
     
-    // Final fallback: Default SVG
-    const defaultSVG = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(`
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-            <rect width="200" height="200" fill="#f3f4f6"/>
-            <rect x="50" y="50" width="100" height="100" rx="10" fill="#6366f1"/>
-            <text x="100" y="105" text-anchor="middle" fill="white" font-size="14" font-weight="bold">
-                ${(product.name || 'Product').substring(0, 10)}
-            </text>
-        </svg>`)}`;
-    return defaultSVG;
+    // Use UI Avatars for text-based placeholders - ALWAYS WORKS!
+    const productName = product.name || product.id || 'Product';
+    
+    // Get first 2-3 letters for the avatar
+    const words = productName.split(/[\s-]+/);
+    let initials = '';
+    if (words.length >= 2) {
+        initials = words[0][0] + words[1][0];
+    } else {
+        initials = productName.substring(0, 2);
+    }
+    initials = initials.toUpperCase();
+    
+    // Generate color based on category
+    const colors = {
+        "Men's Wear": '3B82F6',      // Blue
+        "Women's Wear": 'EC4899',    // Pink
+        "Kids' Wear": '10B981',      // Green
+        "Designer & Premium": 'F59E0B', // Amber
+        "Footwear": '6B7280',        // Gray
+        "Accessories": 'EF4444'      // Red
+    };
+    
+    const bgColor = colors[category] || '6366F1'; // Default purple
+    
+    // UI Avatars URL - this service ALWAYS returns an image
+    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=${bgColor}&color=fff&size=300&font-size=0.5&bold=true&format=png`;
+    
+    console.log(`🔤 Using text avatar for ${product.id}: ${initials}`);
+    return avatarUrl;
 }
 
 // Enhanced fallback image function

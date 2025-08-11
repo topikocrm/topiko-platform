@@ -129,8 +129,11 @@ const SVG_TEMPLATES = {
 
 // Generate SVG data URL from template
 function getSVGDataURL(svgTemplate) {
-    const encoded = encodeURIComponent(svgTemplate);
-    return `data:image/svg+xml;charset=utf-8,${encoded}`;
+    // Remove unnecessary whitespace and newlines for cleaner encoding
+    const cleanedSvg = svgTemplate.replace(/\s+/g, ' ').trim();
+    // Use base64 encoding for better compatibility
+    const base64 = btoa(unescape(encodeURIComponent(cleanedSvg)));
+    return `data:image/svg+xml;base64,${base64}`;
 }
 
 // Get appropriate SVG for product
@@ -177,14 +180,30 @@ function getProductImageWithSVGFallback(productId, productName) {
     return getProductSVG(productName, productId);
 }
 
+// Test SVG functionality
+function testSVGRendering() {
+    const testSvg = SVG_TEMPLATES['tshirt'];
+    const dataUrl = getSVGDataURL(testSvg);
+    console.log('📐 Testing SVG Data URL (first 100 chars):', dataUrl.substring(0, 100));
+    
+    // Create a test image to verify it loads
+    const testImg = new Image();
+    testImg.onload = () => console.log('✅ SVG test successful - Images can render!');
+    testImg.onerror = () => console.log('❌ SVG test failed - Check encoding!');
+    testImg.src = dataUrl;
+}
+
 // Export
 if (typeof window !== 'undefined') {
     window.SVGProductImages = {
         SVG_TEMPLATES,
         getSVGDataURL,
         getProductSVG,
-        getProductImageWithSVGFallback
+        getProductImageWithSVGFallback,
+        testSVGRendering
     };
     
     console.log('✅ SVG Product Images loaded - Vector fallbacks ready!');
+    // Run test on load
+    setTimeout(testSVGRendering, 100);
 }
