@@ -1139,11 +1139,6 @@
 
     <!-- SCRIPT LOADING ORDER - CRITICAL -->
     <script src="js/direct_product_images.js"></script> <!-- DIRECT Product Images (Exact mapping) -->
-    <script src="js/svg_product_images.js"></script>   <!-- SVG Fallback Images -->
-    <script src="js/inline_svg_images.js"></script>    <!-- Inline SVG Helpers -->
-    <script src="js/smart_image_loader.js"></script>   <!-- Smart Image Sources -->
-    <script src="js/unified_image_loader.js"></script> <!-- Unified Image System -->
-    <script src="js/image_integration.js"></script>    <!-- Integration Helper -->
     <script src="js/config_js.js"></script>     <!-- Configuration -->
     <script src="js/utils_js.js"></script>      <!-- Utilities -->  
     <script src="translations.js"></script>     <!-- Translation System -->
@@ -1167,10 +1162,10 @@
                     const imageDiv = element.querySelector('.product-selector-image');
                     const titleDiv = element.querySelector('.product-selector-title');
                     
-                    if (imageDiv && titleDiv && window.UnifiedImageLoader) {
+                    if (imageDiv && titleDiv && window.TopikoConfig) {
                         const productName = titleDiv.textContent;
-                        // Update image with unified image loader
-                        window.UnifiedImageLoader.loadImageToElement(imageDiv, productId, productName);
+                        // Update image with retry logic
+                        window.TopikoConfig.loadImageWithRetry(imageDiv, productId, 'unknown', 'unknown');
                     }
                 }
             }, 100);
@@ -1188,10 +1183,10 @@
                 const imageDiv = card.querySelector('.product-selector-image');
                 const titleDiv = card.querySelector('.product-selector-title');
                 
-                if (imageDiv && titleDiv && window.UnifiedImageLoader) {
+                if (imageDiv && titleDiv && window.TopikoConfig) {
                     const productName = titleDiv.textContent;
-                    // Use unified image loader for better reliability
-                    window.UnifiedImageLoader.loadImageToElement(imageDiv, productId, productName);
+                    // Use existing image system with retry logic
+                    window.TopikoConfig.loadImageWithRetry(imageDiv, productId, 'unknown', 'unknown');
                 }
             });
         }, 2000); // Wait for products to render

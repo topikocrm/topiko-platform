@@ -195,17 +195,27 @@ const ENHANCED_FALLBACK_IMAGES = {
 
 // Smart image retrieval with SVG fallback
 function getReliableProductImage(product, category, subcategory, attemptIndex = 0) {
-    // First check for direct mapped images (real product photos)
-    if (window.DirectProductImages) {
+    const productName = product.name || product.id || 'Product';
+    
+    // Level 1: Direct mapped images (real product photos) - but only on first attempt
+    if (attemptIndex === 0 && window.DirectProductImages) {
         const directImage = window.DirectProductImages.getDirectProductImage(product.id);
         if (directImage) {
-            console.log(`✅ Using real image for ${product.id}`);
+            console.log(`✅ Using direct image for ${product.id}`);
             return directImage;
         }
     }
     
-    // Use UI Avatars for text-based placeholders - ALWAYS WORKS!
-    const productName = product.name || product.id || 'Product';
+    // Level 2: Generic product images based on product name
+    if (attemptIndex <= 1) {
+        const genericImage = getGenericProductImage(productName, attemptIndex);
+        if (genericImage) {
+            console.log(`🔄 Using generic image for ${productName}`);
+            return genericImage;
+        }
+    }
+    
+    // Level 3: UI Avatars fallback - ALWAYS WORKS!
     
     // Get first 2-3 letters for the avatar
     const words = productName.split(/[\s-]+/);
@@ -236,6 +246,51 @@ function getReliableProductImage(product, category, subcategory, attemptIndex = 
     return avatarUrl;
 }
 
+// Get generic product images based on product name
+function getGenericProductImage(productName, attemptIndex) {
+    const nameLower = productName.toLowerCase();
+    
+    const imageMap = {
+        'kurta': [
+            'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=400&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1566479179817-c0efeb382d13?w=400&h=400&fit=crop'
+        ],
+        'saree': [
+            'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1583391733975-4770270d3c5e?w=400&h=400&fit=crop'
+        ],
+        'dress': [
+            'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1566479179817-c0efeb382d13?w=400&h=400&fit=crop'
+        ],
+        'shirt': [
+            'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=400&fit=crop'
+        ],
+        'tshirt': [
+            'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=400&fit=crop'
+        ],
+        'jeans': [
+            'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&h=400&fit=crop'
+        ],
+        'shoes': [
+            'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop',
+            'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&h=400&fit=crop'
+        ]
+    };
+    
+    // Find matching category
+    for (const [keyword, urls] of Object.entries(imageMap)) {
+        if (nameLower.includes(keyword)) {
+            return urls[attemptIndex] || urls[0];
+        }
+    }
+    
+    return null;
+}
+
 // Enhanced fallback image function
 function getFallbackImage(category, subcategory) {
     return getReliableProductImage({ id: 'fallback' }, category, subcategory, 1);
@@ -247,42 +302,52 @@ function getPlaceholderImage() {
 }
 
 // Frontend image loading with retry
-function loadImageWithRetry(imageElement, productId, category, subcategory, maxAttempts = 4) {
+function loadImageWithRetry(imageElement, productId, category, subcategory, maxAttempts = 3) {
+    if (!imageElement) return;
+    
     let currentAttempt = 0;
     
     function attemptLoad() {
         const reliableUrl = getReliableProductImage(
-            { id: productId, image: imageElement.src }, 
+            { id: productId, name: productId }, 
             category, 
             subcategory, 
             currentAttempt
         );
         
+        // Test the image URL first
         const testImg = new Image();
         testImg.onload = () => {
-            console.log(`✅ Image loaded successfully: ${productId} (attempt ${currentAttempt + 1})`);
-            imageElement.src = reliableUrl;
-            if (imageElement.style) {
-                imageElement.style.backgroundImage = `url("${reliableUrl}")`;
-            }
+            console.log(`✅ Image loaded: ${productId}`);
+            applyImageToElement(imageElement, reliableUrl);
         };
         
         testImg.onerror = () => {
             currentAttempt++;
             if (currentAttempt < maxAttempts) {
-                console.log(`🔄 Trying fallback ${currentAttempt + 1} for: ${productId}`);
-                setTimeout(attemptLoad, 500); // Brief delay before retry
+                console.log(`🔄 Retry ${currentAttempt + 1} for: ${productId}`);
+                setTimeout(attemptLoad, 300);
             } else {
-                console.log(`📦 All attempts failed for: ${productId}, using placeholder`);
+                console.log(`📦 Using placeholder for: ${productId}`);
                 const placeholder = getPlaceholderImage();
-                imageElement.src = placeholder;
-                if (imageElement.style) {
-                    imageElement.style.backgroundImage = `url("${placeholder}")`;
-                }
+                applyImageToElement(imageElement, placeholder);
             }
         };
         
         testImg.src = reliableUrl;
+    }
+    
+    // Helper function to apply image to any element type
+    function applyImageToElement(element, url) {
+        if (element.tagName === 'IMG') {
+            element.src = url;
+        } else {
+            // For divs and other elements, use background image
+            element.style.backgroundImage = `url("${url}")`;
+            element.style.backgroundSize = 'cover';
+            element.style.backgroundPosition = 'center';
+            element.style.backgroundRepeat = 'no-repeat';
+        }
     }
     
     attemptLoad();
