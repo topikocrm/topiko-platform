@@ -611,35 +611,11 @@ function displayProducts() {
 function populateThemePreviews() {
     if (!window.topikoApp) return;
     
-    const themePreviewIds = ['modern-preview', 'vibrant-preview', 'professional-preview', 'traditional-preview', 'creative-preview', 'luxury-preview'];
+    // Don't replace theme images - they should remain as static theme previews
+    // Theme images are important for users to see the visual style differences
+    console.log('🎨 Theme previews populated (using static theme images)');
     
-    if (window.topikoApp.userProducts.length === 0) {
-        themePreviewIds.forEach(previewId => {
-            const previewEl = document.getElementById(previewId);
-            if (previewEl) {
-                previewEl.innerHTML = `
-                    <div class="theme-preview-item">Sample Product</div>
-                    <div class="theme-preview-item">₹999</div>
-                `;
-            }
-        });
-    } else {
-        const previewProducts = window.topikoApp.userProducts.slice(0, 2);
-        
-        themePreviewIds.forEach(previewId => {
-            const previewEl = document.getElementById(previewId);
-            if (previewEl) {
-                previewEl.innerHTML = previewProducts.map(product => 
-                    `<div class="theme-preview-item">
-                        <div style="font-weight: 600; margin-bottom: 2px; font-size: 0.7rem;">${product.name.substring(0, 15)}${product.name.length > 15 ? '...' : ''}</div>
-                        <div style="color: #059669; font-weight: bold; font-size: 0.7rem;">₹${product.price.toLocaleString()}</div>
-                    </div>`
-                ).join('');
-            }
-        });
-    }
-    
-    // Restore previously selected theme visual state
+    // Just restore theme selection state without touching the images
     restoreThemeSelection();
 }
 
