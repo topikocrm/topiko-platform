@@ -483,6 +483,20 @@ async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
     console.log(`🎨 Calling Preview Template API: ${apiUrl}`);
     console.log(`📊 Payload: ${JSON.stringify(payload)}`);
     
+    // Show debug dialog with API parameters
+    const debugMessage = `🔍 DEBUG - API Call Parameters:\n\n` +
+                         `API URL: ${apiUrl}\n` +
+                         `Subdomain URL: ${subdomainUrl}\n` +
+                         `Template No: ${templateNo}\n\n` +
+                         `Full Payload: ${JSON.stringify(payload, null, 2)}`;
+    
+    if (confirm(debugMessage + '\n\nClick OK to continue with API call, Cancel to abort.')) {
+        console.log('User confirmed API call');
+    } else {
+        console.log('User cancelled API call');
+        return false;
+    }
+    
     try {
         const response = await fetch(apiUrl, {
             method: 'POST',
