@@ -2205,15 +2205,24 @@ function selectTheme(themeName, element) {
     nextBtn.disabled = false;
     nextBtn.style.opacity = '1';
     
-    // Enhanced image loading check
+    // Enhanced image loading check with debugging
     const img = element.querySelector('.theme-image');
-    if (img && !img.complete) {
-        img.onload = () => {
-            window.TopikoUtils.addDebugLog(`✅ Theme image loaded: ${themeName}`);
-        };
-        img.onerror = () => {
-            window.TopikoUtils.addDebugLog(`⚠️ Theme image failed to load: ${themeName}`, 'warning');
-        };
+    if (img) {
+        console.log(`🖼️ Theme ${themeName} image src: ${img.src}`);
+        console.log(`🖼️ Theme ${themeName} image ID: ${img.id}`);
+        
+        if (!img.complete) {
+            img.onload = () => {
+                window.TopikoUtils.addDebugLog(`✅ Theme image loaded: ${themeName} (${img.src})`);
+                console.log(`✅ Successfully loaded: ${img.src}`);
+            };
+            img.onerror = () => {
+                window.TopikoUtils.addDebugLog(`⚠️ Theme image failed to load: ${themeName} (${img.src})`, 'warning');
+                console.error(`❌ Failed to load: ${img.src}`);
+            };
+        } else {
+            console.log(`✅ Theme image already loaded: ${themeName} (${img.src})`);
+        }
     }
     
     window.TopikoUtils.showNotification(`Perfect choice! ${themeNames[themeName].name} theme selected!`, 'success');
@@ -2601,6 +2610,26 @@ async function callTopikoAPI(jsonString) {
 // DEBUGGING FUNCTIONS
 // ========================================
 
+// Debug theme images to see if they're all the same
+function debugThemeImages() {
+    console.log('🔍 DEBUGGING THEME IMAGES...');
+    const themeImages = [
+        'modern-preview', 'vibrant-preview', 'professional-preview', 
+        'traditional-preview', 'creative-preview', 'luxury-preview'
+    ];
+    
+    themeImages.forEach(imageId => {
+        const img = document.getElementById(imageId);
+        if (img) {
+            console.log(`📸 ${imageId}: ${img.src}`);
+            console.log(`📐 ${imageId} dimensions: ${img.naturalWidth}x${img.naturalHeight}`);
+            console.log(`🎯 ${imageId} complete: ${img.complete}`);
+        } else {
+            console.error(`❌ Image not found: ${imageId}`);
+        }
+    });
+}
+
 // Comprehensive product price debugging
 function debugProductPrices() {
     console.log('🔍 DEBUGGING PRODUCT PRICES...');
@@ -2854,6 +2883,7 @@ if (typeof window !== 'undefined') {
     window.proceedToThemes = proceedToThemes;
     window.selectTheme = selectTheme;
     window.completeSetup = completeSetup;
+    window.debugThemeImages = debugThemeImages;
     
     // Completion Screen Functions
     window.openExploreForm = openExploreForm;
