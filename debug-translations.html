@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Translation Issue</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .debug-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin: 0.25rem;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #4f46e5;
+        }
+        .test-element {
+            background: white;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }
+        .console-output {
+            background: #1f2937;
+            color: #10b981;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.875rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        pre {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Translation System</h1>
+    
+    <div class="debug-section">
+        <h2>Test Translation Updates</h2>
+        <button onclick="testTranslation('en')">English</button>
+        <button onclick="testTranslation('hi')">Hindi</button>
+        <button onclick="testTranslation('te')">Telugu</button>
+        <button onclick="testTranslation('ta')">Tamil</button>
+        <button onclick="debugState()">Debug State</button>
+        <button onclick="forceUpdate()">Force Update</button>
+        <button onclick="clearConsole()">Clear Console</button>
+    </div>
+    
+    <div class="debug-section">
+        <h2>Test Elements (with data-translate)</h2>
+        <div class="test-element" data-translate="welcome.tagline">Welcome tagline will appear here</div>
+        <div class="test-element" data-translate="welcome.tryFreeButton">Try free button text</div>
+        <div class="test-element" data-translate="goals.title">Goals title</div>
+        <div class="test-element" data-translate="registration.fields.email.label">Email label</div>
+        <div class="test-element" data-translate="registration.fields.businessName.label">Business name label</div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>Direct Translation Test (no data-translate)</h2>
+        <div id="direct-test" class="test-element">Direct translation will appear here</div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>Console Output</h2>
+        <div class="console-output" id="console">
+            <pre>Debug output will appear here...</pre>
+        </div>
+    </div>
+    
+    <script src="translations.js"></script>
+    
+    <script>
+        const consoleDiv = document.getElementById('console');
+        let logContent = [];
+        
+        // Intercept console.log
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            logContent.push(args.join(' '));
+            updateConsole();
+        };
+        
+        function updateConsole() {
+            consoleDiv.innerHTML = '<pre>' + logContent.join('\n') + '</pre>';
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+        
+        function clearConsole() {
+            logContent = [];
+            updateConsole();
+        }
+        
+        function testTranslation(lang) {
+            console.log(`\n========== Testing ${lang} ==========`);
+            
+            // Check if translation system is loaded
+            if (!window.TopikoTranslations) {
+                console.log('❌ TopikoTranslations not loaded!');
+                return;
+            }
+            
+            // Set language
+            console.log(`Setting language to: ${lang}`);
+            const success = window.TopikoTranslations.setLanguage(lang);
+            console.log(`Language set: ${success ? '✅ SUCCESS' : '❌ FAILED'}`);
+            
+            // Get current language
+            const currentLang = window.TopikoTranslations.getCurrentLanguage();
+            console.log(`Current language: ${currentLang}`);
+            
+            // Test direct translation
+            const tagline = window.TopikoTranslations.getTranslation('welcome.tagline');
+            console.log(`Tagline translation: ${tagline ? tagline.substring(0, 50) + '...' : 'NOT FOUND'}`);
+            
+            // Update direct test element
+            document.getElementById('direct-test').textContent = tagline || 'Translation not found';
+            
+            // Update page translations
+            console.log('Calling updatePageTranslations()...');
+            window.TopikoTranslations.updatePageTranslations();
+            
+            // Check if elements were updated
+            setTimeout(() => {
+                const elements = document.querySelectorAll('[data-translate]');
+                console.log(`Checked ${elements.length} elements with data-translate`);
+                
+                // Check first element's content
+                if (elements.length > 0) {
+                    console.log(`First element content: ${elements[0].textContent.substring(0, 50)}...`);
+                }
+            }, 200);
+        }
+        
+        function debugState() {
+            console.log('\n========== DEBUG STATE ==========');
+            
+            if (!window.TopikoTranslations) {
+                console.log('❌ TopikoTranslations not loaded!');
+                return;
+            }
+            
+            // Check current language
+            console.log(`Current language: ${window.TopikoTranslations.getCurrentLanguage()}`);
+            
+            // Check stored language
+            console.log(`Stored language: ${localStorage.getItem('topiko_language')}`);
+            
+            // Check available languages
+            console.log(`Available languages: ${Object.keys(window.TopikoTranslations.TRANSLATIONS).join(', ')}`);
+            
+            // Check if functions exist
+            console.log(`getTranslation exists: ${typeof window.TopikoTranslations.getTranslation === 'function'}`);
+            console.log(`setLanguage exists: ${typeof window.TopikoTranslations.setLanguage === 'function'}`);
+            console.log(`updatePageTranslations exists: ${typeof window.TopikoTranslations.updatePageTranslations === 'function'}`);
+            console.log(`selectLanguageWithTranslation exists: ${typeof window.selectLanguageWithTranslation === 'function'}`);
+            
+            // Test a translation
+            const testKey = 'welcome.tagline';
+            const testTranslation = window.TopikoTranslations.getTranslation(testKey);
+            console.log(`Test translation (${testKey}): ${testTranslation ? '✅ Found' : '❌ Not found'}`);
+        }
+        
+        function forceUpdate() {
+            console.log('\n========== FORCE UPDATE ==========');
+            
+            if (!window.TopikoTranslations) {
+                console.log('❌ TopikoTranslations not loaded!');
+                return;
+            }
+            
+            // Get all elements with data-translate
+            const elements = document.querySelectorAll('[data-translate]');
+            console.log(`Found ${elements.length} elements to update`);
+            
+            elements.forEach((element, index) => {
+                const key = element.getAttribute('data-translate');
+                const translation = window.TopikoTranslations.getTranslation(key);
+                
+                if (translation) {
+                    element.textContent = translation;
+                    console.log(`✅ Updated element ${index}: ${key}`);
+                } else {
+                    console.log(`❌ No translation for element ${index}: ${key}`);
+                }
+            });
+        }
+        
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('========== PAGE LOADED ==========');
+            console.log('Debug page ready');
+            
+            // Check if translations loaded
+            if (window.TopikoTranslations) {
+                console.log('✅ Translation system loaded');
+                console.log(`Available languages: ${Object.keys(window.TopikoTranslations.TRANSLATIONS).join(', ')}`);
+                
+                // Initialize
+                if (window.TopikoTranslations.initializeTranslations) {
+                    window.TopikoTranslations.initializeTranslations();
+                    console.log('✅ Translations initialized');
+                }
+            } else {
+                console.log('❌ Translation system not loaded');
+            }
+            
+            // Show initial state
+            debugState();
+        });
+    </script>
+</body>
+</html>

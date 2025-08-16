@@ -93,11 +93,14 @@ const TRANSLATIONS = {
                     label: "Business Type",
                     placeholder: "Select your business type",
                     options: {
+                        llp: "Limited Liability Partnership (LLP)",
+                        privateLimited: "Private Limited Company (Pvt Ltd)",
+                        publicLimited: "Public Limited Company",
+                        opc: "One Person Company (OPC)",
+                        franchise: "Franchise",
                         startup: "Startup",
-                        smallBusiness: "Small Business",
-                        mediumEnterprise: "Medium Enterprise",
-                        largeEnterprise: "Large Enterprise",
-                        freelancer: "Freelancer"
+                        freelancer: "Freelancer/Gig Worker",
+                        others: "Others"
                     }
                 },
                 category: {
@@ -314,9 +317,9 @@ const TRANSLATIONS = {
                 button: "Get My Free Setup! 🚀"
             },
             setupIntro: {
-                title: "Excellent, {name}! 🎉",
+                title: "Excellent, {businessName}! 🎉",
                 subtitle: "In just 3 simple steps, we'll show you exactly how your {business} can look and work online — the Topiko way!",
-                note: "🔥 Businesses like yours are going live every hour — don't miss the momentum!",
+                momentum: "🔥 Businesses like yours are going live every hour — don't miss the momentum!",
                 button: "Let's Create Something Amazing! 🎯"
             },
             otpVerification: {
@@ -508,11 +511,14 @@ const TRANSLATIONS = {
                     label: "बिज़नेस टाइप",
                     placeholder: "अपने बिज़नेस टाइप चुनें",
                     options: {
+                        llp: "लिमिटेड लायबिलिटी पार्टनरशिप (LLP)",
+                        privateLimited: "प्राइवेट लिमिटेड कंपनी (Pvt Ltd)",
+                        publicLimited: "पब्लिक लिमिटेड कंपनी",
+                        opc: "वन पर्सन कंपनी (OPC)",
+                        franchise: "फ्रैंचाइज़ी",
                         startup: "स्टार्टअप",
-                        smallBusiness: "छोटा बिज़नेस",
-                        mediumEnterprise: "मीडियम बिज़नेस",
-                        largeEnterprise: "बड़ा बिज़नेस",
-                        freelancer: "फ्रीलांसर"
+                        freelancer: "फ्रीलांसर/गिग वर्कर",
+                        others: "अन्य"
                     }
                 },
                 category: {
@@ -729,7 +735,7 @@ const TRANSLATIONS = {
                 button: "अपना मुफ़्त सेटअप पाएं! 🚀"
             },
             setupIntro: {
-                title: "बेहतरीन!, {name}! 🎉",
+                title: "बेहतरीन!, {businessName}! 🎉",
                 subtitle: "सिर्फ 3 आसान स्टेप्स में, हम आपको दिखाएंगे कि आपका {business} ऑनलाइन कैसा दिख सकता है और कैसे काम कर सकता है — Topiko के तरीक़े से!",
                 note: "🔥 आपके जैसे बिज़नेस हर घंटे लाइव हो रहे हैं - इस मौक़े को हाथ से जाने न दें!",
                 button: "आइए कुछ अद्भुत बनाते हैं! 🎯"
@@ -790,7 +796,7 @@ const TRANSLATIONS = {
             
             // Info messages
             helpRequested: "🎯 बहुत बढ़िया! हमारी टीम अगले 2 घंटों के अंदर आपसे संपर्क करेगी ताकि आपको मुफ़्त सेटअप में मदद मिल सके!",
-            callScheduled: "🎉 शानदार! "{offer}" के लिए आपकी कॉल शेड्यूल हो गई है। हमारी टीम चुने गए समय पर आपसे संपर्क करेगी।",
+            callScheduled: "🎉 शानदार! {offer} के लिए आपकी कॉल शेड्यूल हो गई है। हमारी टीम चुने गए समय पर आपसे संपर्क करेगी।",
             feedbackReceived: "🚀 आपकी फीडबैक के लिए धन्यवाद! हम इसका उपयोग अपनी सेवा को बेहतर बनाने के लिए करेंगे।"
         },
 
@@ -923,11 +929,14 @@ const TRANSLATIONS = {
                     label: "వ్యాపార రకం",
                     placeholder: "మీ వ్యాపార రకాన్ని ఎంచుకోండి",
                     options: {
+                        llp: "పరిమిత బాధ్యత భాగస్వామ్యం (LLP)",
+                        privateLimited: "ప్రైవేట్ లిమిటెడ్ కంపెనీ (Pvt Ltd)",
+                        publicLimited: "పబ్లిక్ లిమిటెడ్ కంపెనీ",
+                        opc: "వన్ పర్సన్ కంపెనీ (OPC)",
+                        franchise: "ఫ్రాంచైజీ",
                         startup: "స్టార్టప్",
-                        smallBusiness: "చిన్న వ్యాపారం",
-                        mediumEnterprise: "మధ్యతరహా సంస్థ",
-                        largeEnterprise: "పెద్ద సంస్థ",
-                        freelancer: "ఫ్రీలాన్సర్"
+                        freelancer: "ఫ్రీలాన్సర్/గిగ్ వర్కర్",
+                        others: "ఇతరములు"
                     }
                 },
                 category: {
@@ -1144,9 +1153,9 @@ const TRANSLATIONS = {
                 button: "నా ఉచిత సెటప్ పొందండి! 🚀"
             },
             setupIntro: {
-                title: "అద్భుతం, {name}! 🎉",
+                title: "అద్భుతం, {businessName}! 🎉",
                 subtitle: "కేవలం 3 సరళమైన దశలలో, మీ {business} ఆన్‌లైన్‌లో ఎలా కనిపించగలదో మరియు పనిచేయగలదో మేము మీకు చూపిస్తాము — Topiko విధానంలో!",
-                note: "🔥 మీలాంటి వ్యాపారాలు ప్రతి గంటకు లైవ్ అవుతున్నాయి — మొమెంటమ్‌ను కోల్పోవద్దు!",
+                momentum: "🔥 మీలాంటి వ్యాపారాలు ప్రతి గంటకు లైవ్ అవుతున్నాయి — మొమెంటమ్‌ను కోల్పోవద్దు!",
                 button: "ఏదైనా అద్భుతమైనది సృష్టిద్దాం! 🎯"
             },
             otpVerification: {
@@ -1338,11 +1347,14 @@ const TRANSLATIONS = {
                     label: "வணிக வகை",
                     placeholder: "உங்கள் வணிக வகையைத் தேர்ந்தெடுக்கவும்",
                     options: {
+                        llp: "வரையறுக்கப்பட்ட பொறுப்பு கூட்டாண்மை (LLP)",
+                        privateLimited: "தனியார் வரையறுக்கப்பட்ட நிறுவனம் (Pvt Ltd)",
+                        publicLimited: "பொது வரையறுக்கப்பட்ட நிறுவனம்",
+                        opc: "ஒரு நபர் நிறுவனம் (OPC)",
+                        franchise: "உரிமையாளர்",
                         startup: "ஸ்டார்ட்அப்",
-                        smallBusiness: "சிறு வணிகம்",
-                        mediumEnterprise: "நடுத்தர நிறுவனம்",
-                        largeEnterprise: "பெரிய நிறுவனம்",
-                        freelancer: "ஃப்ரீலான்சர்"
+                        freelancer: "ஃப்ரீலான்சர்/கிக் தொழிலாளி",
+                        others: "மற்றவை"
                     }
                 },
                 category: {
@@ -1559,9 +1571,9 @@ const TRANSLATIONS = {
                 button: "என் இலவச அமைப்பைப் பெறுங்கள்! 🚀"
             },
             setupIntro: {
-                title: "சிறப்பு, {name}! 🎉",
+                title: "சிறப்பு, {businessName}! 🎉",
                 subtitle: "வெறும் 3 எளிய படிகளில், உங்கள் {business} ஆன்லைனில் எப்படி தோற்றமளிக்கும் மற்றும் வேலை செய்யும் என்பதை நாங்கள் உங்களுக்குக் காட்டுவோம் — Topiko வழி!",
-                note: "🔥 உங்களைப் போன்ற வணிகங்கள் ஒவ்வொரு மணி நேரமும் நேரலையில் வருகின்றன — வேகத்தை தவறவிடாதீர்கள்!",
+                momentum: "🔥 உங்களைப் போன்ற வணிகங்கள் ஒவ்வொரு மணி நேரமும் நேரலையில் வருகின்றன — வேகத்தை தவறவிடாதீர்கள்!",
                 button: "ஏதாவது அற்புதமான ஒன்றை உருவாக்குவோம்! 🎯"
             },
             otpVerification: {
@@ -1931,6 +1943,9 @@ if (typeof window !== 'undefined') {
             updatePageTranslations();
         }
     };
+    
+    // Make selectLanguageWithTranslation globally available for onclick handlers
+    window.selectLanguageWithTranslation = selectLanguageWithTranslation;
     
     // Auto-initialize on DOM ready with enhanced timing
     if (document.readyState === 'loading') {
