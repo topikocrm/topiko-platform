@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Image Service Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #6366f1;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1e293b;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .image-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .image-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .image-container {
+            width: 100%;
+            height: 200px;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-info {
+            padding: 1rem;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .product-category {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .stats {
+            background: #f0f9ff;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #6366f1;
+            font-size: 1.25rem;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ Product Image Service Test</h1>
+        
+        <div class="stats" id="stats">
+            Loading cache statistics...
+        </div>
+        
+        <div class="controls">
+            <button onclick="loadTestImages()">Load Test Images</button>
+            <button onclick="clearCache()">Clear Cache</button>
+            <button onclick="testPlaceholders()">Test Placeholders</button>
+            <button onclick="testCategories()">Test All Categories</button>
+        </div>
+        
+        <div id="loading" class="loading" style="display: none;">
+            Loading images...
+        </div>
+        
+        <div class="image-grid" id="imageGrid">
+            <!-- Images will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Load the image service -->
+    <script src="js/staticProductImages.js"></script>
+    <script src="js/productImageService.js"></script>
+    <script src="js/smart_image_loader.js"></script>
+    
+    <script>
+        // Test products
+        const testProducts = [
+            { id: 'test-kurta-001', name: 'Traditional Kurta', category: 'boutique', subcategory: 'mens-wear' },
+            { id: 'test-saree-001', name: 'Silk Saree', category: 'boutique', subcategory: 'womens-wear' },
+            { id: 'test-biryani-001', name: 'Chicken Biryani', category: 'home-foods', subcategory: 'north-indian' },
+            { id: 'test-dosa-001', name: 'Masala Dosa', category: 'home-foods', subcategory: 'south-indian' },
+            { id: 'test-laptop-001', name: 'Gaming Laptop', category: 'electronics', subcategory: 'computers' },
+            { id: 'test-shoes-001', name: 'Running Shoes', category: 'footwear', subcategory: 'sneakers' },
+            { id: 'test-handbag-001', name: 'Leather Handbag', category: 'accessories', subcategory: 'bags' },
+            { id: 'test-facial-001', name: 'Gold Facial', category: 'salons', subcategory: 'beauty-services' },
+            { id: 'test-tomato-001', name: 'Fresh Tomatoes', category: 'grocery', subcategory: 'fresh-produce' },
+            { id: 'test-kidsdress-001', name: 'Kids Party Dress', category: 'kids-wear', subcategory: 'girls-clothing' }
+        ];
+
+        // Update stats
+        function updateStats() {
+            const stats = window.ProductImageService.getCacheStats();
+            document.getElementById('stats').innerHTML = `
+                <strong>Cache Statistics:</strong> 
+                ${stats.loaded} images loaded | 
+                ${stats.total} total cached | 
+                Cache hit rate: ${stats.cacheHitRate}
+            `;
+        }
+
+        // Load test images
+        async function loadTestImages() {
+            const grid = document.getElementById('imageGrid');
+            const loading = document.getElementById('loading');
+            
+            grid.innerHTML = '';
+            loading.style.display = 'block';
+            
+            for (const product of testProducts) {
+                const card = createImageCard(product);
+                grid.appendChild(card);
+                
+                // Load image asynchronously
+                const img = card.querySelector('img');
+                window.ProductImageService.updateImageElement(
+                    img,
+                    product.id,
+                    product.name,
+                    product.category,
+                    product.subcategory
+                );
+            }
+            
+            loading.style.display = 'none';
+            setTimeout(updateStats, 1000);
+        }
+
+        // Create image card
+        function createImageCard(product) {
+            const card = document.createElement('div');
+            card.className = 'image-card';
+            
+            card.innerHTML = `
+                <div class="image-container">
+                    <img src="images/products/placeholders/default.svg" 
+                         alt="${product.name}"
+                         id="img-${product.id}">
+                </div>
+                <div class="image-info">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-category">${product.category} / ${product.subcategory}</div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Test placeholders
+        function testPlaceholders() {
+            const placeholders = [
+                'clothing', 'food', 'electronics', 'footwear', 
+                'accessories', 'beauty', 'grocery', 'kids', 
+                'furniture', 'default'
+            ];
+            
+            const grid = document.getElementById('imageGrid');
+            grid.innerHTML = '';
+            
+            placeholders.forEach(name => {
+                const card = document.createElement('div');
+                card.className = 'image-card';
+                
+                card.innerHTML = `
+                    <div class="image-container">
+                        <img src="images/products/placeholders/${name}.svg" 
+                             alt="${name}">
+                    </div>
+                    <div class="image-info">
+                        <div class="product-name">${name.toUpperCase()} Placeholder</div>
+                        <div class="product-category">SVG Placeholder</div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            updateStats();
+        }
+
+        // Test all categories
+        function testCategories() {
+            const categories = [
+                { name: 'Men\'s Kurta', category: 'boutique', subcategory: 'mens-wear' },
+                { name: 'Women\'s Saree', category: 'boutique', subcategory: 'womens-wear' },
+                { name: 'Kids T-Shirt', category: 'kids-wear', subcategory: 'boys-clothing' },
+                { name: 'Butter Chicken', category: 'home-foods', subcategory: 'north-indian' },
+                { name: 'Idli Sambar', category: 'home-foods', subcategory: 'south-indian' },
+                { name: 'Gulab Jamun', category: 'home-foods', subcategory: 'sweets-desserts' },
+                { name: 'Fresh Coffee', category: 'home-foods', subcategory: 'beverages' },
+                { name: 'Hair Cut', category: 'salons', subcategory: 'hair-services' },
+                { name: 'Facial Treatment', category: 'salons', subcategory: 'beauty-services' },
+                { name: 'Body Massage', category: 'salons', subcategory: 'spa-wellness' },
+                { name: 'Fresh Vegetables', category: 'grocery', subcategory: 'fresh-produce' },
+                { name: 'Rice & Dal', category: 'grocery', subcategory: 'staples' },
+                { name: 'Smartphone', category: 'electronics', subcategory: 'mobile-devices' },
+                { name: 'Laptop Computer', category: 'electronics', subcategory: 'computers' },
+                { name: 'Formal Shoes', category: 'footwear', subcategory: 'mens-shoes' },
+                { name: 'Designer Handbag', category: 'accessories', subcategory: 'bags' }
+            ];
+            
+            const grid = document.getElementById('imageGrid');
+            const loading = document.getElementById('loading');
+            
+            grid.innerHTML = '';
+            loading.style.display = 'block';
+            
+            categories.forEach((cat, index) => {
+                const product = {
+                    id: `cat-test-${index}`,
+                    name: cat.name,
+                    category: cat.category,
+                    subcategory: cat.subcategory
+                };
+                
+                const card = createImageCard(product);
+                grid.appendChild(card);
+                
+                const img = card.querySelector('img');
+                window.ProductImageService.updateImageElement(
+                    img,
+                    product.id,
+                    product.name,
+                    product.category,
+                    product.subcategory
+                );
+            });
+            
+            loading.style.display = 'none';
+            setTimeout(updateStats, 1000);
+        }
+
+        // Clear cache
+        function clearCache() {
+            if (confirm('Clear all cached images?')) {
+                window.ProductImageService.clearCache();
+                updateStats();
+                alert('Cache cleared!');
+            }
+        }
+
+        // Initial load
+        window.addEventListener('DOMContentLoaded', () => {
+            updateStats();
+            loadTestImages();
+        });
+    </script>
+</body>
+</html>

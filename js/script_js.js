@@ -1548,13 +1548,32 @@ function createProductCardWithVariants(product) {
     const selectedClass = isSelected ? 'selected' : '';
     const checkmarkStyle = isSelected ? 'opacity: 1' : 'opacity: 0';
     
-    // Get reliable image with retry system
-    const reliableImageUrl = window.TopikoConfig.getReliableProductImage(
-        product, 
-        product.category, 
-        product.subcategory, 
-        0
-    );
+    // Get reliable image with new service
+    let reliableImageUrl;
+    if (window.ProductImageService) {
+        // Use new image service with static images
+        reliableImageUrl = 'images/products/placeholders/default.svg'; // Start with placeholder
+        // Load real image asynchronously
+        window.ProductImageService.getProductImage(
+            product.id,
+            product.name,
+            product.category,
+            product.subcategory
+        ).then(url => {
+            const imgElements = document.querySelectorAll(`[data-product-id="${product.id}"] .product-selector-image`);
+            imgElements.forEach(img => {
+                if (img) img.style.backgroundImage = `url("${url}")`;
+            });
+        });
+    } else {
+        // Fallback to old system
+        reliableImageUrl = window.TopikoConfig.getReliableProductImage(
+            product, 
+            product.category, 
+            product.subcategory, 
+            0
+        );
+    }
     
     // Enhanced: More robust price extraction
     let productPrice = 0;

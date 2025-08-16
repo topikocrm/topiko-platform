@@ -1,9 +1,9 @@
 /* ========================================
-   SMART IMAGE LOADER WITH RETRY LOGIC
-   Tries multiple sources until one works
+   SMART IMAGE LOADER - UPDATED WITH NEW IMAGE SERVICE
+   Uses ProductImageService for reliable image loading
    ======================================== */
 
-// Multiple image sources to try for each product type
+// Legacy image sources (kept for backwards compatibility)
 const IMAGE_SOURCES = {
     // For each keyword, we have multiple image options to try
     'kurta': [
@@ -112,51 +112,33 @@ function testImage(url) {
 }
 
 // Main function to get working image with retry
-async function getWorkingProductImage(productName, productId) {
-    // Check cache first
+async function getWorkingProductImage(productName, productId, category, subcategory) {
+    // Use new ProductImageService if available
+    if (window.ProductImageService) {
+        try {
+            const imageUrl = await window.ProductImageService.getProductImage(
+                productId, 
+                productName, 
+                category || 'default', 
+                subcategory || 'default'
+            );
+            console.log(`✅ ProductImageService provided image for ${productName}`);
+            return imageUrl;
+        } catch (e) {
+            console.warn('ProductImageService failed, using fallback:', e);
+        }
+    }
+    
+    // Fallback to old cache system
     if (imageCache[productId]) {
         console.log(`✅ Using cached image for ${productId}`);
         return imageCache[productId];
     }
     
-    // Use FREE image sources first
-    let imageSources = [];
-    
-    if (window.FreeImageSources) {
-        imageSources = window.FreeImageSources.getFreeImages(productName);
-        console.log(`🆓 Using free images for ${productName}`);
-    } else {
-        // Fallback to old system
-        const nameLower = (productName || '').toLowerCase();
-        imageSources = IMAGE_SOURCES['default'];
-        
-        for (const [keyword, sources] of Object.entries(IMAGE_SOURCES)) {
-            if (nameLower.includes(keyword)) {
-                imageSources = sources;
-                console.log(`🔍 Found keyword match: ${keyword} for ${productName}`);
-                break;
-            }
-        }
-    }
-    
-    // Try each image source until one works
-    for (let i = 0; i < imageSources.length; i++) {
-        const url = imageSources[i];
-        console.log(`🔄 Trying image ${i + 1}/${imageSources.length} for ${productName}`);
-        
-        const result = await testImage(url);
-        if (result) {
-            console.log(`✅ Image loaded successfully: ${url}`);
-            imageCache[productId] = url;
-            return url;
-        }
-    }
-    
-    // If nothing worked, return the last fallback (usually placeholder)
-    const fallback = imageSources[imageSources.length - 1];
-    console.log(`⚠️ Using final fallback for ${productName}`);
-    imageCache[productId] = fallback;
-    return fallback;
+    // Use placeholder as final fallback - relative path for file:// protocol
+    const placeholder = `images/products/placeholders/default.svg`;
+    console.log(`⚠️ Using placeholder for ${productName}`);
+    return placeholder;
 }
 
 // Synchronous version that returns immediately with a placeholder
@@ -176,13 +158,26 @@ function getProductImageSync(productName, productId) {
 }
 
 // Function to update image element with retry logic
-function loadImageWithRetry(imgElement, productName, productId) {
-    getWorkingProductImage(productName, productId).then(url => {
+function loadImageWithRetry(imgElement, productName, productId, category, subcategory) {
+    // Use new ProductImageService if available
+    if (window.ProductImageService) {
+        window.ProductImageService.updateImageElement(
+            imgElement, 
+            productId, 
+            productName, 
+            category || 'default', 
+            subcategory || 'default'
+        );
+        return;
+    }
+    
+    // Fallback to old system
+    getWorkingProductImage(productName, productId, category, subcategory).then(url => {
         if (imgElement && url) {
             imgElement.src = url;
             imgElement.onerror = () => {
-                // If this fails too, use placeholder
-                imgElement.src = `https://via.placeholder.com/300x300/6366F1/ffffff?text=${encodeURIComponent(productName.substring(0, 10))}`;
+                // Use local placeholder instead of via.placeholder.com - relative path
+                imgElement.src = 'images/products/placeholders/default.svg';
             };
         }
     });
