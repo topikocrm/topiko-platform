@@ -387,12 +387,11 @@ function loadCategoriesContent(businessCategory, categoriesContainer) {
 
 // Helper function to get template identifier for API calls
 function getFullThemeName(themeId) {
-    // Return the theme ID directly for API calls
-    // The API should receive 'modern', 'vibrant', etc., not display names
+    // Map theme IDs to template names for API
     const themeTemplateIds = {
-        'modern': 'modern',
-        'vibrant': 'vibrant', 
-        'professional': 'professional',
+        'modern': 'Modern & Minimalist',
+        'vibrant': 'Colorful & Vibrant', 
+        'professional': 'Professional & Corporate',
         'traditional': 'traditional',
         'creative': 'creative',
         'luxury': 'luxury'
