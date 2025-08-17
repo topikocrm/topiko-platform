@@ -36,7 +36,7 @@ const TRANSLATIONS = {
         // ========================================
         goals: {
             title: "Select Your Goals",
-            subtitle: "Choose what you want to achieve with Topiko (select all that apply)",
+            subtitle: "Choose what you want to achieve with Topiko (select any 3)",
             options: {
                 ecommerce: {
                     title: "Sell Online (E-commerce)",
@@ -454,7 +454,7 @@ const TRANSLATIONS = {
         // ========================================
         goals: {
             title: "अपने लक्ष्य चुनें",
-            subtitle: "Topiko के साथ क्या हासिल करना चाहते हैं (जो भी लागू हो सभी चुनें)",
+            subtitle: "Topiko के साथ क्या हासिल करना चाहते हैं (कोई भी 3 चुनें)",
             options: {
                 ecommerce: {
                     title: "ऑनलाइन बेचना (ई-कॉमर्स)",
@@ -872,7 +872,7 @@ const TRANSLATIONS = {
         // ========================================
         goals: {
             title: "మీ లక్ష్యాలను ఎంచుకోండి",
-            subtitle: "Topikoతో మీరు ఏమి సాధించాలనుకుంటున్నారో ఎంచుకోండి (వర్తించే అన్నింటిని ఎంచుకోండి)",
+            subtitle: "Topikoతో మీరు ఏమి సాధించాలనుకుంటున్నారో ఎంచుకోండి (ఏవైనా 3 ఎంచుకోండి)",
             options: {
                 ecommerce: {
                     title: "ఆన్‌లైన్ అమ్మకం (ఈ-కామర్స్)",
@@ -1290,7 +1290,7 @@ const TRANSLATIONS = {
         // ========================================
         goals: {
             title: "உங்கள் இலக்குகளைத் தேர்ந்தெடுக்கவும்",
-            subtitle: "Topiko-வுடன் நீங்கள் எதை அடைய விரும்புகிறீர்கள் என்பதைத் தேர்ந்தெடுக்கவும் (பொருந்தும் அனைத்தையும் தேர்ந்தெடுக்கவும்)",
+            subtitle: "Topiko-வுடன் நீங்கள் எதை அடைய விரும்புகிறீர்கள் என்பதைத் தேர்ந்தெடுக்கவும் (ஏதேனும் 3 தேர்ந்தெடுக்கவும்)",
             options: {
                 ecommerce: {
                     title: "ஆன்லைன் விற்பனை (ஈ-காமர்ஸ்)",
