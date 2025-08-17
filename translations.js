@@ -13,7 +13,7 @@ const TRANSLATIONS = {
         // WELCOME SCREEN
         // ========================================
         welcome: {
-            tagline: "Complete Business Platform for Indian SMBs",
+            tagline: "Namaste! Ready to grow your business the smart way? With Topiko, you get one easy platform to take your business online, build a strong identity, serve your customers better, and simplify operations—all designed for India's entrepreneurs. Start your digital growth journey with Topiko today!",
             tryFreeButton: "Try for Free"
         },
 
