@@ -381,42 +381,45 @@ body::after {
     background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
     border-color: #f59e0b;
     color: #1e293b;
-    animation: pulseRing 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     position: relative;
+    animation: pulse 2s infinite;
+    transform: scale(1.1);
 }
 
-.progress-step.active .progress-circle::before {
+.progress-step.active .progress-circle::after {
     content: '';
     position: absolute;
-    top: -20px;
-    left: -20px;
-    right: -20px;
-    bottom: -20px;
-    background: radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, transparent 70%);
+    top: -15px;
+    left: -15px;
+    right: -15px;
+    bottom: -15px;
     border-radius: 50%;
-    animation: pulseRingExpand 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+    animation: pulseShadow 2s infinite;
     z-index: -1;
 }
 
-@keyframes pulseRing {
-    0%, 100% { 
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+@keyframes pulse {
+    0% {
+        transform: scale(1.1);
     }
-    50% { 
-        transform: scale(1.05);
-        box-shadow: 0 0 0 20px rgba(251, 191, 36, 0);
+    50% {
+        transform: scale(1.15);
+    }
+    100% {
+        transform: scale(1.1);
     }
 }
 
-@keyframes pulseRingExpand {
-    0%, 100% { 
-        transform: scale(0.8);
-        opacity: 1;
+@keyframes pulseShadow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
     }
-    50% { 
-        transform: scale(1.2);
-        opacity: 0.5;
+    70% {
+        box-shadow: 0 0 0 20px rgba(251, 191, 36, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(251, 191, 36, 0);
     }
 }
 
@@ -613,42 +616,7 @@ body::after {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.try-free-button::before, .submit-button::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s ease, height 0.6s ease;
-}
 
-.try-free-button::after, .submit-button::after {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, #fbbf24, #f59e0b, #fbbf24);
-    border-radius: 50px;
-    opacity: 0;
-    z-index: -1;
-    transition: opacity 0.3s ease;
-    animation: rotateGradient 3s linear infinite;
-}
-
-@keyframes rotateGradient {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.try-free-button:hover::after, .submit-button:hover::after {
-    opacity: 0.3;
-}
 
 .try-free-button:hover, .submit-button:hover {
     transform: translateY(-3px) scale(1.02);
