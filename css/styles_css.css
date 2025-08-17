@@ -380,31 +380,43 @@ body::after {
 .progress-step.active .progress-circle {
     background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
     border-color: #f59e0b;
-    box-shadow: 
-        0 4px 15px rgba(245, 158, 11, 0.4),
-        0 0 0 0 rgba(245, 158, 11, 0.4);
-    animation: activePulse 2s infinite;
     color: #1e293b;
+    animation: pulseRing 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    position: relative;
 }
 
-@keyframes activePulse {
-    0% { 
+.progress-step.active .progress-circle::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulseRingExpand 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    z-index: -1;
+}
+
+@keyframes pulseRing {
+    0%, 100% { 
         transform: scale(1);
-        box-shadow: 
-            0 4px 15px rgba(245, 158, 11, 0.4),
-            0 0 0 0 rgba(245, 158, 11, 0.4);
+        box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
     }
     50% { 
-        transform: scale(1.15);
-        box-shadow: 
-            0 4px 20px rgba(245, 158, 11, 0.5),
-            0 0 0 15px rgba(245, 158, 11, 0);
+        transform: scale(1.05);
+        box-shadow: 0 0 0 20px rgba(251, 191, 36, 0);
     }
-    100% { 
-        transform: scale(1);
-        box-shadow: 
-            0 4px 15px rgba(245, 158, 11, 0.4),
-            0 0 0 0 rgba(245, 158, 11, 0);
+}
+
+@keyframes pulseRingExpand {
+    0%, 100% { 
+        transform: scale(0.8);
+        opacity: 1;
+    }
+    50% { 
+        transform: scale(1.2);
+        opacity: 0.5;
     }
 }
 
@@ -644,7 +656,6 @@ body::after {
         0 15px 40px rgba(251, 191, 36, 0.4),
         0 3px 8px rgba(0, 0, 0, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.4);
-    background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%);
 }
 
 .try-free-button:hover::before, .submit-button:hover::before {
@@ -653,7 +664,7 @@ body::after {
 }
 
 .try-free-button:active, .submit-button:active {
-    transform: translateY(-1px) scale(1.01);
+    transform: translateY(-1px) scale(1);
     box-shadow: 
         0 5px 15px rgba(251, 191, 36, 0.3),
         0 1px 3px rgba(0, 0, 0, 0.1),
@@ -3905,9 +3916,6 @@ body::after {
     overflow: hidden;
 }
 
-.try-free-button:hover, .submit-button:hover {
-    animation: buttonShine 1s ease;
-}
 
 /* Form input focus animations */
 @keyframes inputGlow {
