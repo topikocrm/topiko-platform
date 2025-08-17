@@ -824,7 +824,7 @@
                         <button onclick="generatePreviewData()" class="btn-secondary" id="previewDataBtn">
                             <span>🔍 Preview Data</span>
                         </button>
-                        <button onclick="completeSetup()" id="themeNextBtn" disabled style="opacity: 0.5;">
+                        <button onclick="completeSetup()" class="submit-button" id="themeNextBtn" disabled style="opacity: 0.5;">
                             <span data-translate="themes.navigation.nextButton">Complete Setup 🚀</span>
                         </button>
                     </div>
@@ -839,7 +839,7 @@
                         
                         <h2 style="color: #059669; font-size: 2.2rem; font-weight: 700; margin-bottom: 1rem;"
                             data-translate="completion.title" data-translate-vars='{"businessName": "Your Business"}'>
-                            Congratulations, <span id="completionBusinessName">Your Business</span> is all set for the final touches!
+                            Congratulations, <span id="completionBusinessName">Your Business</span> is all set to Go Live!!
                         </h2>
                         
                         <p style="color: #064e3b; font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.6;"
@@ -905,7 +905,7 @@
                                 </button>
                                 
                                 <button class="action-button explore-btn" onclick="openExploreForm()" style="background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 1.25rem; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s ease;">
-                                    <span data-translate="completion.actions.explore.title">🚀 I want to explore on my own</span>
+                                    <span data-translate="completion.actions.explore.title">🚀 Let me think about it</span>
                                     <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;"
                                          data-translate="completion.actions.explore.subtitle">Tell us what you're looking for</div>
                                 </button>
@@ -921,7 +921,7 @@
     
     <!-- Goals Transition Modal -->
     <div class="modal-overlay" id="goalsTransitionModal">
-        <div class="modal-content">
+        <div class="modal-content dark-glass">
             <button class="modal-close" onclick="closeModal('goalsTransitionModal')">×</button>
             
             <div style="text-align: center;">
@@ -968,7 +968,7 @@
 
     <!-- Setup Intro Modal -->
     <div class="modal-overlay" id="setupIntroModal">
-        <div class="modal-content">
+        <div class="modal-content dark-glass">
             <button class="modal-close" onclick="closeModal('setupIntroModal')">×</button>
             
             <div style="text-align: center;">
@@ -977,7 +977,7 @@
                 <!-- FIXED: Use business name instead of user name -->
                 <h2 style="color: #059669; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;"
                    data-translate="modals.setupIntro.title" data-translate-vars='{"businessName": "business"}'>
-                    Excellent, <span id="setupBusinessName">business</span>! 🎉
+                    Excellent, <span id="setupBusinessName">Business</span>! 🎉
                 </h2>
                 
                 <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.2); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0;">
@@ -1004,7 +1004,7 @@
 
     <!-- OTP Verification Modal -->
     <div class="modal-overlay" id="otpVerificationModal">
-        <div class="modal-content">
+        <div class="modal-content dark-glass">
             <button class="modal-close" onclick="closeModal('otpVerificationModal')">×</button>
             
             <div style="text-align: center;">

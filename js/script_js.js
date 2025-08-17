@@ -113,11 +113,13 @@ function updateGoalsUIState() {
 
 // NEW FUNCTION: Generate random coupon code
 function generateRandomCoupon() {
-    const prefixes = ['TOPIKO', 'GROW', 'SMART', 'DIGITAL', 'SUCCESS'];
-    const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-    const randomNumber = Math.floor(Math.random() * 900) + 100; // 3-digit number
-    
-    return `${randomPrefix}${randomNumber}`;
+    // Generate simple 5 character alphanumeric code
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let couponCode = '';
+    for (let i = 0; i < 5; i++) {
+        couponCode += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return couponCode;
 }
 
 // UPDATED FUNCTION: Start offer timer with 6:45:00
@@ -809,7 +811,12 @@ function showGoalsTransitionModal() {
     window.TopikoUtils.showNotification(`Perfect! ${window.topikoApp.selectedGoals.length} goal${window.topikoApp.selectedGoals.length > 1 ? 's' : ''} selected!`, 'success');
     window.TopikoUtils.calculateLeadScore();
     
-    // Show the goals transition modal
+    // Show the goals transition modal and update business name
+    const setupBusinessName = document.getElementById('setupBusinessName');
+    if (setupBusinessName && window.topikoApp.businessName) {
+        setupBusinessName.textContent = window.topikoApp.businessName;
+    }
+    
     setTimeout(() => {
         displayGoalsTransitionModal();
     }, 1500);
@@ -2084,7 +2091,117 @@ function enhanceImageElement(imgElement, productId, category, subcategory) {
 // CUSTOM PRODUCT & ADDITIONAL FUNCTIONS
 // ========================================
 
+function editProduct(productId) {
+    // Find the product in userProducts
+    const product = window.topikoApp.userProducts.find(p => p.id === productId);
+    if (!product) {
+        window.TopikoUtils.showNotification('Product not found', 'error');
+        return;
+    }
+    
+    // Switch to custom mode to show the form
+    switchProductMode('custom');
+    
+    // Populate the form with product data
+    document.getElementById('productName').value = product.name || '';
+    document.getElementById('productPrice').value = product.price || '';
+    document.getElementById('productDescription').value = product.description || '';
+    document.getElementById('productCategory').value = product.category || '';
+    document.getElementById('productImage').value = product.imageUrl || '';
+    
+    // Update subcategory dropdown based on category
+    updateProductCategoriesDropdown();
+    setTimeout(() => {
+        document.getElementById('productSubcategory').value = product.subcategory || '';
+    }, 100);
+    
+    // Change form title and button text to indicate edit mode
+    const formTitle = document.getElementById('productFormTitle');
+    if (formTitle) {
+        formTitle.textContent = `Edit Product: ${product.name}`;
+    }
+    
+    // Store the product ID being edited
+    window.topikoApp.editingProductId = productId;
+    
+    // Change the add button to update button
+    const addButton = document.querySelector('[onclick="addCustomProduct()"]');
+    if (addButton) {
+        addButton.textContent = 'Update Product';
+        addButton.onclick = () => updateProduct(productId);
+    }
+    
+    // Scroll to form
+    document.getElementById('customProductForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function updateProduct(productId) {
+    const name = document.getElementById('productName').value.trim();
+    const price = document.getElementById('productPrice').value.trim();
+    const description = document.getElementById('productDescription').value.trim();
+    const categoryKey = document.getElementById('productCategory').value;
+    const subcategoryKey = document.getElementById('productSubcategory').value;
+    const imageUrl = document.getElementById('productImage').value.trim();
+    
+    if (!name || !price || !description || !categoryKey) {
+        window.TopikoUtils.showNotification('Please fill all required fields', 'error');
+        return;
+    }
+    
+    // Find and update the product
+    const productIndex = window.topikoApp.userProducts.findIndex(p => p.id === productId);
+    if (productIndex !== -1) {
+        window.topikoApp.userProducts[productIndex] = {
+            ...window.topikoApp.userProducts[productIndex],
+            name,
+            price: parseFloat(price),
+            description,
+            category: categoryKey,
+            subcategory: subcategoryKey || 'general',
+            imageUrl: imageUrl || window.topikoApp.userProducts[productIndex].imageUrl,
+            isCustom: true
+        };
+        
+        // Re-render products
+        renderAllProducts();
+        
+        // Reset form
+        document.getElementById('productName').value = '';
+        document.getElementById('productPrice').value = '';
+        document.getElementById('productDescription').value = '';
+        document.getElementById('productCategory').value = '';
+        document.getElementById('productSubcategory').value = '';
+        document.getElementById('productImage').value = '';
+        
+        // Reset button and title
+        const addButton = document.querySelector('[onclick*="updateProduct"]');
+        if (addButton) {
+            addButton.textContent = 'Add Product';
+            addButton.onclick = addCustomProduct;
+        }
+        
+        const formTitle = document.getElementById('productFormTitle');
+        if (formTitle) {
+            formTitle.textContent = 'Add Custom Product/Service';
+        }
+        
+        // Clear editing state
+        delete window.topikoApp.editingProductId;
+        
+        // Switch back to select mode
+        switchProductMode('select');
+        
+        window.TopikoUtils.showNotification(`✅ Product "${name}" updated successfully!`, 'success');
+    }
+}
+
 async function addCustomProduct() {
+    // Check if we're in edit mode
+    if (window.topikoApp.editingProductId) {
+        updateProduct(window.topikoApp.editingProductId);
+        return;
+    }
+    
     const name = document.getElementById('productName').value.trim();
     const price = document.getElementById('productPrice').value.trim();
     const description = document.getElementById('productDescription').value.trim();
@@ -2539,7 +2656,7 @@ function showCompletionSuccess(actionType, primaryData, secondaryData) {
             <div style="background: rgba(156, 163, 175, 0.1); border-radius: 12px; padding: 1.5rem; margin: 2rem 0;">
                 <p style="color: #6b7280; font-size: 0.9rem; margin: 0;">
                     If you have any questions, feel free to reach out to us at<br>
-                    <strong style="color: #374151;">support@topiko.com</strong> or call <strong style="color: #374151;">+91-XXX-XXX-XXXX</strong>
+                    <strong style="color: #374151;">support@topiko.com</strong> or call <strong style="color: #374151;">+91 885 886 8889</strong>
                 </p>
             </div>
         </div>
@@ -2911,6 +3028,8 @@ if (typeof window !== 'undefined') {
     window.updateUserCategories = updateUserCategories;
     window.proceedToProducts = proceedToProducts;
     window.addCustomProduct = addCustomProduct;
+    window.editProduct = editProduct;
+    window.updateProduct = updateProduct;
     window.requestFollowup = requestFollowup;
     window.proceedToThemes = proceedToThemes;
     window.selectTheme = selectTheme;

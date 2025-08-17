@@ -282,7 +282,7 @@ const TRANSLATIONS = {
         // COMPLETION SCREEN
         // ========================================
         completion: {
-            title: "Congratulations, {businessName} is all set for the final touches!",
+            title: "Congratulations, {businessName} is all set to Go Live!!",
             subtitle: "Your business setup is complete! Our team will now create your professional online presence.",
             offers: {
                 title: "🎁 Choose Your FREE Bonus Offer!",
@@ -296,7 +296,7 @@ const TRANSLATIONS = {
                     subtitle: "Schedule a convenient time with our team"
                 },
                 explore: {
-                    title: "🚀 I want to explore on my own",
+                    title: "🚀 Let me think about it",
                     subtitle: "Tell us what you're looking for"
                 }
             }
@@ -310,9 +310,9 @@ const TRANSLATIONS = {
                 title: "Great! Your goals are set.",
                 subtitle: "Now let's show you how Topiko can help with {goals} for your business — one step at a time",
                 benefits: [
-                    "✨ No technical knowledge needed",
-                    "✅ ZERO obligation to continue",
-                    "🧪 Try before you decide"
+                    "No technical knowledge needed",
+                    "ZERO obligation to continue",
+                    "Try before you decide"
                 ],
                 button: "Get My Free Setup! 🚀"
             },
