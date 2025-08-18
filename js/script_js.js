@@ -171,6 +171,9 @@ function initializeCompletionScreen() {
     // Display random selectable offers
     displayRandomOffers();
     
+    // Ensure timer starts
+    startOfferTimer();
+    
     // Reset selections
     selectedOffer = null;
     window.selectedTimeSlot = null;
@@ -2128,7 +2131,7 @@ function editProduct(productId) {
     const addButton = document.querySelector('[onclick="addCustomProduct()"]');
     if (addButton) {
         addButton.textContent = 'Update Product';
-        addButton.onclick = () => updateProduct(productId);
+        addButton.setAttribute('onclick', `updateProduct('${productId}')`);
     }
     
     // Scroll to form
@@ -2176,8 +2179,8 @@ function updateProduct(productId) {
         // Reset button and title
         const addButton = document.querySelector('[onclick*="updateProduct"]');
         if (addButton) {
-            addButton.textContent = 'Add Product';
-            addButton.onclick = addCustomProduct;
+            addButton.textContent = '➕ Add Custom Product';
+            addButton.setAttribute('onclick', 'addCustomProduct()');
         }
         
         const formTitle = document.getElementById('productFormTitle');
@@ -2419,6 +2422,11 @@ async function completeSetup() {
     
     setTimeout(() => {
         window.TopikoUtils.showScreen('completion');
+        // Update business name before initializing
+        const completionBusinessName = document.getElementById('completionBusinessName');
+        if (completionBusinessName && window.topikoApp && window.topikoApp.businessName) {
+            completionBusinessName.textContent = window.topikoApp.businessName;
+        }
         setTimeout(() => {
             initializeCompletionScreen();
         }, 500);
