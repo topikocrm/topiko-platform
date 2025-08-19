@@ -124,30 +124,51 @@ function generateRandomCoupon() {
 
 // UPDATED FUNCTION: Start offer timer with 6:45:00
 function startOfferTimer() {
-    const timerElement = document.getElementById('offerTimer');
-    if (!timerElement) {
-        console.warn('⚠️ Timer element #offerTimer not found');
-        return;
-    }
+    console.log('🎬 startOfferTimer called');
     
+    // Try to find timer element with delay if needed
+    setTimeout(() => {
+        const timerElement = document.getElementById('offerTimer');
+        if (!timerElement) {
+            console.error('❌ Timer element #offerTimer not found in DOM');
+            // Try again after a delay
+            setTimeout(() => {
+                const retryElement = document.getElementById('offerTimer');
+                if (retryElement) {
+                    console.log('✅ Timer element found on retry');
+                    startTimerCountdown(retryElement);
+                } else {
+                    console.error('❌ Timer element still not found after retry');
+                }
+            }, 1000);
+            return;
+        }
+        
+        console.log('✅ Timer element found:', timerElement);
+        startTimerCountdown(timerElement);
+    }, 100);
+}
+
+function startTimerCountdown(timerElement) {
     // Clear any existing timer
     if (window.offerTimerInterval) {
         clearInterval(window.offerTimerInterval);
+        console.log('🧹 Cleared existing timer');
     }
     
-    // NEW: Set initial time to 6 hours, 45 minutes
+    // Set initial time to 6 hours, 45 minutes
     let totalSeconds = (6 * 3600) + (45 * 60); // 6:45:00
     
-    console.log('🕒 Starting offer timer with', totalSeconds, 'seconds');
+    // Set initial display immediately
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const initialTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    timerElement.textContent = initialTime;
+    
+    console.log('🕒 Timer initialized with:', initialTime);
     
     window.offerTimerInterval = setInterval(() => {
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        
-        const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        timerElement.textContent = timeString;
-        
         totalSeconds--;
         
         if (totalSeconds < 0) {
@@ -155,10 +176,18 @@ function startOfferTimer() {
             timerElement.textContent = "00:00:00";
             timerElement.style.color = "#dc2626";
             console.log('⏰ Timer expired');
+            return;
         }
+        
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        
+        const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        timerElement.textContent = timeString;
     }, 1000);
     
-    console.log('✅ Offer timer started successfully');
+    console.log('✅ Timer countdown started successfully');
 }
 
 // UPDATED: initializeCompletionScreen function with coupon generation
@@ -1000,6 +1029,11 @@ async function completeRegistration() {
         
         window.TopikoUtils.showNotification(`🎉 Welcome ${name}! Account created successfully!`, 'success');
         setTimeout(() => {
+            // Ensure business name is set before showing modal
+            const setupBusinessName = document.getElementById('setupBusinessName');
+            if (setupBusinessName && window.topikoApp.businessName) {
+                setupBusinessName.textContent = window.topikoApp.businessName;
+            }
             displaySetupIntroModal();
         }, 2000);
     } else {
@@ -2179,7 +2213,7 @@ function updateProduct(productId) {
         };
         
         // Re-render products
-        window.TopikoUtils.displayProducts();
+        filterAndDisplayProducts();
         
         // Reset form
         document.getElementById('productName').value = '';
@@ -2354,7 +2388,17 @@ async function proceedToThemes() {
 // ========================================
 
 function selectTheme(themeName, element) {
-    window.topikoApp.selectedTheme = themeName;
+    // Map theme IDs to full names for API
+    const themeFullNames = {
+        'modern': 'Modern & Minimalist',
+        'vibrant': 'Colorful & Vibrant',
+        'professional': 'Professional & Corporate',
+        'traditional': 'Traditional & Classic',
+        'creative': 'Creative & Artistic',
+        'luxury': 'Elegant & Luxury'
+    };
+    
+    window.topikoApp.selectedTheme = themeFullNames[themeName] || themeName;
     
     document.querySelectorAll('.theme-option').forEach(option => {
         option.classList.remove('selected');
@@ -2982,6 +3026,7 @@ if (typeof window !== 'undefined') {
     // Coupon & Timer Functions - NEW
     window.generateRandomCoupon = generateRandomCoupon;
     window.startOfferTimer = startOfferTimer;
+    window.startTimerCountdown = startTimerCountdown;
     window.initializeCompletionScreen = initializeCompletionScreen;
     
     // Dynamic Time Slot Functions - NEW

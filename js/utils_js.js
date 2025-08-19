@@ -813,17 +813,12 @@ function stopMotivationalMessages() {
 function updateProductsHelpSection() {
     if (!window.topikoApp) return;
     
-    const dayOfMonth = new Date().getDate();
-    const totalDaysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-    
-    // Calculate claimed percentage based on day (30-90%)
-    const minPercentage = 30;
-    const maxPercentage = 90;
-    const dailyIncrease = (maxPercentage - minPercentage) / totalDaysInMonth;
-    const currentPercentage = Math.min(minPercentage + (dailyIncrease * dayOfMonth), maxPercentage);
-    
-    const claimedCount = Math.floor((currentPercentage / 100) * 75);
+    // Generate random number between 55 and 75
+    const claimedCount = Math.floor(Math.random() * (75 - 55 + 1)) + 55;
     const remainingSlots = 75 - claimedCount;
+    
+    // Calculate percentage for progress bar
+    const currentPercentage = (claimedCount / 75) * 100;
     const isUrgent = remainingSlots <= 15;
     
     // Update DOM elements
