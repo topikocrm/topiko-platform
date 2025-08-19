@@ -2456,12 +2456,12 @@ function selectTheme(themeName, element) {
 // Helper function to convert theme ID to full name for API
 function getFullThemeName(themeId) {
     const themeMap = {
-        'vibrant': 'Colorful & Vibrant',
         'modern': 'Modern & Minimalist',
-        'corporate': 'Corporate & Professional',
-        'handcrafted': 'Handcrafted & Artisanal',
-        'startup': 'Bold & Startup',
-        'educational': 'Educational & Trustworthy'
+        'vibrant': 'Colorful & Vibrant',
+        'professional': 'Professional & Corporate',
+        'traditional': 'Traditional & Classic',
+        'creative': 'Creative & Artistic',
+        'luxury': 'Luxury & Premium'
     };
     return themeMap[themeId] || themeId;
 }
