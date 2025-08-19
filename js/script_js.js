@@ -482,16 +482,22 @@ async function generatePreviewData() {
             
             // Create subdomain with selected theme
             const businessData = composePreviewJSON();
-            await callTopikoAPI(JSON.stringify(businessData));
+            const apiResult = await callTopikoAPI(JSON.stringify(businessData));
             
-            // Mark subdomain as created
-            window.topikoApp.subdomainCreated = true;
-            console.log('✅ Subdomain created successfully');
+            // Only mark as created if API actually succeeded
+            if (apiResult === true) {
+                window.topikoApp.subdomainCreated = true;
+                console.log('✅ Subdomain created successfully');
+            } else {
+                console.log('❌ Subdomain creation failed, will retry next time');
+                window.TopikoUtils.showNotification('Failed to create subdomain. Please try again.', 'error');
+                return;
+            }
         }
         
-        // Use full theme name for Preview API
-        const templateNo = selectedTheme;
-        console.log(`🎯 Template name for Preview API: ${templateNo}`);
+        // Convert theme ID to full name for Preview API
+        const templateNo = getFullThemeName(selectedTheme);
+        console.log(`🎯 Theme ID: ${selectedTheme} -> Template name for API: ${templateNo}`);
         
         // Call Preview Template API
         console.log('🚀 About to call Preview Template API...');
@@ -644,6 +650,9 @@ function composePreviewJSON() {
     // Process selected products
     const processedProducts = processSelectedProducts();
     
+    // Convert theme ID to full name for API
+    const themeForAPI = window.topikoApp.selectedTheme ? getFullThemeName(window.topikoApp.selectedTheme) : null;
+    
     // Compose final JSON
     const previewData = {
         user_name: document.getElementById('fullName').value.trim(),
@@ -659,11 +668,11 @@ function composePreviewJSON() {
         selected_products: processedProducts,
         selected_goals: window.topikoApp.selectedGoals || [],
         selected_language: window.topikoApp.selectedLanguage || 'en',
-        selected_theme: window.topikoApp.selectedTheme || null,
+        selected_theme: themeForAPI,
         qualifying_answers: window.topikoApp.qualifyingAnswers || {}
     };
     
-    console.log('🚀 API Data - selected_theme:', previewData.selected_theme);
+    console.log('🚀 API Data - theme ID:', window.topikoApp.selectedTheme, '-> full name:', themeForAPI);
     
     return previewData;
 }
@@ -2401,21 +2410,10 @@ async function proceedToThemes() {
 function selectTheme(themeName, element) {
     console.log('🎨 selectTheme called with:', themeName);
     
-    // Map theme IDs to full names for API
-    const themeFullNames = {
-        'modern': 'Modern & Minimalist',
-        'vibrant': 'Colorful & Vibrant',
-        'professional': 'Professional & Corporate',
-        'traditional': 'Traditional & Classic',
-        'creative': 'Creative & Artistic',
-        'luxury': 'Elegant & Luxury'
-    };
+    // Store simple ID like the backup version
+    window.topikoApp.selectedTheme = themeName; // Store simple ID: 'vibrant', 'modern', etc.
     
-    // Store only the full name for both APIs
-    window.topikoApp.selectedTheme = themeFullNames[themeName] || themeName; // Full name for both APIs
-    
-    console.log('📝 Theme selected:', themeName);
-    console.log('📝 Theme Full Name stored:', window.topikoApp.selectedTheme);
+    console.log('📝 Theme ID stored:', window.topikoApp.selectedTheme);
     
     document.querySelectorAll('.theme-option').forEach(option => {
         option.classList.remove('selected');
@@ -2453,6 +2451,19 @@ function selectTheme(themeName, element) {
     
     window.TopikoUtils.showNotification(`Perfect choice! ${themeNames[themeName].name} theme selected!`, 'success');
     window.TopikoUtils.calculateLeadScore();
+}
+
+// Helper function to convert theme ID to full name for API
+function getFullThemeName(themeId) {
+    const themeMap = {
+        'vibrant': 'Colorful & Vibrant',
+        'modern': 'Modern & Minimalist',
+        'corporate': 'Corporate & Professional',
+        'handcrafted': 'Handcrafted & Artisanal',
+        'startup': 'Bold & Startup',
+        'educational': 'Educational & Trustworthy'
+    };
+    return themeMap[themeId] || themeId;
 }
 
 // Updated completeSetup - no API calls, just local saving
