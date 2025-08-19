@@ -2356,9 +2356,9 @@ async function requestFollowup() {
     }
 }
 
-// Updated proceedToThemes - just navigate to themes screen
+// Updated proceedToThemes - calls API to create subdomain first
 async function proceedToThemes() {
-    console.log('🎨 Proceeding to themes screen...');
+    console.log('🎨 Proceeding to themes and calling original API...');
     
     try {
         // Validate that we have products selected
@@ -2368,7 +2368,12 @@ async function proceedToThemes() {
             return;
         }
         
-        // Just navigate to themes screen (API call moved to completeSetup)
+        // Call original Topiko API to create subdomain
+        const businessData = composePreviewJSON();
+        await callTopikoAPI(JSON.stringify(businessData));
+        console.log('✅ Original Topiko API called successfully');
+        
+        // Navigate to themes screen
         window.TopikoUtils.showNotification('Excellent! Loading beautiful themes for your store...', 'success');
         setTimeout(() => {
             window.TopikoUtils.showScreen('themes');
@@ -2377,7 +2382,7 @@ async function proceedToThemes() {
         
     } catch (error) {
         console.error(`❌ Failed to proceed to themes: ${error.message}`);
-        window.TopikoUtils.showNotification('Failed to load themes. Please try again.', 'error');
+        window.TopikoUtils.showNotification('Failed to save data. Please try again.', 'error');
     }
 }
 
@@ -2442,19 +2447,9 @@ function selectTheme(themeName, element) {
     window.TopikoUtils.calculateLeadScore();
 }
 
-// Updated completeSetup - calls API with selected theme
+// Updated completeSetup - no API calls, just local saving
 async function completeSetup() {
     console.log('🚀 Complete setup called with theme:', window.topikoApp?.selectedTheme);
-    
-    // Call original Topiko API with selected theme
-    try {
-        const businessData = composePreviewJSON();
-        console.log('📝 Sending to API with theme:', businessData.selected_theme);
-        await callTopikoAPI(JSON.stringify(businessData));
-        console.log('✅ Original Topiko API called successfully with theme:', businessData.selected_theme);
-    } catch (error) {
-        console.error(`❌ Failed to call API: ${error.message}`);
-    }
     
     const finalScore = window.TopikoUtils.calculateLeadScore() + 10;
     
