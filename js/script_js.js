@@ -649,6 +649,8 @@ function composePreviewJSON() {
         qualifying_answers: window.topikoApp.qualifyingAnswers || {}
     };
     
+    console.log('🚀 API Data - selected_theme:', previewData.selected_theme);
+    
     return previewData;
 }
 
@@ -2388,6 +2390,8 @@ async function proceedToThemes() {
 // ========================================
 
 function selectTheme(themeName, element) {
+    console.log('🎨 selectTheme called with:', themeName);
+    
     // Map theme IDs to full names for API
     const themeFullNames = {
         'modern': 'Modern & Minimalist',
@@ -2398,7 +2402,10 @@ function selectTheme(themeName, element) {
         'luxury': 'Elegant & Luxury'
     };
     
-    window.topikoApp.selectedTheme = themeFullNames[themeName] || themeName;
+    const fullThemeName = themeFullNames[themeName] || themeName;
+    window.topikoApp.selectedTheme = fullThemeName;
+    
+    console.log('📝 Theme set to:', window.topikoApp.selectedTheme);
     
     document.querySelectorAll('.theme-option').forEach(option => {
         option.classList.remove('selected');
