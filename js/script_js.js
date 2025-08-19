@@ -495,9 +495,9 @@ async function generatePreviewData() {
             }
         }
         
-        // Convert theme ID to full name for Preview API
+        // Preview API needs full theme name (based on successful API logs)
         const templateNo = getFullThemeName(selectedTheme);
-        console.log(`🎯 Theme ID: ${selectedTheme} -> Template name for API: ${templateNo}`);
+        console.log(`🎯 Converting for Preview API - Theme ID: ${selectedTheme} -> Full name: ${templateNo}`);
         
         // Call Preview Template API
         console.log('🚀 About to call Preview Template API...');
@@ -650,7 +650,7 @@ function composePreviewJSON() {
     // Process selected products
     const processedProducts = processSelectedProducts();
     
-    // Convert theme ID to full name for API
+    // Convert theme ID to full name for main API (user requested this change)
     const themeForAPI = window.topikoApp.selectedTheme ? getFullThemeName(window.topikoApp.selectedTheme) : null;
     
     // Compose final JSON
@@ -668,11 +668,11 @@ function composePreviewJSON() {
         selected_products: processedProducts,
         selected_goals: window.topikoApp.selectedGoals || [],
         selected_language: window.topikoApp.selectedLanguage || 'en',
-        selected_theme: themeForAPI,
+        selected_theme: themeForAPI,  // Send full theme name
         qualifying_answers: window.topikoApp.qualifyingAnswers || {}
     };
     
-    console.log('🚀 API Data - theme ID:', window.topikoApp.selectedTheme, '-> full name:', themeForAPI);
+    console.log(`🚀 Main API Data - Theme ID: ${window.topikoApp.selectedTheme} -> Full name: ${themeForAPI}`);
     
     return previewData;
 }
@@ -2464,6 +2464,19 @@ function getFullThemeName(themeId) {
         'luxury': 'Luxury & Premium'
     };
     return themeMap[themeId] || themeId;
+}
+
+// Helper function to get template number for preview API
+function getTemplateNumber(themeId) {
+    const templateMap = {
+        'modern': 1,
+        'vibrant': 2,
+        'professional': 3,
+        'traditional': 4,
+        'creative': 5,
+        'luxury': 6
+    };
+    return templateMap[themeId] || 1;
 }
 
 // Updated completeSetup - no API calls, just local saving
