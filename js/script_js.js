@@ -2398,12 +2398,11 @@ function selectTheme(themeName, element) {
         'luxury': 'Elegant & Luxury'
     };
     
-    // Store both the simple ID and full name
-    window.topikoApp.selectedThemeId = themeName; // Simple ID for preview API
-    window.topikoApp.selectedTheme = themeFullNames[themeName] || themeName; // Full name for main API
+    // Store only the full name for both APIs
+    window.topikoApp.selectedTheme = themeFullNames[themeName] || themeName; // Full name for both APIs
     
-    console.log('📝 Theme ID:', window.topikoApp.selectedThemeId);
-    console.log('📝 Theme Full Name:', window.topikoApp.selectedTheme);
+    console.log('📝 Theme selected:', themeName);
+    console.log('📝 Theme Full Name stored:', window.topikoApp.selectedTheme);
     
     document.querySelectorAll('.theme-option').forEach(option => {
         option.classList.remove('selected');
