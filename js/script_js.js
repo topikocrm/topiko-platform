@@ -125,27 +125,40 @@ function generateRandomCoupon() {
 // UPDATED FUNCTION: Start offer timer with 6:45:00
 function startOfferTimer() {
     const timerElement = document.getElementById('offerTimer');
-    if (!timerElement) return;
+    if (!timerElement) {
+        console.warn('⚠️ Timer element #offerTimer not found');
+        return;
+    }
+    
+    // Clear any existing timer
+    if (window.offerTimerInterval) {
+        clearInterval(window.offerTimerInterval);
+    }
     
     // NEW: Set initial time to 6 hours, 45 minutes
     let totalSeconds = (6 * 3600) + (45 * 60); // 6:45:00
     
-    const timerInterval = setInterval(() => {
+    console.log('🕒 Starting offer timer with', totalSeconds, 'seconds');
+    
+    window.offerTimerInterval = setInterval(() => {
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
         
-        timerElement.textContent = 
-            `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        timerElement.textContent = timeString;
         
         totalSeconds--;
         
         if (totalSeconds < 0) {
-            clearInterval(timerInterval);
+            clearInterval(window.offerTimerInterval);
             timerElement.textContent = "00:00:00";
             timerElement.style.color = "#dc2626";
+            console.log('⏰ Timer expired');
         }
     }, 1000);
+    
+    console.log('✅ Offer timer started successfully');
 }
 
 // UPDATED: initializeCompletionScreen function with coupon generation
@@ -2166,7 +2179,7 @@ function updateProduct(productId) {
         };
         
         // Re-render products
-        renderAllProducts();
+        window.TopikoUtils.displayProducts();
         
         // Reset form
         document.getElementById('productName').value = '';
@@ -2427,10 +2440,22 @@ async function completeSetup() {
         if (completionBusinessName && window.topikoApp && window.topikoApp.businessName) {
             completionBusinessName.textContent = window.topikoApp.businessName;
         }
+        // Mark all progress steps as completed on completion screen
+        markAllProgressStepsCompleted();
         setTimeout(() => {
             initializeCompletionScreen();
         }, 500);
     }, 2000);
+}
+
+// Function to mark all progress steps as completed on completion screen
+function markAllProgressStepsCompleted() {
+    const progressElements = document.querySelectorAll('.progress-step');
+    progressElements.forEach(step => {
+        step.classList.remove('in-progress');
+        step.classList.add('completed');
+    });
+    console.log('✅ All progress steps marked as completed on completion screen');
 }
 
 // ========================================

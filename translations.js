@@ -35,7 +35,7 @@ const TRANSLATIONS = {
         // GOALS SCREEN
         // ========================================
         goals: {
-            title: "Select Your Goals",
+            title: "Select Your Business Goals",
             subtitle: "Choose what you want to achieve with Topiko (select any 3)",
             options: {
                 ecommerce: {
@@ -307,7 +307,7 @@ const TRANSLATIONS = {
         // ========================================
         modals: {
             goalsTransition: {
-                title: "Great! Your goals are set.",
+                title: "Great! Your Business goals are set.",
                 subtitle: "Now let's show you how Topiko can help with {goals} for your business — one step at a time",
                 benefits: [
                     "No technical knowledge needed",
