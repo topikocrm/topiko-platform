@@ -476,6 +476,19 @@ async function generatePreviewData() {
             return;
         }
         
+        // Check if subdomain was already created
+        if (!window.topikoApp.subdomainCreated) {
+            console.log('📝 Subdomain not created yet, calling main API first...');
+            
+            // Create subdomain with selected theme
+            const businessData = composePreviewJSON();
+            await callTopikoAPI(JSON.stringify(businessData));
+            
+            // Mark subdomain as created
+            window.topikoApp.subdomainCreated = true;
+            console.log('✅ Subdomain created successfully');
+        }
+        
         // Use full theme name for Preview API
         const templateNo = selectedTheme;
         console.log(`🎯 Template name for Preview API: ${templateNo}`);
@@ -2356,9 +2369,9 @@ async function requestFollowup() {
     }
 }
 
-// Updated proceedToThemes - calls API to create subdomain first
+// Updated proceedToThemes - just navigate to themes, no API call
 async function proceedToThemes() {
-    console.log('🎨 Proceeding to themes and calling original API...');
+    console.log('🎨 Proceeding to themes screen...');
     
     try {
         // Validate that we have products selected
@@ -2368,12 +2381,7 @@ async function proceedToThemes() {
             return;
         }
         
-        // Call original Topiko API to create subdomain
-        const businessData = composePreviewJSON();
-        await callTopikoAPI(JSON.stringify(businessData));
-        console.log('✅ Original Topiko API called successfully');
-        
-        // Navigate to themes screen
+        // Just navigate to themes screen - API will be called when preview is clicked
         window.TopikoUtils.showNotification('Excellent! Loading beautiful themes for your store...', 'success');
         setTimeout(() => {
             window.TopikoUtils.showScreen('themes');
@@ -2382,7 +2390,7 @@ async function proceedToThemes() {
         
     } catch (error) {
         console.error(`❌ Failed to proceed to themes: ${error.message}`);
-        window.TopikoUtils.showNotification('Failed to save data. Please try again.', 'error');
+        window.TopikoUtils.showNotification('Failed to load themes. Please try again.', 'error');
     }
 }
 

@@ -915,6 +915,7 @@ function initializeTopikoApp() {
         userProducts: [],
         currentUserId: null,
         selectedTheme: null,
+        subdomainCreated: false,  // Track if subdomain was created
         pageViews: 1,
         leadScore: 0,
         formProgress: 0,
