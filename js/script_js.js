@@ -434,11 +434,12 @@ function loadCategoriesContent(businessCategory, categoriesContainer) {
 
 // Helper function to get template identifier for API calls
 function getFullThemeName(themeId) {
-    // Map theme IDs to template names for API
+    // Map theme IDs to template identifiers that the API expects
+    // The preview API expects simple lowercase identifiers
     const themeTemplateIds = {
-        'modern': 'Modern & Minimalist',
-        'vibrant': 'Colorful & Vibrant', 
-        'professional': 'Professional & Corporate',
+        'modern': 'modern',
+        'vibrant': 'vibrant', 
+        'professional': 'professional',
         'traditional': 'traditional',
         'creative': 'creative',
         'luxury': 'luxury'
@@ -462,22 +463,24 @@ async function generatePreviewData() {
         }
         
         // Get selected theme and subdomain
-        const selectedTheme = window.topikoApp?.selectedTheme;
+        const selectedThemeId = window.topikoApp?.selectedThemeId; // Simple ID for preview
+        const selectedTheme = window.topikoApp?.selectedTheme; // Full name for display
         const businessName = document.getElementById('businessName')?.value.trim();
         const subdomainUrl = generateSubdomainUrl(businessName) + '.topiko.com';
         
-        console.log(`🎯 Selected theme: ${selectedTheme}`);
+        console.log(`🎯 Selected theme ID: ${selectedThemeId}`);
+        console.log(`🎯 Selected theme name: ${selectedTheme}`);
         console.log(`🎯 Business name: ${businessName}`);
         console.log(`🎯 Subdomain URL: ${subdomainUrl}`);
         
-        if (!selectedTheme) {
+        if (!selectedThemeId) {
             window.TopikoUtils.showNotification('Please select a theme first', 'error');
             return;
         }
         
-        // Get template identifier for API
-        const templateNo = getFullThemeName(selectedTheme);
-        console.log(`🎯 Theme ID: ${selectedTheme} -> Template ID: ${templateNo}`);
+        // Use simple theme ID for Preview API (e.g., 'vibrant', 'modern', etc.)
+        const templateNo = selectedThemeId;
+        console.log(`🎯 Template ID for Preview API: ${templateNo}`);
         
         // Call Preview Template API
         console.log('🚀 About to call Preview Template API...');
@@ -2355,9 +2358,9 @@ async function requestFollowup() {
     }
 }
 
-// Updated proceedToThemes - calls original API first
+// Updated proceedToThemes - just navigate to themes screen
 async function proceedToThemes() {
-    console.log('🎨 Proceeding to themes and calling original API...');
+    console.log('🎨 Proceeding to themes screen...');
     
     try {
         // Validate that we have products selected
@@ -2367,12 +2370,7 @@ async function proceedToThemes() {
             return;
         }
         
-        // Call original Topiko API (moved from generatePreviewData)
-        const businessData = composePreviewJSON();
-        await callTopikoAPI(JSON.stringify(businessData));
-        console.log('✅ Original Topiko API called successfully');
-        
-        // Continue with theme navigation
+        // Just navigate to themes screen (API call moved to completeSetup)
         window.TopikoUtils.showNotification('Excellent! Loading beautiful themes for your store...', 'success');
         setTimeout(() => {
             window.TopikoUtils.showScreen('themes');
@@ -2381,7 +2379,7 @@ async function proceedToThemes() {
         
     } catch (error) {
         console.error(`❌ Failed to proceed to themes: ${error.message}`);
-        window.TopikoUtils.showNotification('Failed to save data. Please try again.', 'error');
+        window.TopikoUtils.showNotification('Failed to load themes. Please try again.', 'error');
     }
 }
 
@@ -2402,10 +2400,12 @@ function selectTheme(themeName, element) {
         'luxury': 'Elegant & Luxury'
     };
     
-    const fullThemeName = themeFullNames[themeName] || themeName;
-    window.topikoApp.selectedTheme = fullThemeName;
+    // Store both the simple ID and full name
+    window.topikoApp.selectedThemeId = themeName; // Simple ID for preview API
+    window.topikoApp.selectedTheme = themeFullNames[themeName] || themeName; // Full name for main API
     
-    console.log('📝 Theme set to:', window.topikoApp.selectedTheme);
+    console.log('📝 Theme ID:', window.topikoApp.selectedThemeId);
+    console.log('📝 Theme Full Name:', window.topikoApp.selectedTheme);
     
     document.querySelectorAll('.theme-option').forEach(option => {
         option.classList.remove('selected');
@@ -2445,11 +2445,23 @@ function selectTheme(themeName, element) {
     window.TopikoUtils.calculateLeadScore();
 }
 
-// Updated completeSetup - no external API calls
+// Updated completeSetup - calls API with selected theme
 async function completeSetup() {
+    console.log('🚀 Complete setup called with theme:', window.topikoApp?.selectedTheme);
+    
+    // Call original Topiko API with selected theme
+    try {
+        const businessData = composePreviewJSON();
+        console.log('📝 Sending to API with theme:', businessData.selected_theme);
+        await callTopikoAPI(JSON.stringify(businessData));
+        console.log('✅ Original Topiko API called successfully with theme:', businessData.selected_theme);
+    } catch (error) {
+        console.error(`❌ Failed to call API: ${error.message}`);
+    }
+    
     const finalScore = window.TopikoUtils.calculateLeadScore() + 10;
     
-    // Save completion data (NO external API calls)
+    // Save completion data locally
     const leadData = {
         user_id: window.topikoApp?.currentUserId,
         name: window.topikoApp?.userName,
@@ -2812,6 +2824,9 @@ async function callTopikoAPI(jsonString) {
     
     try {
         console.log(`🚀 Calling original API: ${apiUrl}`);
+        const parsedData = JSON.parse(jsonString);
+        console.log('📊 Full API payload:', parsedData);
+        console.log('🎨 Theme being sent to API:', parsedData.selected_theme);
         
         const response = await fetch(apiUrl, {
             method: 'POST',
