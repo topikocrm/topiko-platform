@@ -576,7 +576,27 @@ async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
         console.log(`📡 Response status: ${response.status}`);
         console.log(`📡 Response ok: ${response.ok}`);
         
-        const responseData = await response.json();
+        // Get response as text first (API may wrap JSON)
+        const responseText = await response.text();
+        
+        let responseData;
+        try {
+            // Try direct parse first
+            responseData = JSON.parse(responseText);
+        } catch (e) {
+            // Extract JSON from wrapped response
+            const jsonMatch = responseText.match(/\{"status":[^}]+\}/);
+            if (jsonMatch) {
+                responseData = JSON.parse(jsonMatch[0]);
+            } else if (responseText.includes('"status":"success"')) {
+                // Fallback - if we see success in response, treat as success
+                responseData = { status: 'success', message: 'Template updated' };
+            } else {
+                console.error('Preview API response parse error:', responseText.substring(0, 200));
+                responseData = { status: 'error' };
+            }
+        }
+        
         console.log(`📡 Response data:`, responseData);
         
         if (response.ok && responseData.status === 'success') {
