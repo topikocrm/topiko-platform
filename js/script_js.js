@@ -2860,14 +2860,22 @@ async function callTopikoAPI(jsonString) {
         
         // Try to get response text first to see what's returned
         const responseText = await response.text();
-        console.log('📡 Raw API response:', responseText);
         
+        // Extract JSON from response (API wraps JSON in script tags)
         let responseData;
         try {
-            responseData = JSON.parse(responseText);
+            // Look for JSON object in the response
+            const jsonMatch = responseText.match(/\{[^{}]*"status"[^{}]*\}/);
+            if (jsonMatch) {
+                responseData = JSON.parse(jsonMatch[0]);
+                console.log('📡 Extracted JSON from response:', responseData);
+            } else {
+                // Try direct parse if no wrapped content
+                responseData = JSON.parse(responseText);
+            }
         } catch (e) {
-            console.error('Failed to parse response as JSON:', responseText);
-            throw new Error(`Invalid API response: ${responseText}`);
+            console.error('Failed to parse response:', e);
+            throw new Error(`Invalid API response format`);
         }
         
         if (response.ok) {
