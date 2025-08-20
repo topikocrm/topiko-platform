@@ -2864,18 +2864,32 @@ async function callTopikoAPI(jsonString) {
         // Extract JSON from response (API wraps JSON in script tags)
         let responseData;
         try {
-            // Look for JSON object in the response
-            const jsonMatch = responseText.match(/\{[^{}]*"status"[^{}]*\}/);
+            // Look for JSON object in the response - more comprehensive regex
+            const jsonMatch = responseText.match(/\{"status":[^}]+\}/);
             if (jsonMatch) {
                 responseData = JSON.parse(jsonMatch[0]);
                 console.log('📡 Extracted JSON from response:', responseData);
             } else {
-                // Try direct parse if no wrapped content
-                responseData = JSON.parse(responseText);
+                // Try to find any JSON-like structure
+                const altMatch = responseText.match(/\{.*?"status".*?\}/s);
+                if (altMatch) {
+                    responseData = JSON.parse(altMatch[0]);
+                    console.log('📡 Extracted JSON (alt method):', responseData);
+                } else {
+                    // Last resort - try direct parse
+                    responseData = JSON.parse(responseText);
+                }
             }
         } catch (e) {
-            console.error('Failed to parse response:', e);
-            throw new Error(`Invalid API response format`);
+            // Check if response indicates success despite parse error
+            if (responseText.includes('"status":"success"') && responseText.includes('"subdomain_created":true')) {
+                console.log('✅ API returned success (detected in response despite parse error)');
+                responseData = { status: 'success', subdomain_created: true };
+            } else {
+                console.error('Failed to parse response:', e);
+                console.error('Response text:', responseText.substring(0, 500));
+                throw new Error(`Invalid API response format`);
+            }
         }
         
         if (response.ok) {
