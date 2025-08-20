@@ -495,25 +495,37 @@ async function generatePreviewData() {
             }
         }
         
-        // Skip preview API - subdomain was already created with theme by main API
-        // Just open the subdomain directly (like the backup version does)
-        const fullSubdomainUrl = `https://${subdomainUrl}`;
-        console.log(`🌐 Opening subdomain: ${fullSubdomainUrl}`);
+        // Convert theme ID to full name for Preview API
+        const templateNo = getFullThemeName(selectedTheme);
+        console.log(`🎯 Converting for Preview API - Theme ID: ${selectedTheme} -> Full name: ${templateNo}`);
         
-        // Test if popup blockers are preventing window opening
-        const newWindow = window.open(fullSubdomainUrl, '_blank');
+        // Call Preview Template API
+        console.log('🚀 About to call Preview Template API...');
+        const apiSuccess = await callPreviewTemplateAPI(subdomainUrl, templateNo);
+        console.log(`🎯 API Success result: ${apiSuccess}`);
         
-        if (newWindow) {
-            console.log('✅ New window opened successfully');
-            window.TopikoUtils.showNotification(`🚀 Opening your website: ${subdomainUrl}...`, 'success');
-        } else {
-            console.log('❌ Popup blocked! Window.open returned null');
-            window.TopikoUtils.showNotification(`🚫 Popup blocked! Please allow popups and try again. URL: ${fullSubdomainUrl}`, 'warning');
+        // If API call was successful, open subdomain in new window
+        if (apiSuccess === true) {
+            const fullSubdomainUrl = `https://${subdomainUrl}`;
+            console.log(`🌐 API was successful! Opening subdomain: ${fullSubdomainUrl}`);
             
-            // Fallback: Copy URL to clipboard
-            navigator.clipboard.writeText(fullSubdomainUrl).then(() => {
-                window.TopikoUtils.showNotification(`📋 URL copied to clipboard: ${fullSubdomainUrl}`, 'info');
-            });
+            // Test if popup blockers are preventing window opening
+            const newWindow = window.open(fullSubdomainUrl, '_blank');
+            
+            if (newWindow) {
+                console.log('✅ New window opened successfully');
+                window.TopikoUtils.showNotification(`🚀 Template updated! Opening ${subdomainUrl}...`, 'success');
+            } else {
+                console.log('❌ Popup blocked! Window.open returned null');
+                window.TopikoUtils.showNotification(`🚫 Popup blocked! Please allow popups and try again. URL: ${fullSubdomainUrl}`, 'warning');
+                
+                // Fallback: Copy URL to clipboard
+                navigator.clipboard.writeText(fullSubdomainUrl).then(() => {
+                    window.TopikoUtils.showNotification(`📋 URL copied to clipboard: ${fullSubdomainUrl}`, 'info');
+                });
+            }
+        } else {
+            console.log(`❌ API was not successful (returned: ${apiSuccess}), not opening window`);
         }
         
         console.log('✅ Preview generation completed');
@@ -566,6 +578,7 @@ async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
         
         // Get response as text first (API may wrap JSON)
         const responseText = await response.text();
+        console.log('📡 Raw Preview API response:', responseText.substring(0, 500));
         
         let responseData;
         try {
@@ -576,12 +589,16 @@ async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
             const jsonMatch = responseText.match(/\{"status":[^}]+\}/);
             if (jsonMatch) {
                 responseData = JSON.parse(jsonMatch[0]);
+                console.log('✅ Extracted JSON from wrapped response');
             } else if (responseText.includes('"status":"success"')) {
                 // Fallback - if we see success in response, treat as success
                 responseData = { status: 'success', message: 'Template updated' };
+                console.log('✅ Detected success in response text');
             } else {
-                console.error('Preview API response parse error:', responseText.substring(0, 200));
-                responseData = { status: 'error' };
+                console.error('❌ Preview API response parse failed');
+                console.error('Response preview:', responseText.substring(0, 500));
+                // Still open the subdomain even if preview API fails
+                responseData = { status: 'success', message: 'Opening preview (API parse failed but subdomain exists)' };
             }
         }
         
