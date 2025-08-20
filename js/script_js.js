@@ -650,10 +650,7 @@ function composePreviewJSON() {
     // Process selected products
     const processedProducts = processSelectedProducts();
     
-    // Convert theme ID to full name for main API (user requested this change)
-    const themeForAPI = window.topikoApp.selectedTheme ? getFullThemeName(window.topikoApp.selectedTheme) : null;
-    
-    // Compose final JSON
+    // Compose final JSON - send theme ID directly (API expects simple ID)
     const previewData = {
         user_name: document.getElementById('fullName').value.trim(),
         user_phone: document.getElementById('phoneNumber').value.trim(),
@@ -668,11 +665,11 @@ function composePreviewJSON() {
         selected_products: processedProducts,
         selected_goals: window.topikoApp.selectedGoals || [],
         selected_language: window.topikoApp.selectedLanguage || 'en',
-        selected_theme: themeForAPI,  // Send full theme name
+        selected_theme: window.topikoApp.selectedTheme || null,  // Send theme ID directly
         qualifying_answers: window.topikoApp.qualifyingAnswers || {}
     };
     
-    console.log(`🚀 Main API Data - Theme ID: ${window.topikoApp.selectedTheme} -> Full name: ${themeForAPI}`);
+    console.log(`🚀 Main API Data - selected_theme: ${previewData.selected_theme}`);
     
     return previewData;
 }
@@ -2861,7 +2858,17 @@ async function callTopikoAPI(jsonString) {
             body: jsonString
         });
         
-        const responseData = await response.json();
+        // Try to get response text first to see what's returned
+        const responseText = await response.text();
+        console.log('📡 Raw API response:', responseText);
+        
+        let responseData;
+        try {
+            responseData = JSON.parse(responseText);
+        } catch (e) {
+            console.error('Failed to parse response as JSON:', responseText);
+            throw new Error(`Invalid API response: ${responseText}`);
+        }
         
         if (response.ok) {
             window.TopikoUtils.showNotification('✅ Business data saved successfully!', 'success');
