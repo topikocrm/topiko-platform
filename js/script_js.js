@@ -495,37 +495,25 @@ async function generatePreviewData() {
             }
         }
         
-        // Preview API needs full theme name (based on successful API logs)
-        const templateNo = getFullThemeName(selectedTheme);
-        console.log(`🎯 Converting for Preview API - Theme ID: ${selectedTheme} -> Full name: ${templateNo}`);
+        // Skip preview API - subdomain was already created with theme by main API
+        // Just open the subdomain directly (like the backup version does)
+        const fullSubdomainUrl = `https://${subdomainUrl}`;
+        console.log(`🌐 Opening subdomain: ${fullSubdomainUrl}`);
         
-        // Call Preview Template API
-        console.log('🚀 About to call Preview Template API...');
-        const apiSuccess = await callPreviewTemplateAPI(subdomainUrl, templateNo);
-        console.log(`🎯 API Success result: ${apiSuccess}`);
+        // Test if popup blockers are preventing window opening
+        const newWindow = window.open(fullSubdomainUrl, '_blank');
         
-        // If API call was successful, open subdomain in new window
-        if (apiSuccess === true) {
-            const fullSubdomainUrl = `https://${subdomainUrl}`;
-            console.log(`🌐 API was successful! Opening subdomain: ${fullSubdomainUrl}`);
-            
-            // Test if popup blockers are preventing window opening
-            const newWindow = window.open(fullSubdomainUrl, '_blank');
-            
-            if (newWindow) {
-                console.log('✅ New window opened successfully');
-                window.TopikoUtils.showNotification(`🚀 Template updated! Opening ${subdomainUrl}...`, 'success');
-            } else {
-                console.log('❌ Popup blocked! Window.open returned null');
-                window.TopikoUtils.showNotification(`🚫 Popup blocked! Please allow popups and try again. URL: ${fullSubdomainUrl}`, 'warning');
-                
-                // Fallback: Copy URL to clipboard
-                navigator.clipboard.writeText(fullSubdomainUrl).then(() => {
-                    window.TopikoUtils.showNotification(`📋 URL copied to clipboard: ${fullSubdomainUrl}`, 'info');
-                });
-            }
+        if (newWindow) {
+            console.log('✅ New window opened successfully');
+            window.TopikoUtils.showNotification(`🚀 Opening your website: ${subdomainUrl}...`, 'success');
         } else {
-            console.log(`❌ API was not successful (returned: ${apiSuccess}), not opening window`);
+            console.log('❌ Popup blocked! Window.open returned null');
+            window.TopikoUtils.showNotification(`🚫 Popup blocked! Please allow popups and try again. URL: ${fullSubdomainUrl}`, 'warning');
+            
+            // Fallback: Copy URL to clipboard
+            navigator.clipboard.writeText(fullSubdomainUrl).then(() => {
+                window.TopikoUtils.showNotification(`📋 URL copied to clipboard: ${fullSubdomainUrl}`, 'info');
+            });
         }
         
         console.log('✅ Preview generation completed');
