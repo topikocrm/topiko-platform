@@ -463,9 +463,10 @@ async function generatePreviewData() {
         }
         
         // Get selected theme and subdomain
-        const selectedTheme = window.topikoApp?.selectedTheme; // Full name like "Colorful & Vibrant"
+        const selectedTheme = window.topikoApp?.selectedTheme;
         const businessName = document.getElementById('businessName')?.value.trim();
-        const subdomainUrl = generateSubdomainUrl(businessName) + '.topiko.com';
+        const subdomainOnly = generateSubdomainUrl(businessName);  // Just subdomain: "mk31"
+        const subdomainUrl = subdomainOnly + '.topiko.com';  // Full URL: "mk31.topiko.com"
         
         console.log(`🎯 Selected theme: ${selectedTheme}`);
         console.log(`🎯 Business name: ${businessName}`);
@@ -499,9 +500,9 @@ async function generatePreviewData() {
         const templateNo = getFullThemeName(selectedTheme);
         console.log(`🎯 Converting for Preview API - Theme ID: ${selectedTheme} -> Full name: ${templateNo}`);
         
-        // Call Preview Template API
+        // Call Preview Template API (use just subdomain without .topiko.com to match main API)
         console.log('🚀 About to call Preview Template API...');
-        const apiSuccess = await callPreviewTemplateAPI(subdomainUrl, templateNo);
+        const apiSuccess = await callPreviewTemplateAPI(subdomainOnly, templateNo);
         console.log(`🎯 API Success result: ${apiSuccess}`);
         
         // If API call was successful, open subdomain in new window
