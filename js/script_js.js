@@ -453,14 +453,147 @@ function getFullThemeName(themeId) {
 // ========================================
 
 // Enhanced generatePreviewData function with template API call
-// REMOVED: generatePreviewData function - not needed as per backup version
-// The backup version doesn't have preview functionality
+// Restored generatePreviewData function from backup
+async function generatePreviewData() {
+    console.log('🔍 Generating preview and calling template API...');
+    
+    try {
+        // Validate required data
+        if (!validatePreviewData()) {
+            return;
+        }
+        
+        // Get selected theme and subdomain
+        const selectedTheme = window.topikoApp?.selectedTheme;
+        const businessName = document.getElementById('businessName')?.value.trim();
+        const subdomainUrl = generateSubdomainUrl(businessName) + '.topiko.com';
+        
+        console.log(`🎯 Selected theme: ${selectedTheme}`);
+        console.log(`🎯 Business name: ${businessName}`);
+        console.log(`🎯 Subdomain URL: ${subdomainUrl}`);
+        
+        if (!selectedTheme) {
+            window.TopikoUtils.showNotification('Please select a theme first', 'error');
+            return;
+        }
+        
+        // Get full theme display name for template_no
+        const templateNo = getFullThemeName(selectedTheme);
+        console.log(`🎯 Template number (full name): ${templateNo}`);
+        
+        // Call Preview Template API
+        console.log('🚀 About to call Preview Template API...');
+        const apiSuccess = await callPreviewTemplateAPI(subdomainUrl, templateNo);
+        console.log(`🎯 API Success result: ${apiSuccess}`);
+        
+        // If API call was successful, open subdomain in new window
+        if (apiSuccess === true) {
+            const fullSubdomainUrl = `https://${subdomainUrl}`;
+            console.log(`🌐 API was successful! Opening subdomain: ${fullSubdomainUrl}`);
+            
+            // Test if popup blockers are preventing window opening
+            const newWindow = window.open(fullSubdomainUrl, '_blank');
+            
+            if (newWindow) {
+                console.log('✅ New window opened successfully');
+                window.TopikoUtils.showNotification(`🚀 Template updated! Opening ${subdomainUrl}...`, 'success');
+            } else {
+                console.log('❌ Popup blocked! Window.open returned null');
+                window.TopikoUtils.showNotification(`🚫 Popup blocked! Please allow popups and try again. URL: ${fullSubdomainUrl}`, 'warning');
+                
+                // Fallback: Copy URL to clipboard
+                navigator.clipboard.writeText(fullSubdomainUrl).then(() => {
+                    window.TopikoUtils.showNotification(`📋 URL copied to clipboard: ${fullSubdomainUrl}`, 'info');
+                });
+            }
+        } else {
+            console.log(`❌ API was not successful (returned: ${apiSuccess}), not opening window`);
+        }
+        
+        console.log('✅ Preview generation completed');
+        
+    } catch (error) {
+        console.error(`❌ Preview generation failed: ${error.message}`);
+        console.error('Full error:', error);
+        window.TopikoUtils.showNotification('Failed to generate preview. Please try again.', 'error');
+    }
+}
 
-// REMOVED: callPreviewTemplateAPI function - not needed as per backup version
-// The backup version doesn't have preview API calls
+// Restored callPreviewTemplateAPI function from backup
+async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
+    const apiUrl = 'https://topiko.com/demoapis/demo_previewTemplate.php';
+    
+    const payload = {
+        subdomain_url: subdomainUrl,
+        template_no: templateNo
+    };
+    
+    console.log(`🎨 Calling Preview Template API: ${apiUrl}`);
+    console.log(`📊 Payload: ${JSON.stringify(payload)}`);
+    
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        console.log(`📡 Response status: ${response.status}`);
+        console.log(`📡 Response ok: ${response.ok}`);
+        
+        const responseData = await response.json();
+        console.log(`📡 Response data:`, responseData);
+        
+        if (response.ok && responseData.status === 'success') {
+            window.TopikoUtils.showNotification(`✅ ${responseData.message}`, 'success');
+            console.log('✅ Preview template API successful - RETURNING TRUE');
+            return true;
+        } else {
+            console.log('❌ API not successful:', {
+                responseOk: response.ok,
+                responseStatus: responseData.status,
+                responseData: responseData
+            });
+            throw new Error(responseData.message || `HTTP ${response.status}`);
+        }
+        
+    } catch (error) {
+        console.error(`❌ Preview template API error: ${error.message}`);
+        console.error('Full error:', error);
+        window.TopikoUtils.showNotification(`⚠️ Preview template update failed: ${error.message}`, 'warning');
+        return false;
+    }
+}
 
-// REMOVED: validatePreviewData function - only used by preview functionality
-// The backup version doesn't have preview validation
+// Restored validatePreviewData function from backup
+function validatePreviewData() {
+    const requiredFields = [
+        { id: 'fullName', name: 'Full Name' },
+        { id: 'email', name: 'Email' },
+        { id: 'phoneNumber', name: 'Phone Number' }, 
+        { id: 'businessName', name: 'Business Name' },
+        { id: 'businessType', name: 'Business Type' },
+        { id: 'category', name: 'Business Category' }
+    ];
+    
+    for (const field of requiredFields) {
+        const element = document.getElementById(field.id);
+        if (!element || !element.value.trim()) {
+            window.TopikoUtils.showNotification(`Please fill ${field.name} before preview`, 'error');
+            return false;
+        }
+    }
+    
+    if (!window.topikoApp.selectedCategories || window.topikoApp.selectedCategories.length === 0) {
+        window.TopikoUtils.showNotification('Please select at least one category before preview', 'error');
+        return false;
+    }
+    
+    return true;
+}
 
 // Restored from backup - needed for main API call
 function composePreviewJSON() {
@@ -2944,6 +3077,9 @@ if (typeof window !== 'undefined') {
     window.loadCategoriesContent = loadCategoriesContent;
     
     // Preview Functions - Restored API calling functions from backup
+    window.generatePreviewData = generatePreviewData;
+    window.callPreviewTemplateAPI = callPreviewTemplateAPI;
+    window.validatePreviewData = validatePreviewData;
     window.composePreviewJSON = composePreviewJSON;
     window.generateSubdomainUrl = generateSubdomainUrl;
     window.mapSubcategoriesToCategories = mapSubcategoriesToCategories;
