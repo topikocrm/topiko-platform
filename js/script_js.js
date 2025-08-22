@@ -459,7 +459,6 @@ function getFullThemeName(themeId) {
 // REMOVED: callPreviewTemplateAPI function - not needed as per backup version
 // The backup version doesn't have preview API calls
 
-    const processedProducts = processSelectedProducts();
 // REMOVED: validatePreviewData function - only used by preview functionality
 // The backup version doesn't have preview validation
 
