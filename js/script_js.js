@@ -462,7 +462,39 @@ function getFullThemeName(themeId) {
 // REMOVED: validatePreviewData function - only used by preview functionality
 // The backup version doesn't have preview validation
 
-// REMOVED: composePreviewJSON function - only used for preview API
+// Restored from backup - needed for main API call
+function composePreviewJSON() {
+    // Generate subdomain URL
+    const businessName = document.getElementById('businessName').value.trim();
+    const subdomainUrl = generateSubdomainUrl(businessName);
+    
+    // Map categories to subcategories
+    const selectedSubcategoryDetails = mapSubcategoriesToCategories();
+    
+    // Process selected products
+    const processedProducts = processSelectedProducts();
+    
+    // Compose final JSON
+    const previewData = {
+        user_name: document.getElementById('fullName').value.trim(),
+        user_phone: document.getElementById('phoneNumber').value.trim(),
+        user_email: document.getElementById('email').value.trim(),
+        business_name: businessName,
+        business_type: document.getElementById('businessType').value,
+        business_address: document.getElementById('address').value.trim(),
+        business_category: document.getElementById('category').value,
+        subdomain_url: subdomainUrl,
+        selected_category_name: window.topikoApp.selectedCategories || [],
+        selected_subcategoryname: selectedSubcategoryDetails,
+        selected_products: processedProducts,
+        selected_goals: window.topikoApp.selectedGoals || [],
+        selected_language: window.topikoApp.selectedLanguage || 'en',
+        selected_theme: window.topikoApp.selectedTheme || null,
+        qualifying_answers: window.topikoApp.qualifyingAnswers || {}
+    };
+    
+    return previewData;
+}
 // The backup version doesn't compose preview data
 
 // Remove .topiko.com from subdomain URL
@@ -2168,7 +2200,7 @@ async function requestFollowup() {
 
 // Updated proceedToThemes - just navigate to themes, no API call
 async function proceedToThemes() {
-    console.log('🎨 Proceeding to themes screen...');
+    console.log('🎨 Proceeding to themes and calling original API...');
     
     try {
         // Validate that we have products selected
@@ -2178,7 +2210,12 @@ async function proceedToThemes() {
             return;
         }
         
-        // Just navigate to themes screen - API will be called when preview is clicked
+        // Call original Topiko API (restored from backup)
+        const businessData = composePreviewJSON();
+        await callTopikoAPI(JSON.stringify(businessData));
+        console.log('✅ Original Topiko API called successfully');
+        
+        // Continue with theme navigation
         window.TopikoUtils.showNotification('Excellent! Loading beautiful themes for your store...', 'success');
         setTimeout(() => {
             window.TopikoUtils.showScreen('themes');
@@ -2187,7 +2224,7 @@ async function proceedToThemes() {
         
     } catch (error) {
         console.error(`❌ Failed to proceed to themes: ${error.message}`);
-        window.TopikoUtils.showNotification('Failed to load themes. Please try again.', 'error');
+        window.TopikoUtils.showNotification('Failed to save data. Please try again.', 'error');
     }
 }
 
@@ -2906,8 +2943,8 @@ if (typeof window !== 'undefined') {
     // Category Enhancement Functions - UPDATED
     window.loadCategoriesContent = loadCategoriesContent;
     
-    // Preview Functions - REMOVED to match backup version
-    // Only keeping utility functions that might be used elsewhere
+    // Preview Functions - Restored API calling functions from backup
+    window.composePreviewJSON = composePreviewJSON;
     window.generateSubdomainUrl = generateSubdomainUrl;
     window.mapSubcategoriesToCategories = mapSubcategoriesToCategories;
     window.processSelectedProducts = processSelectedProducts;
