@@ -453,252 +453,18 @@ function getFullThemeName(themeId) {
 // ========================================
 
 // Enhanced generatePreviewData function with template API call
-async function generatePreviewData() {
-    console.log('🔍 Generating preview and calling template API...');
-    
-    try {
-        // Validate required data
-        if (!validatePreviewData()) {
-            return;
-        }
-        
-        // Get selected theme and subdomain
-        const selectedTheme = window.topikoApp?.selectedTheme;
-        const businessName = document.getElementById('businessName')?.value.trim();
-        const subdomainOnly = generateSubdomainUrl(businessName);  // Just subdomain: "mk31"
-        const subdomainUrl = subdomainOnly + '.topiko.com';  // Full URL: "mk31.topiko.com"
-        
-        console.log(`🎯 Selected theme: ${selectedTheme}`);
-        console.log(`🎯 Business name: ${businessName}`);
-        console.log(`🎯 Subdomain URL: ${subdomainUrl}`);
-        
-        if (!selectedTheme) {
-            window.TopikoUtils.showNotification('Please select a theme first', 'error');
-            return;
-        }
-        
-        // Check if subdomain was already created
-        if (!window.topikoApp.subdomainCreated) {
-            console.log('📝 Subdomain not created yet, calling main API first...');
-            
-            // Create subdomain with selected theme
-            const businessData = composePreviewJSON();
-            const apiResult = await callTopikoAPI(JSON.stringify(businessData));
-            
-            // Only mark as created if API actually succeeded
-            if (apiResult === true) {
-                window.topikoApp.subdomainCreated = true;
-                console.log('✅ Subdomain created successfully');
-            } else {
-                console.log('❌ Subdomain creation failed, will retry next time');
-                window.TopikoUtils.showNotification('Failed to create subdomain. Please try again.', 'error');
-                return;
-            }
-        }
-        
-        // Convert theme ID to full name for Preview API
-        const templateNo = getFullThemeName(selectedTheme);
-        console.log(`🎯 Converting for Preview API - Theme ID: ${selectedTheme} -> Full name: ${templateNo}`);
-        
-        // Call Preview Template API (use just subdomain without .topiko.com to match main API)
-        console.log('🚀 About to call Preview Template API...');
-        const apiSuccess = await callPreviewTemplateAPI(subdomainOnly, templateNo);
-        console.log(`🎯 API Success result: ${apiSuccess}`);
-        
-        // If API call was successful, open subdomain in new window
-        if (apiSuccess === true) {
-            const fullSubdomainUrl = `https://${subdomainUrl}`;
-            console.log(`🌐 API was successful! Opening subdomain: ${fullSubdomainUrl}`);
-            
-            // Test if popup blockers are preventing window opening
-            const newWindow = window.open(fullSubdomainUrl, '_blank');
-            
-            if (newWindow) {
-                console.log('✅ New window opened successfully');
-                window.TopikoUtils.showNotification(`🚀 Template updated! Opening ${subdomainUrl}...`, 'success');
-            } else {
-                console.log('❌ Popup blocked! Window.open returned null');
-                window.TopikoUtils.showNotification(`🚫 Popup blocked! Please allow popups and try again. URL: ${fullSubdomainUrl}`, 'warning');
-                
-                // Fallback: Copy URL to clipboard
-                navigator.clipboard.writeText(fullSubdomainUrl).then(() => {
-                    window.TopikoUtils.showNotification(`📋 URL copied to clipboard: ${fullSubdomainUrl}`, 'info');
-                });
-            }
-        } else {
-            console.log(`❌ API was not successful (returned: ${apiSuccess}), not opening window`);
-        }
-        
-        console.log('✅ Preview generation completed');
-        
-    } catch (error) {
-        console.error(`❌ Preview generation failed: ${error.message}`);
-        console.error('Full error:', error);
-        window.TopikoUtils.showNotification('Failed to generate preview. Please try again.', 'error');
-    }
-}
+// REMOVED: generatePreviewData function - not needed as per backup version
+// The backup version doesn't have preview functionality
 
-// Preview Template API call function
-async function callPreviewTemplateAPI(subdomainUrl, templateNo) {
-    const apiUrl = 'https://topiko.com/demoapis/demo_previewTemplate.php';
-    
-    const payload = {
-        subdomain_url: subdomainUrl,
-        template_no: templateNo  // Send the full theme name
-    };
-    
-    console.log(`🎨 Calling Preview Template API: ${apiUrl}`);
-    console.log(`📊 Payload: ${JSON.stringify(payload)}`);
-    
-    // Show debug dialog with API parameters
-    const debugMessage = `🔍 DEBUG - API Call Parameters:\n\n` +
-                         `API URL: ${apiUrl}\n` +
-                         `Subdomain URL: ${subdomainUrl}\n` +
-                         `Template No: ${templateNo}\n\n` +
-                         `Full Payload: ${JSON.stringify(payload, null, 2)}`;
-    
-    if (confirm(debugMessage + '\n\nClick OK to continue with API call, Cancel to abort.')) {
-        console.log('User confirmed API call');
-    } else {
-        console.log('User cancelled API call');
-        return false;
-    }
-    
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-        
-        console.log(`📡 Response status: ${response.status}`);
-        console.log(`📡 Response ok: ${response.ok}`);
-        
-        // Get response as text first (API may wrap JSON)
-        const responseText = await response.text();
-        console.log('📡 Raw Preview API response:', responseText.substring(0, 500));
-        
-        let responseData;
-        try {
-            // Try direct parse first
-            responseData = JSON.parse(responseText);
-        } catch (e) {
-            // Extract JSON from wrapped response
-            const jsonMatch = responseText.match(/\{"status":[^}]+\}/);
-            if (jsonMatch) {
-                responseData = JSON.parse(jsonMatch[0]);
-                console.log('✅ Extracted JSON from wrapped response');
-            } else if (responseText.includes('"status":"success"')) {
-                // Fallback - if we see success in response, treat as success
-                responseData = { status: 'success', message: 'Template updated' };
-                console.log('✅ Detected success in response text');
-            } else {
-                console.error('❌ Preview API response parse failed');
-                console.error('Response preview:', responseText.substring(0, 500));
-                // Still open the subdomain even if preview API fails
-                responseData = { status: 'success', message: 'Opening preview (API parse failed but subdomain exists)' };
-            }
-        }
-        
-        console.log(`📡 Response data:`, responseData);
-        
-        if (response.ok && responseData.status === 'success') {
-            window.TopikoUtils.showNotification(`✅ ${responseData.message}`, 'success');
-            console.log('✅ Preview template API successful - RETURNING TRUE');
-            return true;
-        } else {
-            console.log('❌ API not successful:', {
-                responseOk: response.ok,
-                responseStatus: responseData.status,
-                responseData: responseData
-            });
-            throw new Error(responseData.message || `HTTP ${response.status}`);
-        }
-        
-    } catch (error) {
-        console.error(`❌ Preview template API error: ${error.message}`);
-        console.error('Full error:', error);
-        
-        // If it's a 404, the API endpoint doesn't exist yet - provide fallback
-        if (error.message.includes('404')) {
-            console.log('🔄 API endpoint not ready, providing fallback behavior');
-            window.TopikoUtils.showNotification('ℹ️ Theme preview saved locally. Use "Complete Setup" to apply changes to your website!', 'info');
-            
-            // Store theme selection locally for when API becomes available
-            localStorage.setItem('selectedTheme', templateNo);
-            localStorage.setItem('selectedSubdomain', subdomainUrl);
-            
-            return true; // Return true so the flow continues normally
-        } else {
-            window.TopikoUtils.showNotification(`⚠️ Preview template update failed: ${error.message}`, 'warning');
-            return false;
-        }
-    }
-}
+// REMOVED: callPreviewTemplateAPI function - not needed as per backup version
+// The backup version doesn't have preview API calls
 
-function validatePreviewData() {
-    const requiredFields = [
-        { id: 'fullName', name: 'Full Name' },
-        { id: 'email', name: 'Email' },
-        { id: 'phoneNumber', name: 'Phone Number' }, 
-        { id: 'businessName', name: 'Business Name' },
-        { id: 'businessType', name: 'Business Type' },
-        { id: 'category', name: 'Business Category' }
-    ];
-    
-    for (const field of requiredFields) {
-        const element = document.getElementById(field.id);
-        if (!element || !element.value.trim()) {
-            window.TopikoUtils.showNotification(`Please fill ${field.name} before preview`, 'error');
-            return false;
-        }
-    }
-    
-    if (!window.topikoApp.selectedCategories || window.topikoApp.selectedCategories.length === 0) {
-        window.TopikoUtils.showNotification('Please select at least one category before preview', 'error');
-        return false;
-    }
-    
-    return true;
-}
-
-function composePreviewJSON() {
-    // Generate subdomain URL
-    const businessName = document.getElementById('businessName').value.trim();
-    const subdomainUrl = generateSubdomainUrl(businessName);
-    
-    // Map categories to subcategories
-    const selectedSubcategoryDetails = mapSubcategoriesToCategories();
-    
-    // Process selected products
     const processedProducts = processSelectedProducts();
-    
-    // Compose final JSON - send theme ID directly (API expects simple ID)
-    const previewData = {
-        user_name: document.getElementById('fullName').value.trim(),
-        user_phone: document.getElementById('phoneNumber').value.trim(),
-        user_email: document.getElementById('email').value.trim(),
-        business_name: businessName,
-        business_type: document.getElementById('businessType').value,
-        business_address: document.getElementById('address').value.trim(),
-        business_category: document.getElementById('category').value,
-        subdomain_url: subdomainUrl,
-        selected_category_name: window.topikoApp.selectedCategories || [],
-        selected_subcategoryname: selectedSubcategoryDetails,
-        selected_products: processedProducts,
-        selected_goals: window.topikoApp.selectedGoals || [],
-        selected_language: window.topikoApp.selectedLanguage || 'en',
-        selected_theme: window.topikoApp.selectedTheme || null,  // Send theme ID directly
-        qualifying_answers: window.topikoApp.qualifyingAnswers || {}
-    };
-    
-    console.log(`🚀 Main API Data - selected_theme: ${previewData.selected_theme}`);
-    
-    return previewData;
-}
+// REMOVED: validatePreviewData function - only used by preview functionality
+// The backup version doesn't have preview validation
+
+// REMOVED: composePreviewJSON function - only used for preview API
+// The backup version doesn't compose preview data
 
 // Remove .topiko.com from subdomain URL
 function generateSubdomainUrl(businessName) {
@@ -3141,14 +2907,11 @@ if (typeof window !== 'undefined') {
     // Category Enhancement Functions - UPDATED
     window.loadCategoriesContent = loadCategoriesContent;
     
-    // Preview Functions - UPDATED
-    window.generatePreviewData = generatePreviewData;
-    window.validatePreviewData = validatePreviewData;
-    window.composePreviewJSON = composePreviewJSON;
+    // Preview Functions - REMOVED to match backup version
+    // Only keeping utility functions that might be used elsewhere
     window.generateSubdomainUrl = generateSubdomainUrl;
     window.mapSubcategoriesToCategories = mapSubcategoriesToCategories;
     window.processSelectedProducts = processSelectedProducts;
-    window.callPreviewTemplateAPI = callPreviewTemplateAPI;
     window.getFullThemeName = getFullThemeName;
     
     // Variant Processing Functions - NEW
