@@ -1735,9 +1735,9 @@ const THEME_CONFIG = {
         description: 'Unique, artistic design that showcases creativity'
     },
     'luxury': {
-        name: 'Elegant & Luxury',
+        name: 'Style District',
         icon: '💎',
-        description: 'Premium design for high-end products and services'
+        description: 'Modern fashion theme for trendy boutiques and style stores'
     }
 };
 

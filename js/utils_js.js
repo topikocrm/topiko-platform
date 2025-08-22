@@ -651,7 +651,7 @@ function restoreThemeSelection() {
             'professional': 'Professional & Corporate',
             'traditional': 'Traditional & Classic', 
             'creative': 'Creative & Artistic',
-            'luxury': 'Elegant & Luxury'
+            'luxury': 'Style District'
         };
         
         const selectedThemeNameEl = document.getElementById('selectedThemeName');
