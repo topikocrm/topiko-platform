@@ -2419,7 +2419,7 @@ function getFullThemeName(themeId) {
         'professional': 'Professional & Corporate',
         'traditional': 'Traditional & Classic',
         'creative': 'Creative & Artistic',
-        'luxury': 'Style District'
+        'luxury': 'Urban Luxe'
     };
     return themeMap[themeId] || themeId;
 }
