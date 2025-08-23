@@ -630,12 +630,12 @@ function restoreThemeSelection() {
     
     // Find and mark the previously selected theme
     const themeMap = {
-        'modern': 0,
-        'vibrant': 1, 
-        'professional': 2,
-        'traditional': 3,
-        'creative': 4,
-        'luxury': 5
+        'professional': 0,
+        'modern': 1,
+        'creative': 2,
+        'luxury': 3,
+        'grocery': 4,
+        'ecommerce': 5
     };
     
     const themeOptions = document.querySelectorAll('.theme-option');
@@ -651,7 +651,9 @@ function restoreThemeSelection() {
             'professional': 'Professional & Corporate',
             'traditional': 'Traditional & Classic', 
             'creative': 'Creative & Artistic',
-            'luxury': 'Style District'
+            'luxury': 'Style District',
+            'grocery': 'Cart & Carry',
+            'ecommerce': 'Global Lane'
         };
         
         const selectedThemeNameEl = document.getElementById('selectedThemeName');

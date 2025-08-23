@@ -265,6 +265,14 @@ const TRANSLATIONS = {
                 luxury: {
                     title: "Style District",
                     description: "Modern fashion theme for trendy boutiques and style stores"
+                },
+                grocery: {
+                    title: "Cart & Carry",
+                    description: "Fresh and vibrant theme for grocery, fruits & vegetables stores"
+                },
+                ecommerce: {
+                    title: "Global Lane",
+                    description: "Versatile e-commerce theme for all types of online stores"
                 }
             },
             selectedTheme: "No theme selected",

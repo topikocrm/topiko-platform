@@ -1738,6 +1738,16 @@ const THEME_CONFIG = {
         name: 'Style District',
         icon: '💎',
         description: 'Modern fashion theme for trendy boutiques and style stores'
+    },
+    'grocery': {
+        name: 'Cart & Carry',
+        icon: '🛒',
+        description: 'Fresh and vibrant theme for grocery, fruits & vegetables stores'
+    },
+    'ecommerce': {
+        name: 'Global Lane',
+        icon: '🌐',
+        description: 'Versatile e-commerce theme for all types of online stores'
     }
 };
 

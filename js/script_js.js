@@ -442,7 +442,9 @@ function getFullThemeName(themeId) {
         'professional': 'professional',
         'traditional': 'traditional',
         'creative': 'creative',
-        'luxury': 'Urban Luxe'
+        'luxury': 'Urban Luxe',
+        'grocery': 'Cart & Carry',
+        'ecommerce': 'Global Lane'
     };
     
     return themeTemplateIds[themeId] || 'modern';
@@ -2419,7 +2421,9 @@ function getFullThemeName(themeId) {
         'professional': 'Professional & Corporate',
         'traditional': 'Traditional & Classic',
         'creative': 'Creative & Artistic',
-        'luxury': 'Urban Luxe'
+        'luxury': 'Urban Luxe',
+        'grocery': 'Cart & Carry',
+        'ecommerce': 'Global Lane'
     };
     return themeMap[themeId] || themeId;
 }
