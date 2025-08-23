@@ -266,8 +266,8 @@ const TRANSLATIONS = {
                     description: "Unique, artistic design that showcases creativity"
                 },
                 luxury: {
-                    title: "Elegant & Luxury",
-                    description: "Premium design for high-end products and services"
+                    title: "Style District",
+                    description: "Modern fashion theme for trendy boutiques and style stores"
                 }
             },
             selectedTheme: "No theme selected",

@@ -442,7 +442,7 @@ function getFullThemeName(themeId) {
         'professional': 'professional',
         'traditional': 'traditional',
         'creative': 'creative',
-        'luxury': 'Style District'
+        'luxury': 'Urban Luxe'
     };
     
     return themeTemplateIds[themeId] || 'modern';
