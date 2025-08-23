@@ -1748,6 +1748,21 @@ const THEME_CONFIG = {
         name: 'Global Lane',
         icon: '🌐',
         description: 'Versatile e-commerce theme for all types of online stores'
+    },
+    'food': {
+        name: 'Gourmet Bloom',
+        icon: '🍽️',
+        description: 'Delicious theme for restaurants, cafes & food delivery services'
+    },
+    'beauty': {
+        name: 'Urban Luxe',
+        icon: '💄',
+        description: 'Elegant theme for beauty products and cosmetics stores'
+    },
+    'jewelry': {
+        name: 'Carat Curve',
+        icon: '💍',
+        description: 'Luxurious theme for jewelry and precious accessories'
     }
 };
 

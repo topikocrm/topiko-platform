@@ -635,7 +635,10 @@ function restoreThemeSelection() {
         'creative': 2,
         'luxury': 3,
         'grocery': 4,
-        'ecommerce': 5
+        'ecommerce': 5,
+        'food': 6,
+        'beauty': 7,
+        'jewelry': 8
     };
     
     const themeOptions = document.querySelectorAll('.theme-option');
@@ -653,7 +656,10 @@ function restoreThemeSelection() {
             'creative': 'Creative & Artistic',
             'luxury': 'Style District',
             'grocery': 'Cart & Carry',
-            'ecommerce': 'Global Lane'
+            'ecommerce': 'Global Lane',
+            'food': 'Gourmet Bloom',
+            'beauty': 'Urban Luxe',
+            'jewelry': 'Carat Curve'
         };
         
         const selectedThemeNameEl = document.getElementById('selectedThemeName');

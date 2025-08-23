@@ -444,7 +444,10 @@ function getFullThemeName(themeId) {
         'creative': 'creative',
         'luxury': 'Urban Luxe',
         'grocery': 'Cart & Carry',
-        'ecommerce': 'Global Lane'
+        'ecommerce': 'Global Lane',
+        'food': 'Gourmet Bloom',
+        'beauty': 'Urban Luxe',
+        'jewelry': 'Urban Luxe'
     };
     
     return themeTemplateIds[themeId] || 'modern';
@@ -2423,7 +2426,10 @@ function getFullThemeName(themeId) {
         'creative': 'Creative & Artistic',
         'luxury': 'Urban Luxe',
         'grocery': 'Cart & Carry',
-        'ecommerce': 'Global Lane'
+        'ecommerce': 'Global Lane',
+        'food': 'Gourmet Bloom',
+        'beauty': 'Urban Luxe',
+        'jewelry': 'Urban Luxe'
     };
     return themeMap[themeId] || themeId;
 }

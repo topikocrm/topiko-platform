@@ -276,6 +276,18 @@ const TRANSLATIONS = {
                 ecommerce: {
                     title: "Global Lane",
                     description: "Versatile e-commerce theme for all types of online stores"
+                },
+                food: {
+                    title: "Gourmet Bloom",
+                    description: "Delicious theme for restaurants, cafes & food delivery services"
+                },
+                beauty: {
+                    title: "Urban Luxe",
+                    description: "Elegant theme for beauty products and cosmetics stores"
+                },
+                jewelry: {
+                    title: "Carat Curve",
+                    description: "Luxurious theme for jewelry and precious accessories"
                 }
             },
             selectedTheme: "No theme selected",
