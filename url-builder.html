@@ -616,7 +616,7 @@
             displayCustomParameters();
             await loadCampaigns();
             updateStats();
-            displayCampaigns();
+            updateCampaignList();
         };
         
         // Load campaigns from Supabase
@@ -885,10 +885,9 @@
                 // Show result section
                 document.getElementById('resultSection').classList.add('show');
                 
-                // Reload campaigns
-                await loadCampaigns();
-                displayCampaigns();
-                updateStats();
+                // Reload campaigns and update display
+                await updateCampaignList();
+                await updateStats();
                 
                 showNotification('Campaign URL created successfully!', 'success');
                 
