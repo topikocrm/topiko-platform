@@ -598,6 +598,154 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
+        // Password Protection
+        function checkPageAccess() {
+            const accessGranted = sessionStorage.getItem('topiko_campaign_access');
+            const accessTime = sessionStorage.getItem('topiko_access_time');
+            
+            // Check if access was granted and still valid (24 hour session)
+            if (accessGranted === 'true' && accessTime) {
+                const timeDiff = Date.now() - parseInt(accessTime);
+                if (timeDiff < 24 * 60 * 60 * 1000) { // 24 hours
+                    return true;
+                }
+            }
+            
+            // Blur the main content by adding a wrapper
+            const contentWrapper = document.createElement('div');
+            contentWrapper.id = 'blurredContent';
+            contentWrapper.style.cssText = 'filter: blur(10px); pointer-events: none;';
+            
+            // Wrap all existing body content
+            while (document.body.firstChild) {
+                contentWrapper.appendChild(document.body.firstChild);
+            }
+            document.body.appendChild(contentWrapper);
+            document.body.style.overflow = 'hidden';
+            
+            // Create password modal
+            const modal = document.createElement('div');
+            modal.id = 'passwordModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 999999;
+                backdrop-filter: blur(5px);
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white;
+                border-radius: 20px;
+                padding: 3rem;
+                max-width: 400px;
+                width: 90%;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                text-align: center;
+            `;
+            
+            modalContent.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+                <h2 style="margin-bottom: 1rem; color: #1e293b; font-size: 1.75rem;">Access Protected</h2>
+                <p style="color: #64748b; margin-bottom: 2rem;">This page requires a security code to access.</p>
+                
+                <input type="password" 
+                       id="accessCode" 
+                       placeholder="Enter access code" 
+                       style="width: 100%; padding: 0.875rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; text-align: center; letter-spacing: 0.5em; margin-bottom: 1rem;"
+                       maxlength="10"
+                       autocomplete="off">
+                
+                <button onclick="verifyAccess()" 
+                        style="width: 100%; padding: 0.875rem; background: #a855f7; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    Verify Access
+                </button>
+                
+                <div id="errorMessage" style="color: #ef4444; margin-top: 1rem; display: none; font-size: 0.875rem;">
+                    Incorrect code. Please try again.
+                </div>
+            `;
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // Focus on input
+            setTimeout(() => {
+                document.getElementById('accessCode').focus();
+            }, 100);
+            
+            // Handle Enter key
+            document.getElementById('accessCode').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    verifyAccess();
+                }
+            });
+            
+            return false;
+        }
+        
+        function verifyAccess() {
+            const code = document.getElementById('accessCode').value;
+            const correctCode = '82725';
+            
+            if (code === correctCode) {
+                // Grant access
+                sessionStorage.setItem('topiko_campaign_access', 'true');
+                sessionStorage.setItem('topiko_access_time', Date.now().toString());
+                
+                // Remove modal and unblur
+                document.getElementById('passwordModal').remove();
+                
+                // Unwrap the blurred content
+                const blurredContent = document.getElementById('blurredContent');
+                if (blurredContent) {
+                    blurredContent.style.filter = 'none';
+                    blurredContent.style.pointerEvents = 'auto';
+                    
+                    // Move all children back to body
+                    while (blurredContent.firstChild) {
+                        document.body.insertBefore(blurredContent.firstChild, blurredContent);
+                    }
+                    blurredContent.remove();
+                }
+                
+                document.body.style.overflow = 'auto';
+                
+                // Initialize the page
+                initializePage();
+            } else {
+                // Show error
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('accessCode').value = '';
+                document.getElementById('accessCode').focus();
+                
+                // Shake animation
+                const input = document.getElementById('accessCode');
+                input.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    input.style.animation = '';
+                }, 500);
+            }
+        }
+        
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
         // Base URL for the lead form
         const BASE_URL = window.location.origin + '/lead-form.html';
         
@@ -975,10 +1123,13 @@
             }
             
             listContainer.innerHTML = campaigns.slice(0, 10).map(campaign => `
-                <div class="campaign-item">
+                <div class="campaign-item" style="${campaign.is_active === false ? 'opacity: 0.6; background: #fef2f2;' : 'background: #f8fafc;'} border-radius: 12px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
                     <div class="campaign-info">
-                        <div class="campaign-name">${campaign.campaign_name || 'Unnamed Campaign'}</div>
-                        <div class="campaign-details">
+                        <div class="campaign-name" style="font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">
+                            ${campaign.campaign_name || 'Unnamed Campaign'}
+                            ${campaign.is_active === false ? '<span style="color: #ef4444; font-size: 0.85rem; margin-left: 0.5rem;">(Inactive)</span>' : ''}
+                        </div>
+                        <div class="campaign-details" style="font-size: 0.85rem; color: #64748b;">
                             ${campaign.utm_source || 'N/A'} • ${campaign.utm_medium || 'N/A'} 
                             ${campaign.utm_state ? `• ${campaign.utm_state}` : ''}
                             ${campaign.utm_language ? `• ${campaign.utm_language}` : ''}
@@ -986,12 +1137,18 @@
                             • by ${campaign.created_by || 'Unknown'}
                         </div>
                     </div>
-                    <div class="campaign-actions">
+                    <div class="campaign-actions" style="display: flex; gap: 0.5rem;">
                         <button class="icon-btn" onclick="copyShortURL('${campaign.short_code}')" title="Copy Short URL">
                             📋
                         </button>
                         <button class="icon-btn" onclick="viewQRCode('${campaign.short_code}')" title="View QR Code">
                             📱
+                        </button>
+                        <button class="icon-btn" 
+                                onclick="toggleCampaignStatus('${campaign.short_code}', ${campaign.is_active !== false})" 
+                                title="${campaign.is_active === false ? 'Activate Campaign' : 'Deactivate Campaign'}"
+                                style="font-size: 1rem;">
+                            ${campaign.is_active === false ? '🔴' : '🟢'}
                         </button>
                     </div>
                     <span id="shortURL_${campaign.short_code}" style="display: none;">https://topiko.app/c/${campaign.short_code}</span>
@@ -1023,6 +1180,29 @@
             alert('Bulk URL generation feature coming soon! This will allow you to upload a CSV and generate multiple campaign URLs at once.');
         }
 
+        async function toggleCampaignStatus(shortCode, currentStatus) {
+            try {
+                const { error } = await supabase
+                    .from('short_urls')
+                    .update({ is_active: !currentStatus })
+                    .eq('short_code', shortCode);
+                
+                if (error) throw error;
+                
+                showNotification(
+                    currentStatus ? 'Campaign deactivated successfully!' : 'Campaign activated successfully!',
+                    currentStatus ? 'warning' : 'success'
+                );
+                
+                // Refresh the campaign list
+                updateCampaignList();
+                updateStats();
+            } catch (error) {
+                console.error('Error toggling campaign status:', error);
+                showNotification('Failed to update campaign status', 'error');
+            }
+        }
+        
         function copyShortURL(shortCode) {
             const text = `https://topiko.app/c/${shortCode}`;
             navigator.clipboard.writeText(text).then(() => {
@@ -1069,8 +1249,8 @@
             }, 3000);
         }
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', async function() {
+        // Initialize page function
+        async function initializePage() {
             await updateCampaignList();
             await updateStats();
             
@@ -1079,6 +1259,13 @@
                 await updateCampaignList();
                 await updateStats();
             }, 30000);
+        }
+        
+        // Initialize on page load with password check
+        document.addEventListener('DOMContentLoaded', function() {
+            if (checkPageAccess()) {
+                initializePage();
+            }
         });
     </script>
 </body>
