@@ -2242,6 +2242,19 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Sync Status Indicator -->
+                <div id="syncStatus" style="margin-bottom: 1rem; padding: 0.75rem; background: #f0f9ff; border-radius: 8px; display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span id="syncIcon">⏱️</span>
+                            <span id="syncMessage" style="font-size: 0.875rem; color: #0369a1;">Checking sync status...</span>
+                        </div>
+                        <button id="retrySync" onclick="manualSyncRetry()" style="padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; display: none;">
+                            Retry Sync
+                        </button>
+                    </div>
+                </div>
 
                 <!-- STATS GRID -->
                 <div class="stats-grid">
@@ -2620,10 +2633,19 @@
         </div>
     </div>
 
+    <!-- Include Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
         // SUPABASE CONFIGURATION
         const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k';
+        
+        // Initialize Supabase client
+        let supabase = null;
+        if (typeof window !== 'undefined' && window.supabase) {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
 
         // GLOBAL STATE - Same as original
         let allLeads = [];
@@ -2684,6 +2706,11 @@
                 notification.classList.remove('show');
                 setTimeout(() => notification.remove(), 400);
             }, 3000);
+            
+            // Update sync status when showing warning notifications
+            if (type === 'warning' && message.includes('sync')) {
+                updateSyncStatus();
+            }
         }
 
         function getTimeAgo(dateString) {
@@ -2762,10 +2789,112 @@
                 
                 localStorage.setItem('topiko_crm_changes', JSON.stringify(allChanges));
                 
+                // Also save to Supabase (async, don't block UI)
+                updateLeadInSupabase(leadId, changes);
+                
                 return true;
             } catch (error) {
                 console.error('❌ Error saving lead changes:', error);
                 return false;
+            }
+        }
+        
+        // New function to update lead data in Supabase
+        async function updateLeadInSupabase(leadId, changes) {
+            if (!supabase) {
+                console.warn('⚠️ Supabase client not initialized, skipping database update');
+                return false;
+            }
+            
+            try {
+                console.log('💾 Updating lead in Supabase:', leadId, changes);
+                
+                // Add metadata to track CRM updates
+                const updateData = {
+                    ...changes,
+                    last_crm_update: new Date().toISOString(),
+                    crm_updated_by: 'CRM System'
+                };
+                
+                // Update the users table in Supabase
+                const { data, error } = await supabase
+                    .from('users')
+                    .update(updateData)
+                    .eq('id', leadId);
+                
+                if (error) {
+                    console.error('❌ Supabase update error:', error);
+                    showNotification('Changes saved locally. Database sync pending.', 'warning');
+                    
+                    // Store failed update for retry
+                    storePendingUpdate(leadId, changes);
+                    return false;
+                }
+                
+                console.log('✅ Lead updated in Supabase successfully');
+                showNotification('Changes saved to database', 'success');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Error updating Supabase:', error);
+                showNotification('Changes saved locally. Database sync pending.', 'warning');
+                
+                // Store failed update for retry
+                storePendingUpdate(leadId, changes);
+                return false;
+            }
+        }
+        
+        // Store failed updates for later retry
+        function storePendingUpdate(leadId, changes) {
+            try {
+                const pendingUpdates = JSON.parse(localStorage.getItem('topiko_pending_updates') || '{}');
+                
+                if (!pendingUpdates[leadId]) {
+                    pendingUpdates[leadId] = {};
+                }
+                
+                Object.assign(pendingUpdates[leadId], changes);
+                pendingUpdates[leadId].timestamp = new Date().toISOString();
+                
+                localStorage.setItem('topiko_pending_updates', JSON.stringify(pendingUpdates));
+                console.log('📋 Stored pending update for retry:', leadId);
+            } catch (error) {
+                console.error('❌ Error storing pending update:', error);
+            }
+        }
+        
+        // Retry pending updates (can be called on page load or manually)
+        async function retryPendingUpdates() {
+            const pendingUpdates = JSON.parse(localStorage.getItem('topiko_pending_updates') || '{}');
+            const leadIds = Object.keys(pendingUpdates);
+            
+            if (leadIds.length === 0) {
+                console.log('✅ No pending updates to retry');
+                return;
+            }
+            
+            console.log(`🔄 Retrying ${leadIds.length} pending updates...`);
+            
+            for (const leadId of leadIds) {
+                const changes = pendingUpdates[leadId];
+                delete changes.timestamp; // Remove timestamp before updating
+                
+                const success = await updateLeadInSupabase(leadId, changes);
+                
+                if (success) {
+                    // Remove from pending if successful
+                    delete pendingUpdates[leadId];
+                    localStorage.setItem('topiko_pending_updates', JSON.stringify(pendingUpdates));
+                }
+            }
+            
+            const remaining = Object.keys(pendingUpdates).length;
+            if (remaining > 0) {
+                console.log(`⚠️ ${remaining} updates still pending`);
+            } else {
+                console.log('✅ All pending updates synced successfully');
+                localStorage.removeItem('topiko_pending_updates');
             }
         }
 
@@ -4948,9 +5077,62 @@
             });
         }
 
+        // Sync status management functions
+        function updateSyncStatus() {
+            const pendingUpdates = JSON.parse(localStorage.getItem('topiko_pending_updates') || '{}');
+            const pendingCount = Object.keys(pendingUpdates).length;
+            
+            const syncStatusDiv = document.getElementById('syncStatus');
+            const syncIcon = document.getElementById('syncIcon');
+            const syncMessage = document.getElementById('syncMessage');
+            const retryButton = document.getElementById('retrySync');
+            
+            if (pendingCount > 0) {
+                syncStatusDiv.style.display = 'block';
+                syncIcon.textContent = '⚠️';
+                syncMessage.textContent = `${pendingCount} update${pendingCount > 1 ? 's' : ''} pending sync to database`;
+                syncMessage.style.color = '#ea580c';
+                retryButton.style.display = 'block';
+            } else if (supabase) {
+                // All synced
+                syncStatusDiv.style.display = 'none';
+            } else {
+                // No Supabase connection
+                syncStatusDiv.style.display = 'block';
+                syncIcon.textContent = '🔌';
+                syncMessage.textContent = 'Working offline - changes saved locally';
+                syncMessage.style.color = '#64748b';
+                retryButton.style.display = 'none';
+            }
+        }
+        
+        async function manualSyncRetry() {
+            const retryButton = document.getElementById('retrySync');
+            const syncMessage = document.getElementById('syncMessage');
+            const syncIcon = document.getElementById('syncIcon');
+            
+            retryButton.disabled = true;
+            retryButton.textContent = 'Syncing...';
+            syncIcon.textContent = '🔄';
+            syncMessage.textContent = 'Syncing with database...';
+            
+            await retryPendingUpdates();
+            
+            retryButton.disabled = false;
+            retryButton.textContent = 'Retry Sync';
+            
+            updateSyncStatus();
+        }
+
         // INITIALIZATION (ENHANCED WITH DEBUGGING)
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Mobile-First Topiko CRM v5.0 Initialized');
+            
+            // Check and retry any pending updates on page load
+            setTimeout(async () => {
+                await retryPendingUpdates();
+                updateSyncStatus();
+            }, 2000);
             
             // Add debugging tools
             window.debugCRM = {
