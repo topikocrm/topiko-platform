@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, rgb(199, 210, 254) 0%, rgb(224, 231, 255) 100%);
+        }
+        .loading-container {
+            text-align: center;
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #a855f7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h2 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        p {
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <div class="spinner"></div>
+        <h2>Redirecting...</h2>
+        <p>Please wait while we redirect you to your destination.</p>
+    </div>
+
+    <script>
+        // Short URL redirect handler
+        // This handles URLs like: topiko.app/c.html?code=ABC123
+        
+        // Sample URL mappings (in production, this would be fetched from a database)
+        const urlMappings = {
+            // Demo campaigns
+            'DEMO01': '/lead-form.html?utm_source=demo&utm_medium=test&utm_campaign=demo_campaign',
+            'TEST01': '/lead-form.html?utm_source=test&utm_medium=social&utm_campaign=test_campaign',
+            'DWT2024': '/lead-form.html?utm_source=whatsapp&utm_medium=social&utm_campaign=diwali_2024&utm_state=telangana&utm_language=te',
+            'GGRO24': '/lead-form.html?utm_source=google&utm_medium=cpc&utm_campaign=grocery_oct24&utm_category=grocery',
+            'AGT001': '/lead-form.html?utm_source=agent&utm_medium=referral&utm_agent=AGT001',
+            
+            // Add more mappings as needed
+        };
+        
+        // Get short code from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const shortCode = urlParams.get('code');
+        
+        if (shortCode) {
+            // Look up the destination URL
+            const destination = urlMappings[shortCode.toUpperCase()];
+            
+            if (destination) {
+                // Track the click (send to analytics)
+                trackClick(shortCode);
+                
+                // Redirect to destination
+                setTimeout(() => {
+                    window.location.href = destination;
+                }, 500); // Small delay to show loading animation
+            } else {
+                // Short code not found, redirect to homepage
+                setTimeout(() => {
+                    window.location.href = '/lead-form.html';
+                }, 1000);
+            }
+        } else {
+            // No code provided, redirect to homepage
+            window.location.href = '/lead-form.html';
+        }
+        
+        function trackClick(code) {
+            // In production, send this to your analytics service
+            console.log('Tracking click for short code:', code);
+            
+            // Store click in localStorage for demo
+            const clicks = JSON.parse(localStorage.getItem('topiko_short_url_clicks') || '{}');
+            clicks[code] = (clicks[code] || 0) + 1;
+            localStorage.setItem('topiko_short_url_clicks', JSON.stringify(clicks));
+        }
+    </script>
+</body>
+</html>

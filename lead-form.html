@@ -40,6 +40,19 @@
         <div id="notificationContent"></div>
     </div>
 
+    <!-- Hidden UTM Fields for Tracking -->
+    <div id="utm-tracking" style="display: none;">
+        <input type="hidden" id="utm_source" name="utm_source">
+        <input type="hidden" id="utm_medium" name="utm_medium">
+        <input type="hidden" id="utm_campaign" name="utm_campaign">
+        <input type="hidden" id="utm_term" name="utm_term">
+        <input type="hidden" id="utm_content" name="utm_content">
+        <input type="hidden" id="utm_state" name="utm_state">
+        <input type="hidden" id="utm_language" name="utm_language">
+        <input type="hidden" id="utm_category" name="utm_category">
+        <input type="hidden" id="utm_agent" name="utm_agent">
+    </div>
+    
     <!-- FOMO Notification System -->
     <div class="fomo-notification" id="fomoNotification" style="position: fixed; bottom: 20px; left: 20px; transform: translateX(-400px); z-index: 999; max-width: 320px; transition: all 0.5s ease;">
         <div class="fomo-header">
@@ -1451,6 +1464,12 @@
 
     // Initialize categories when the page loads
     document.addEventListener('DOMContentLoaded', function() {
+        // Capture UTM parameters immediately on page load
+        if (window.TopikoUtils && window.TopikoUtils.captureUTMParameters) {
+            window.TopikoUtils.captureUTMParameters();
+            console.log('📊 UTM parameters captured on page load');
+        }
+        
         // Load categories when categories screen is shown
         const originalShowScreen = window.TopikoUtils?.showScreen;
         if (originalShowScreen) {

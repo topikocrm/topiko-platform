@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTM Storage Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1a202c;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .test-btn {
+            background: #4c51bf;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-btn:hover {
+            background: #434190;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #c6f6d5;
+            border: 1px solid #48bb78;
+        }
+        .error {
+            background: #fed7d7;
+            border: 1px solid #f56565;
+        }
+        .warning {
+            background: #feebc8;
+            border: 1px solid #ed8936;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 UTM Storage Test - What's Actually Happening?</h1>
+        
+        <div class="test-section">
+            <h2>1️⃣ Test Current UTM Parameters</h2>
+            <p>Check what UTM parameters are in the URL and sessionStorage</p>
+            <button class="test-btn" onclick="testCurrentUTM()">Check Current UTM</button>
+            <div id="currentUTMResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2️⃣ Test Supabase Connection</h2>
+            <p>Verify if we can connect to Supabase</p>
+            <button class="test-btn" onclick="testSupabaseConnection()">Test Connection</button>
+            <div id="connectionResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3️⃣ Test Save with UTM Data</h2>
+            <p>Try to save a test lead with UTM parameters and see what happens</p>
+            <button class="test-btn" onclick="testSaveWithUTM()">Save Test Lead with UTM</button>
+            <div id="saveResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>4️⃣ Check What's in Database</h2>
+            <p>Fetch a recent lead and see what fields are actually stored</p>
+            <button class="test-btn" onclick="checkDatabaseFields()">Check Database Fields</button>
+            <div id="dbFieldsResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>5️⃣ Test Custom Parameters</h2>
+            <p>Test if custom parameters (like utm_offer) are being saved</p>
+            <button class="test-btn" onclick="testCustomParams()">Test Custom Parameters</button>
+            <div id="customResult" class="result"></div>
+        </div>
+    </div>
+
+    <!-- Include Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Include your utils -->
+    <script src="js/utils_js.js"></script>
+    
+    <script>
+        // Add some test UTM parameters to URL if not present
+        if (!window.location.search.includes('utm_')) {
+            const testParams = '?utm_source=test&utm_medium=debug&utm_campaign=storage_test&utm_state=karnataka&utm_offer=50off';
+            history.replaceState(null, '', window.location.pathname + testParams);
+        }
+
+        function testCurrentUTM() {
+            const result = document.getElementById('currentUTMResult');
+            
+            // Check URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlUTM = {};
+            for (const [key, value] of urlParams) {
+                if (key.includes('utm') || ['source', 'medium', 'campaign'].includes(key)) {
+                    urlUTM[key] = value;
+                }
+            }
+            
+            // Check sessionStorage
+            const storedUTM = sessionStorage.getItem('utm_data');
+            
+            result.innerHTML = `
+<strong>📍 Current URL Parameters:</strong>
+${JSON.stringify(urlUTM, null, 2)}
+
+<strong>💾 SessionStorage UTM Data:</strong>
+${storedUTM ? JSON.stringify(JSON.parse(storedUTM), null, 2) : 'No UTM data in sessionStorage'}
+
+<strong>🎯 Captured by captureUTMParameters():</strong>
+${JSON.stringify(captureUTMParameters(), null, 2)}
+            `;
+            result.className = 'result success';
+        }
+
+        async function testSupabaseConnection() {
+            const result = document.getElementById('connectionResult');
+            
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('id')
+                    .limit(1);
+                
+                if (error) {
+                    result.innerHTML = `❌ Connection Failed:\n${JSON.stringify(error, null, 2)}`;
+                    result.className = 'result error';
+                } else {
+                    result.innerHTML = `✅ Connection Successful!\nCan access 'users' table`;
+                    result.className = 'result success';
+                }
+            } catch (e) {
+                result.innerHTML = `❌ Error: ${e.message}`;
+                result.className = 'result error';
+            }
+        }
+
+        async function testSaveWithUTM() {
+            const result = document.getElementById('saveResult');
+            
+            // Capture UTM first
+            captureUTMParameters();
+            
+            const testData = {
+                name: 'UTM Test User',
+                email: `utm_test_${Date.now()}@test.com`,
+                phone: '9999999999',
+                business_name: 'UTM Test Business',
+                created_at: new Date().toISOString()
+            };
+            
+            result.innerHTML = `📤 Attempting to save with UTM data...\n`;
+            
+            const saveResult = await saveToSupabase(testData, 'users');
+            
+            if (saveResult.success) {
+                result.innerHTML += `\n✅ Save successful!\n\n`;
+                result.innerHTML += `<strong>Data sent to Supabase:</strong>\n`;
+                result.innerHTML += JSON.stringify(appendUTMToData(testData), null, 2);
+                result.innerHTML += `\n\n<strong>Response from Supabase:</strong>\n`;
+                result.innerHTML += JSON.stringify(saveResult.data, null, 2);
+                
+                // Check if UTM fields are in response
+                const savedData = saveResult.data[0];
+                const hasUTM = savedData && (
+                    savedData.utm_source || 
+                    savedData.utm_campaign || 
+                    savedData.utm_medium
+                );
+                
+                if (hasUTM) {
+                    result.innerHTML += `\n\n✅ UTM FIELDS ARE BEING SAVED!`;
+                    result.className = 'result success';
+                } else {
+                    result.innerHTML += `\n\n⚠️ UTM FIELDS NOT FOUND IN RESPONSE - They might be ignored by Supabase`;
+                    result.className = 'result warning';
+                }
+            } else {
+                result.innerHTML += `\n❌ Save failed:\n${JSON.stringify(saveResult.error, null, 2)}`;
+                result.className = 'result error';
+            }
+        }
+
+        async function checkDatabaseFields() {
+            const result = document.getElementById('dbFieldsResult');
+            
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+                
+                if (error) {
+                    result.innerHTML = `❌ Query Failed:\n${JSON.stringify(error, null, 2)}`;
+                    result.className = 'result error';
+                } else if (data && data.length > 0) {
+                    const record = data[0];
+                    const fields = Object.keys(record);
+                    const utmFields = fields.filter(f => f.includes('utm') || ['source', 'medium', 'campaign'].includes(f));
+                    
+                    result.innerHTML = `
+<strong>📊 Latest Record Fields (${fields.length} total):</strong>
+${fields.join(', ')}
+
+<strong>🎯 UTM-related Fields Found (${utmFields.length}):</strong>
+${utmFields.length > 0 ? utmFields.join(', ') : '❌ No UTM fields found in database'}
+
+<strong>📝 Sample Record:</strong>
+${JSON.stringify(record, null, 2)}
+                    `;
+                    
+                    result.className = utmFields.length > 0 ? 'result success' : 'result warning';
+                } else {
+                    result.innerHTML = '⚠️ No records found in database';
+                    result.className = 'result warning';
+                }
+            } catch (e) {
+                result.innerHTML = `❌ Error: ${e.message}`;
+                result.className = 'result error';
+            }
+        }
+
+        async function testCustomParams() {
+            const result = document.getElementById('customResult');
+            
+            // Add custom parameter to URL
+            const url = new URL(window.location);
+            url.searchParams.set('utm_offer', '50off');
+            url.searchParams.set('custom_tracking', 'test123');
+            history.replaceState(null, '', url);
+            
+            // Capture parameters
+            captureUTMParameters();
+            
+            const testData = {
+                name: 'Custom Param Test',
+                email: `custom_${Date.now()}@test.com`,
+                phone: '8888888888'
+            };
+            
+            const dataWithUTM = appendUTMToData(testData);
+            
+            result.innerHTML = `
+<strong>🔧 Testing Custom Parameters:</strong>
+
+<strong>URL has:</strong>
+utm_offer = ${url.searchParams.get('utm_offer')}
+custom_tracking = ${url.searchParams.get('custom_tracking')}
+
+<strong>Data being sent to Supabase:</strong>
+${JSON.stringify(dataWithUTM, null, 2)}
+
+<strong>Attempting save...</strong>
+            `;
+            
+            const saveResult = await saveToSupabase(testData, 'users');
+            
+            if (saveResult.success && saveResult.data[0]) {
+                const hasCustom = saveResult.data[0].utm_offer || saveResult.data[0].custom_tracking;
+                result.innerHTML += `\n\n${hasCustom ? '✅ Custom parameters saved!' : '⚠️ Custom parameters not in response'}`;
+            }
+            
+            result.className = 'result';
+        }
+    </script>
+</body>
+</html>

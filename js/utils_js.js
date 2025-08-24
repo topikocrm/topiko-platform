@@ -59,6 +59,116 @@ try {
 }
 
 // ========================================
+// UTM TRACKING SYSTEM
+// ========================================
+
+function captureUTMParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmData = {
+        // Standard UTM parameters
+        utm_source: urlParams.get('utm_source') || urlParams.get('source') || null,
+        utm_medium: urlParams.get('utm_medium') || urlParams.get('medium') || null,
+        utm_campaign: urlParams.get('utm_campaign') || urlParams.get('campaign') || null,
+        utm_term: urlParams.get('utm_term') || urlParams.get('term') || null,
+        utm_content: urlParams.get('utm_content') || urlParams.get('content') || null,
+        
+        // Custom parameters for Indian market
+        utm_state: urlParams.get('utm_state') || urlParams.get('state') || null,
+        utm_language: urlParams.get('utm_language') || urlParams.get('lang') || null,
+        utm_category: urlParams.get('utm_category') || urlParams.get('category') || null,
+        utm_agent: urlParams.get('utm_agent') || urlParams.get('agent') || null,
+        
+        // Meta information
+        landing_url: window.location.href,
+        landing_timestamp: new Date().toISOString(),
+        referrer: document.referrer || null
+    };
+    
+    // Capture ALL additional parameters (including custom ones from URL builder)
+    const customParams = {};
+    for (const [key, value] of urlParams.entries()) {
+        // Skip standard UTM params and meta info we already captured
+        if (!key.startsWith('utm_') && 
+            !['source', 'medium', 'campaign', 'term', 'content', 'state', 'lang', 'language', 'category', 'agent'].includes(key)) {
+            customParams[key] = value;
+        }
+        // Also capture any utm_ params we haven't explicitly handled
+        else if (key.startsWith('utm_') && !Object.keys(utmData).includes(key)) {
+            customParams[key] = value;
+        }
+    }
+    
+    // Add custom parameters to utmData
+    if (Object.keys(customParams).length > 0) {
+        utmData.custom_params = customParams;
+    }
+    
+    // Store in sessionStorage for persistence across page refreshes
+    sessionStorage.setItem('utm_data', JSON.stringify(utmData));
+    
+    // Store in global app object
+    if (!window.topikoApp) {
+        window.topikoApp = {};
+    }
+    window.topikoApp.utmData = utmData;
+    
+    // Populate hidden fields if they exist
+    Object.keys(utmData).forEach(key => {
+        const field = document.getElementById(key);
+        if (field && utmData[key]) {
+            field.value = utmData[key];
+        }
+    });
+    
+    // Log UTM capture for debugging
+    if (Object.values(utmData).some(value => value !== null && value !== '')) {
+        console.log('📊 UTM Parameters Captured:', utmData);
+        addDebugLog('📊 UTM Parameters captured successfully', 'info');
+    }
+    
+    return utmData;
+}
+
+function getStoredUTMData() {
+    // First check if already in memory
+    if (window.topikoApp?.utmData) {
+        return window.topikoApp.utmData;
+    }
+    
+    // Then check sessionStorage
+    const storedData = sessionStorage.getItem('utm_data');
+    if (storedData) {
+        try {
+            const utmData = JSON.parse(storedData);
+            window.topikoApp.utmData = utmData;
+            return utmData;
+        } catch (e) {
+            console.error('Error parsing stored UTM data:', e);
+        }
+    }
+    
+    // If no stored data, capture from current URL
+    return captureUTMParameters();
+}
+
+function appendUTMToData(data) {
+    const utmData = getStoredUTMData();
+    
+    // Only append non-null UTM values
+    const cleanUTMData = {};
+    Object.keys(utmData).forEach(key => {
+        if (utmData[key] !== null && utmData[key] !== '') {
+            cleanUTMData[key] = utmData[key];
+        }
+    });
+    
+    return {
+        ...data,
+        ...cleanUTMData
+    };
+}
+
+// ========================================
 // NOTIFICATION SYSTEM
 // ========================================
 
@@ -111,8 +221,11 @@ document.addEventListener('click', function(e) {
 // ========================================
 
 async function saveToSupabase(data, table, operation = 'insert', userId = null) {
+    // Append UTM data to all saves
+    const dataWithUTM = appendUTMToData(data);
+    
     addDebugLog(`🔍 DEBUGGING ${table.toUpperCase()} ${operation.toUpperCase()}`, 'info');
-    addDebugLog(`📤 Data: ${JSON.stringify(data, null, 2)}`, 'info');
+    addDebugLog(`📤 Data: ${JSON.stringify(dataWithUTM, null, 2)}`, 'info');
     
     if (!supabase) {
         addDebugLog('❌ Supabase client not initialized', 'error');
@@ -126,7 +239,7 @@ async function saveToSupabase(data, table, operation = 'insert', userId = null) 
             // 🔥 ADD UPDATE OPERATION
             const response = await supabase
                 .from(table)
-                .update(data)
+                .update(dataWithUTM)
                 .eq('id', userId)
                 .select();
             result = response.data;
@@ -135,7 +248,7 @@ async function saveToSupabase(data, table, operation = 'insert', userId = null) 
             // INSERT OPERATION
             const response = await supabase
                 .from(table)
-                .insert([data])
+                .insert([dataWithUTM])
                 .select();
             result = response.data;
             error = response.error;
@@ -975,6 +1088,11 @@ if (typeof window !== 'undefined') {
         // Debug & Logging
         addDebugLog,
         toggleDebugPanel,
+        
+        // UTM Tracking
+        captureUTMParameters,
+        getStoredUTMData,
+        appendUTMToData,
         
         // Notifications & Modals
         showNotification,

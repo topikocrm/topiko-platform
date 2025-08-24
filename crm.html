@@ -323,6 +323,152 @@
             color: white;
             border-color: #3b82f6;
         }
+        
+        /* View Toggle Buttons */
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .view-btn:hover {
+            background: #f1f5f9;
+            transform: translateY(-1px);
+        }
+        
+        .view-btn.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-color: #10b981;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Table View Styles */
+        .leads-table {
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            overflow-x: auto;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .leads-table table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+        
+        .leads-table th {
+            background: #f8fafc;
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .leads-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.85rem;
+            color: #1e293b;
+        }
+        
+        .leads-table tr:hover {
+            background: #f8fafc;
+        }
+        
+        .table-score-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .table-status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        /* Kanban View Styles */
+        .kanban-container {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            min-height: 500px;
+        }
+        
+        .kanban-column {
+            min-width: 300px;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .kanban-header {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .kanban-count {
+            background: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+        
+        .kanban-card {
+            background: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .kanban-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .kanban-card-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .kanban-card-detail {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
 
         .filter-btn:active {
             transform: scale(0.98);
@@ -1325,6 +1471,26 @@
         .mb-2 { margin-bottom: 0.5rem; }
         .mb-4 { margin-bottom: 1rem; }
         .p-4 { padding: 1rem; }
+        
+        /* Loading spinner animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .leads-count {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: rgba(59, 130, 246, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
 
         /* ===== TABLET BREAKPOINT (768px+) ===== */
         @media (min-width: 768px) {
@@ -1787,6 +1953,22 @@
                         <button class="filter-btn" onclick="toggleFilter('high-budget', this)">💰 High Budget</button>
                         <button class="filter-btn" onclick="toggleFilter('decision-makers', this)">👑 Decision Makers</button>
                         <button class="filter-btn" onclick="toggleFilter('unassigned', this)">📋 Unassigned</button>
+                    </div>
+                    
+                    <!-- VIEW TOGGLE BUTTONS -->
+                    <div class="view-toggle-container" style="margin-top: 1rem; padding: 0.75rem; background: #f8fafc; border-radius: 12px;">
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                            <span style="font-size: 0.85rem; font-weight: 600; color: #64748b; margin-right: 0.5rem;">View:</span>
+                            <button class="view-btn active" onclick="changeView('cards', this)" data-view="cards">
+                                <span style="margin-right: 0.25rem;">📇</span> Cards
+                            </button>
+                            <button class="view-btn" onclick="changeView('table', this)" data-view="table">
+                                <span style="margin-right: 0.25rem;">📊</span> Table
+                            </button>
+                            <button class="view-btn" onclick="changeView('kanban', this)" data-view="kanban">
+                                <span style="margin-right: 0.25rem;">📋</span> Kanban
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -2288,7 +2470,7 @@
             const timeoutId = setTimeout(() => controller.abort(), 10000);
             
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*&order=created_at.desc&limit=100`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*&order=created_at.desc`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
@@ -2317,7 +2499,7 @@
             console.log('🧠 Fetching lead intelligence...');
             
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence?select=*&order=created_at.desc&limit=100`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence?select=*&order=created_at.desc`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
@@ -2337,7 +2519,7 @@
             console.log('📊 Fetching CRM leads...');
             
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/crm_leads?select=*&order=created_at.desc&limit=50`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/crm_leads?select=*&order=created_at.desc`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
@@ -2568,6 +2750,22 @@
             document.getElementById('warmLeads').textContent = allLeads.filter(lead => lead.lead_score >= 41 && lead.lead_score < 65).length;
             document.getElementById('priorityLeads').textContent = allLeads.filter(lead => isPriorityLead(lead)).length;
         }
+        
+        // VIEW MANAGEMENT
+        let currentView = localStorage.getItem('crm_view_preference') || 'cards';
+        
+        function changeView(view, button) {
+            // Update active button
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            // Store current view
+            currentView = view;
+            localStorage.setItem('crm_view_preference', view);
+            
+            // Re-render with new view
+            renderLeads();
+        }
 
         function renderLeads() {
             const leadsGrid = document.getElementById('leadsGrid');
@@ -2586,8 +2784,176 @@
                 return;
             }
             
-            const leadsHTML = filteredLeads.slice(0, 20).map(lead => createLeadCard(lead)).join('');
-            leadsGrid.innerHTML = leadsHTML;
+            // Render based on current view
+            if (currentView === 'table') {
+                renderTableView(filteredLeads);
+            } else if (currentView === 'kanban') {
+                renderKanbanView(filteredLeads);
+            } else {
+                // Default cards view
+                // Store filtered leads for lazy loading
+                currentFilteredLeads = filteredLeads;
+                window.currentDisplayedCount = 20;
+                
+                // Reset grid classes for cards view
+                leadsGrid.className = 'leads-grid';
+                
+                // Display initial batch
+                const initialLeads = filteredLeads.slice(0, window.currentDisplayedCount);
+                const leadsHTML = initialLeads.map(lead => createLeadCard(lead)).join('');
+                leadsGrid.innerHTML = leadsHTML;
+            
+                // Add loading indicator if more leads exist
+                if (filteredLeads.length > window.currentDisplayedCount) {
+                    const loadingIndicator = document.createElement('div');
+                    loadingIndicator.id = 'loadMoreIndicator';
+                    loadingIndicator.style.cssText = 'grid-column: 1 / -1; text-align: center; padding: 2rem; display: none;';
+                    loadingIndicator.innerHTML = `
+                        <div class="loading-spinner" style="margin: 0 auto 1rem; width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                        <p style="color: #64748b; font-size: 0.9rem;">Loading more leads...</p>
+                    `;
+                    leadsGrid.appendChild(loadingIndicator);
+                }
+                
+                // Show count of displayed vs total
+                const countDisplay = document.querySelector('.leads-count');
+                if (countDisplay) {
+                    const displayedCount = Math.min(window.currentDisplayedCount, filteredLeads.length);
+                    countDisplay.textContent = `Showing ${displayedCount} of ${filteredLeads.length} leads`;
+                }
+            }
+        }
+        
+        // TABLE VIEW RENDERING
+        function renderTableView(leads) {
+            const leadsGrid = document.getElementById('leadsGrid');
+            leadsGrid.className = 'leads-table';
+            
+            const tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Score</th>
+                            <th>Assigned To</th>
+                            <th>Status</th>
+                            <th>Qualification</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${leads.map(lead => createTableRow(lead)).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            leadsGrid.innerHTML = tableHTML;
+        }
+        
+        function createTableRow(lead) {
+            const assignedSDR = lead.assigned_sdr_id ? 
+                sdrTeam.find(sdr => sdr.id === lead.assigned_sdr_id)?.name || 'Unknown' : 
+                'Unassigned';
+            
+            const scoreClass = lead.lead_score >= 65 ? 'hot' : 
+                              lead.lead_score >= 41 ? 'warm' : 'cold';
+            
+            const statusColors = {
+                'New': '#dbeafe',
+                'Contacted': '#fef3c7',
+                'Qualified': '#d1fae5',
+                'Negotiation': '#e0f2fe',
+                'Closed': '#dcfce7'
+            };
+            
+            const status = lead.lead_pipeline_status || 'New';
+            
+            return `
+                <tr onclick="showLeadIntelligence('${lead.id}')" style="cursor: pointer;">
+                    <td>
+                        <div style="font-weight: 600;">${lead.name}</div>
+                        <div style="font-size: 0.75rem; color: #64748b;">${lead.business_name}</div>
+                    </td>
+                    <td>${lead.phone}</td>
+                    <td>
+                        <span class="table-score-badge score-${scoreClass}" style="background: ${scoreClass === 'hot' ? '#fee2e2' : scoreClass === 'warm' ? '#fef3c7' : '#e5e7eb'}; color: ${scoreClass === 'hot' ? '#dc2626' : scoreClass === 'warm' ? '#d97706' : '#6b7280'};">
+                            ${lead.lead_score}/100
+                        </span>
+                    </td>
+                    <td>${assignedSDR}</td>
+                    <td>
+                        <span class="table-status-badge" style="background: ${statusColors[status] || '#f1f5f9'}; color: #1e293b;">
+                            ${status}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="font-size: 0.8rem;">
+                            ${lead.budget_quality || 'Unknown'} • ${lead.timeline || 'Unknown'}
+                        </div>
+                    </td>
+                    <td>
+                        <button onclick="event.stopPropagation(); assignLead('${lead.id}')" style="padding: 0.25rem 0.5rem; background: #3b82f6; color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">
+                            Assign
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }
+        
+        // KANBAN VIEW RENDERING
+        function renderKanbanView(leads) {
+            const leadsGrid = document.getElementById('leadsGrid');
+            leadsGrid.className = 'kanban-container';
+            
+            const statuses = ['New', 'Contacted', 'Qualified', 'Negotiation', 'Closed'];
+            const leadsByStatus = {};
+            
+            // Group leads by status
+            statuses.forEach(status => {
+                leadsByStatus[status] = leads.filter(lead => 
+                    (lead.lead_pipeline_status || 'New') === status
+                );
+            });
+            
+            const kanbanHTML = statuses.map(status => `
+                <div class="kanban-column">
+                    <div class="kanban-header">
+                        <span>${status}</span>
+                        <span class="kanban-count">${leadsByStatus[status].length}</span>
+                    </div>
+                    <div class="kanban-cards">
+                        ${leadsByStatus[status].map(lead => createKanbanCard(lead)).join('')}
+                    </div>
+                </div>
+            `).join('');
+            
+            leadsGrid.innerHTML = kanbanHTML;
+        }
+        
+        function createKanbanCard(lead) {
+            const assignedSDR = lead.assigned_sdr_id ? 
+                sdrTeam.find(sdr => sdr.id === lead.assigned_sdr_id)?.name || 'Unassigned' : 
+                'Unassigned';
+            
+            const scoreClass = lead.lead_score >= 65 ? 'hot' : 
+                              lead.lead_score >= 41 ? 'warm' : 'cold';
+            
+            return `
+                <div class="kanban-card" onclick="showLeadIntelligence('${lead.id}')">
+                    <div class="kanban-card-name">${lead.name}</div>
+                    <div class="kanban-card-detail">📞 ${lead.phone}</div>
+                    <div class="kanban-card-detail">💼 ${lead.business_name}</div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 0.5rem;">
+                        <span style="font-size: 0.7rem; padding: 0.2rem 0.4rem; background: ${scoreClass === 'hot' ? '#fee2e2' : scoreClass === 'warm' ? '#fef3c7' : '#e5e7eb'}; color: ${scoreClass === 'hot' ? '#dc2626' : scoreClass === 'warm' ? '#d97706' : '#6b7280'}; border-radius: 4px; font-weight: 600;">
+                            ${lead.lead_score}/100
+                        </span>
+                        <span style="font-size: 0.7rem; color: #64748b;">
+                            ${assignedSDR}
+                        </span>
+                    </div>
+                </div>
+            `;
         }
 
         function createLeadCard(lead) {
@@ -2707,17 +3073,40 @@
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Source:</span>
-                                ${lead.utm_source}
+                                ${lead.utm_source || 'Direct'}
                             </div>
                             <div class="detail-item">
-                                <span class="detail-label">Session:</span>
-                                ${lead.session_duration_minutes}min
+                                <span class="detail-label">Campaign:</span>
+                                ${lead.utm_campaign || 'N/A'}
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Products:</span>
                                 ${lead.products_count}
                             </div>
                         </div>
+                        
+                        ${(lead.utm_state || lead.utm_language || lead.utm_agent) ? `
+                        <div class="card-details" style="margin-top: 0.5rem;">
+                            ${lead.utm_state ? `
+                            <div class="detail-item">
+                                <span class="detail-label">State:</span>
+                                ${lead.utm_state.replace(/_/g, ' ')}
+                            </div>` : ''}
+                            ${lead.utm_language ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Language:</span>
+                                ${lead.utm_language.toUpperCase()}
+                            </div>` : ''}
+                            ${lead.utm_agent ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Agent:</span>
+                                ${lead.utm_agent}
+                            </div>` : ''}
+                            <div class="detail-item">
+                                <span class="detail-label">Session:</span>
+                                ${lead.session_duration_minutes}min
+                            </div>
+                        </div>` : ''}
                         
                         <div class="card-status">
                             <span class="status-badge status-${lead.lead_status.toLowerCase().replace(' ', '-')}">
@@ -2728,6 +3117,17 @@
                             </span>
                         </div>
                     </div>
+                    
+                    ${lead.custom_params ? `
+                    <div class="card-details" style="margin-top: 0.5rem; padding: 0.5rem; background: #f8fafc; border-radius: 6px;">
+                        <div style="font-size: 0.7rem; font-weight: 600; color: #64748b; margin-bottom: 0.25rem;">🔧 Custom Parameters:</div>
+                        ${Object.entries(lead.custom_params).map(([key, value]) => `
+                            <div class="detail-item" style="font-size: 0.75rem;">
+                                <span class="detail-label" style="color: #64748b;">${key}:</span>
+                                <span style="color: #1e293b; font-weight: 500;">${value}</span>
+                            </div>
+                        `).join('')}
+                    </div>` : ''}
                     
                     <div class="card-actions">
                         <div class="sdr-dropdown">
@@ -3944,6 +4344,80 @@
             document.getElementById('scoreBreakdownModal').classList.remove('show');
         }
 
+        // LAZY LOADING FUNCTIONS
+        let isLoadingMore = false;
+        let currentFilteredLeads = [];
+        
+        function loadMoreLeads() {
+            if (isLoadingMore || !currentFilteredLeads.length) return;
+            
+            const currentCount = window.currentDisplayedCount || 20;
+            if (currentCount >= currentFilteredLeads.length) return;
+            
+            isLoadingMore = true;
+            const loadingIndicator = document.getElementById('loadMoreIndicator');
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'block';
+            }
+            
+            // Simulate loading delay for smooth UX
+            setTimeout(() => {
+                const leadsGrid = document.getElementById('leadsGrid');
+                const nextBatch = currentFilteredLeads.slice(currentCount, currentCount + 20);
+                
+                nextBatch.forEach(lead => {
+                    const leadCard = document.createElement('div');
+                    leadCard.innerHTML = createLeadCard(lead);
+                    leadsGrid.insertBefore(leadCard.firstElementChild, loadingIndicator);
+                });
+                
+                window.currentDisplayedCount = currentCount + nextBatch.length;
+                
+                // Hide loading indicator if no more leads
+                if (window.currentDisplayedCount >= currentFilteredLeads.length && loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+                
+                isLoadingMore = false;
+            }, 300);
+        }
+        
+        function setupInfiniteScroll() {
+            const mainContent = document.querySelector('.crm-main');
+            if (!mainContent) return;
+            
+            let ticking = false;
+            function handleScroll() {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        const scrollHeight = mainContent.scrollHeight;
+                        const scrollTop = mainContent.scrollTop;
+                        const clientHeight = mainContent.clientHeight;
+                        
+                        // Load more when user is 200px from bottom
+                        if (scrollHeight - scrollTop - clientHeight < 200) {
+                            loadMoreLeads();
+                        }
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }
+            
+            mainContent.addEventListener('scroll', handleScroll);
+            
+            // Also handle window scroll for mobile
+            window.addEventListener('scroll', () => {
+                const scrollHeight = document.documentElement.scrollHeight;
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const clientHeight = window.innerHeight;
+                
+                if (scrollHeight - scrollTop - clientHeight < 200) {
+                    loadMoreLeads();
+                }
+            });
+        }
+
         // INITIALIZATION (ENHANCED WITH DEBUGGING)
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Mobile-First Topiko CRM v5.0 Initialized');
@@ -4039,6 +4513,19 @@
                 }, 30000);
                 
                 showNotification('Mobile-First CRM v5.0 ready! Database connected. 📱', 'success');
+                
+                // Setup infinite scroll after initial load
+                setupInfiniteScroll();
+                
+                // Set the correct view button as active based on saved preference
+                const savedView = localStorage.getItem('crm_view_preference') || 'cards';
+                document.querySelectorAll('.view-btn').forEach(btn => {
+                    if (btn.dataset.view === savedView) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
                 
                 console.log('✅ Mobile-First CRM v5.0 ready with full database connectivity');
                 

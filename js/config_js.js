@@ -1705,6 +1705,69 @@ const FOMO_MESSAGE_TEMPLATES = [
 ];
 
 // ========================================
+// UTM CONFIGURATION
+// ========================================
+
+const UTM_CONFIG = {
+    // Standard UTM parameters
+    standard: ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'],
+    
+    // Custom parameters for Indian market
+    custom: ['utm_state', 'utm_language', 'utm_category', 'utm_agent'],
+    
+    // Common campaign sources
+    sources: {
+        google: 'Google',
+        facebook: 'Facebook',
+        instagram: 'Instagram',
+        whatsapp: 'WhatsApp',
+        sms: 'SMS',
+        email: 'Email',
+        agent: 'Agent Referral',
+        direct: 'Direct',
+        qrcode: 'QR Code'
+    },
+    
+    // Common mediums
+    mediums: {
+        cpc: 'Cost Per Click',
+        social: 'Social Media',
+        referral: 'Referral',
+        organic: 'Organic',
+        paid: 'Paid',
+        sms: 'SMS',
+        email: 'Email'
+    },
+    
+    // Indian states for targeting
+    states: {
+        'andhra_pradesh': 'Andhra Pradesh',
+        'telangana': 'Telangana',
+        'tamil_nadu': 'Tamil Nadu',
+        'karnataka': 'Karnataka',
+        'kerala': 'Kerala',
+        'maharashtra': 'Maharashtra',
+        'gujarat': 'Gujarat',
+        'delhi': 'Delhi',
+        'west_bengal': 'West Bengal',
+        'uttar_pradesh': 'Uttar Pradesh'
+    },
+    
+    // Supported languages
+    languages: {
+        'en': 'English',
+        'hi': 'Hindi',
+        'te': 'Telugu',
+        'ta': 'Tamil',
+        'kn': 'Kannada',
+        'ml': 'Malayalam',
+        'mr': 'Marathi',
+        'gu': 'Gujarati',
+        'bn': 'Bengali'
+    }
+};
+
+// ========================================
 // THEME CONFIGURATION
 // ========================================
 
@@ -1834,6 +1897,7 @@ if (typeof window !== 'undefined') {
         INDIAN_BUSINESS_NAMES,
         INDIAN_CITIES,
         FOMO_MESSAGE_TEMPLATES,
+        UTM_CONFIG,
         THEME_CONFIG,
         GOAL_NAMES,
         LANGUAGE_CONFIG,

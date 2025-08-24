@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topiko Campaign URL Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, rgb(199, 210, 254) 0%, rgb(224, 231, 255) 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #64748b;
+        }
+
+        .builder-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+        }
+
+        .required::after {
+            content: ' *';
+            color: #ef4444;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a855f7, #9333ea);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .result-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .url-display {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .copy-btn:hover {
+            background: #059669;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .qr-code img {
+            border: 4px solid white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .campaign-list {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .campaign-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .campaign-info {
+            flex-grow: 1;
+        }
+
+        .campaign-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .campaign-details {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .campaign-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            padding: 0.5rem;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 Campaign URL Builder</h1>
+            <p>Create trackable campaign URLs with UTM parameters for your marketing campaigns</p>
+        </div>
+
+        <!-- URL Builder Form -->
+        <div class="builder-section">
+            <h2 style="margin-bottom: 1.5rem;">Create New Campaign URL</h2>
+            
+            <div class="form-grid">
+                <!-- Campaign Name -->
+                <div class="form-group">
+                    <label for="campaignName" class="required">Campaign Name</label>
+                    <input type="text" id="campaignName" placeholder="e.g., Diwali Sale 2024">
+                </div>
+
+                <!-- Source -->
+                <div class="form-group">
+                    <label for="utmSource" class="required">Source</label>
+                    <select id="utmSource" onchange="updateMediumOptions()">
+                        <option value="">Select Source</option>
+                        <optgroup label="Social Media">
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="telegram">Telegram</option>
+                        </optgroup>
+                        <optgroup label="Search Engines">
+                            <option value="google">Google</option>
+                        </optgroup>
+                        <optgroup label="SMS Platforms">
+                            <option value="magictext">MagicText</option>
+                            <option value="sms_other">Others</option>
+                        </optgroup>
+                        <optgroup label="Email Platforms">
+                            <option value="mailchimp">Mailchimp</option>
+                            <option value="newsletter">Newsletter</option>
+                        </optgroup>
+                        <optgroup label="Lead Databases">
+                            <option value="justdial">JustDial</option>
+                            <option value="b2b">B2B Database</option>
+                            <option value="b2bleadwala">B2BLeadWala</option>
+                            <option value="indiamart">IndiaMart</option>
+                            <option value="tradeindia">TradeIndia</option>
+                        </optgroup>
+                        <optgroup label="Referral Sources">
+                            <option value="agent">Agent</option>
+                            <option value="partner">Partner</option>
+                            <option value="reseller">Reseller</option>
+                            <option value="distributor">Distributor</option>
+                            <option value="influencer">Influencer</option>
+                            <option value="affiliate">Affiliate</option>
+                            <option value="customer">Customer Referral</option>
+                        </optgroup>
+                        <optgroup label="Offline Sources">
+                            <option value="qrcode">QR Code</option>
+                            <option value="poster">Poster/Print</option>
+                            <option value="newspaper">Newspaper</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="direct">Direct</option>
+                            <option value="other">Other</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- Medium -->
+                <div class="form-group">
+                    <label for="utmMedium" class="required">Medium 
+                        <span style="font-size: 0.75rem; color: #64748b; font-weight: normal;">(How they arrived)</span>
+                    </label>
+                    <select id="utmMedium">
+                        <option value="">Select Medium</option>
+                        <optgroup label="Organic">
+                            <option value="social">Social (Organic)</option>
+                            <option value="search">Search (Organic)</option>
+                            <option value="direct">Direct</option>
+                            <option value="organic">Other Organic</option>
+                        </optgroup>
+                        <optgroup label="Paid">
+                            <option value="cpc">CPC (Cost Per Click)</option>
+                            <option value="cpm">CPM (Cost Per Impression)</option>
+                            <option value="paid_social">Paid Social Ads</option>
+                            <option value="paid_search">Paid Search</option>
+                            <option value="display">Display Ads</option>
+                        </optgroup>
+                        <optgroup label="Data Sources">
+                            <option value="database">Database Import</option>
+                            <option value="scraped">Scraped Data</option>
+                            <option value="purchased_list">Purchased List</option>
+                            <option value="imported">Bulk Import</option>
+                        </optgroup>
+                        <optgroup label="Referrals/Agents">
+                            <option value="referral">Referral</option>
+                            <option value="agent">Agent Network</option>
+                            <option value="affiliate">Affiliate</option>
+                            <option value="partner">Partner</option>
+                        </optgroup>
+                        <optgroup label="Messaging">
+                            <option value="sms">SMS</option>
+                            <option value="email">Email</option>
+                            <option value="broadcast">Broadcast</option>
+                            <option value="whatsapp">WhatsApp</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="offline">Offline</option>
+                            <option value="qrcode">QR Code</option>
+                            <option value="other">Other</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- State -->
+                <div class="form-group">
+                    <label for="utmState">Target State</label>
+                    <select id="utmState">
+                        <option value="">All States</option>
+                        <option value="andhra_pradesh">Andhra Pradesh</option>
+                        <option value="telangana">Telangana</option>
+                        <option value="tamil_nadu">Tamil Nadu</option>
+                        <option value="karnataka">Karnataka</option>
+                        <option value="kerala">Kerala</option>
+                        <option value="maharashtra">Maharashtra</option>
+                        <option value="gujarat">Gujarat</option>
+                        <option value="delhi">Delhi</option>
+                        <option value="west_bengal">West Bengal</option>
+                        <option value="uttar_pradesh">Uttar Pradesh</option>
+                    </select>
+                </div>
+
+                <!-- Language -->
+                <div class="form-group">
+                    <label for="utmLanguage">Target Language</label>
+                    <select id="utmLanguage">
+                        <option value="">All Languages</option>
+                        <option value="en">English</option>
+                        <option value="hi">Hindi</option>
+                        <option value="te">Telugu</option>
+                        <option value="ta">Tamil</option>
+                        <option value="kn">Kannada</option>
+                        <option value="ml">Malayalam</option>
+                        <option value="mr">Marathi</option>
+                        <option value="gu">Gujarati</option>
+                        <option value="bn">Bengali</option>
+                    </select>
+                </div>
+
+                <!-- Category -->
+                <div class="form-group">
+                    <label for="utmCategory">Business Category</label>
+                    <select id="utmCategory">
+                        <option value="">All Categories</option>
+                        <option value="grocery">Grocery</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="food">Food & Restaurant</option>
+                        <option value="beauty">Beauty & Cosmetics</option>
+                        <option value="health">Health & Pharmacy</option>
+                        <option value="services">Services</option>
+                    </select>
+                </div>
+
+                <!-- Agent Code -->
+                <div class="form-group">
+                    <label for="utmAgent">Agent Code</label>
+                    <input type="text" id="utmAgent" placeholder="e.g., AGT001">
+                </div>
+
+                <!-- Content -->
+                <div class="form-group">
+                    <label for="utmContent">Content/Variant</label>
+                    <input type="text" id="utmContent" placeholder="e.g., banner_top">
+                </div>
+
+                <!-- Term -->
+                <div class="form-group">
+                    <label for="utmTerm">Keywords (for paid search)</label>
+                    <input type="text" id="utmTerm" placeholder="e.g., online store">
+                </div>
+            </div>
+
+            <!-- Custom Parameters Section -->
+            <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: #1e293b;">
+                    🔧 Custom Parameters 
+                    <span style="font-size: 0.8rem; color: #64748b; font-weight: normal;">(Add any additional tracking parameters)</span>
+                </h3>
+                
+                <div id="customParametersContainer">
+                    <!-- Custom parameters will be added here -->
+                </div>
+                
+                <div style="margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="text" id="newParamName" placeholder="Parameter name (e.g., utm_offer)" 
+                           style="flex: 1; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    <input type="text" id="newParamValue" placeholder="Parameter value (e.g., 50off)" 
+                           style="flex: 1; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    <button onclick="addCustomParameter()" 
+                            style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                        + Add
+                    </button>
+                </div>
+                
+                <div style="margin-top: 0.5rem;">
+                    <small style="color: #64748b;">💡 Examples: utm_offer, utm_discount, utm_event, custom_id, ref_code</small>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="generateURL()">Generate URL</button>
+                <button class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                <button class="btn btn-secondary" onclick="generateBulkURLs()">Bulk Generate</button>
+            </div>
+
+            <!-- Result Section -->
+            <div id="resultSection" class="result-section">
+                <h3 style="margin-bottom: 1rem;">Generated Campaign URLs</h3>
+                
+                <div>
+                    <label style="font-weight: 600; color: #475569;">Full URL:</label>
+                    <div class="url-display">
+                        <span id="fullURL"></span>
+                        <button class="copy-btn" onclick="copyURL('fullURL')">Copy</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label style="font-weight: 600; color: #475569;">Short URL:</label>
+                    <div class="url-display">
+                        <span id="shortURL"></span>
+                        <button class="copy-btn" onclick="copyURL('shortURL')">Copy</button>
+                    </div>
+                </div>
+
+                <div class="qr-code">
+                    <h4 style="margin-bottom: 1rem;">QR Code</h4>
+                    <img id="qrCode" src="" alt="QR Code" style="display: none;">
+                </div>
+
+                <div id="successMessage" class="success-message">
+                    ✅ URL copied to clipboard!
+                </div>
+            </div>
+        </div>
+
+        <!-- Campaign Statistics -->
+        <div class="builder-section">
+            <h2 style="margin-bottom: 1.5rem;">Campaign Statistics</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Total Campaigns</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Total Clicks</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #6366f1, #4f46e5);">
+                    <div class="stat-value">0%</div>
+                    <div class="stat-label">Conversion Rate</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Active Campaigns</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Campaigns -->
+        <div class="campaign-list">
+            <h2 style="margin-bottom: 1.5rem;">Recent Campaigns</h2>
+            <div id="campaignList">
+                <!-- Campaign items will be added here dynamically -->
+                <p style="color: #94a3b8; text-align: center;">No campaigns created yet. Create your first campaign above!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base URL for the lead form
+        const BASE_URL = window.location.origin + '/lead-form.html';
+        
+        // Store campaigns in localStorage
+        let campaigns = JSON.parse(localStorage.getItem('topiko_campaigns') || '[]');
+        let customParameters = [];
+        
+        // Initialize custom parameters display on load
+        window.onload = function() {
+            displayCustomParameters();
+            updateStats();
+            displayCampaigns();
+        };
+
+        function updateMediumOptions() {
+            const source = document.getElementById('utmSource').value;
+            const mediumSelect = document.getElementById('utmMedium');
+            
+            // Smart medium suggestions based on source
+            const mediumSuggestions = {
+                // Social Media
+                'whatsapp': 'whatsapp',
+                'facebook': 'social',
+                'instagram': 'social',
+                'twitter': 'social',
+                'linkedin': 'social',
+                'youtube': 'social',
+                'telegram': 'broadcast',
+                // Search Engines
+                'google': 'search',
+                // SMS Platforms
+                'magictext': 'sms',
+                'sms_other': 'sms',
+                // Email Platforms
+                'mailchimp': 'email',
+                'newsletter': 'email',
+                // Lead Databases
+                'justdial': 'scraped',
+                'b2b': 'database',
+                'b2bleadwala': 'purchased_list',
+                'indiamart': 'database',
+                'tradeindia': 'imported',
+                // Referral Sources
+                'agent': 'agent',
+                'partner': 'partner',
+                'reseller': 'referral',
+                'distributor': 'referral',
+                'influencer': 'referral',
+                'affiliate': 'affiliate',
+                'customer': 'referral',
+                // Offline Sources
+                'qrcode': 'qrcode',
+                'poster': 'offline',
+                'newspaper': 'offline',
+                // Other
+                'direct': 'direct',
+                'other': 'other'
+            };
+            
+            // Auto-select suggested medium if available
+            if (mediumSuggestions[source] && !mediumSelect.value) {
+                mediumSelect.value = mediumSuggestions[source];
+            }
+        }
+        
+        function addCustomParameter() {
+            const nameInput = document.getElementById('newParamName');
+            const valueInput = document.getElementById('newParamValue');
+            
+            const name = nameInput.value.trim();
+            const value = valueInput.value.trim();
+            
+            if (!name || !value) {
+                alert('Please enter both parameter name and value');
+                return;
+            }
+            
+            // Validate parameter name (should start with letter/underscore, contain only alphanumeric/underscore)
+            if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
+                alert('Parameter name should start with a letter or underscore and contain only letters, numbers, and underscores');
+                return;
+            }
+            
+            // Check for duplicates
+            if (customParameters.find(p => p.name === name)) {
+                alert('This parameter already exists. Remove it first to add a new value.');
+                return;
+            }
+            
+            // Add to custom parameters
+            customParameters.push({ name, value });
+            
+            // Clear inputs
+            nameInput.value = '';
+            valueInput.value = '';
+            
+            // Update display
+            displayCustomParameters();
+        }
+        
+        function removeCustomParameter(index) {
+            customParameters.splice(index, 1);
+            displayCustomParameters();
+        }
+        
+        function displayCustomParameters() {
+            const container = document.getElementById('customParametersContainer');
+            
+            if (customParameters.length === 0) {
+                container.innerHTML = '<p style="color: #94a3b8; font-size: 0.9rem;">No custom parameters added yet</p>';
+                return;
+            }
+            
+            container.innerHTML = customParameters.map((param, index) => `
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; padding: 0.5rem; background: white; border-radius: 6px; border: 1px solid #e2e8f0;">
+                    <span style="font-weight: 600; color: #475569; min-width: 150px;">${param.name}:</span>
+                    <span style="flex: 1; color: #1e293b;">${param.value}</span>
+                    <button onclick="removeCustomParameter(${index})" 
+                            style="background: #ef4444; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                        Remove
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function generateURL() {
+            const campaignName = document.getElementById('campaignName').value;
+            const source = document.getElementById('utmSource').value;
+            const medium = document.getElementById('utmMedium').value;
+            
+            if (!campaignName || !source || !medium) {
+                alert('Please fill in required fields: Campaign Name, Source, and Medium');
+                return;
+            }
+
+            // Build UTM parameters
+            const params = new URLSearchParams();
+            
+            // Standard UTM parameters
+            params.append('utm_source', source);
+            params.append('utm_medium', medium);
+            params.append('utm_campaign', campaignName.toLowerCase().replace(/\s+/g, '_'));
+            
+            // Optional UTM parameters
+            const term = document.getElementById('utmTerm').value;
+            const content = document.getElementById('utmContent').value;
+            if (term) params.append('utm_term', term);
+            if (content) params.append('utm_content', content);
+            
+            // Custom parameters
+            const state = document.getElementById('utmState').value;
+            const language = document.getElementById('utmLanguage').value;
+            const category = document.getElementById('utmCategory').value;
+            const agent = document.getElementById('utmAgent').value;
+            
+            if (state) params.append('utm_state', state);
+            if (language) params.append('utm_language', language);
+            if (category) params.append('utm_category', category);
+            if (agent) params.append('utm_agent', agent);
+            
+            // Add custom parameters
+            customParameters.forEach(param => {
+                params.append(param.name, param.value);
+            });
+            
+            // Generate full URL
+            const fullURL = `${BASE_URL}?${params.toString()}`;
+            
+            // Generate short URL (for now, just a placeholder)
+            const shortCode = generateShortCode();
+            const shortURL = `${window.location.origin}/c/${shortCode}`;
+            
+            // Display results
+            document.getElementById('fullURL').textContent = fullURL;
+            document.getElementById('shortURL').textContent = shortURL;
+            
+            // Generate QR Code
+            const qrCodeImg = document.getElementById('qrCode');
+            qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shortURL)}`;
+            qrCodeImg.style.display = 'block';
+            
+            // Show result section
+            document.getElementById('resultSection').classList.add('show');
+            
+            // Save campaign
+            saveCampaign({
+                name: campaignName,
+                source: source,
+                medium: medium,
+                state: state,
+                language: language,
+                shortCode: shortCode,
+                fullURL: fullURL,
+                shortURL: shortURL,
+                createdAt: new Date().toISOString(),
+                clicks: 0
+            });
+            
+            updateStats();
+        }
+
+        function generateShortCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function copyURL(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const successMsg = document.getElementById('successMessage');
+                successMsg.classList.add('show');
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 2000);
+            });
+        }
+
+        function resetForm() {
+            document.getElementById('campaignName').value = '';
+            document.getElementById('utmSource').value = '';
+            document.getElementById('utmMedium').value = '';
+            document.getElementById('utmState').value = '';
+            document.getElementById('utmLanguage').value = '';
+            document.getElementById('utmCategory').value = '';
+            document.getElementById('utmAgent').value = '';
+            document.getElementById('utmContent').value = '';
+            document.getElementById('utmTerm').value = '';
+            document.getElementById('resultSection').classList.remove('show');
+            
+            // Clear custom parameters
+            customParameters = [];
+            displayCustomParameters();
+        }
+
+        function saveCampaign(campaign) {
+            campaigns.unshift(campaign);
+            if (campaigns.length > 50) {
+                campaigns = campaigns.slice(0, 50); // Keep only last 50 campaigns
+            }
+            localStorage.setItem('topiko_campaigns', JSON.stringify(campaigns));
+            updateCampaignList();
+        }
+
+        function updateCampaignList() {
+            const listContainer = document.getElementById('campaignList');
+            
+            if (campaigns.length === 0) {
+                listContainer.innerHTML = '<p style="color: #94a3b8; text-align: center;">No campaigns created yet. Create your first campaign above!</p>';
+                return;
+            }
+            
+            listContainer.innerHTML = campaigns.slice(0, 10).map(campaign => `
+                <div class="campaign-item">
+                    <div class="campaign-info">
+                        <div class="campaign-name">${campaign.name}</div>
+                        <div class="campaign-details">
+                            ${campaign.source} • ${campaign.medium} 
+                            ${campaign.state ? `• ${campaign.state}` : ''}
+                            ${campaign.language ? `• ${campaign.language}` : ''}
+                            • ${campaign.clicks} clicks
+                        </div>
+                    </div>
+                    <div class="campaign-actions">
+                        <button class="icon-btn" onclick="copyURL('shortURL_${campaign.shortCode}')" title="Copy Short URL">
+                            📋
+                        </button>
+                        <button class="icon-btn" onclick="viewQRCode('${campaign.shortCode}')" title="View QR Code">
+                            📱
+                        </button>
+                    </div>
+                    <span id="shortURL_${campaign.shortCode}" style="display: none;">${campaign.shortURL}</span>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const totalCampaigns = campaigns.length;
+            const totalClicks = campaigns.reduce((sum, c) => sum + c.clicks, 0);
+            const activeCampaigns = campaigns.filter(c => {
+                const createdDate = new Date(c.createdAt);
+                const daysSinceCreation = (new Date() - createdDate) / (1000 * 60 * 60 * 24);
+                return daysSinceCreation <= 30; // Consider active if created within 30 days
+            }).length;
+            
+            document.querySelector('.stats-grid .stat-card:nth-child(1) .stat-value').textContent = totalCampaigns;
+            document.querySelector('.stats-grid .stat-card:nth-child(2) .stat-value').textContent = totalClicks;
+            document.querySelector('.stats-grid .stat-card:nth-child(4) .stat-value').textContent = activeCampaigns;
+        }
+
+        function generateBulkURLs() {
+            alert('Bulk URL generation feature coming soon! This will allow you to upload a CSV and generate multiple campaign URLs at once.');
+        }
+
+        function viewQRCode(shortCode) {
+            const campaign = campaigns.find(c => c.shortCode === shortCode);
+            if (campaign) {
+                window.open(`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(campaign.shortURL)}`, '_blank');
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCampaignList();
+            updateStats();
+        });
+    </script>
+</body>
+</html>
