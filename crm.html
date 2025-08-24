@@ -2609,7 +2609,15 @@
                 
                 session_duration_minutes: intel.session_duration_minutes || 0,
                 page_views: intel.page_views || 1,
-                utm_source: intel.utm_source || 'Direct',
+                utm_source: rawLead.utm_source || intel.utm_source || 'Direct',
+                utm_medium: rawLead.utm_medium || intel.utm_medium || null,
+                utm_campaign: rawLead.utm_campaign || intel.utm_campaign || null,
+                utm_state: rawLead.utm_state || null,
+                utm_language: rawLead.utm_language || null,
+                utm_agent: rawLead.utm_agent || null,
+                utm_term: rawLead.utm_term || null,
+                utm_content: rawLead.utm_content || null,
+                custom_params: rawLead.custom_params || null,
                 device_type: intel.device_type || 'Unknown',
                 
                 products_count: rawLead.products_count || 0,
