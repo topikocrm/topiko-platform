@@ -463,15 +463,15 @@
         <div class="charts-grid">
             <div class="chart-container">
                 <h3 class="chart-title">📊 Top Sources Performance</h3>
-                <div id="sourcesChart" class="chart-placeholder">
-                    Chart visualization will be here
+                <div id="sourcesChart" style="padding: 1rem;">
+                    <!-- Source performance bars will be inserted here -->
                 </div>
             </div>
             
             <div class="chart-container">
                 <h3 class="chart-title">📈 Campaign Trends (Last 30 Days)</h3>
-                <div id="trendsChart" class="chart-placeholder">
-                    Chart visualization will be here
+                <div id="trendsChart" style="padding: 1rem;">
+                    <!-- Daily trend data will be inserted here -->
                 </div>
             </div>
         </div>
@@ -543,9 +543,165 @@
                 // Display top campaigns
                 displayTopCampaigns();
                 
+                // Display source performance chart
+                displaySourcePerformance();
+                
+                // Display campaign trends
+                displayCampaignTrends();
+                
             } catch (error) {
                 console.error('Error loading analytics:', error);
             }
+        }
+        
+        function displaySourcePerformance() {
+            // Group campaigns by source
+            const sourceData = {};
+            
+            allCampaigns.forEach(campaign => {
+                const source = campaign.utm_source || 'Unknown';
+                if (!sourceData[source]) {
+                    sourceData[source] = {
+                        campaigns: 0,
+                        clicks: 0,
+                        leads: 0
+                    };
+                }
+                
+                sourceData[source].campaigns++;
+                sourceData[source].clicks += campaign.clicks || 0;
+                
+                // Count leads for this source
+                const sourceLeads = allLeads.filter(l => 
+                    l.utm_source === campaign.utm_source &&
+                    l.utm_campaign === campaign.utm_campaign
+                );
+                sourceData[source].leads += sourceLeads.length;
+            });
+            
+            // Sort by clicks
+            const sortedSources = Object.entries(sourceData)
+                .sort(([,a], [,b]) => b.clicks - a.clicks)
+                .slice(0, 5); // Top 5 sources
+            
+            const container = document.getElementById('sourcesChart');
+            
+            if (sortedSources.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #94a3b8;">No source data available yet</p>';
+                return;
+            }
+            
+            // Find max value for scaling
+            const maxClicks = Math.max(...sortedSources.map(([,data]) => data.clicks));
+            
+            container.innerHTML = sortedSources.map(([source, data]) => {
+                const barWidth = maxClicks > 0 ? (data.clicks / maxClicks) * 100 : 0;
+                const conversionRate = data.clicks > 0 ? Math.round((data.leads / data.clicks) * 100) : 0;
+                
+                return `
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 600; color: #334155;">${source}</span>
+                            <span style="color: #64748b; font-size: 0.875rem;">
+                                ${data.clicks} clicks | ${data.leads} leads | ${conversionRate}% conversion
+                            </span>
+                        </div>
+                        <div style="background: #e5e7eb; border-radius: 4px; height: 32px; position: relative; overflow: hidden;">
+                            <div style="background: linear-gradient(90deg, #6366f1, #8b5cf6); height: 100%; width: ${barWidth}%; transition: width 0.5s; display: flex; align-items: center; padding: 0 0.5rem;">
+                                <span style="color: white; font-size: 0.75rem; font-weight: 600;">${data.campaigns} campaigns</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function displayCampaignTrends() {
+            const container = document.getElementById('trendsChart');
+            
+            // Group clicks by day for last 30 days
+            const now = new Date();
+            const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            
+            // Create date buckets
+            const dailyData = {};
+            for (let d = new Date(thirtyDaysAgo); d <= now; d.setDate(d.getDate() + 1)) {
+                const dateKey = d.toISOString().split('T')[0];
+                dailyData[dateKey] = { clicks: 0, leads: 0 };
+            }
+            
+            // Aggregate campaign data (simulated since we don't have click timestamps)
+            // In production, you'd track click timestamps
+            allCampaigns.forEach(campaign => {
+                const createdDate = new Date(campaign.created_at);
+                if (createdDate >= thirtyDaysAgo) {
+                    const dateKey = createdDate.toISOString().split('T')[0];
+                    if (dailyData[dateKey]) {
+                        // Distribute clicks across days (simplified)
+                        dailyData[dateKey].clicks += Math.round((campaign.clicks || 0) / 7); // Rough distribution
+                    }
+                }
+            });
+            
+            // Count leads by day
+            allLeads.forEach(lead => {
+                if (lead.created_at && lead.utm_campaign) {
+                    const leadDate = new Date(lead.created_at);
+                    if (leadDate >= thirtyDaysAgo) {
+                        const dateKey = leadDate.toISOString().split('T')[0];
+                        if (dailyData[dateKey]) {
+                            dailyData[dateKey].leads++;
+                        }
+                    }
+                }
+            });
+            
+            // Get last 7 days for display
+            const last7Days = Object.entries(dailyData).slice(-7);
+            
+            if (last7Days.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #94a3b8;">No trend data available yet</p>';
+                return;
+            }
+            
+            // Find max value for scaling
+            const maxValue = Math.max(
+                ...last7Days.map(([,data]) => Math.max(data.clicks, data.leads)),
+                1
+            );
+            
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                    <span style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="width: 12px; height: 12px; background: #6366f1; border-radius: 2px;"></span>
+                        <span style="font-size: 0.875rem; color: #64748b;">Clicks</span>
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="width: 12px; height: 12px; background: #10b981; border-radius: 2px;"></span>
+                        <span style="font-size: 0.875rem; color: #64748b;">Leads</span>
+                    </span>
+                </div>
+                <div style="display: flex; align-items: flex-end; justify-content: space-between; height: 200px; border-bottom: 2px solid #e5e7eb; padding: 0 0.5rem;">
+                    ${last7Days.map(([date, data]) => {
+                        const clickHeight = (data.clicks / maxValue) * 180;
+                        const leadHeight = (data.leads / maxValue) * 180;
+                        const dayName = new Date(date).toLocaleDateString('en', { weekday: 'short' });
+                        
+                        return `
+                            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                                <div style="display: flex; gap: 2px; align-items: flex-end; height: 180px;">
+                                    <div style="width: 20px; background: #6366f1; height: ${clickHeight}px; border-radius: 4px 4px 0 0;" title="${data.clicks} clicks"></div>
+                                    <div style="width: 20px; background: #10b981; height: ${leadHeight}px; border-radius: 4px 4px 0 0;" title="${data.leads} leads"></div>
+                                </div>
+                                <span style="font-size: 0.75rem; color: #64748b;">${dayName}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                <div style="text-align: center; margin-top: 0.5rem; color: #94a3b8; font-size: 0.75rem;">
+                    Last 7 days performance
+                </div>
+            `;
         }
         
         function updateStats() {
@@ -561,21 +717,26 @@
             // Total clicks
             const totalClicks = allCampaigns.reduce((sum, c) => sum + (c.clicks || 0), 0);
             
-            // Campaign leads
-            const campaignLeads = allLeads.filter(l => 
-                l.utm_campaign && l.utm_campaign !== 'N/A' && l.utm_campaign !== null
-            );
+            // Calculate total leads from campaigns (more accurate matching)
+            let totalCampaignLeads = 0;
+            allCampaigns.forEach(campaign => {
+                const campaignSpecificLeads = allLeads.filter(l => 
+                    l.utm_campaign === campaign.utm_campaign &&
+                    l.utm_source === campaign.utm_source
+                );
+                totalCampaignLeads += campaignSpecificLeads.length;
+            });
             
-            // Conversion rate
+            // Overall conversion rate
             const conversionRate = totalClicks > 0 
-                ? Math.round((campaignLeads.length / totalClicks) * 100) 
+                ? Math.round((totalCampaignLeads / totalClicks) * 100) 
                 : 0;
             
             // Update UI
             document.getElementById('activeCampaigns').textContent = activeCampaigns.length;
             document.getElementById('totalClicks').textContent = totalClicks;
             document.getElementById('conversionRate').textContent = conversionRate + '%';
-            document.getElementById('totalLeads').textContent = campaignLeads.length;
+            document.getElementById('totalLeads').textContent = totalCampaignLeads;
         }
         
         function displayCampaignsTable() {
