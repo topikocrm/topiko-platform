@@ -274,8 +274,16 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🚀 Campaign URL Builder</h1>
+            <h1>Topiko Campaign URL Builder</h1>
             <p>Create trackable campaign URLs with UTM parameters for your marketing campaigns</p>
+        </div>
+
+        <!-- Team Member Identification -->
+        <div style="background: #f0f9ff; border: 1px solid #0284c7; border-radius: 8px; padding: 1rem; margin-bottom: 2rem;">
+            <label style="font-weight: 600; color: #0c4a6e; display: block; margin-bottom: 0.5rem;">Your Name/Email (Team Member)</label>
+            <input type="text" id="createdBy" placeholder="e.g., raj@topiko.app or Raj Kumar" 
+                   style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+            <small style="color: #64748b;">This helps track who created which campaigns</small>
         </div>
 
         <!-- URL Builder Form -->
@@ -484,6 +492,32 @@
                 </div>
             </div>
 
+            <!-- Short URL Options -->
+            <div style="margin-top: 2rem; padding: 1.5rem; background: #f0fdf4; border-radius: 12px; border: 1px solid #86efac;">
+                <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: #166534;">
+                    🔗 Short URL Settings
+                </h3>
+                
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label for="customCode" style="font-weight: 600; color: #166534; display: block; margin-bottom: 0.5rem;">
+                            Custom Short Code (Optional)
+                        </label>
+                        <input type="text" id="customCode" placeholder="e.g., diwali2024 or BLR50" 
+                               pattern="[A-Za-z0-9\-_]+" maxlength="20"
+                               style="width: 100%; padding: 0.5rem; border: 1px solid #86efac; border-radius: 6px;">
+                        <small style="color: #64748b;">Leave empty for auto-generated code. Use letters, numbers, dash, underscore only.</small>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" id="checkDuplicate" checked>
+                        <label for="checkDuplicate" style="font-size: 0.9rem; color: #166534;">
+                            Reuse existing short URL if same campaign exists
+                        </label>
+                    </div>
+                </div>
+            </div>
+
             <div class="button-group">
                 <button class="btn btn-primary" onclick="generateURL()">Generate URL</button>
                 <button class="btn btn-secondary" onclick="resetForm()">Reset</button>
@@ -555,20 +589,57 @@
         </div>
     </div>
 
+    <!-- Include Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         // Base URL for the lead form
         const BASE_URL = window.location.origin + '/lead-form.html';
         
-        // Store campaigns in localStorage
-        let campaigns = JSON.parse(localStorage.getItem('topiko_campaigns') || '[]');
+        // Store campaigns temporarily
+        let campaigns = [];
         let customParameters = [];
         
-        // Initialize custom parameters display on load
-        window.onload = function() {
+        // Initialize on load
+        window.onload = async function() {
+            // Load saved creator name
+            const savedCreator = localStorage.getItem('campaign_creator');
+            if (savedCreator) {
+                document.getElementById('createdBy').value = savedCreator;
+            }
+            
             displayCustomParameters();
+            await loadCampaigns();
             updateStats();
             displayCampaigns();
         };
+        
+        // Load campaigns from Supabase
+        async function loadCampaigns() {
+            try {
+                const { data, error } = await supabase
+                    .from('short_urls')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+                
+                if (error) {
+                    console.error('Error loading campaigns:', error);
+                    showNotification('Failed to load campaigns from database', 'error');
+                } else {
+                    campaigns = data || [];
+                    console.log('Loaded campaigns:', campaigns.length);
+                }
+            } catch (e) {
+                console.error('Error:', e);
+                campaigns = [];
+            }
+        }
 
         function updateMediumOptions() {
             const source = document.getElementById('utmSource').value;
@@ -681,15 +752,25 @@
             `).join('');
         }
 
-        function generateURL() {
+        async function generateURL() {
             const campaignName = document.getElementById('campaignName').value;
             const source = document.getElementById('utmSource').value;
             const medium = document.getElementById('utmMedium').value;
+            const createdBy = document.getElementById('createdBy').value;
             
             if (!campaignName || !source || !medium) {
                 alert('Please fill in required fields: Campaign Name, Source, and Medium');
                 return;
             }
+            
+            if (!createdBy) {
+                alert('Please enter your name/email in the Team Member field');
+                document.getElementById('createdBy').focus();
+                return;
+            }
+            
+            // Save creator name for next time
+            localStorage.setItem('campaign_creator', createdBy);
 
             // Build UTM parameters
             const params = new URLSearchParams();
@@ -717,44 +798,104 @@
             if (agent) params.append('utm_agent', agent);
             
             // Add custom parameters
+            const customParamsObj = {};
             customParameters.forEach(param => {
                 params.append(param.name, param.value);
+                customParamsObj[param.name] = param.value;
             });
             
             // Generate full URL
             const fullURL = `${BASE_URL}?${params.toString()}`;
             
-            // Generate short URL (for now, just a placeholder)
-            const shortCode = generateShortCode();
+            // Check for duplicate if enabled
+            let shortCode = document.getElementById('customCode').value.trim();
+            const checkDuplicate = document.getElementById('checkDuplicate').checked;
+            
+            if (checkDuplicate && !shortCode) {
+                // Check if this exact campaign already exists
+                const existing = campaigns.find(c => 
+                    c.utm_source === source && 
+                    c.utm_medium === medium && 
+                    c.utm_campaign === campaignName.toLowerCase().replace(/\s+/g, '_')
+                );
+                
+                if (existing) {
+                    shortCode = existing.short_code;
+                    console.log('Reusing existing short code:', shortCode);
+                }
+            }
+            
+            // Generate short code if not provided or found
+            if (!shortCode) {
+                shortCode = generateShortCode();
+            } else {
+                // Validate custom code
+                if (!/^[A-Za-z0-9\-_]+$/.test(shortCode)) {
+                    alert('Short code can only contain letters, numbers, dash, and underscore');
+                    return;
+                }
+            }
+            
             const shortURL = `${window.location.origin}/c/${shortCode}`;
             
-            // Display results
-            document.getElementById('fullURL').textContent = fullURL;
-            document.getElementById('shortURL').textContent = shortURL;
+            // Save to Supabase
+            const campaignData = {
+                short_code: shortCode,
+                long_url: fullURL,
+                campaign_name: campaignName,
+                created_by: createdBy,
+                utm_source: source,
+                utm_medium: medium,
+                utm_campaign: campaignName.toLowerCase().replace(/\s+/g, '_'),
+                utm_state: state || null,
+                utm_language: language || null,
+                utm_category: category || null,
+                utm_agent: agent || null,
+                utm_content: content || null,
+                utm_term: term || null,
+                custom_params: Object.keys(customParamsObj).length > 0 ? customParamsObj : null,
+                clicks: 0,
+                is_active: true
+            };
             
-            // Generate QR Code
-            const qrCodeImg = document.getElementById('qrCode');
-            qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shortURL)}`;
-            qrCodeImg.style.display = 'block';
-            
-            // Show result section
-            document.getElementById('resultSection').classList.add('show');
-            
-            // Save campaign
-            saveCampaign({
-                name: campaignName,
-                source: source,
-                medium: medium,
-                state: state,
-                language: language,
-                shortCode: shortCode,
-                fullURL: fullURL,
-                shortURL: shortURL,
-                createdAt: new Date().toISOString(),
-                clicks: 0
-            });
-            
-            updateStats();
+            try {
+                const { data, error } = await supabase
+                    .from('short_urls')
+                    .upsert(campaignData, { onConflict: 'short_code' })
+                    .select()
+                    .single();
+                
+                if (error) {
+                    console.error('Error saving campaign:', error);
+                    alert('Failed to save campaign: ' + error.message);
+                    return;
+                }
+                
+                console.log('Campaign saved:', data);
+                
+                // Display results
+                document.getElementById('fullURL').textContent = fullURL;
+                document.getElementById('shortURL').textContent = shortURL;
+                
+                // Generate QR Code
+                const qrCodeImg = document.getElementById('qrCode');
+                qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shortURL)}`;
+                qrCodeImg.style.display = 'block';
+                
+                // Show result section
+                document.getElementById('resultSection').classList.add('show');
+                
+                // Reload campaigns
+                await loadCampaigns();
+                displayCampaigns();
+                updateStats();
+                
+                showNotification('Campaign URL created successfully!', 'success');
+                
+            } catch (e) {
+                console.error('Error:', e);
+                alert('Failed to save campaign. Please try again.');
+            }
         }
 
         function generateShortCode() {
@@ -803,8 +944,31 @@
             updateCampaignList();
         }
 
-        function updateCampaignList() {
+        async function loadCampaigns() {
+            try {
+                const { data, error } = await supabase
+                    .from('short_urls')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(100);
+                
+                if (error) {
+                    console.error('Error loading campaigns:', error);
+                    return [];
+                }
+                
+                return data || [];
+            } catch (error) {
+                console.error('Error loading campaigns:', error);
+                return [];
+            }
+        }
+        
+        async function updateCampaignList() {
             const listContainer = document.getElementById('campaignList');
+            
+            // Load campaigns from Supabase
+            const campaigns = await loadCampaigns();
             
             if (campaigns.length === 0) {
                 listContainer.innerHTML = '<p style="color: #94a3b8; text-align: center;">No campaigns created yet. Create your first campaign above!</p>';
@@ -814,38 +978,45 @@
             listContainer.innerHTML = campaigns.slice(0, 10).map(campaign => `
                 <div class="campaign-item">
                     <div class="campaign-info">
-                        <div class="campaign-name">${campaign.name}</div>
+                        <div class="campaign-name">${campaign.campaign_name || 'Unnamed Campaign'}</div>
                         <div class="campaign-details">
-                            ${campaign.source} • ${campaign.medium} 
-                            ${campaign.state ? `• ${campaign.state}` : ''}
-                            ${campaign.language ? `• ${campaign.language}` : ''}
-                            • ${campaign.clicks} clicks
+                            ${campaign.utm_source || 'N/A'} • ${campaign.utm_medium || 'N/A'} 
+                            ${campaign.utm_state ? `• ${campaign.utm_state}` : ''}
+                            ${campaign.utm_language ? `• ${campaign.utm_language}` : ''}
+                            • ${campaign.clicks || 0} clicks
+                            • by ${campaign.created_by || 'Unknown'}
                         </div>
                     </div>
                     <div class="campaign-actions">
-                        <button class="icon-btn" onclick="copyURL('shortURL_${campaign.shortCode}')" title="Copy Short URL">
+                        <button class="icon-btn" onclick="copyShortURL('${campaign.short_code}')" title="Copy Short URL">
                             📋
                         </button>
-                        <button class="icon-btn" onclick="viewQRCode('${campaign.shortCode}')" title="View QR Code">
+                        <button class="icon-btn" onclick="viewQRCode('${campaign.short_code}')" title="View QR Code">
                             📱
                         </button>
                     </div>
-                    <span id="shortURL_${campaign.shortCode}" style="display: none;">${campaign.shortURL}</span>
+                    <span id="shortURL_${campaign.short_code}" style="display: none;">https://topiko.app/c/${campaign.short_code}</span>
                 </div>
             `).join('');
         }
 
-        function updateStats() {
+        async function updateStats() {
+            const campaigns = await loadCampaigns();
+            
             const totalCampaigns = campaigns.length;
-            const totalClicks = campaigns.reduce((sum, c) => sum + c.clicks, 0);
+            const totalClicks = campaigns.reduce((sum, c) => sum + (c.clicks || 0), 0);
             const activeCampaigns = campaigns.filter(c => {
-                const createdDate = new Date(c.createdAt);
+                const createdDate = new Date(c.created_at);
                 const daysSinceCreation = (new Date() - createdDate) / (1000 * 60 * 60 * 24);
-                return daysSinceCreation <= 30; // Consider active if created within 30 days
+                return daysSinceCreation <= 30 && c.is_active !== false;
             }).length;
+            
+            // Calculate conversion rate (needs integration with users table)
+            const conversionRate = '0%'; // Will be calculated from actual conversions
             
             document.querySelector('.stats-grid .stat-card:nth-child(1) .stat-value').textContent = totalCampaigns;
             document.querySelector('.stats-grid .stat-card:nth-child(2) .stat-value').textContent = totalClicks;
+            document.querySelector('.stats-grid .stat-card:nth-child(3) .stat-value').textContent = conversionRate;
             document.querySelector('.stats-grid .stat-card:nth-child(4) .stat-value').textContent = activeCampaigns;
         }
 
@@ -853,17 +1024,62 @@
             alert('Bulk URL generation feature coming soon! This will allow you to upload a CSV and generate multiple campaign URLs at once.');
         }
 
+        function copyShortURL(shortCode) {
+            const text = `https://topiko.app/c/${shortCode}`;
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('✅ Short URL copied to clipboard!', 'success');
+            });
+        }
+        
         function viewQRCode(shortCode) {
-            const campaign = campaigns.find(c => c.shortCode === shortCode);
-            if (campaign) {
-                window.open(`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(campaign.shortURL)}`, '_blank');
+            const shortURL = `https://topiko.app/c/${shortCode}`;
+            window.open(`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(shortURL)}`, '_blank');
+        }
+        
+        function showNotification(message, type = 'info') {
+            // Create notification element if it doesn't exist
+            let notification = document.getElementById('notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'notification';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                    color: white;
+                    font-weight: 600;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 10000;
+                    transition: opacity 0.3s;
+                `;
+                document.body.appendChild(notification);
             }
+            
+            notification.textContent = message;
+            notification.style.display = 'block';
+            notification.style.opacity = '1';
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 300);
+            }, 3000);
         }
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCampaignList();
-            updateStats();
+        document.addEventListener('DOMContentLoaded', async function() {
+            await updateCampaignList();
+            await updateStats();
+            
+            // Refresh data every 30 seconds
+            setInterval(async () => {
+                await updateCampaignList();
+                await updateStats();
+            }, 30000);
         });
     </script>
 </body>

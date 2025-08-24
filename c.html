@@ -50,57 +50,101 @@
         <p>Please wait while we redirect you to your destination.</p>
     </div>
 
+    <!-- Include Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         // Short URL redirect handler
-        // This handles URLs like: topiko.app/c.html?code=ABC123
+        // This handles URLs like: topiko.app/c.html?code=ABC123 or topiko.app/c/ABC123
         
-        // Sample URL mappings (in production, this would be fetched from a database)
-        const urlMappings = {
-            // Demo campaigns
-            'DEMO01': '/lead-form.html?utm_source=demo&utm_medium=test&utm_campaign=demo_campaign',
-            'TEST01': '/lead-form.html?utm_source=test&utm_medium=social&utm_campaign=test_campaign',
-            'DWT2024': '/lead-form.html?utm_source=whatsapp&utm_medium=social&utm_campaign=diwali_2024&utm_state=telangana&utm_language=te',
-            'GGRO24': '/lead-form.html?utm_source=google&utm_medium=cpc&utm_campaign=grocery_oct24&utm_category=grocery',
-            'AGT001': '/lead-form.html?utm_source=agent&utm_medium=referral&utm_agent=AGT001',
-            
-            // Add more mappings as needed
-        };
-        
-        // Get short code from URL
+        // Get short code from URL (support both query param and path)
+        let shortCode = null;
         const urlParams = new URLSearchParams(window.location.search);
-        const shortCode = urlParams.get('code');
+        shortCode = urlParams.get('code');
+        
+        // If no code in query params, check if it's in the path (for clean URLs)
+        if (!shortCode) {
+            const pathParts = window.location.pathname.split('/');
+            if (pathParts.includes('c') && pathParts.length > pathParts.indexOf('c') + 1) {
+                shortCode = pathParts[pathParts.indexOf('c') + 1];
+            }
+        }
         
         if (shortCode) {
-            // Look up the destination URL
-            const destination = urlMappings[shortCode.toUpperCase()];
-            
-            if (destination) {
-                // Track the click (send to analytics)
-                trackClick(shortCode);
-                
-                // Redirect to destination
-                setTimeout(() => {
-                    window.location.href = destination;
-                }, 500); // Small delay to show loading animation
-            } else {
-                // Short code not found, redirect to homepage
-                setTimeout(() => {
-                    window.location.href = '/lead-form.html';
-                }, 1000);
-            }
+            // Fetch URL mapping from Supabase and redirect
+            fetchAndRedirect(shortCode);
         } else {
             // No code provided, redirect to homepage
             window.location.href = '/lead-form.html';
         }
         
-        function trackClick(code) {
-            // In production, send this to your analytics service
-            console.log('Tracking click for short code:', code);
-            
-            // Store click in localStorage for demo
-            const clicks = JSON.parse(localStorage.getItem('topiko_short_url_clicks') || '{}');
-            clicks[code] = (clicks[code] || 0) + 1;
-            localStorage.setItem('topiko_short_url_clicks', JSON.stringify(clicks));
+        async function fetchAndRedirect(code) {
+            try {
+                // Fetch the URL mapping from Supabase
+                const { data, error } = await supabase
+                    .from('short_urls')
+                    .select('long_url, clicks')
+                    .eq('short_code', code)
+                    .eq('is_active', true)
+                    .single();
+                
+                if (error || !data) {
+                    console.error('Short URL not found:', error);
+                    // Redirect to homepage if not found
+                    setTimeout(() => {
+                        window.location.href = '/lead-form.html';
+                    }, 1000);
+                    return;
+                }
+                
+                // Track the click
+                await trackClick(code);
+                
+                // Redirect to destination
+                setTimeout(() => {
+                    window.location.href = data.long_url;
+                }, 500); // Small delay to show loading animation
+                
+            } catch (error) {
+                console.error('Error fetching short URL:', error);
+                // Redirect to homepage on error
+                setTimeout(() => {
+                    window.location.href = '/lead-form.html';
+                }, 1000);
+            }
+        }
+        
+        async function trackClick(code) {
+            try {
+                // Increment click count in Supabase
+                const { data: currentData } = await supabase
+                    .from('short_urls')
+                    .select('clicks')
+                    .eq('short_code', code)
+                    .single();
+                
+                if (currentData) {
+                    const newClicks = (currentData.clicks || 0) + 1;
+                    
+                    await supabase
+                        .from('short_urls')
+                        .update({ 
+                            clicks: newClicks,
+                            last_clicked: new Date().toISOString()
+                        })
+                        .eq('short_code', code);
+                    
+                    console.log('Click tracked for short code:', code);
+                }
+            } catch (error) {
+                console.error('Error tracking click:', error);
+                // Don't block redirect if tracking fails
+            }
         }
     </script>
 </body>
