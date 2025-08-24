@@ -1801,6 +1801,18 @@
                         <span>Assigned Leads</span>
                     </div>
                 </li>
+                <li class="crm-nav-item">
+                    <div class="crm-nav-link" onclick="window.location.href='campaign-analytics.html'">
+                        <span class="crm-nav-icon">📈</span>
+                        <span>Campaign Analytics</span>
+                    </div>
+                </li>
+                <li class="crm-nav-item">
+                    <div class="crm-nav-link" onclick="window.location.href='url-builder.html'">
+                        <span class="crm-nav-icon">🔗</span>
+                        <span>URL Builder</span>
+                    </div>
+                </li>
             </ul>
         </nav>
 
@@ -1875,65 +1887,6 @@
                         </div>
                         <div class="stat-value" id="warmLeads">0</div>
                         <div class="stat-change">Follow-up needed</div>
-                    </div>
-                </div>
-
-                <!-- CAMPAIGN ANALYTICS SECTION -->
-                <div class="campaign-analytics-section" style="margin-top: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 16px; border: 1px solid #e2e8f0;">
-                    <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                        <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;">
-                            📊 Campaign Performance Analytics
-                        </h2>
-                        <button onclick="loadCampaignAnalytics()" style="background: #6366f1; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 600;">
-                            Refresh Analytics
-                        </button>
-                    </div>
-                    
-                    <div class="campaign-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                        <div class="campaign-stat-card" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <span style="color: #64748b; font-size: 0.875rem; font-weight: 600;">Active Campaigns</span>
-                                <span style="font-size: 1.5rem;">🚀</span>
-                            </div>
-                            <div id="activeCampaignsCount" style="font-size: 2rem; font-weight: 700; color: #1e293b;">0</div>
-                            <div style="color: #94a3b8; font-size: 0.75rem; margin-top: 0.25rem;">Last 30 days</div>
-                        </div>
-                        
-                        <div class="campaign-stat-card" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 1.5rem; border-radius: 12px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <span style="color: #1e40af; font-size: 0.875rem; font-weight: 600;">Total Clicks</span>
-                                <span style="font-size: 1.5rem;">👆</span>
-                            </div>
-                            <div id="totalCampaignClicks" style="font-size: 2rem; font-weight: 700; color: #1e40af;">0</div>
-                            <div style="color: #3b82f6; font-size: 0.75rem; margin-top: 0.25rem;">From short URLs</div>
-                        </div>
-                        
-                        <div class="campaign-stat-card" style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); padding: 1.5rem; border-radius: 12px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <span style="color: #166534; font-size: 0.875rem; font-weight: 600;">Conversion Rate</span>
-                                <span style="font-size: 1.5rem;">📈</span>
-                            </div>
-                            <div id="campaignConversionRate" style="font-size: 2rem; font-weight: 700; color: #166534;">0%</div>
-                            <div style="color: #22c55e; font-size: 0.75rem; margin-top: 0.25rem;">Clicks to leads</div>
-                        </div>
-                        
-                        <div class="campaign-stat-card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 1.5rem; border-radius: 12px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                                <span style="color: #92400e; font-size: 0.875rem; font-weight: 600;">Top Source</span>
-                                <span style="font-size: 1.5rem;">🎯</span>
-                            </div>
-                            <div id="topCampaignSource" style="font-size: 1.5rem; font-weight: 700; color: #92400e;">N/A</div>
-                            <div id="topSourceLeads" style="color: #f59e0b; font-size: 0.75rem; margin-top: 0.25rem;">0 leads</div>
-                        </div>
-                    </div>
-                    
-                    <div class="top-campaigns-list" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                        <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Top Performing Campaigns</h3>
-                        <div id="topCampaignsList" style="display: flex; flex-direction: column; gap: 0.75rem;">
-                            <div style="color: #94a3b8; text-align: center; padding: 2rem;">
-                                Loading campaign data...
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -4605,122 +4558,12 @@
                     }
                 }, 1000);
                 
-                // Load campaign analytics on startup
-                loadCampaignAnalytics();
                 
             } catch (error) {
                 console.error('❌ Initialization error:', error);
                 showNotification('CRM loaded with limited functionality - Check console for details', 'error');
             }
         });
-        
-        // Campaign Analytics Functions
-        async function loadCampaignAnalytics() {
-            try {
-                // Load campaign data from short_urls table
-                const { data: campaigns, error: campaignError } = await supabase
-                    .from('short_urls')
-                    .select('*')
-                    .order('clicks', { ascending: false });
-                
-                if (campaignError) {
-                    console.error('Error loading campaigns:', campaignError);
-                    return;
-                }
-                
-                // Load lead data with UTM parameters
-                const { data: leads, error: leadError } = await supabase
-                    .from('users')
-                    .select('utm_source, utm_medium, utm_campaign, created_at');
-                
-                if (leadError) {
-                    console.error('Error loading lead UTM data:', leadError);
-                    return;
-                }
-                
-                // Calculate analytics
-                const now = new Date();
-                const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-                
-                // Active campaigns (created in last 30 days)
-                const activeCampaigns = campaigns.filter(c => {
-                    const createdDate = new Date(c.created_at);
-                    return createdDate >= thirtyDaysAgo && c.is_active !== false;
-                });
-                
-                // Total clicks
-                const totalClicks = campaigns.reduce((sum, c) => sum + (c.clicks || 0), 0);
-                
-                // Calculate conversion rate
-                const campaignLeads = leads.filter(l => l.utm_campaign && l.utm_campaign !== 'N/A');
-                const conversionRate = totalClicks > 0 
-                    ? Math.round((campaignLeads.length / totalClicks) * 100) 
-                    : 0;
-                
-                // Find top source
-                const sourceCount = {};
-                leads.forEach(lead => {
-                    if (lead.utm_source && lead.utm_source !== 'Direct') {
-                        sourceCount[lead.utm_source] = (sourceCount[lead.utm_source] || 0) + 1;
-                    }
-                });
-                
-                const topSource = Object.entries(sourceCount)
-                    .sort(([,a], [,b]) => b - a)[0];
-                
-                // Update UI
-                document.getElementById('activeCampaignsCount').textContent = activeCampaigns.length;
-                document.getElementById('totalCampaignClicks').textContent = totalClicks;
-                document.getElementById('campaignConversionRate').textContent = conversionRate + '%';
-                
-                if (topSource) {
-                    document.getElementById('topCampaignSource').textContent = topSource[0];
-                    document.getElementById('topSourceLeads').textContent = topSource[1] + ' leads';
-                } else {
-                    document.getElementById('topCampaignSource').textContent = 'N/A';
-                    document.getElementById('topSourceLeads').textContent = '0 leads';
-                }
-                
-                // Display top campaigns
-                displayTopCampaigns(campaigns.slice(0, 5));
-                
-            } catch (error) {
-                console.error('Error loading campaign analytics:', error);
-            }
-        }
-        
-        function displayTopCampaigns(campaigns) {
-            const container = document.getElementById('topCampaignsList');
-            
-            if (campaigns.length === 0) {
-                container.innerHTML = `
-                    <div style="color: #94a3b8; text-align: center; padding: 2rem;">
-                        No campaigns found. Create your first campaign in the URL Builder.
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = campaigns.map((campaign, index) => `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: ${index % 2 === 0 ? '#f8fafc' : 'white'}; border-radius: 8px;">
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600; color: #1e293b;">
-                            ${campaign.campaign_name || 'Unnamed Campaign'}
-                        </div>
-                        <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">
-                            ${campaign.utm_source || 'N/A'} • ${campaign.utm_medium || 'N/A'}
-                            ${campaign.short_code ? ` • Code: ${campaign.short_code}` : ''}
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 1.25rem; font-weight: 700; color: #3b82f6;">
-                            ${campaign.clicks || 0}
-                        </div>
-                        <div style="font-size: 0.75rem; color: #94a3b8;">clicks</div>
-                    </div>
-                </div>
-            `).join('');
-        }
     </script>
 </body>
 </html>
