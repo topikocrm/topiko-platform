@@ -594,8 +594,15 @@
             // Find max value for scaling
             const maxClicks = Math.max(...sortedSources.map(([,data]) => data.clicks));
             
+            // Helper function to format large numbers
+            const formatNumber = (num) => {
+                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+                return num.toString();
+            };
+            
             container.innerHTML = sortedSources.map(([source, data]) => {
-                const barWidth = maxClicks > 0 ? (data.clicks / maxClicks) * 100 : 0;
+                const barWidth = maxClicks > 0 ? Math.min((data.clicks / maxClicks) * 100, 100) : 0;
                 const conversionRate = data.clicks > 0 ? Math.round((data.leads / data.clicks) * 100) : 0;
                 
                 return `
@@ -603,12 +610,15 @@
                         <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                             <span style="font-weight: 600; color: #334155;">${source}</span>
                             <span style="color: #64748b; font-size: 0.875rem;">
-                                ${data.clicks} clicks | ${data.leads} leads | ${conversionRate}% conversion
+                                ${formatNumber(data.clicks)} clicks | ${formatNumber(data.leads)} leads | ${conversionRate}% conv
                             </span>
                         </div>
                         <div style="background: #e5e7eb; border-radius: 4px; height: 32px; position: relative; overflow: hidden;">
-                            <div style="background: linear-gradient(90deg, #6366f1, #8b5cf6); height: 100%; width: ${barWidth}%; transition: width 0.5s; display: flex; align-items: center; padding: 0 0.5rem;">
-                                <span style="color: white; font-size: 0.75rem; font-weight: 600;">${data.campaigns} campaigns</span>
+                            <div style="background: linear-gradient(90deg, #6366f1, #8b5cf6); height: 100%; width: ${barWidth}%; transition: width 0.5s; display: flex; align-items: center; justify-content: space-between; padding: 0 0.5rem;">
+                                <span style="color: white; font-size: 0.75rem; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
+                                    ${data.campaigns} ${data.campaigns === 1 ? 'campaign' : 'campaigns'}
+                                </span>
+                                ${barWidth > 20 ? `<span style="color: white; font-size: 0.875rem; font-weight: 700;">${formatNumber(data.clicks)}</span>` : ''}
                             </div>
                         </div>
                     </div>
@@ -670,36 +680,76 @@
                 1
             );
             
+            // Helper function to format large numbers
+            const formatNumber = (num) => {
+                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+                return num.toString();
+            };
+            
+            // Create scale markers for Y-axis
+            const scaleMarkers = [];
+            for (let i = 0; i <= 4; i++) {
+                scaleMarkers.push(Math.round(maxValue * (i / 4)));
+            }
+            
             container.innerHTML = `
                 <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
                     <span style="display: flex; align-items: center; gap: 0.5rem;">
                         <span style="width: 12px; height: 12px; background: #6366f1; border-radius: 2px;"></span>
                         <span style="font-size: 0.875rem; color: #64748b;">Clicks</span>
                     </span>
+                    <span style="font-size: 0.875rem; color: #94a3b8;">Max: ${formatNumber(maxValue)}</span>
                     <span style="display: flex; align-items: center; gap: 0.5rem;">
                         <span style="width: 12px; height: 12px; background: #10b981; border-radius: 2px;"></span>
                         <span style="font-size: 0.875rem; color: #64748b;">Leads</span>
                     </span>
                 </div>
-                <div style="display: flex; align-items: flex-end; justify-content: space-between; height: 200px; border-bottom: 2px solid #e5e7eb; padding: 0 0.5rem;">
-                    ${last7Days.map(([date, data]) => {
-                        const clickHeight = (data.clicks / maxValue) * 180;
-                        const leadHeight = (data.leads / maxValue) * 180;
-                        const dayName = new Date(date).toLocaleDateString('en', { weekday: 'short' });
-                        
-                        return `
-                            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
-                                <div style="display: flex; gap: 2px; align-items: flex-end; height: 180px;">
-                                    <div style="width: 20px; background: #6366f1; height: ${clickHeight}px; border-radius: 4px 4px 0 0;" title="${data.clicks} clicks"></div>
-                                    <div style="width: 20px; background: #10b981; height: ${leadHeight}px; border-radius: 4px 4px 0 0;" title="${data.leads} leads"></div>
+                <div style="position: relative;">
+                    <!-- Y-axis scale markers -->
+                    <div style="position: absolute; left: -40px; top: 0; height: 200px; display: flex; flex-direction: column-reverse; justify-content: space-between; font-size: 0.7rem; color: #94a3b8;">
+                        ${scaleMarkers.reverse().map(val => `<span>${formatNumber(val)}</span>`).join('')}
+                    </div>
+                    
+                    <!-- Chart bars -->
+                    <div style="display: flex; align-items: flex-end; justify-content: space-between; height: 200px; border-bottom: 2px solid #e5e7eb; padding: 0 0.5rem; margin-left: 50px;">
+                        ${last7Days.map(([date, data]) => {
+                            const clickHeight = Math.max((data.clicks / maxValue) * 180, 1);
+                            const leadHeight = Math.max((data.leads / maxValue) * 180, 1);
+                            const dayName = new Date(date).toLocaleDateString('en', { weekday: 'short' });
+                            
+                            return `
+                                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                                    <div style="display: flex; gap: 2px; align-items: flex-end; height: 180px; position: relative;">
+                                        <div style="width: 20px; background: #6366f1; height: ${clickHeight}px; border-radius: 4px 4px 0 0; cursor: pointer; position: relative;" 
+                                             title="${formatNumber(data.clicks)} clicks"
+                                             onmouseover="this.style.opacity='0.8'" 
+                                             onmouseout="this.style.opacity='1'">
+                                            ${clickHeight > 20 && data.clicks > 0 ? `
+                                                <span style="position: absolute; top: 4px; left: 50%; transform: translateX(-50%); color: white; font-size: 0.65rem; font-weight: 600;">
+                                                    ${formatNumber(data.clicks)}
+                                                </span>
+                                            ` : ''}
+                                        </div>
+                                        <div style="width: 20px; background: #10b981; height: ${leadHeight}px; border-radius: 4px 4px 0 0; cursor: pointer;" 
+                                             title="${formatNumber(data.leads)} leads"
+                                             onmouseover="this.style.opacity='0.8'" 
+                                             onmouseout="this.style.opacity='1'">
+                                            ${leadHeight > 20 && data.leads > 0 ? `
+                                                <span style="position: absolute; top: 4px; left: 50%; transform: translateX(-50%); color: white; font-size: 0.65rem; font-weight: 600;">
+                                                    ${formatNumber(data.leads)}
+                                                </span>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                    <span style="font-size: 0.75rem; color: #64748b;">${dayName}</span>
                                 </div>
-                                <span style="font-size: 0.75rem; color: #64748b;">${dayName}</span>
-                            </div>
-                        `;
-                    }).join('')}
+                            `;
+                        }).join('')}
+                    </div>
                 </div>
                 <div style="text-align: center; margin-top: 0.5rem; color: #94a3b8; font-size: 0.75rem;">
-                    Last 7 days performance
+                    Last 7 days performance (hover for details)
                 </div>
             `;
         }
