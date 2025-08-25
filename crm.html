@@ -1720,7 +1720,7 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             border-radius: 8px;
             border: 1px solid #e2e8f0;
-            z-index: 2001;
+            z-index: 9999;
             max-height: 60vh;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -2244,15 +2244,20 @@
                 </div>
                 
                 <!-- Sync Status Indicator -->
-                <div id="syncStatus" style="margin-bottom: 1rem; padding: 0.75rem; background: #f0f9ff; border-radius: 8px; display: none;">
+                <div id="syncStatus" style="margin-bottom: 1rem; padding: 0.75rem; background: #f0f9ff; border-radius: 8px;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
                             <span id="syncIcon">⏱️</span>
                             <span id="syncMessage" style="font-size: 0.875rem; color: #0369a1;">Checking sync status...</span>
                         </div>
-                        <button id="retrySync" onclick="manualSyncRetry()" style="padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; display: none;">
-                            Retry Sync
-                        </button>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button id="retrySync" onclick="manualSyncRetry()" style="padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; display: none;">
+                                Retry Sync
+                            </button>
+                            <button onclick="refreshFromSupabase()" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem;">
+                                🔄 Refresh Data
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -2808,6 +2813,7 @@
             
             try {
                 console.log('💾 Updating lead in Supabase:', leadId, changes);
+                console.log('Lead ID type:', typeof leadId, 'Value:', leadId);
                 
                 // Add metadata to track CRM updates
                 const updateData = {
@@ -2816,14 +2822,25 @@
                     crm_updated_by: 'CRM System'
                 };
                 
+                // Remove any undefined values
+                Object.keys(updateData).forEach(key => {
+                    if (updateData[key] === undefined) {
+                        delete updateData[key];
+                    }
+                });
+                
+                console.log('Update data being sent:', updateData);
+                
                 // Update the users table in Supabase
                 const { data, error } = await supabase
                     .from('users')
                     .update(updateData)
-                    .eq('id', leadId);
+                    .eq('id', leadId)
+                    .select();
                 
                 if (error) {
                     console.error('❌ Supabase update error:', error);
+                    console.error('Error details:', error.message, error.details, error.hint);
                     showNotification('Changes saved locally. Database sync pending.', 'warning');
                     
                     // Store failed update for retry
@@ -2831,8 +2848,19 @@
                     return false;
                 }
                 
-                console.log('✅ Lead updated in Supabase successfully');
+                console.log('✅ Lead updated in Supabase successfully', data);
                 showNotification('Changes saved to database', 'success');
+                
+                // Update the local lead data with the returned data
+                if (data && data.length > 0) {
+                    const updatedLead = data[0];
+                    const leadIndex = allLeads.findIndex(l => l.id === leadId);
+                    if (leadIndex !== -1) {
+                        // Merge the updated data back into the local lead
+                        Object.assign(allLeads[leadIndex], updatedLead);
+                    }
+                }
+                
                 return true;
                 
             } catch (error) {
@@ -5088,17 +5116,18 @@
             const retryButton = document.getElementById('retrySync');
             
             if (pendingCount > 0) {
-                syncStatusDiv.style.display = 'block';
                 syncIcon.textContent = '⚠️';
                 syncMessage.textContent = `${pendingCount} update${pendingCount > 1 ? 's' : ''} pending sync to database`;
                 syncMessage.style.color = '#ea580c';
                 retryButton.style.display = 'block';
             } else if (supabase) {
                 // All synced
-                syncStatusDiv.style.display = 'none';
+                syncIcon.textContent = '✅';
+                syncMessage.textContent = 'All changes synced to database';
+                syncMessage.style.color = '#059669';
+                retryButton.style.display = 'none';
             } else {
                 // No Supabase connection
-                syncStatusDiv.style.display = 'block';
                 syncIcon.textContent = '🔌';
                 syncMessage.textContent = 'Working offline - changes saved locally';
                 syncMessage.style.color = '#64748b';
@@ -5122,6 +5151,39 @@
             retryButton.textContent = 'Retry Sync';
             
             updateSyncStatus();
+        }
+        
+        async function refreshFromSupabase() {
+            showNotification('Refreshing data from database...', 'info');
+            
+            try {
+                // Fetch fresh data from Supabase
+                const users = await fetchUsers();
+                
+                if (users && users.length > 0) {
+                    console.log(`🔄 Refreshed ${users.length} leads from Supabase`);
+                    
+                    // Merge with local changes
+                    const savedChanges = loadSavedChanges();
+                    const processedUsers = processCombinedLeadsWithChanges(users, savedChanges);
+                    
+                    // Update the global allLeads array
+                    allLeads = processedUsers;
+                    
+                    // Re-render the current view
+                    filterLeads();
+                    renderLeads();
+                    updateDashboardStats();
+                    
+                    showNotification(`Refreshed ${users.length} leads from database`, 'success');
+                } else {
+                    showNotification('No data received from database', 'warning');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error refreshing from Supabase:', error);
+                showNotification('Failed to refresh data from database', 'error');
+            }
         }
 
         // INITIALIZATION (ENHANCED WITH DEBUGGING)
