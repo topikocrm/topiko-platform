@@ -14,6 +14,9 @@ const TRANSLATIONS = {
         // ========================================
         welcome: {
             tagline: "Namaste! Ready to grow your business the smart way? With Topiko, you get one easy platform to take your business online, build a strong identity, serve your customers better, and simplify operations—all designed for India's entrepreneurs. Start your digital growth journey with Topiko today!",
+            headline: "Your Business, Now Everywhere Your Customers Are",
+            subheadline: "In just 2 minutes, see how amazing your business looks online - then discover everything Topiko can do to grow your digital presence. Absolutely FREE to try!",
+            ctaButton: "Start My Success Journey →",
             tryFreeButton: "Try for Free"
         },
 
@@ -36,7 +39,7 @@ const TRANSLATIONS = {
         // ========================================
         goals: {
             title: "Select Your Business Goals",
-            subtitle: "Choose what you want to achieve with Topiko (select any 3)",
+            subtitle: "Select up to 3 goals to get personalized recommendations",
             options: {
                 ecommerce: {
                     title: "Sell Online (E-commerce)",
@@ -57,6 +60,10 @@ const TRANSLATIONS = {
                 brand: {
                     title: "Establish my Brand",
                     description: "Build a strong brand presence and professional image online"
+                },
+                operations: {
+                    title: "Save Time on Operations",
+                    description: "Streamline daily tasks and automate operations so you can focus on what matters most"
                 }
             },
             nextButton: "Next Step"
@@ -67,7 +74,7 @@ const TRANSLATIONS = {
         // ========================================
         registration: {
             title: "Get Started with Topiko",
-            subtitle: "Tell us about your business to create your free account",
+            subtitle: "Tell us about your business to get started",
             fields: {
                 fullName: {
                     label: "Your Name",
@@ -411,7 +418,12 @@ const TRANSLATIONS = {
             successFactors: "Success Factors",
             businessLive1: "Business Live-1",
             businessLive2: "Business Live-2", 
-            businessLive3: "Business Live-3"
+            businessLive3: "Business Live-3",
+            aboutYourself: "About Yourself",
+            setCategories: "Set Categories",
+            addProducts: "Add Products",
+            selectTheme: "Select Theme",
+            customOffer: "Your Custom Offer"
         },
 
         // ========================================
@@ -452,6 +464,9 @@ const TRANSLATIONS = {
         // ========================================
         welcome: {
             tagline: "भारतीय SMBs के लिए संपूर्ण बिजनेस प्लेटफॉर्म",
+            headline: "अपने बिजनेस को अगले स्तर पर ले जाएं",
+            subheadline: "सिर्फ 2 मिनट में जानें कि कैसे Topiko आपके बिजनेस को भारत के सबसे संपूर्ण डिजिटल प्लेटफॉर्म से बदल सकता है - बिल्कुल मुफ्त शुरुआत!",
+            ctaButton: "मेरी सफलता की यात्रा शुरू करें →",
             tryFreeButton: "मुफ्त में शुरू करें"
         },
 
@@ -495,6 +510,10 @@ const TRANSLATIONS = {
                 brand: {
                     title: "अपना ब्रांड स्थापित करना",
                     description: "ऑनलाइन मजबूत ब्रांड उपस्थिति और पेशेवर छवि बनाएं"
+                },
+                operations: {
+                    title: "संचालन में समय की बचत",
+                    description: "दैनिक कार्यों को सुव्यवस्थित करें और संचालन को स्वचालित करें ताकि आप महत्वपूर्ण चीजों पर ध्यान दे सकें"
                 }
             },
             nextButton: "अगला चरण"
@@ -829,7 +848,12 @@ const TRANSLATIONS = {
             successFactors: "सफलता कारक",
             businessLive1: "बिज़नेस लाइव-1",
             businessLive2: "बिज़नेस लाइव-2",
-            businessLive3: "बिज़नेस लाइव-3"
+            businessLive3: "बिज़नेस लाइव-3",
+            aboutYourself: "अपने बारे में",
+            setCategories: "श्रेणियाँ सेट करें",
+            addProducts: "उत्पाद जोड़ें",
+            selectTheme: "थीम चुनें",
+            customOffer: "आपका कस्टम ऑफर"
         },
 
         // ========================================
@@ -870,6 +894,9 @@ const TRANSLATIONS = {
         // ========================================
         welcome: {
             tagline: "భారతీయ SMB వ్యాపారాలకు సంపూర్ణ వ్యాపార ప్లాట్‌ఫాం",
+            headline: "మీ వ్యాపారాన్ని తదుపరి స్థాయికి తీసుకెళ్లండి",
+            subheadline: "కేవలం 2 నిమిషాల్లో, భారతదేశంలోని అత్యంత సంపూర్ణ డిజిటల్ ప్లాట్‌ఫామ్‌తో Topiko మీ వ్యాపారాన్ని ఎలా మార్చగలదో తెలుసుకోండి - పూర్తిగా ఉచితంగా ప్రారంభించండి!",
+            ctaButton: "నా విజయ ప్రయాణాన్ని ప్రారంభించండి →",
             tryFreeButton: "ఉచితంగా try చేయండి"
         },
 
@@ -913,6 +940,10 @@ const TRANSLATIONS = {
                 brand: {
                     title: "నా బ్రాండ్‌ను స్థాపించడం",
                     description: "ఆన్‌లైన్‌లో బలమైన బ్రాండ్ ఉపస్థితి మరియు వృత్తిపరమైన ఇమేజ్‌ను నిర్మించండి"
+                },
+                operations: {
+                    title: "కార్యకలాపాలలో సమయం ఆదా",
+                    description: "రోజువారీ పనులను క్రమబద్ధీకరించండి మరియు కార్యకలాపాలను స్వయంచాలకంగా చేయండి తద్వారా మీరు ముఖ్యమైన వాటిపై దృష్టి పెట్టవచ్చు"
                 }
             },
             nextButton: "తదుపరి దశ"
@@ -1247,7 +1278,12 @@ const TRANSLATIONS = {
             successFactors: "విజయ కారకాలు",
             businessLive1: "వ్యాపారం లైవ్-1",
             businessLive2: "వ్యాపారం లైవ్-2",
-            businessLive3: "వ్యాపారం లైవ్-3"
+            businessLive3: "వ్యాపారం లైవ్-3",
+            aboutYourself: "మీ గురించి",
+            setCategories: "వర్గాలను సెట్ చేయండి",
+            addProducts: "ఉత్పత్తులను జోడించండి",
+            selectTheme: "థీమ్ ఎంచుకోండి",
+            customOffer: "మీ కస్టమ్ ఆఫర్"
         },
 
         // ========================================
@@ -1288,6 +1324,9 @@ const TRANSLATIONS = {
         // ========================================
         welcome: {
             tagline: "இந்திய SMBகளுக்கான முழுமையான வணிக தளம்",
+            headline: "உங்கள் வணிகத்தை அடுத்த நிலைக்கு கொண்டு செல்லுங்கள்",
+            subheadline: "வெறும் 2 நிமிடங்களில், இந்தியாவின் மிகவும் முழுமையான டிஜிட்டல் தளத்துடன் Topiko உங்கள் வணிகத்தை எவ்வாறு மாற்றும் என்பதைக் கண்டறியுங்கள் - முற்றிலும் இலவசமாக தொடங்குங்கள்!",
+            ctaButton: "எனது வெற்றி பயணத்தைத் தொடங்குங்கள் →",
             tryFreeButton: "இலவசமாக முயற்சி செய்யுங்கள்"
         },
 
@@ -1331,6 +1370,10 @@ const TRANSLATIONS = {
                 brand: {
                     title: "என் பிராண்டை நிறுவுதல்",
                     description: "ஆன்லைனில் வலுவான பிராண்ட் இருப்பு மற்றும் தொழில்முறை பிம்பத்தை உருவாக்குங்கள்"
+                },
+                operations: {
+                    title: "செயல்பாடுகளில் நேரத்தை சேமிக்கவும்",
+                    description: "தினசரி பணிகளை எளிதாக்கி, செயல்பாடுகளை தானியங்குபடுத்தி, முக்கியமானவற்றில் கவனம் செலுத்தவும்"
                 }
             },
             nextButton: "அடுத்த படி"
@@ -1665,7 +1708,12 @@ const TRANSLATIONS = {
             successFactors: "வெற்றி காரணிகள்",
             businessLive1: "வணிகம் நேரலை-1",
             businessLive2: "வணிகம் நேரலை-2",
-            businessLive3: "வணிகம் நேரலை-3"
+            businessLive3: "வணிகம் நேரலை-3",
+            aboutYourself: "உங்களைப் பற்றி",
+            setCategories: "வகைகளை அமை",
+            addProducts: "தயாரிப்புகளைச் சேர்",
+            selectTheme: "தீம் தேர்வு",
+            customOffer: "உங்கள் தனிப்பயன் சலுகை"
         },
 
         // ========================================

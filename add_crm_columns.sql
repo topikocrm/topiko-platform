@@ -4,7 +4,8 @@
 -- Add SDR assignment columns
 ALTER TABLE users 
 ADD COLUMN IF NOT EXISTS assigned_sdr_id TEXT,
-ADD COLUMN IF NOT EXISTS assignment_date TIMESTAMP WITH TIME ZONE;
+ADD COLUMN IF NOT EXISTS assignment_date TIMESTAMP WITH TIME ZONE,
+ADD COLUMN IF NOT EXISTS lead_status TEXT DEFAULT 'New';
 
 -- Add lead pipeline status columns
 ALTER TABLE users 
@@ -30,3 +31,7 @@ ADD COLUMN IF NOT EXISTS crm_updated_by TEXT;
 CREATE INDEX IF NOT EXISTS idx_users_assigned_sdr ON users(assigned_sdr_id);
 CREATE INDEX IF NOT EXISTS idx_users_pipeline_status ON users(lead_pipeline_status);
 CREATE INDEX IF NOT EXISTS idx_users_followup_date ON users(next_followup_date);
+CREATE INDEX IF NOT EXISTS idx_users_lead_status ON users(lead_status);
+
+-- IMPORTANT: Refresh the schema cache after adding columns
+NOTIFY pgrst, 'reload schema';

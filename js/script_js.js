@@ -1287,6 +1287,12 @@ function switchProductMode(mode) {
 function loadProductSelector() {
     window.TopikoUtils.addDebugLog('🛍️ Loading products for selected categories...');
     
+    // Check if we're actually on the products screen
+    if (window.topikoApp.currentStep !== 'products') {
+        window.TopikoUtils.addDebugLog('⏭️ Not on products screen, skipping product load');
+        return;
+    }
+    
     // Get selected categories and subcategories from previous screen
     const selectedCategories = window.topikoApp.selectedCategories;
     const selectedSubcategories = window.topikoApp.selectedSubcategories;
@@ -2198,6 +2204,11 @@ function updateProduct(productId) {
         // Re-render products
         filterAndDisplayProducts();
         
+        // Also update the product in selectedProducts if it's selected
+        if (window.topikoApp.selectedProductIds && window.topikoApp.selectedProductIds.includes(productId)) {
+            updateSelectedProductsSection();
+        }
+        
         // Reset form
         document.getElementById('productName').value = '';
         document.getElementById('productPrice').value = '';
@@ -2291,7 +2302,10 @@ async function addCustomProduct() {
     });
     
     window.TopikoUtils.showNotification(`✅ "${name}" added successfully!`, 'success');
-    window.TopikoUtils.displayProducts();
+    
+    // Switch back to select mode and refresh the display
+    switchProductMode('select');
+    filterAndDisplayProducts();
     window.TopikoUtils.calculateLeadScore();
     
     window.TopikoUtils.addDebugLog(`➕ Custom product added: ${name}`);
@@ -2356,6 +2370,12 @@ async function proceedToThemes() {
         // Continue with theme navigation
         window.TopikoUtils.showNotification('Excellent! Loading beautiful themes for your store...', 'success');
         setTimeout(() => {
+            // Update business name in themes heading
+            const themeBusinessName = document.getElementById('themeBusinessName');
+            if (themeBusinessName && window.topikoApp.businessName) {
+                themeBusinessName.textContent = window.topikoApp.businessName;
+            }
+            
             window.TopikoUtils.showScreen('themes');
             window.TopikoUtils.populateThemePreviews();
         }, 1000);
@@ -2784,6 +2804,14 @@ function proceedFromGoalsModal() {
 
 function proceedFromSetupModal() {
     window.TopikoUtils.closeModal('setupIntroModal');
+    
+    // Update user name in qualifying questions heading
+    const qualifyingUserName = document.getElementById('qualifyingUserName');
+    if (qualifyingUserName && window.topikoApp.userName) {
+        const firstName = window.topikoApp.userName.split(' ')[0]; // Get first name only
+        qualifyingUserName.textContent = firstName;
+    }
+    
     setTimeout(() => window.TopikoUtils.showScreen('qualifying-questions'), 500);
 }
 
@@ -3052,9 +3080,9 @@ function forceRefreshPrices() {
 
 // Auto-initialize product selector when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    // Set default mode to select
+    // Set default mode to select only when on products page
     setTimeout(() => {
-        if (document.getElementById('selectMode')) {
+        if (document.getElementById('selectMode') && window.topikoApp && window.topikoApp.currentStep === 'products') {
             switchProductMode('select');
         }
     }, 1000);

@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Topiko - Complete Business Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="css/styles_css.css">
 </head>
@@ -85,19 +88,23 @@
                 </div>
                 <div class="progress-step" data-step="qualifying-questions" onclick="navigateToStep('qualifying-questions')">
                     <div class="progress-circle">3</div>
-                    <div class="progress-label" data-translate="progress.successFactors">Success Factors</div>
+                    <div class="progress-label" data-translate="progress.aboutYourself">About Yourself</div>
                 </div>
                 <div class="progress-step" data-step="categories" onclick="navigateToStep('categories')">
                     <div class="progress-circle">4</div>
-                    <div class="progress-label" data-translate="progress.businessLive1">Business Live-1</div>
+                    <div class="progress-label" data-translate="progress.setCategories">Set Categories</div>
                 </div>
                 <div class="progress-step" data-step="products" onclick="navigateToStep('products')">
                     <div class="progress-circle">5</div>
-                    <div class="progress-label" data-translate="progress.businessLive2">Business Live-2</div>
+                    <div class="progress-label" data-translate="progress.addProducts">Add Products</div>
                 </div>
                 <div class="progress-step" data-step="themes" onclick="navigateToStep('themes')">
                     <div class="progress-circle">6</div>
-                    <div class="progress-label" data-translate="progress.businessLive3">Business Live-3</div>
+                    <div class="progress-label" data-translate="progress.selectTheme">Select Theme</div>
+                </div>
+                <div class="progress-step" data-step="custom-offer" onclick="navigateToStep('custom-offer')">
+                    <div class="progress-circle">7</div>
+                    <div class="progress-label" data-translate="progress.customOffer">Your Custom Offer</div>
                 </div>
             </div>
         </div>
@@ -107,19 +114,102 @@
             <!-- Welcome Screen -->
             <section class="screen active" id="welcome">
                 <div class="welcome-screen">
-                    <h1 class="topiko-logo">Topiko CRM  </h1>
-                    <!-- UPDATED: New engaging message about Namaste and digital growth -->
-                    <p style="font-size: 1.1rem; color: #6b46c1; margin-bottom: 2rem; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto;" 
-                       data-translate="welcome.tagline">Namaste! Ready to grow your business the smart way? With Topiko, you get one easy platform to take your business online, build a strong identity, serve your customers better, and simplify operations—all designed for India's entrepreneurs. Start your digital growth journey with Topiko today!</p>
+                    <!-- Logo and Trust Badge -->
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.5rem;">
+                        <h1 class="topiko-logo" style="margin: 0; font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 3.5rem; background: linear-gradient(135deg, #6b46c1 0%, #a855f7 50%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.02em; text-shadow: 0 4px 20px rgba(139, 92, 246, 0.3); animation: float 3s ease-in-out infinite;">Topiko</h1>
+                        <span style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                            Trusted by 15,000+ Businesses
+                        </span>
+                    </div>
+                    
+                    <!-- Main Headline -->
+                    <h2 style="font-size: 2rem; font-family: 'Poppins', sans-serif; font-weight: 400; margin-bottom: 1rem; line-height: 1.2;">
+                        <span style="color: #1e293b;">Welcome! Let's Turn Your Business Into a</span> 
+                        <span style="background: linear-gradient(135deg, #6b46c1 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Digital Powerhouse</span>
+                    </h2>
+                    
+                    <!-- Sub-headline -->
+                    <p style="font-size: 1.15rem; font-family: 'Poppins', sans-serif; color: #6b46c1; margin-bottom: 2rem; line-height: 1.6; max-width: 700px; margin-left: auto; margin-right: auto; font-weight: 500;" 
+                       data-translate="welcome.subheadline">
+                        In just 2 minutes, see how amazing your business looks online - then discover everything Topiko can do to grow your digital presence. Absolutely FREE to try!
+                    </p>
+                    
+                    <!-- Value Props Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; max-width: 900px; margin: 2rem auto;">
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; border-left: 4px solid #6b46c1;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🏪</div>
+                            <p style="font-size: 0.95rem; color: #475569; margin: 0; font-weight: 600;">From Local Business to Online Empire</p>
+                            <p style="font-size: 0.85rem; color: #64748b; margin: 0.25rem 0 0 0;">All-in-ONE Platform for Growth</p>
+                        </div>
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; border-left: 4px solid #10b981;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📱</div>
+                            <p style="font-size: 0.95rem; color: #475569; margin: 0; font-weight: 600;">We Handle the Tech, You Handle the Business</p>
+                            <p style="font-size: 0.85rem; color: #64748b; margin: 0.25rem 0 0 0;">Full technical support included</p>
+                        </div>
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; border-left: 4px solid #f59e0b;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🤝</div>
+                            <p style="font-size: 0.95rem; color: #475569; margin: 0; font-weight: 600;">From Setup to Success - We're With You</p>
+                            <p style="font-size: 0.85rem; color: #64748b; margin: 0.25rem 0 0 0;">Ongoing support and guidance</p>
+                        </div>
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; border-left: 4px solid #3b82f6;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🚀</div>
+                            <p style="font-size: 0.95rem; color: #475569; margin: 0; font-weight: 600;">Go Live in 15 Minutes</p>
+                            <p style="font-size: 0.85rem; color: #64748b; margin: 0.25rem 0 0 0;">Not 15 Days - Instant Setup!</p>
+                        </div>
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; border-left: 4px solid #8b5cf6;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🛠️</div>
+                            <p style="font-size: 0.95rem; color: #475569; margin: 0; font-weight: 600;">All the Tools You'll Ever Need</p>
+                            <p style="font-size: 0.85rem; color: #64748b; margin: 0.25rem 0 0 0;">Complete digital solution</p>
+                        </div>
+                        <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; border-left: 4px solid #ec4899;">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💪</div>
+                            <p style="font-size: 0.95rem; color: #475569; margin: 0; font-weight: 600;">Your Digital Partner, Not Just a Platform</p>
+                            <p style="font-size: 0.85rem; color: #64748b; margin: 0.25rem 0 0 0;">Personal guidance at every step</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Special Offer Badge -->
+                    <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #10b981; border-radius: 12px; padding: 1rem; margin: 1.5rem auto; max-width: 600px;">
+                        <p style="color: #059669; font-weight: 700; margin: 0; font-size: 1rem;">
+                            ✨ Start your personalized journey to discover the perfect digital solution for your business! Your satisfaction guaranteed!
+                        </p>
+                    </div>
+                    
+                    <!-- CTA Button with animation -->
                     <button class="try-free-button" onclick="startLeadFlow()" 
-                            data-translate="welcome.tryFreeButton">
-                        Try for Free
+                            style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); font-size: 1.25rem; padding: 1rem 3rem; animation: pulse 2s infinite; border: none; color: white; font-weight: 600; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);"
+                            data-translate="welcome.ctaButton">
+                        Start My Success Journey →
                     </button>
+                    
+                    <!-- Trust Indicators -->
+                    <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+                        <span style="color: #64748b; font-size: 0.9rem;">
+                            ✓ No Hidden Costs
+                        </span>
+                        <span style="color: #64748b; font-size: 0.9rem;">
+                            ✓ Scale as You Grow
+                        </span>
+                        <span style="color: #64748b; font-size: 0.9rem;">
+                            ✓ Tailor-Made for Your Business
+                        </span>
+                    </div>
                 </div>
+                
+                <style>
+                    @keyframes pulse {
+                        0%, 100% { transform: scale(1); }
+                        50% { transform: scale(1.02); }
+                    }
+                    @keyframes float {
+                        0%, 100% { transform: translateY(0px); }
+                        50% { transform: translateY(-5px); }
+                    }
+                </style>
             </section>
 
-            <!-- Language Selection Screen -->
-            <section class="screen" id="language">
+            <!-- Language Selection Screen - Commented out until translations are ready -->
+            <!-- <section class="screen" id="language">
                 <div class="content-card">
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" 
                         data-translate="language.title">Choose Your Language</h2>
@@ -160,7 +250,7 @@
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> -->
 
             <!-- Goals Selection Screen -->
             <section class="screen" id="goals">
@@ -169,7 +259,7 @@
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" 
                         data-translate="goals.title">Select Your Business Goals</h2>
                     <p style="text-align: center; margin-bottom: 2rem;" 
-                       data-translate="goals.subtitle">Choose any three from the list</p>
+                       data-translate="goals.subtitle">Select up to 3 goals to get personalized recommendations</p>
                     
                     <div class="goals-grid">
                         <!-- UPDATED: All goal descriptions -->
@@ -260,7 +350,7 @@
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" 
                         data-translate="registration.title">Get Started with Topiko</h2>
                     <p style="text-align: center; margin-bottom: 2rem; font-size: 1.2rem; font-weight: 600; color: #059669; background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1)); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; line-height: 1.5;" 
-                       data-translate="registration.subtitle">Tell us about your business to create your free account</p>
+                       data-translate="registration.subtitle">Tell us about your business to get started</p>
                     
                     <div class="form-group">
                         <label for="fullName" data-translate="registration.fields.fullName.label">Your Name</label>
@@ -358,11 +448,11 @@
                     <div style="text-align: center; margin-bottom: 2rem;">
                         <h2 style="color: #6b46c1; font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem;" 
                             id="qualifyingTitle" data-translate="qualifying.title">
-                            Let's setup things for you
+                            Hi <span id="qualifyingUserName">there</span>! Let's get everything ready for you
                         </h2>
                         <p style="color: #059669; font-size: 1.2rem; font-weight: 600; background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin-top: 1rem;" 
                            data-translate="qualifying.subtitle">
-                            Just need a couple of details about your business
+                            Just a few quick questions to personalize your solution
                         </p>
                     </div>
 
@@ -412,6 +502,13 @@
                     <div class="qualifying-question">
                         <h3 data-translate="qualifying.questions.budget.title">To meet your business goals, how much budget can you allocate per year?</h3>
                         <div class="radio-options">
+                            <div class="radio-option">
+                                <input type="radio" id="budget-very-low" name="budget" value="<5000" class="radio-input" onchange="updateQualifyingData()">
+                                <label for="budget-very-low" class="radio-card">
+                                    <div class="radio-icon"></div>
+                                    <span data-translate="qualifying.questions.budget.options.veryLow">Less than ₹5,000</span>
+                                </label>
+                            </div>
                             <div class="radio-option">
                                 <input type="radio" id="budget-low" name="budget" value="5000-10000" class="radio-input" onchange="updateQualifyingData()">
                                 <label for="budget-low" class="radio-card">
@@ -495,7 +592,7 @@
                     <button class="submit-button" onclick="proceedToCategories()" 
                             id="qualifyingNextBtn" disabled style="opacity: 0.5;"
                             data-translate="qualifying.nextButton">
-                        Create my Business 🚀
+                        Continue to Setup 🚀
                     </button>
                 </div>
             </section>
@@ -505,8 +602,8 @@
                 <div class="content-card">
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" 
                         id="categoriesTitle" data-translate="categories.title">Select Your Business Categories</h2>
-                    <p style="text-align: center; margin-bottom: 2rem;" 
-                       data-translate="categories.subtitle">Choose specific categories and subcategories that best describe your business</p>
+                    <!-- <p style="text-align: center; margin-bottom: 2rem;" 
+                       data-translate="categories.subtitle">Choose specific categories and subcategories that best describe your business</p> -->
                     
                     <!-- Selection Summary -->
                     <div class="selection-summary" id="selectionSummary" style="display: none;">
@@ -552,8 +649,8 @@
                     <p style="text-align: center; margin-bottom: 2rem;" 
                        data-translate="products.subtitle">Choose products or add your own custom products</p>
                     
-                    <!-- Help Section -->
-                    <div class="products-help-section" id="productsHelpSection" onclick="requestFollowup()">
+                    <!-- Help Section - Commented out as requested -->
+                    <!-- <div class="products-help-section" id="productsHelpSection" onclick="requestFollowup()">
                         <div class="help-title" id="productsHelpTitle" 
                              data-translate="products.helpSection.title">🎯 Free Professional Setup Available!</div>
                         <div class="help-progress">
@@ -563,7 +660,7 @@
                             <span data-translate="products.helpSection.text" 
                                   data-translate-vars='{"count": "47", "month": "January"}'>Topiko is helping with free setup for 75 businesses every month. 47 claimed for January. Click here for help!</span>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Product Selection Mode Toggle -->
                     <div class="product-mode-toggle">
@@ -732,9 +829,9 @@
             <section class="screen" id="themes">
                 <div class="content-card">
                     <h2 style="text-align: center; margin-bottom: 0.5rem;" 
-                        id="themesTitle" data-translate="themes.title">Choose Your Business Theme</h2>
+                        id="themesTitle" data-translate="themes.title">Choose a Theme for your <span id="themeBusinessName">Business</span></h2>
                     <p style="text-align: center; margin-bottom: 2rem;" 
-                       data-translate="themes.subtitle">Select a theme that represents your business style. See how your products will look!</p>
+                       data-translate="themes.subtitle">Select a theme that represents your business style, see how great your business will look online!</p>
                     
                     <div class="theme-grid">
                         <!-- Professional & Corporate Theme (1st position) -->
@@ -935,7 +1032,7 @@
                             
                             <!-- UPDATED: Timer set to 6:45:00 -->
                             <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: center;">
-                                <span data-translate="completion.offers.timer" data-translate-vars='{"time": "6:45:00"}'><span class="animated-fire">🔥</span> Limited Time: These offers expire in <span id="offerTimer">6:45:00</span></span>
+                                <span><span class="animated-fire">🔥</span> Limited Time: These offers expire in <span id="offerTimer">6:45:00</span></span>
                             </div>
 
                             <!-- Selected Offer Display -->
@@ -987,26 +1084,26 @@
                 </h2>
                 
                 <p style="color: #553c9a; font-size: 1rem; font-weight: 500; margin-bottom: 1.5rem; line-height: 1.6;">
-                    <span data-translate="modals.goalsTransition.subtitle" data-translate-vars='{"goals": "your selected goals"}'>Now let's show you how Topiko can help with your selected goals for your business — one step at a time</span>
+                    <span data-translate="modals.goalsTransition.subtitle" data-translate-vars='{"goals": "your selected goals"}'>Perfect! Let's build your solution based on your goals</span>
                     <span id="selectedGoalsInlineText" style="display: block; margin: 0.5rem 0; color: #6b46c1; font-weight: 600;">your selected goals</span>
                 </p>
 
                 <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 1rem; margin: 1rem 0; color: #059669; font-weight: 600; font-size: 0.9rem; text-align: left; line-height: 1.8;">
-                    Topiko helped 5,500+ businesses reach their goals last month — let's do the same for yours! 
+                    Every month thousands of businesses achieve their goals with Topiko 
                     
                     <!-- FIXED: Updated emoji in third benefit -->
                     <div style="margin-top: 0.8rem; display: flex; flex-direction: column; gap: 0.3rem;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="margin-right: 0.5rem;">🚀</span>
+                            <span data-translate="modals.goalsTransition.benefits.2">Try before you decide</span>
+                        </div>
                         <div style="display: flex; align-items: center;">
                             <span style="margin-right: 0.5rem;">✨</span>
                             <span data-translate="modals.goalsTransition.benefits.0">No technical knowledge needed</span>
                         </div>
                         <div style="display: flex; align-items: center;">
                             <span style="margin-right: 0.5rem;">✅</span>
-                            <span data-translate="modals.goalsTransition.benefits.1">ZERO obligation to continue</span>
-                        </div>
-                        <div style="display: flex; align-items: center;">
-                            <span style="margin-right: 0.5rem;">🚀</span>
-                            <span data-translate="modals.goalsTransition.benefits.2">Try before you decide</span>
+                            <span data-translate="modals.goalsTransition.benefits.1">Zero obligation to continue</span>
                         </div>
                     </div>
                 </div>
@@ -1037,7 +1134,7 @@
                 <div style="background: rgba(34, 197, 94, 0.1); border: 2px solid rgba(34, 197, 94, 0.2); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0;">
                     <p style="color: #059669; font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;"
                        data-translate="modals.setupIntro.subtitle" data-translate-vars='{"business": "business"}'>
-                        In just 3 simple steps, we'll show you exactly how your <span id="setupBusinessNameInText">business</span> can look and work online — the Topiko way!
+                        In just 3 simple steps, we'll build your online presence together!
                     </p>
                 </div>
 
@@ -1050,7 +1147,7 @@
                 <!-- MOVED: Momentum message after button -->
                 <p style="color: #064e3b; font-size: 0.9rem; margin-top: 1rem; font-style: italic;"
                    data-translate="modals.setupIntro.momentum">
-                    <span class="animated-fire">🔥</span> Businesses like yours are going live every hour — don't miss the momentum!
+                    <span class="animated-fire">🔥</span> Businesses like yours see results from day one. Start yours now!
                 </p>
             </div>
         </div>
@@ -1377,9 +1474,9 @@
             }
         }, 1000);
         
-        // Fix 2: Initialize product mode correctly
+        // Fix 2: Initialize product mode correctly only when on products page
         setTimeout(() => {
-            if (typeof switchProductMode === 'function') {
+            if (typeof switchProductMode === 'function' && window.topikoApp && window.topikoApp.currentStep === 'products') {
                 try {
                     switchProductMode('select');
                     console.log('✅ Product mode initialized');

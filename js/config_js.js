@@ -368,7 +368,7 @@ const STEP_CONFIG = {
         'products',
         'themes'
     ],
-    PROGRESS_STEPS: ['goals', 'registration', 'qualifying-questions', 'categories', 'products', 'themes']
+    PROGRESS_STEPS: ['goals', 'registration', 'qualifying-questions', 'categories', 'products', 'themes', 'custom-offer']
 };
 
 // ========================================

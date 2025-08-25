@@ -1714,13 +1714,13 @@
         .sdr-dropdown-content,
         .status-dropdown-content {
             display: none;
-            position: fixed;
+            position: fixed !important;
             background-color: white;
             min-width: 200px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             border-radius: 8px;
             border: 1px solid #e2e8f0;
-            z-index: 9999;
+            z-index: 99999 !important;
             max-height: 60vh;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -1728,8 +1728,10 @@
 
         .sdr-dropdown-content.show,
         .status-dropdown-content.show {
-            display: block;
-            animation: fadeInScale 0.2s ease;
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            /* animation: fadeInScale 0.2s ease; */ /* Disabled - causing visibility issues */
         }
 
         @keyframes fadeInScale {
@@ -3211,8 +3213,8 @@
                 
                 products_count: rawLead.products_count || 0,
                 
-                lead_status: intel.lead_status || 'New',
-                assigned_sdr_id: intel.assigned_sdr_id || rawLead.assigned_sdr_id || null,
+                lead_status: rawLead.lead_status || intel.lead_status || 'New',
+                assigned_sdr_id: rawLead.assigned_sdr_id || intel.assigned_sdr_id || null,
                 lead_pipeline_status: rawLead.lead_pipeline_status || intel.lead_pipeline_status || 'New',
                 next_followup_date: rawLead.next_followup_date || intel.next_followup_date || null,
                 lead_notes: rawLead.lead_notes || intel.lead_notes || '',
@@ -3819,12 +3821,12 @@
                     <div class="card-actions">
                         <div class="sdr-dropdown">
                             <button class="action-btn btn-assign ${lead.assigned_sdr_id ? 'reassign' : ''}" 
-                                    onclick="toggleSDRDropdown('${lead.id}', event)">
+                                    data-lead-id="${lead.id}">
                                 ${lead.assigned_sdr_id ? '↻ Re-assign' : '👨‍💼 Assign'}
                             </button>
-                            <div class="sdr-dropdown-content" id="sdrDropdown-${lead.id}">
+                            <div class="sdr-dropdown-content" id="sdrDropdown-${lead.id}" style="display: none;">
                                 ${sdrTeam.map(sdr => `
-                                    <div class="sdr-option" onclick="assignLeadToSDR('${lead.id}', '${sdr.id}')">
+                                    <div class="sdr-option" data-lead-id="${lead.id}" data-sdr-id="${sdr.id}">
                                         ${sdr.name}
                                     </div>
                                 `).join('')}
@@ -3832,16 +3834,16 @@
                         </div>
                         
                         <div class="status-dropdown">
-                            <button class="action-btn btn-status" onclick="toggleStatusDropdown('${lead.id}', event)">
+                            <button class="action-btn btn-status" data-lead-id="${lead.id}">
                                 📊 Status
                             </button>
-                            <div class="status-dropdown-content" id="statusDropdown-${lead.id}">
-                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Contacted')">Contacted</div>
-                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Not Reachable')">Not Reachable</div>
-                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Demo Requested')">Demo Requested</div>
-                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Samples Requested')">Samples Requested</div>
-                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Dropped-Budget')">Dropped-Budget</div>
-                                <div class="status-option" onclick="updateLeadStatus('${lead.id}', 'Converted')">Converted</div>
+                            <div class="status-dropdown-content" id="statusDropdown-${lead.id}" style="display: none;">
+                                <div class="status-option" data-lead-id="${lead.id}" data-status="Contacted">Contacted</div>
+                                <div class="status-option" data-lead-id="${lead.id}" data-status="Not Reachable">Not Reachable</div>
+                                <div class="status-option" data-lead-id="${lead.id}" data-status="Demo Requested">Demo Requested</div>
+                                <div class="status-option" data-lead-id="${lead.id}" data-status="Samples Requested">Samples Requested</div>
+                                <div class="status-option" data-lead-id="${lead.id}" data-status="Dropped-Budget">Dropped-Budget</div>
+                                <div class="status-option" data-lead-id="${lead.id}" data-status="Converted">Converted</div>
                             </div>
                         </div>
                         
@@ -4404,10 +4406,13 @@
             console.log('🔧 Toggling SDR dropdown for lead:', leadId);
             
             // Close all other dropdowns first
-            document.querySelectorAll('.sdr-dropdown-content, .status-dropdown-content').forEach(dropdown => {
-                if (dropdown.id !== `sdrDropdown-${leadId}`) {
-                    dropdown.classList.remove('show');
-                }
+            document.querySelectorAll('.sdr-dropdown-content').forEach(d => {
+                d.style.display = 'none';
+                d.classList.remove('show');
+            });
+            document.querySelectorAll('.status-dropdown-content').forEach(d => {
+                d.style.display = 'none';
+                d.classList.remove('show');
             });
             
             const dropdown = document.getElementById(`sdrDropdown-${leadId}`);
@@ -4416,59 +4421,30 @@
                 return false;
             }
             
-            const button = event.target.closest('.action-btn');
-            const card = button.closest('.lead-card');
-            
-            // Position dropdown for mobile/desktop
+            const button = event.target;
             const rect = button.getBoundingClientRect();
-            const isSmallScreen = window.innerWidth < 768;
             
-            if (isSmallScreen) {
-                // On mobile, position dropdown at center of screen
-                dropdown.style.position = 'fixed';
-                dropdown.style.top = '50%';
-                dropdown.style.left = '50%';
-                dropdown.style.transform = 'translate(-50%, -50%)';
-                dropdown.style.zIndex = '2001';
-                dropdown.style.maxHeight = '60vh';
-                dropdown.style.width = '80vw';
-                dropdown.style.maxWidth = '300px';
-            } else {
-                // On desktop, position relative to button
-                dropdown.style.position = 'absolute';
-                dropdown.style.top = '100%';
-                dropdown.style.left = '0';
-                dropdown.style.transform = 'none';
-                dropdown.style.zIndex = '1000';
-                dropdown.style.width = '200px';
-                dropdown.style.maxWidth = 'none';
-            }
+            // Simple positioning
+            dropdown.style.position = 'fixed';
+            dropdown.style.top = (rect.bottom + 5) + 'px';
+            dropdown.style.left = rect.left + 'px';
+            dropdown.style.display = 'block';
+            dropdown.style.zIndex = '99999';
+            dropdown.classList.add('show');
             
-            dropdown.classList.toggle('show');
+            console.log('✅ SDR dropdown shown at:', rect.bottom + 5, rect.left);
             
-            if (dropdown.classList.contains('show')) {
-                card.style.zIndex = '999';
-                console.log('✅ SDR dropdown opened');
-                
-                // Close dropdown when clicking outside
-                setTimeout(() => {
-                    const closeHandler = (e) => {
-                        if (!dropdown.contains(e.target) && !button.contains(e.target)) {
-                            dropdown.classList.remove('show');
-                            card.style.zIndex = '1';
-                            document.removeEventListener('click', closeHandler);
-                            document.removeEventListener('touchstart', closeHandler);
-                            console.log('🔒 SDR dropdown closed');
-                        }
-                    };
-                    
-                    document.addEventListener('click', closeHandler);
-                    document.addEventListener('touchstart', closeHandler);
-                }, 100);
-            } else {
-                card.style.zIndex = '1';
-                console.log('🔒 SDR dropdown closed');
-            }
+            // Simple close handler
+            setTimeout(() => {
+                const closeHandler = (e) => {
+                    if (!dropdown.contains(e.target) && e.target !== button) {
+                        dropdown.style.display = 'none';
+                        dropdown.classList.remove('show');
+                        document.removeEventListener('click', closeHandler);
+                    }
+                };
+                document.addEventListener('click', closeHandler);
+            }, 100);
             
             return false;
         }
@@ -4523,10 +4499,13 @@
             console.log('📊 Toggling status dropdown for lead:', leadId);
             
             // Close all other dropdowns first
-            document.querySelectorAll('.sdr-dropdown-content, .status-dropdown-content').forEach(dropdown => {
-                if (dropdown.id !== `statusDropdown-${leadId}`) {
-                    dropdown.classList.remove('show');
-                }
+            document.querySelectorAll('.sdr-dropdown-content').forEach(d => {
+                d.style.display = 'none';
+                d.classList.remove('show');
+            });
+            document.querySelectorAll('.status-dropdown-content').forEach(d => {
+                d.style.display = 'none';
+                d.classList.remove('show');
             });
             
             const dropdown = document.getElementById(`statusDropdown-${leadId}`);
@@ -4535,59 +4514,30 @@
                 return false;
             }
             
-            const button = event.target.closest('.action-btn');
-            const card = button.closest('.lead-card');
-            
-            // Position dropdown for mobile/desktop
+            const button = event.target;
             const rect = button.getBoundingClientRect();
-            const isSmallScreen = window.innerWidth < 768;
             
-            if (isSmallScreen) {
-                // On mobile, position dropdown at center of screen
-                dropdown.style.position = 'fixed';
-                dropdown.style.top = '50%';
-                dropdown.style.left = '50%';
-                dropdown.style.transform = 'translate(-50%, -50%)';
-                dropdown.style.zIndex = '2001';
-                dropdown.style.maxHeight = '60vh';
-                dropdown.style.width = '80vw';
-                dropdown.style.maxWidth = '300px';
-            } else {
-                // On desktop, position relative to button
-                dropdown.style.position = 'absolute';
-                dropdown.style.top = '100%';
-                dropdown.style.left = '0';
-                dropdown.style.transform = 'none';
-                dropdown.style.zIndex = '1000';
-                dropdown.style.width = '160px';
-                dropdown.style.maxWidth = 'none';
-            }
+            // Simple positioning
+            dropdown.style.position = 'fixed';
+            dropdown.style.top = (rect.bottom + 5) + 'px';
+            dropdown.style.left = rect.left + 'px';
+            dropdown.style.display = 'block';
+            dropdown.style.zIndex = '99999';
+            dropdown.classList.add('show');
             
-            dropdown.classList.toggle('show');
+            console.log('✅ Status dropdown shown at:', rect.bottom + 5, rect.left);
             
-            if (dropdown.classList.contains('show')) {
-                card.style.zIndex = '999';
-                console.log('✅ Status dropdown opened');
-                
-                // Close dropdown when clicking outside
-                setTimeout(() => {
-                    const closeHandler = (e) => {
-                        if (!dropdown.contains(e.target) && !button.contains(e.target)) {
-                            dropdown.classList.remove('show');
-                            card.style.zIndex = '1';
-                            document.removeEventListener('click', closeHandler);
-                            document.removeEventListener('touchstart', closeHandler);
-                            console.log('🔒 Status dropdown closed');
-                        }
-                    };
-                    
-                    document.addEventListener('click', closeHandler);
-                    document.addEventListener('touchstart', closeHandler);
-                }, 100);
-            } else {
-                card.style.zIndex = '1';
-                console.log('🔒 Status dropdown closed');
-            }
+            // Simple close handler
+            setTimeout(() => {
+                const closeHandler = (e) => {
+                    if (!dropdown.contains(e.target) && e.target !== button) {
+                        dropdown.style.display = 'none';
+                        dropdown.classList.remove('show');
+                        document.removeEventListener('click', closeHandler);
+                    }
+                };
+                document.addEventListener('click', closeHandler);
+            }, 100);
             
             return false;
         }
@@ -5189,6 +5139,104 @@
         // INITIALIZATION (ENHANCED WITH DEBUGGING)
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Mobile-First Topiko CRM v5.0 Initialized');
+            
+            // Add event delegation for dropdown buttons
+            document.addEventListener('click', function(e) {
+                // Handle Assign button clicks
+                if (e.target.classList.contains('btn-assign')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const leadId = e.target.getAttribute('data-lead-id');
+                    const dropdown = document.getElementById(`sdrDropdown-${leadId}`);
+                    
+                    // Close all dropdowns
+                    document.querySelectorAll('.sdr-dropdown-content, .status-dropdown-content').forEach(d => {
+                        if (d !== dropdown) d.style.display = 'none';
+                    });
+                    
+                    // Toggle this dropdown
+                    if (dropdown) {
+                        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+                        
+                        if (dropdown.style.display === 'block') {
+                            const rect = e.target.getBoundingClientRect();
+                            
+                            // Move dropdown to body to avoid any container issues
+                            document.body.appendChild(dropdown);
+                            
+                            // Style the dropdown
+                            dropdown.style.position = 'fixed';
+                            dropdown.style.top = (rect.bottom + 5) + 'px';
+                            dropdown.style.left = rect.left + 'px';
+                            dropdown.style.zIndex = '9999999';
+                            dropdown.style.backgroundColor = 'white';
+                            dropdown.style.border = '1px solid #e2e8f0';
+                            dropdown.style.borderRadius = '8px';
+                            dropdown.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                            dropdown.style.minWidth = '200px';
+                            dropdown.style.padding = '8px 0';
+                        }
+                    }
+                }
+                
+                // Handle Status button clicks
+                if (e.target.classList.contains('btn-status')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const leadId = e.target.getAttribute('data-lead-id');
+                    const dropdown = document.getElementById(`statusDropdown-${leadId}`);
+                    
+                    // Close all dropdowns
+                    document.querySelectorAll('.sdr-dropdown-content, .status-dropdown-content').forEach(d => {
+                        if (d !== dropdown) d.style.display = 'none';
+                    });
+                    
+                    // Toggle this dropdown
+                    if (dropdown) {
+                        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+                        if (dropdown.style.display === 'block') {
+                            const rect = e.target.getBoundingClientRect();
+                            
+                            // Move dropdown to body to avoid container issues
+                            document.body.appendChild(dropdown);
+                            
+                            dropdown.style.position = 'fixed';
+                            dropdown.style.top = (rect.bottom + 5) + 'px';
+                            dropdown.style.left = rect.left + 'px';
+                            dropdown.style.zIndex = '9999999';
+                            dropdown.style.backgroundColor = 'white';
+                            dropdown.style.border = '1px solid #e2e8f0';
+                            dropdown.style.borderRadius = '8px';
+                            dropdown.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                            dropdown.style.minWidth = '200px';
+                            dropdown.style.padding = '8px 0';
+                        }
+                    }
+                }
+                
+                // Handle SDR option clicks
+                if (e.target.classList.contains('sdr-option')) {
+                    const leadId = e.target.getAttribute('data-lead-id');
+                    const sdrId = e.target.getAttribute('data-sdr-id');
+                    assignLeadToSDR(leadId, sdrId);
+                    document.getElementById(`sdrDropdown-${leadId}`).style.display = 'none';
+                }
+                
+                // Handle Status option clicks
+                if (e.target.classList.contains('status-option')) {
+                    const leadId = e.target.getAttribute('data-lead-id');
+                    const status = e.target.getAttribute('data-status');
+                    updateLeadStatus(leadId, status);
+                    document.getElementById(`statusDropdown-${leadId}`).style.display = 'none';
+                }
+                
+                // Close dropdowns when clicking elsewhere
+                if (!e.target.closest('.sdr-dropdown') && !e.target.closest('.status-dropdown')) {
+                    document.querySelectorAll('.sdr-dropdown-content, .status-dropdown-content').forEach(d => {
+                        d.style.display = 'none';
+                    });
+                }
+            });
             
             // Check and retry any pending updates on page load
             setTimeout(async () => {
