@@ -27,6 +27,31 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+// Toggle mobile filters
+function toggleMobileFilters() {
+    const controls = document.querySelector('.product-controls');
+    if (controls) {
+        if (controls.classList.contains('collapsed')) {
+            controls.classList.remove('collapsed');
+            controls.classList.add('expanded');
+        } else {
+            controls.classList.remove('expanded');
+            controls.classList.add('collapsed');
+        }
+    }
+}
+
+// Toggle product card expansion on mobile
+function toggleProductCard(productId) {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) return;
+    
+    const card = document.querySelector(`[data-product-id="${productId}"]`);
+    if (card) {
+        card.classList.toggle('expanded');
+    }
+}
+
 // Mobile-specific enhancements
 function initializeMobileEnhancements() {
     // Detect if mobile device
@@ -34,6 +59,18 @@ function initializeMobileEnhancements() {
     
     if (isMobile) {
         console.log('📱 Mobile device detected, applying mobile enhancements');
+        
+        // Show mobile filter toggle button
+        const filterToggle = document.querySelector('.mobile-filter-toggle');
+        if (filterToggle) {
+            filterToggle.style.display = 'block';
+        }
+        
+        // Hide quick filters on mobile (they're in the collapsible section)
+        const quickFilters = document.querySelector('.quick-filters-container');
+        if (quickFilters) {
+            quickFilters.style.display = 'none';
+        }
         
         // Prevent double-tap zoom
         let lastTouchEnd = 0;
@@ -98,8 +135,53 @@ function initializeApp() {
     window.TopikoUtils.addDebugLog('✅ Enhanced app initialized successfully', 'success');
 }
 
-// Save data on page unload
+// Save data on page unload and track abandonment
 window.addEventListener('beforeunload', function(e) {
+    // Save abandonment data to Supabase if user hasn't completed
+    if (window.topikoApp.currentUserId && window.topikoApp.currentStep !== 'completion') {
+        const abandonmentData = {
+            last_step: window.topikoApp.currentStep,
+            abandoned_at: new Date().toISOString(),
+            session_duration_minutes: Math.round((Date.now() - window.topikoApp.sessionStartTime) / 60000),
+            form_progress: Math.round(window.topikoApp.formProgress || 0),
+            products_selected_count: window.topikoApp.userProducts?.length || 0,
+            goals_selected_count: window.topikoApp.selectedGoals?.length || 0,
+            categories_selected_count: window.topikoApp.selectedCategories?.length || 0
+        };
+        
+        // Use sendBeacon for reliability (won't wait for response)
+        const payload = {
+            user_id: window.topikoApp.currentUserId,
+            ...abandonmentData
+        };
+        
+        // Try to update user record with abandonment info
+        // Note: This might not complete if the page unloads too quickly
+        try {
+            // Using synchronous XHR as a fallback (deprecated but works for beforeunload)
+            const xhr = new XMLHttpRequest();
+            xhr.open('PATCH', `${window.SUPABASE_URL}/rest/v1/users?id=eq.${window.topikoApp.currentUserId}`, false);
+            xhr.setRequestHeader('apikey', window.SUPABASE_ANON_KEY);
+            xhr.setRequestHeader('Authorization', `Bearer ${window.SUPABASE_ANON_KEY}`);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('Prefer', 'return=minimal');
+            
+            xhr.send(JSON.stringify({
+                abandoned_at: abandonmentData.abandoned_at,
+                last_step: abandonmentData.last_step
+            }));
+            
+            console.log('📊 Abandonment data saved:', abandonmentData);
+        } catch (err) {
+            // If sync request fails, try navigator.sendBeacon as backup
+            if (navigator.sendBeacon) {
+                const formData = new FormData();
+                formData.append('data', JSON.stringify(payload));
+                navigator.sendBeacon('/api/track-abandonment', formData);
+            }
+        }
+    }
+    
     window.TopikoUtils.saveSessionData();
     
     // Clean up intervals
@@ -216,8 +298,10 @@ function startTimerCountdown(timerElement) {
         console.log('🧹 Cleared existing timer');
     }
     
-    // Set initial time to 6 hours, 45 minutes
-    let totalSeconds = (6 * 3600) + (45 * 60); // 6:45:00
+    // Generate random time between 04:15:30 and 06:20:20
+    const minSeconds = (4 * 3600) + (15 * 60) + 30; // 04:15:30 = 15,330 seconds
+    const maxSeconds = (6 * 3600) + (20 * 60) + 20; // 06:20:20 = 22,820 seconds
+    let totalSeconds = Math.floor(Math.random() * (maxSeconds - minSeconds + 1)) + minSeconds;
     
     // Set initial display immediately
     const hours = Math.floor(totalSeconds / 3600);
@@ -965,6 +1049,24 @@ function trackFormProgress() {
 async function submitRegistration() {
     window.TopikoUtils.addDebugLog('📝 Registration submission');
     
+    // Find and disable the submit button immediately
+    const submitBtn = event.target || document.querySelector('[onclick="submitRegistration()"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.6';
+        submitBtn.style.cursor = 'not-allowed';
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span style="display: inline-block; animation: pulse 1s infinite;">Processing...</span>';
+        
+        // Re-enable after 3 seconds as fallback
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+            submitBtn.innerHTML = originalText;
+        }, 3000);
+    }
+    
     const name = document.getElementById('fullName').value.trim();
     const email = document.getElementById('email').value.trim();
     const phone = document.getElementById('phoneNumber').value.trim();
@@ -975,6 +1077,13 @@ async function submitRegistration() {
 
     if (!name || !email || !phone || !business || !type || !category) {
         window.TopikoUtils.showNotification('Please fill all required fields', 'error');
+        // Re-enable button if validation fails
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+            submitBtn.innerHTML = originalText;
+        }
         return;
     }
 
@@ -1030,10 +1139,31 @@ function handleOtpInput(input, index) {
 }
 
 async function verifyOtp() {
+    // Disable the verify button immediately
+    const verifyBtn = document.getElementById('verifyOtpBtn');
+    if (verifyBtn) {
+        verifyBtn.disabled = true;
+        verifyBtn.style.opacity = '0.6';
+        verifyBtn.style.cursor = 'not-allowed';
+        const originalText = verifyBtn.innerHTML;
+        verifyBtn.innerHTML = '<span style="animation: pulse 1s infinite;">Verifying...</span>';
+    }
+    
     const otpInputs = document.querySelectorAll('.otp-input');
     const otp = Array.from(otpInputs).map(input => input.value).join('');
     
     if (otp === window.TopikoConfig.DEFAULTS.OTP_DEFAULT) {
+        // Also permanently disable the "Show My Business Online" button
+        const registrationSubmitBtn = document.querySelector('[onclick="submitRegistration()"]');
+        if (registrationSubmitBtn) {
+            registrationSubmitBtn.disabled = true;
+            registrationSubmitBtn.style.opacity = '0.5';
+            registrationSubmitBtn.style.cursor = 'not-allowed';
+            registrationSubmitBtn.innerHTML = '<span style="color: #10b981;">✓ Registration Complete</span>';
+            registrationSubmitBtn.onclick = null; // Remove onclick handler
+        }
+        
+        // Keep button disabled during processing
         window.TopikoUtils.closeModal('otpVerificationModal');
         window.TopikoUtils.showNotification('✅ Phone verified successfully!', 'success');
         
@@ -1041,6 +1171,13 @@ async function verifyOtp() {
         await completeRegistration();
     } else {
         window.TopikoUtils.showNotification('Invalid OTP. Please try again.', 'error');
+        // Re-enable button on error
+        if (verifyBtn) {
+            verifyBtn.disabled = false;
+            verifyBtn.style.opacity = '1';
+            verifyBtn.style.cursor = 'pointer';
+            verifyBtn.innerHTML = originalText || 'Verify & Continue';
+        }
     }
 }
 
@@ -2307,15 +2444,25 @@ function updateProduct(productId) {
             ...window.topikoApp.userProducts[productIndex],
             name,
             price: parseFloat(price),
+            suggestedPrice: parseFloat(price), // Also update suggestedPrice
             description,
             categoryKey: categoryKey,  // Fixed: was 'category'
             subcategoryKey: subcategoryKey || 'general',  // Fixed: was 'subcategory'
             imageUrl: imageUrl || window.topikoApp.userProducts[productIndex].imageUrl,
-            isCustom: true
+            isCustom: true,
+            isEdited: true // Mark as edited to track changes
         };
         
         console.log(`✅ Product updated: Price changed from ₹${oldPrice} to ₹${price}`);
         console.log('Updated product:', window.topikoApp.userProducts[productIndex]);
+        
+        // Force update the price tag immediately
+        const priceTag = document.getElementById(`price-${productId}`);
+        if (priceTag) {
+            priceTag.textContent = `₹${Math.round(parseFloat(price)).toLocaleString()}`;
+            priceTag.classList.add('price-updating');
+            setTimeout(() => priceTag.classList.remove('price-updating'), 300);
+        }
         
         // Re-render products
         filterAndDisplayProducts();
@@ -2326,6 +2473,11 @@ function updateProduct(productId) {
         // Also update the product in selectedProducts if it's selected
         if (window.topikoApp.selectedProductIds && window.topikoApp.selectedProductIds.includes(productId)) {
             updateSelectedProductsSection();
+            
+            // Force refresh the selected products display
+            setTimeout(() => {
+                updateSelectedProductsSection();
+            }, 100);
         }
         
         // Update display in utils if it exists
@@ -2490,6 +2642,28 @@ async function proceedToThemes() {
             return;
         }
         
+        // Save products count to user record
+        if (window.topikoApp.currentUserId) {
+            const productsCount = selectedProducts.length;
+            try {
+                const { error } = await supabase
+                    .from('users')
+                    .update({ 
+                        products_count: productsCount,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', window.topikoApp.currentUserId);
+                
+                if (error) {
+                    console.error('Failed to save products count:', error);
+                } else {
+                    console.log(`✅ Products count (${productsCount}) saved to user record`);
+                }
+            } catch (err) {
+                console.error('Error saving products count:', err);
+            }
+        }
+        
         // Call original Topiko API (restored from backup)
         const businessData = composePreviewJSON();
         await callTopikoAPI(JSON.stringify(businessData));
@@ -2521,13 +2695,34 @@ async function proceedToThemes() {
 // THEMES FUNCTIONS
 // ========================================
 
-function selectTheme(themeName, element) {
+async function selectTheme(themeName, element) {
     console.log('🎨 selectTheme called with:', themeName);
     
     // Store simple ID like the backup version
     window.topikoApp.selectedTheme = themeName; // Store simple ID: 'vibrant', 'modern', etc.
     
     console.log('📝 Theme ID stored:', window.topikoApp.selectedTheme);
+    
+    // Save theme to user record immediately
+    if (window.topikoApp.currentUserId) {
+        try {
+            const { error } = await supabase
+                .from('users')
+                .update({ 
+                    selected_theme: themeName,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', window.topikoApp.currentUserId);
+            
+            if (error) {
+                console.error('Failed to save theme:', error);
+            } else {
+                console.log('✅ Theme saved to user record');
+            }
+        } catch (err) {
+            console.error('Error saving theme:', err);
+        }
+    }
     
     document.querySelectorAll('.theme-option').forEach(option => {
         option.classList.remove('selected');
@@ -2943,7 +3138,15 @@ function proceedFromSetupModal() {
         qualifyingUserName.textContent = firstName;
     }
     
-    setTimeout(() => window.TopikoUtils.showScreen('qualifying-questions'), 500);
+    setTimeout(() => {
+        // COMMENTED OUT: Hide loading overlay when transitioning to next screen
+        // const loadingOverlay = document.getElementById('pageLoadingOverlay');
+        // if (loadingOverlay) {
+        //     loadingOverlay.style.display = 'none';
+        //     document.body.style.overflow = ''; // Re-enable scrolling
+        // }
+        window.TopikoUtils.showScreen('qualifying-questions');
+    }, 500);
 }
 
 // Helper function for modal goals update (includes new 6th goal)
@@ -3346,6 +3549,8 @@ if (typeof window !== 'undefined') {
     
     // Mobile Functions
     window.initializeMobileEnhancements = initializeMobileEnhancements;
+    window.toggleMobileFilters = toggleMobileFilters;
+    window.toggleProductCard = toggleProductCard;
     
     console.log('✅ ALL ENHANCED FUNCTIONS AVAILABLE GLOBALLY');
 }

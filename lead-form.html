@@ -703,8 +703,13 @@
                             </div>
                         </div>
                         
+                        <!-- Mobile Filter Toggle -->
+                        <button class="mobile-filter-toggle" onclick="toggleMobileFilters()" style="display: none;">
+                            🔍 Filters & Search
+                        </button>
+                        
                         <!-- Search & Filter Controls -->
-                        <div class="product-controls">
+                        <div class="product-controls collapsed">
                             <div class="search-box">
                                 <input type="text" id="productSearch" 
                                        data-translate="products.filters.search" 
@@ -732,15 +737,15 @@
                             <div class="products-count">
                                 <span id="productsCount">500</span> products
                             </div>
-                        </div>
-
-                        <!-- Price Range -->
-                        <div class="price-range">
-                            <label>Price Range: ₹<span id="priceRangeDisplay">0 - ₹5000</span></label>
-                            <div class="price-inputs">
-                                <input type="number" id="minPrice" placeholder="Min" value="0" min="0" max="5000">
-                                <span>to</span>
-                                <input type="number" id="maxPrice" placeholder="Max" value="5000" min="0" max="5000">
+                            
+                            <!-- Price Range - Moved inside controls for mobile -->
+                            <div class="price-range">
+                                <label>Price Range: ₹<span id="priceRangeDisplay">0 - ₹5000</span></label>
+                                <div class="price-inputs">
+                                    <input type="number" id="minPrice" placeholder="Min" value="0" min="0" max="5000">
+                                    <span>to</span>
+                                    <input type="number" id="maxPrice" placeholder="Max" value="5000" min="0" max="5000">
+                                </div>
                             </div>
                         </div>
                         
@@ -1586,6 +1591,12 @@
         initializeFOMONotifications();
     });
     </script>
+    
+    <!-- Page Loading Overlay -->
+    <div id="pageLoadingOverlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Processing your request...</div>
+    </div>
     
 </body>
 </html>
