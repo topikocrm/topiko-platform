@@ -79,8 +79,8 @@ function captureUTMParameters() {
         utm_agent: urlParams.get('utm_agent') || urlParams.get('agent') || null,
         
         // Meta information
-        landing_url: window.location.href,
-        landing_timestamp: new Date().toISOString(),
+        // landing_url: window.location.href,  // Uncomment when columns are added to database
+        // landing_timestamp: new Date().toISOString(),  // Uncomment when columns are added to database
         referrer: document.referrer || null
     };
     
@@ -252,6 +252,21 @@ async function saveToSupabase(data, table, operation = 'insert', userId = null) 
                 .select();
             result = response.data;
             error = response.error;
+            
+            // If error is about missing columns, retry without those fields
+            if (error && error.message && (error.message.includes('landing_url') || error.message.includes('landing_timestamp'))) {
+                addDebugLog('⚠️ Retrying without landing_url/landing_timestamp fields', 'warning');
+                const cleanData = { ...dataWithUTM };
+                delete cleanData.landing_url;
+                delete cleanData.landing_timestamp;
+                
+                const retryResponse = await supabase
+                    .from(table)
+                    .insert([cleanData])
+                    .select();
+                result = retryResponse.data;
+                error = retryResponse.error;
+            }
         }
         
         if (error) {
@@ -616,12 +631,21 @@ function showFomoNotification() {
     timeEl.textContent = `${Math.floor(Math.random() * 15) + 1} minutes ago`;
     statusEl.textContent = data.template.status;
     
+    // Force show with inline styles for mobile
+    fomoEl.style.opacity = '1';
+    fomoEl.style.visibility = 'visible';
+    fomoEl.style.transform = 'translateY(0)';
     fomoEl.classList.add('show');
     window.topikoApp.lastFomoShow = Date.now();
     
     setTimeout(() => {
         fomoEl.classList.remove('show');
         fomoEl.classList.add('hide');
+        // Force hide with inline styles
+        fomoEl.style.opacity = '0';
+        fomoEl.style.visibility = 'hidden';
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        fomoEl.style.transform = isMobile ? 'translateY(200px)' : 'translateX(-400px)';
         setTimeout(() => fomoEl.classList.remove('hide'), 500);
     }, 5000);
     
@@ -641,21 +665,60 @@ function updateBusinessCounter() {
 function showBusinessCounter() {
     const counterEl = document.getElementById('fomoCounter');
     if (counterEl) {
+        // Show the counter
         counterEl.classList.add('show');
-        setTimeout(() => counterEl.classList.remove('show'), 4000);
+        
+        // Hide after 5-7 seconds (random for natural feel)
+        const displayTime = 5000 + Math.random() * 2000;
+        setTimeout(() => {
+            counterEl.classList.remove('show');
+        }, displayTime);
     }
 }
 
 function startFomoSystem() {
-    setTimeout(() => showFomoNotification(), 8000);
-    setTimeout(() => showBusinessCounter(), 15000);
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
+    // Initially hide FOMO notification with inline styles
+    const fomoEl = document.getElementById('fomoNotification');
+    if (fomoEl) {
+        fomoEl.style.opacity = '0';
+        fomoEl.style.visibility = 'hidden';
+        fomoEl.style.transform = isMobile ? 'translateY(200px)' : 'translateX(-400px)';
+    }
+    
+    // Initial delays - longer on mobile
+    setTimeout(() => showFomoNotification(), 8000);
+    setTimeout(() => showBusinessCounter(), isMobile ? 20000 : 15000);
+    
+    // Random notifications
     setInterval(() => {
         const randomDelay = Math.random() * 20000 + 25000;
         setTimeout(() => showFomoNotification(), randomDelay);
     }, 45000);
     
-    setInterval(() => showBusinessCounter(), 90000);
+    // Random counter display - less frequent than notifications
+    const showRandomCounter = () => {
+        // Random delay between 60-120 seconds
+        const delay = 60000 + Math.random() * 60000;
+        
+        setTimeout(() => {
+            // Only show if user is not typing
+            const isTyping = document.activeElement && 
+                (document.activeElement.tagName === 'INPUT' || 
+                 document.activeElement.tagName === 'TEXTAREA');
+            
+            if (!isTyping) {
+                showBusinessCounter();
+            }
+            
+            // Schedule next counter
+            showRandomCounter();
+        }, delay);
+    };
+    
+    // Start the random counter cycle
+    showRandomCounter();
 }
 
 // ========================================

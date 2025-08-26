@@ -15,7 +15,7 @@ const TRANSLATIONS = {
         welcome: {
             tagline: "Namaste! Ready to grow your business the smart way? With Topiko, you get one easy platform to take your business online, build a strong identity, serve your customers better, and simplify operations—all designed for India's entrepreneurs. Start your digital growth journey with Topiko today!",
             headline: "Your Business, Now Everywhere Your Customers Are",
-            subheadline: "In just 2 minutes, see how amazing your business looks online - then discover everything Topiko can do to grow your digital presence. Absolutely FREE to try!",
+            subheadline: "In just 5 minutes, see how amazing your business looks online. Start FREE now!",
             ctaButton: "Start My Success Journey →",
             tryFreeButton: "Try for Free"
         },
@@ -122,8 +122,8 @@ const TRANSLATIONS = {
         // QUALIFYING QUESTIONS SCREEN
         // ========================================
         qualifying: {
-            title: "Let's setup things for you",
-            subtitle: "Just need a couple of details about your business",
+            title: "Hi there! Let's get everything ready for you",
+            subtitle: "Just a few quick questions to personalize your solution",
             questions: {
                 onlinePresence: {
                     title: "Do you currently have any online presence?",
@@ -138,6 +138,7 @@ const TRANSLATIONS = {
                 budget: {
                     title: "To meet your business goals, how much budget can you allocate per year?",
                     options: {
+                        veryLow: "Less than ₹5,000",
                         low: "₹5,000 to ₹10,000",
                         medium: "₹10,000 to ₹25,000",
                         high: "More than ₹25,000"
@@ -160,7 +161,7 @@ const TRANSLATIONS = {
                     }
                 }
             },
-            nextButton: "Create my Business 🚀"
+            nextButton: "Continue to Setup 🚀"
         },
 
         // ========================================
@@ -249,8 +250,8 @@ const TRANSLATIONS = {
         // THEMES SCREEN
         // ========================================
         themes: {
-            title: "Choose Your Business Theme",
-            subtitle: "Select a theme that represents your business style. See how your products will look!",
+            title: "Choose a Theme for your Business",
+            subtitle: "Select a theme that represents your business style, see how great your business will look online!",
             options: {
                 modern: {
                     title: "Modern & Minimalist",
@@ -334,8 +335,8 @@ const TRANSLATIONS = {
         // ========================================
         modals: {
             goalsTransition: {
-                title: "Great! Your Business goals are set.",
-                subtitle: "Now let's show you how Topiko can help with {goals} for your business — one step at a time",
+                title: "Perfect! Let's build your solution based on your goals",
+                subtitle: "We'll customize everything based on what you selected",
                 benefits: [
                     "No technical knowledge needed",
                     "ZERO obligation to continue",
@@ -345,8 +346,8 @@ const TRANSLATIONS = {
             },
             setupIntro: {
                 title: "Excellent, {businessName}! 🎉",
-                subtitle: "In just 3 simple steps, we'll show you exactly how your {business} can look and work online — the Topiko way!",
-                momentum: "🔥 Businesses like yours are going live every hour — don't miss the momentum!",
+                subtitle: "In just 3 simple steps, we'll build your online presence together!",
+                momentum: "🔥 Businesses like yours see results from day one. Start yours now!",
                 button: "Let's Create Something Amazing! 🎯"
             },
             otpVerification: {
@@ -588,6 +589,7 @@ const TRANSLATIONS = {
                 budget: {
                     title: "आप अपने बिज़नेस के लिए साल भर का कितना बजट रख सकते हैं?",
                     options: {
+                        veryLow: "₹5,000 से कम",
                         low: "₹5,000 से ₹10,000",
                         medium: "₹10,000 से ₹25,000", 
                         high: "₹25,000 से अधिक"
@@ -610,7 +612,7 @@ const TRANSLATIONS = {
                     }
                 }
             },
-            nextButton: "मेरा बिज़नेस बनाएं 🚀"
+            nextButton: "सेटअप जारी रखें 🚀"
         },
 
         // ========================================
@@ -1018,6 +1020,7 @@ const TRANSLATIONS = {
                 budget: {
                     title: "మీ వ్యాపార లక్ష్యాలను చేరుకోవడానికి, మీరు సంవత్సరానికి ఎంత బడ్జెట్ కేటాయించగలరు?",
                     options: {
+                        veryLow: "₹5,000 కంటే తక్కువ",
                         low: "₹5,000 నుండి ₹10,000",
                         medium: "₹10,000 నుండి ₹25,000",
                         high: "₹25,000 కంటే ఎక్కువ"
@@ -1040,7 +1043,7 @@ const TRANSLATIONS = {
                     }
                 }
             },
-            nextButton: "నా వ్యాపారాన్ని సృష్టించండి 🚀"
+            nextButton: "సెటప్‌కు కొనసాగండి 🚀"
         },
 
         // ========================================
@@ -1448,6 +1451,7 @@ const TRANSLATIONS = {
                 budget: {
                     title: "உங்கள் வணிக இலக்குகளை அடைய, ஆண்டுக்கு எவ்வளவு பட்ஜெட் ஒதுக்க முடியும்?",
                     options: {
+                        veryLow: "₹5,000க்கும் குறைவு",
                         low: "₹5,000 முதல் ₹10,000 வரை",
                         medium: "₹10,000 முதல் ₹25,000 வரை",
                         high: "₹25,000க்கும் அதிகம்"
@@ -1470,7 +1474,7 @@ const TRANSLATIONS = {
                     }
                 }
             },
-            nextButton: "என் வணிகத்தை உருவாக்குங்கள் 🚀"
+            nextButton: "அமைப்பைத் தொடரவும் 🚀"
         },
 
         // ========================================
