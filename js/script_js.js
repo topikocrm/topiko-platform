@@ -3271,6 +3271,52 @@ function handleCustomTimeInput(input) {
     }
 }
 
+// Format date and time for SMS (e.g., "Aug 28 4pm")
+function formatSlotForSMS(dateLabel, timeLabel) {
+    let formattedSlot = '';
+    
+    // Handle special date labels
+    if (dateLabel === 'Today' || dateLabel === 'Tomorrow' || dateLabel === 'Day After') {
+        // Get actual date
+        const now = new Date();
+        let targetDate = new Date();
+        
+        if (dateLabel === 'Tomorrow') {
+            targetDate.setDate(now.getDate() + 1);
+        } else if (dateLabel === 'Day After') {
+            targetDate.setDate(now.getDate() + 2);
+        }
+        
+        // Format as "Aug 28"
+        const month = targetDate.toLocaleDateString('en-US', { month: 'short' });
+        const day = targetDate.getDate();
+        formattedSlot = `${month} ${day}`;
+    } else if (dateLabel === 'Custom Time') {
+        // For custom time, just use what user entered
+        return timeLabel;
+    } else {
+        // Use the date label as is (already formatted like "Aug 28")
+        formattedSlot = dateLabel;
+    }
+    
+    // Format time (convert "04:00 PM" to "4pm")
+    if (timeLabel) {
+        const timeParts = timeLabel.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+        if (timeParts) {
+            let hour = parseInt(timeParts[1]);
+            const period = timeParts[3].toLowerCase();
+            
+            // Remove leading zero and format as "4pm"
+            formattedSlot += ` ${hour}${period}`;
+        } else {
+            // If time format doesn't match, use as is
+            formattedSlot += ` ${timeLabel}`;
+        }
+    }
+    
+    return formattedSlot.trim();
+}
+
 // Send SMS for call scheduling confirmation
 async function sendCallScheduleSMS(dateLabel, timeLabel) {
     // Get phone number from session
@@ -3281,8 +3327,11 @@ async function sendCallScheduleSMS(dateLabel, timeLabel) {
         return false;
     }
     
+    // Format the slot as "Aug 28 4pm"
+    const formattedSlot = formatSlotForSMS(dateLabel, timeLabel);
+    
     // Format message for call schedule confirmation
-    const message = `Your call with Topiko team is scheduled for ${dateLabel} at ${timeLabel}. For any assistance call 885 886 8889. -TOPIKO`;
+    const message = `Your call with Topiko team is scheduled for ${formattedSlot}. For any assistance call 885 886 8889. -TOPIKO`;
     
     // Remove +91 for API
     const phoneForAPI = phoneNumber.replace('+91', '');
@@ -3297,14 +3346,14 @@ async function sendCallScheduleSMS(dateLabel, timeLabel) {
     }
     
     try {
-        const response = await fetch('/api/send-otp', {
+        // Use the new send-sms endpoint
+        const response = await fetch('/api/send-sms', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 mobile: phoneForAPI,
-                otp: '', // Not used for schedule SMS
                 message: message
             })
         });
@@ -3340,15 +3389,16 @@ async function confirmScheduleAndComplete() {
         return;
     }
     
-    // Save scheduling data
+    // Format the slot for database storage
+    const formattedSlot = slotData ? formatSlotForSMS(slotData.dateLabel, slotData.timeLabel) : selectedSlot;
+    
+    // Save scheduling data (removed scheduled_date and scheduled_time - not in DB schema)
     const schedulingData = {
         user_id: window.topikoApp?.currentUserId,
         business_name: window.topikoApp?.businessName,
         selected_offer: offer.title,
         offer_id: offer.id,
-        scheduled_slot: selectedSlot,
-        scheduled_date: slotData?.dateLabel,
-        scheduled_time: slotData?.timeLabel,
+        scheduled_slot: formattedSlot, // Store formatted slot like "Aug 28 4pm"
         action_type: 'schedule_call',
         completion_choice: 'talk_team',
         scheduled_at: new Date().toISOString()
@@ -3911,6 +3961,7 @@ if (typeof window !== 'undefined') {
     window.selectTimeSlot = selectTimeSlot;
     window.openCustomTimeInput = openCustomTimeInput;
     window.handleCustomTimeInput = handleCustomTimeInput;
+    window.formatSlotForSMS = formatSlotForSMS;
     window.confirmScheduleAndComplete = confirmScheduleAndComplete;
     window.sendCallScheduleSMS = sendCallScheduleSMS;
     window.selectReason = selectReason;
