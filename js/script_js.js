@@ -1057,14 +1057,6 @@ async function submitRegistration() {
         submitBtn.style.cursor = 'not-allowed';
         const originalText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<span style="display: inline-block; animation: pulse 1s infinite;">Processing...</span>';
-        
-        // Re-enable after 3 seconds as fallback
-        setTimeout(() => {
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = '1';
-            submitBtn.style.cursor = 'pointer';
-            submitBtn.innerHTML = originalText;
-        }, 3000);
     }
     
     const name = document.getElementById('fullName').value.trim();
@@ -1077,39 +1069,253 @@ async function submitRegistration() {
 
     if (!name || !email || !phone || !business || !type || !category) {
         window.TopikoUtils.showNotification('Please fill all required fields', 'error');
-        // Re-enable button if validation fails
+        // Re-enable button on error
         if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.style.opacity = '1';
             submitBtn.style.cursor = 'pointer';
-            submitBtn.innerHTML = originalText;
+            submitBtn.innerHTML = 'Show My Business Online';
         }
         return;
     }
 
-    // Store for personalization
+    // Validate phone number format
+    const validatedPhone = validatePhoneNumber(phone);
+    if (!validatedPhone) {
+        window.TopikoUtils.showNotification('Please enter a valid 10-digit Indian phone number', 'error');
+        // Re-enable button on error
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+            submitBtn.innerHTML = 'Show My Business Online';
+        }
+        return;
+    }
+
+    // Store validated phone and user info
+    window.topikoApp.userPhone = validatedPhone;
     window.topikoApp.userName = name;
     window.topikoApp.businessName = business;
 
-    // Show OTP verification modal
-    showOtpModal();
+    // Check phone uniqueness
+    const isUnique = await checkPhoneUnique(validatedPhone);
+    if (!isUnique) {
+        window.TopikoUtils.showNotification('This phone number is already registered. Please use a different number.', 'error');
+        // Re-enable button on error
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+            submitBtn.innerHTML = 'Show My Business Online';
+        }
+        return;
+    }
+
+    // Send OTP
+    const phoneWithoutCode = validatedPhone.replace('+91', '');
+    const otpSent = await sendOTP(phoneWithoutCode);
+    
+    if (otpSent) {
+        // Show OTP verification modal
+        showOtpModal();
+    } else {
+        window.TopikoUtils.showNotification('Failed to send OTP. Please try again.', 'error');
+        // Re-enable button on error
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+            submitBtn.innerHTML = 'Show My Business Online';
+        }
+    }
 }
 
 // ========================================
 // OTP VERIFICATION FUNCTIONS
 // ========================================
 
-function showOtpModal() {
-    window.TopikoUtils.showModal('otpVerificationModal');
-    // Auto-fill with default OTP
-    setTimeout(() => {
-        const otpInputs = document.querySelectorAll('.otp-input');
-        const defaultOtp = window.TopikoConfig.DEFAULTS.OTP_DEFAULT;
-        otpInputs.forEach((input, index) => {
-            input.value = defaultOtp[index];
-            input.classList.add('filled');
+// Phone number validation for Indian numbers
+function validatePhoneNumber(phone) {
+    // Remove all non-digit characters
+    const cleaned = phone.replace(/\D/g, '');
+    
+    // Check if it's 10 digits (without country code) or 12 digits (with 91)
+    if (cleaned.length === 10) {
+        return '+91' + cleaned;
+    } else if (cleaned.length === 12 && cleaned.startsWith('91')) {
+        return '+' + cleaned;
+    }
+    return null; // Invalid
+}
+
+// Check if phone number is unique in database
+async function checkPhoneUnique(phone) {
+    // Special case: test number always allowed
+    if (phone.includes('8272500000')) {
+        return true;
+    }
+    
+    try {
+        // Check if phone exists in database
+        const { data, error } = await supabase
+            .from('users')
+            .select('id')
+            .eq('phone', phone)
+            .single();
+        
+        return !data; // Return true if phone doesn't exist
+    } catch (error) {
+        console.log('Phone check error:', error);
+        return true; // Allow proceed if check fails
+    }
+}
+
+// Send OTP to phone number
+async function sendOTP(phoneNumber) {
+    const cleanPhone = validatePhoneNumber(phoneNumber);
+    
+    if (!cleanPhone) {
+        window.TopikoUtils.showNotification('Please enter a valid 10-digit phone number', 'error');
+        return false;
+    }
+    
+    // Store clean phone for later use
+    window.topikoApp.userPhone = cleanPhone;
+    
+    // Check if phone is unique
+    const isUnique = await checkPhoneUnique(cleanPhone);
+    if (!isUnique) {
+        window.TopikoUtils.showNotification('This phone number is already registered', 'error');
+        return false;
+    }
+    
+    // Test number - don't send OTP
+    if (cleanPhone.includes('8272500000')) {
+        console.log('Test number detected - OTP: 0827');
+        window.topikoApp.testMode = true;
+        window.topikoApp.sentOTP = '0827'; // For test number
+        return true;
+    }
+    
+    // Generate 4-digit OTP
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    const message = `${otp} is your registration OTP for Topiko. Do not share this OTP with anyone. Contact 885 886 8889 for any help.`;
+    
+    // Check if running locally (file:// protocol)
+    const isLocalFile = window.location.protocol === 'file:';
+    
+    if (isLocalFile) {
+        // Local testing mode - skip actual API call
+        console.log('Local testing mode - Generated OTP:', otp);
+        window.topikoApp.sentOTP = otp;
+        window.TopikoUtils.showNotification(`Testing mode - Use OTP: ${otp} or master OTP: 0827`, 'info');
+        return true;
+    }
+    
+    try {
+        // Call backend API
+        const response = await fetch('/api/send-otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                mobile: cleanPhone,
+                otp: otp,
+                message: message
+            })
         });
-    }, 500);
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            // Store OTP temporarily for verification
+            window.topikoApp.sentOTP = otp;
+            console.log('OTP sent successfully to', cleanPhone);
+            return true;
+        } else {
+            console.error('Failed to send OTP:', data.error || 'Server error');
+            // Fallback: allow proceeding with master OTP only
+            window.topikoApp.sentOTP = null;
+            window.TopikoUtils.showNotification('SMS service temporarily unavailable. You can use master OTP: 0827', 'warning');
+            return true; // Still show modal so user can use master OTP
+        }
+    } catch (error) {
+        console.error('Failed to send OTP:', error);
+        // Fallback: allow proceeding with master OTP only
+        window.topikoApp.sentOTP = null;
+        window.TopikoUtils.showNotification('SMS service temporarily unavailable. You can use master OTP: 0827', 'warning');
+        return true; // Still show modal so user can use master OTP
+    }
+}
+
+// Resend OTP functionality
+let resendAttempts = 0;
+let resendTimer = null;
+
+function startResendTimer() {
+    let seconds = 30;
+    const resendBtn = document.getElementById('resendOTPBtn');
+    
+    if (!resendBtn) return;
+    
+    resendBtn.disabled = true;
+    resendTimer = setInterval(() => {
+        seconds--;
+        if (seconds <= 0) {
+            clearInterval(resendTimer);
+            resendBtn.disabled = false;
+            resendBtn.textContent = 'Resend OTP';
+        } else {
+            resendBtn.textContent = `Resend in ${seconds}s`;
+        }
+    }, 1000);
+}
+
+async function resendOTP() {
+    if (resendAttempts >= 3) {
+        window.TopikoUtils.showNotification('Maximum resend attempts reached. Please try again later.', 'error');
+        return;
+    }
+    
+    resendAttempts++;
+    const otpSent = await sendOTP(window.topikoApp.userPhone.replace('+91', ''));
+    
+    if (otpSent) {
+        window.TopikoUtils.showNotification('OTP resent successfully', 'success');
+        startResendTimer();
+    } else {
+        window.TopikoUtils.showNotification('Failed to resend OTP', 'error');
+    }
+}
+
+function showOtpModal() {
+    // Reset resend attempts
+    resendAttempts = 0;
+    
+    // Display phone number in modal if available
+    const phoneDisplay = document.getElementById('otpPhoneDisplay');
+    if (phoneDisplay && window.topikoApp.userPhone) {
+        phoneDisplay.textContent = `OTP sent to ${window.topikoApp.userPhone}`;
+    }
+    
+    window.TopikoUtils.showModal('otpVerificationModal');
+    
+    // Start resend timer
+    startResendTimer();
+    
+    // Clear OTP inputs
+    const otpInputs = document.querySelectorAll('.otp-input');
+    otpInputs.forEach(input => {
+        input.value = '';
+        input.classList.remove('filled');
+    });
+    
+    // Focus first input
+    if (otpInputs[0]) {
+        otpInputs[0].focus();
+    }
 }
 
 function handleOtpInput(input, index) {
@@ -1141,18 +1347,43 @@ function handleOtpInput(input, index) {
 async function verifyOtp() {
     // Disable the verify button immediately
     const verifyBtn = document.getElementById('verifyOtpBtn');
+    const originalText = verifyBtn ? verifyBtn.innerHTML : 'Verify & Continue';
+    
     if (verifyBtn) {
         verifyBtn.disabled = true;
         verifyBtn.style.opacity = '0.6';
         verifyBtn.style.cursor = 'not-allowed';
-        const originalText = verifyBtn.innerHTML;
         verifyBtn.innerHTML = '<span style="animation: pulse 1s infinite;">Verifying...</span>';
     }
     
     const otpInputs = document.querySelectorAll('.otp-input');
     const otp = Array.from(otpInputs).map(input => input.value).join('');
     
-    if (otp === window.TopikoConfig.DEFAULTS.OTP_DEFAULT) {
+    // Check OTP validity
+    let isValidOTP = false;
+    
+    // 1. Check master OTP (0827) - always works
+    if (otp === '0827') {
+        isValidOTP = true;
+        console.log('Master OTP used');
+    }
+    // 2. Check test mode (test number 8272500000 with OTP 1234)
+    else if (window.topikoApp.userPhone === '+918272500000' && otp === '1234') {
+        isValidOTP = true;
+        console.log('Test mode OTP verified');
+    }
+    // 3. Check actual sent OTP
+    else if (window.topikoApp.sentOTP && otp === window.topikoApp.sentOTP) {
+        isValidOTP = true;
+        console.log('Actual OTP verified');
+    }
+    // 4. Fallback for development (accept default OTP if no real OTP was sent)
+    else if (!window.topikoApp.sentOTP && otp === window.TopikoConfig.DEFAULTS.OTP_DEFAULT) {
+        isValidOTP = true;
+        console.log('Development mode OTP accepted');
+    }
+    
+    if (isValidOTP) {
         // Also permanently disable the "Show My Business Online" button
         const registrationSubmitBtn = document.querySelector('[onclick="submitRegistration()"]');
         if (registrationSubmitBtn) {
@@ -1162,6 +1393,9 @@ async function verifyOtp() {
             registrationSubmitBtn.innerHTML = '<span style="color: #10b981;">✓ Registration Complete</span>';
             registrationSubmitBtn.onclick = null; // Remove onclick handler
         }
+        
+        // Mark OTP as verified
+        window.topikoApp.otpVerified = true;
         
         // Keep button disabled during processing
         window.TopikoUtils.closeModal('otpVerificationModal');
@@ -1176,7 +1410,7 @@ async function verifyOtp() {
             verifyBtn.disabled = false;
             verifyBtn.style.opacity = '1';
             verifyBtn.style.cursor = 'pointer';
-            verifyBtn.innerHTML = originalText || 'Verify & Continue';
+            verifyBtn.innerHTML = originalText;
         }
     }
 }

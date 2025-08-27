@@ -1172,9 +1172,14 @@
                     Verify Your Phone Number
                 </h2>
                 
-                <p style="color: #553c9a; font-size: 1rem; margin-bottom: 1.5rem;"
+                <p style="color: #553c9a; font-size: 1rem; margin-bottom: 0.5rem;"
                    data-translate="modals.otpVerification.subtitle">
                     We've sent a 4-digit code to your phone. Enter it below to secure your account.
+                </p>
+                
+                <!-- Phone number display -->
+                <p id="otpPhoneDisplay" style="color: #6b46c1; font-weight: 600; font-size: 1.1rem; margin-bottom: 1.5rem;">
+                    <!-- Phone number will be inserted here -->
                 </p>
 
                 <div class="otp-input-group">
@@ -1184,8 +1189,12 @@
                     <input type="text" class="otp-input" maxlength="1" oninput="handleOtpInput(this, 3)" onkeyup="if(event.key==='Backspace' && !this.value && this.previousElementSibling) this.previousElementSibling.focus()">
                 </div>
 
-                <p style="color: #6b7280; font-size: 0.8rem; margin-bottom: 1.5rem;">
-                    <span data-translate="modals.otpVerification.resend">Didn't receive the code? Resend OTP</span>
+                <p style="color: #6b7280; font-size: 0.9rem; margin-top: 1rem; margin-bottom: 1rem;">
+                    <span data-translate="modals.otpVerification.resend">Didn't receive the code?</span>
+                    <button id="resendOtpBtn" onclick="resendOTP()" 
+                            style="background: none; border: none; color: #6b46c1; font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0; margin-left: 5px;">
+                        Resend OTP
+                    </button>
                 </p>
 
                 <button class="submit-button" id="verifyOtpBtn" onclick="verifyOtp()" 
