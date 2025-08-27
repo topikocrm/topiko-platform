@@ -1213,6 +1213,9 @@ async function sendOTP(phoneNumber) {
         return true;
     }
     
+    // Remove +91 prefix for API call (API expects 10-digit number)
+    const phoneForAPI = cleanPhone.replace('+91', '');
+    
     try {
         // Call backend API
         const response = await fetch('/api/send-otp', {
@@ -1221,7 +1224,7 @@ async function sendOTP(phoneNumber) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                mobile: cleanPhone,
+                mobile: phoneForAPI,
                 otp: otp,
                 message: message
             })
@@ -1232,7 +1235,7 @@ async function sendOTP(phoneNumber) {
         if (response.ok && data.success) {
             // Store OTP temporarily for verification
             window.topikoApp.sentOTP = otp;
-            console.log('OTP sent successfully to', cleanPhone);
+            console.log('OTP sent successfully to', phoneForAPI, '- OTP:', otp);
             return true;
         } else {
             console.error('Failed to send OTP:', data.error || 'Server error');
