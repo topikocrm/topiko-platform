@@ -383,35 +383,49 @@ function generateDynamicTimeSlots() {
     const now = new Date();
     const slots = [];
     
+    // Business hours: 10 AM to 6 PM
+    const businessHours = [10, 12, 14, 16]; // 10am, 12pm, 2pm, 4pm
+    
     // Start from 2 hours from now
-    let currentTime = new Date(now.getTime() + (2 * 60 * 60 * 1000));
+    let startTime = new Date(now.getTime() + (2 * 60 * 60 * 1000));
     
-    // Round to next hour
-    currentTime.setMinutes(0, 0, 0);
-    currentTime.setHours(currentTime.getHours() + 1);
+    // Round to next even hour
+    startTime.setMinutes(0, 0, 0);
+    if (startTime.getHours() % 2 !== 0) {
+        startTime.setHours(startTime.getHours() + 1);
+    }
     
-    // Generate 8 slots
-    for (let i = 0; i < 8; i++) {
-        const slotTime = new Date(currentTime.getTime() + (i * 2 * 60 * 60 * 1000)); // Every 2 hours
-        
-        // Skip if outside business hours (9 AM to 6 PM)
-        const hour = slotTime.getHours();
-        if (hour < 9 || hour > 18) {
-            // Move to next business day
-            slotTime.setDate(slotTime.getDate() + 1);
-            slotTime.setHours(9, 0, 0, 0);
+    let slotsAdded = 0;
+    let currentDate = new Date(startTime);
+    
+    // Generate exactly 8 slots
+    while (slotsAdded < 8) {
+        // Check each business hour slot for the current date
+        for (let hour of businessHours) {
+            // Create potential slot time
+            const slotTime = new Date(currentDate);
+            slotTime.setHours(hour, 0, 0, 0);
+            
+            // Only add if it's at least 2 hours from now
+            if (slotTime.getTime() > now.getTime() + (2 * 60 * 60 * 1000)) {
+                slots.push({
+                    id: `slot-${slotsAdded}`,
+                    dateTime: slotTime,
+                    dateLabel: getDateLabel(slotTime),
+                    timeLabel: slotTime.toLocaleTimeString('en-IN', { 
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        hour12: true 
+                    })
+                });
+                slotsAdded++;
+                
+                if (slotsAdded >= 8) break;
+            }
         }
         
-        slots.push({
-            id: `slot-${i}`,
-            dateTime: slotTime,
-            dateLabel: getDateLabel(slotTime),
-            timeLabel: slotTime.toLocaleTimeString('en-IN', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                hour12: true 
-            })
-        });
+        // Move to next day
+        currentDate.setDate(currentDate.getDate() + 1);
     }
     
     return slots;
@@ -452,12 +466,30 @@ function openCallScheduler() {
     if (timeSlotsGrid) {
         // Store slots data globally for access in onclick
         window.timeSlotsData = timeSlots;
-        timeSlotsGrid.innerHTML = timeSlots.map(slot => `
+        
+        // Generate 8 time slots + 1 custom input option
+        const slotsHTML = timeSlots.map(slot => `
             <div class="time-slot" onclick="selectTimeSlot(this, '${slot.id}', window.timeSlotsData.find(s => s.id === '${slot.id}'))">
                 <div class="slot-date">${slot.dateLabel}</div>
                 <div class="slot-time">${slot.timeLabel}</div>
             </div>
         `).join('');
+        
+        // Add custom time input as 9th option
+        const customSlotHTML = `
+            <div class="time-slot custom-slot" onclick="openCustomTimeInput(this)">
+                <div class="slot-date">Custom</div>
+                <div class="slot-time">
+                    <input type="text" id="customTimeInput" placeholder="Enter time" 
+                           style="width: 100%; border: none; background: transparent; text-align: center; font-size: 0.9rem;"
+                           onclick="event.stopPropagation();"
+                           onblur="handleCustomTimeInput(this)"
+                           onkeypress="if(event.key === 'Enter') handleCustomTimeInput(this)">
+                </div>
+            </div>
+        `;
+        
+        timeSlotsGrid.innerHTML = slotsHTML + customSlotHTML;
     }
     
     // Update scheduler modal with selected offer
@@ -3198,6 +3230,47 @@ function selectTimeSlot(element, slotId, slotData) {
     window.TopikoUtils.addDebugLog(`⏰ Time slot selected: ${slotId} - ${window.selectedTimeSlotData.dateLabel} at ${window.selectedTimeSlotData.timeLabel}`);
 }
 
+// Handle custom time input selection
+function openCustomTimeInput(element) {
+    // Remove selected class from all slots
+    document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
+    
+    // Add selected class to custom slot
+    element.classList.add('selected');
+    
+    // Focus on the input
+    const input = element.querySelector('#customTimeInput');
+    if (input) {
+        input.focus();
+    }
+}
+
+// Handle custom time input value
+function handleCustomTimeInput(input) {
+    const value = input.value.trim();
+    
+    if (value) {
+        // Store custom time slot
+        window.selectedTimeSlot = 'custom';
+        window.selectedTimeSlotData = {
+            dateLabel: 'Custom Time',
+            timeLabel: value
+        };
+        
+        // Enable confirm button
+        const confirmBtn = document.getElementById('confirmScheduleBtn');
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.style.opacity = '1';
+        }
+        
+        // Keep the slot selected
+        input.closest('.time-slot').classList.add('selected');
+        
+        window.TopikoUtils.addDebugLog(`⏰ Custom time selected: ${value}`);
+    }
+}
+
 // Send SMS for call scheduling confirmation
 async function sendCallScheduleSMS(dateLabel, timeLabel) {
     // Get phone number from session
@@ -3836,6 +3909,8 @@ if (typeof window !== 'undefined') {
     window.displayRandomOffers = displayRandomOffers;
     window.getRandomOffers = getRandomOffers;
     window.selectTimeSlot = selectTimeSlot;
+    window.openCustomTimeInput = openCustomTimeInput;
+    window.handleCustomTimeInput = handleCustomTimeInput;
     window.confirmScheduleAndComplete = confirmScheduleAndComplete;
     window.sendCallScheduleSMS = sendCallScheduleSMS;
     window.selectReason = selectReason;
