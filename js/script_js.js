@@ -450,8 +450,10 @@ function openCallScheduler() {
     // Update time slots grid
     const timeSlotsGrid = document.getElementById('timeSlotsGrid');
     if (timeSlotsGrid) {
+        // Store slots data globally for access in onclick
+        window.timeSlotsData = timeSlots;
         timeSlotsGrid.innerHTML = timeSlots.map(slot => `
-            <div class="time-slot" onclick="selectTimeSlot(this, '${slot.id}')">
+            <div class="time-slot" onclick="selectTimeSlot(this, '${slot.id}', window.timeSlotsData.find(s => s.id === '${slot.id}'))">
                 <div class="slot-date">${slot.dateLabel}</div>
                 <div class="slot-time">${slot.timeLabel}</div>
             </div>
@@ -3172,7 +3174,7 @@ function getRandomOffers(offers, count) {
 }
 
 // Enhanced Time Slot Selection
-function selectTimeSlot(element, slotId) {
+function selectTimeSlot(element, slotId, slotData) {
     // Remove selected class from all slots
     document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
     
@@ -3186,15 +3188,73 @@ function selectTimeSlot(element, slotId) {
         confirmBtn.style.opacity = '1';
     }
     
-    // Store selected slot
+    // Store selected slot ID and full data
     window.selectedTimeSlot = slotId;
+    window.selectedTimeSlotData = slotData || {
+        dateLabel: element.querySelector('.slot-date')?.textContent,
+        timeLabel: element.querySelector('.slot-time')?.textContent
+    };
     
-    window.TopikoUtils.addDebugLog(`⏰ Time slot selected: ${slotId}`);
+    window.TopikoUtils.addDebugLog(`⏰ Time slot selected: ${slotId} - ${window.selectedTimeSlotData.dateLabel} at ${window.selectedTimeSlotData.timeLabel}`);
+}
+
+// Send SMS for call scheduling confirmation
+async function sendCallScheduleSMS(dateLabel, timeLabel) {
+    // Get phone number from session
+    const phoneNumber = window.topikoApp?.userPhone;
+    
+    if (!phoneNumber) {
+        console.log('No phone number available for SMS');
+        return false;
+    }
+    
+    // Format message for call schedule confirmation
+    const message = `Your call with Topiko team is scheduled for ${dateLabel} at ${timeLabel}. For any assistance call 885 886 8889. -TOPIKO`;
+    
+    // Remove +91 for API
+    const phoneForAPI = phoneNumber.replace('+91', '');
+    
+    // Check if running locally
+    const isLocalFile = window.location.protocol === 'file:';
+    
+    if (isLocalFile) {
+        console.log('Local testing - SMS:', message);
+        window.TopikoUtils.showNotification('SMS confirmation would be sent: ' + message, 'info');
+        return true;
+    }
+    
+    try {
+        const response = await fetch('/api/send-otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                mobile: phoneForAPI,
+                otp: '', // Not used for schedule SMS
+                message: message
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            console.log('Schedule SMS sent successfully');
+            return true;
+        } else {
+            console.error('Failed to send schedule SMS:', data.error);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error sending schedule SMS:', error);
+        return false;
+    }
 }
 
 // Confirm Schedule and Complete
-function confirmScheduleAndComplete() {
+async function confirmScheduleAndComplete() {
     const selectedSlot = window.selectedTimeSlot;
+    const slotData = window.selectedTimeSlotData;
     const offer = selectedOffer;
     
     if (!selectedSlot) {
@@ -3214,6 +3274,8 @@ function confirmScheduleAndComplete() {
         selected_offer: offer.title,
         offer_id: offer.id,
         scheduled_slot: selectedSlot,
+        scheduled_date: slotData?.dateLabel,
+        scheduled_time: slotData?.timeLabel,
         action_type: 'schedule_call',
         completion_choice: 'talk_team',
         scheduled_at: new Date().toISOString()
@@ -3224,16 +3286,25 @@ function confirmScheduleAndComplete() {
         window.TopikoUtils.saveToSupabase(schedulingData, 'completion_actions');
     }
     
+    // Send SMS confirmation
+    if (slotData?.dateLabel && slotData?.timeLabel) {
+        const smsSent = await sendCallScheduleSMS(slotData.dateLabel, slotData.timeLabel);
+        if (smsSent) {
+            window.TopikoUtils.showNotification('📱 SMS confirmation sent to your phone', 'success');
+        }
+    }
+    
     // Close modal and show success
     window.TopikoUtils.closeModal('dateTimeModal');
     
-    // Show completion message
-    window.TopikoUtils.showNotification(`🎉 Perfect! Call scheduled to claim "${offer.title}". Our team will contact you at the selected time.`, 'success');
+    // Show completion message with date/time details
+    const scheduleDetails = slotData ? ` for ${slotData.dateLabel} at ${slotData.timeLabel}` : ' at the selected time';
+    window.TopikoUtils.showNotification(`🎉 Perfect! Call scheduled${scheduleDetails} to claim "${offer.title}". Our team will contact you.`, 'success');
     
     // Update completion screen to show success state
     showCompletionSuccess('call_scheduled', offer.title, selectedSlot);
     
-    window.TopikoUtils.addDebugLog(`✅ Call scheduled successfully: ${offer.title} at ${selectedSlot}`);
+    window.TopikoUtils.addDebugLog(`✅ Call scheduled successfully: ${offer.title} at ${selectedSlot} - ${slotData?.dateLabel} ${slotData?.timeLabel}`);
 }
 
 // Enhanced Reason Selection
@@ -3766,6 +3837,7 @@ if (typeof window !== 'undefined') {
     window.getRandomOffers = getRandomOffers;
     window.selectTimeSlot = selectTimeSlot;
     window.confirmScheduleAndComplete = confirmScheduleAndComplete;
+    window.sendCallScheduleSMS = sendCallScheduleSMS;
     window.selectReason = selectReason;
     window.submitReasonAndComplete = submitReasonAndComplete;
     window.showCompletionSuccess = showCompletionSuccess;
