@@ -450,6 +450,11 @@
                 <h2 class="section-title">Campaign Performance</h2>
                 <div class="campaign-filters">
                     <input type="text" class="filter-input" id="searchCampaign" placeholder="Search campaigns..." onkeyup="filterCampaigns()">
+                    <select class="filter-select" id="campaignTypeFilter" onchange="filterCampaigns()" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-weight: 600;">
+                        <option value="">All Campaigns</option>
+                        <option value="customer">Customer Campaigns</option>
+                        <option value="partner">Partner Campaigns</option>
+                    </select>
                     <select class="filter-select" id="sourceFilter" onchange="filterCampaigns()">
                         <option value="">All Sources</option>
                         <option value="google">Google</option>
@@ -458,6 +463,9 @@
                         <option value="whatsapp">WhatsApp</option>
                         <option value="email">Email</option>
                         <option value="sms">SMS</option>
+                        <option value="database">Database</option>
+                        <option value="purchased_list">Purchased List</option>
+                        <option value="scraped">Scraped Data</option>
                     </select>
                     <select class="filter-select" id="periodFilter" onchange="filterCampaigns()">
                         <option value="30">Last 30 days</option>
@@ -941,10 +949,11 @@
             document.getElementById('totalLeads').textContent = totalCampaignLeads;
         }
         
-        function displayCampaignsTable() {
+        function displayCampaignsTable(campaignsToDisplay = null) {
             const container = document.getElementById('campaignsTableContainer');
+            const campaigns = campaignsToDisplay || allCampaigns;
             
-            if (allCampaigns.length === 0) {
+            if (campaigns.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">📊</div>
@@ -959,7 +968,7 @@
             }
             
             // Calculate conversions for each campaign
-            const campaignsWithStats = allCampaigns.map(campaign => {
+            const campaignsWithStats = campaigns.map(campaign => {
                 const leads = allLeads.filter(l => 
                     l.utm_campaign === campaign.utm_campaign &&
                     l.utm_source === campaign.utm_source
@@ -1146,10 +1155,25 @@
         function filterCampaigns() {
             // Implement filtering logic
             const searchTerm = document.getElementById('searchCampaign').value.toLowerCase();
+            const campaignTypeFilter = document.getElementById('campaignTypeFilter').value;
             const sourceFilter = document.getElementById('sourceFilter').value;
             const periodFilter = document.getElementById('periodFilter').value;
             
-            let filteredCampaigns = allCampaigns;
+            // Start with the original campaigns, not the already filtered ones
+            let filteredCampaigns = [...allCampaigns];
+            
+            // Filter by campaign type (customer vs partner)
+            if (campaignTypeFilter) {
+                if (campaignTypeFilter === 'partner') {
+                    filteredCampaigns = filteredCampaigns.filter(c => 
+                        c.source === 'partner' || (c.campaign_name && c.campaign_name.includes('[PARTNER]'))
+                    );
+                } else if (campaignTypeFilter === 'customer') {
+                    filteredCampaigns = filteredCampaigns.filter(c => 
+                        c.source !== 'partner' && (!c.campaign_name || !c.campaign_name.includes('[PARTNER]'))
+                    );
+                }
+            }
             
             if (searchTerm) {
                 filteredCampaigns = filteredCampaigns.filter(c => 
@@ -1162,9 +1186,8 @@
                 filteredCampaigns = filteredCampaigns.filter(c => c.utm_source === sourceFilter);
             }
             
-            // Redisplay with filtered data
-            allCampaigns = filteredCampaigns;
-            displayCampaignsTable();
+            // Display filtered data without overwriting original
+            displayCampaignsTable(filteredCampaigns);
         }
         
         function copyShortUrl(shortCode) {
