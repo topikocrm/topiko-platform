@@ -322,11 +322,11 @@
                     <input type="text" id="campaignName" placeholder="e.g., Q1 2025 Partner Drive">
                 </div>
 
-                <!-- Partner Type -->
+                <!-- Target Partner Type -->
                 <div class="form-group">
-                    <label for="utmPartnerType" class="required">Partner Type</label>
+                    <label for="utmPartnerType" class="required">Target Partner Type</label>
                     <select id="utmPartnerType">
-                        <option value="">Select Partner Type</option>
+                        <option value="">Select Target Type</option>
                         <option value="reseller">Reseller</option>
                         <option value="affiliate">Affiliate</option>
                         <option value="referral">Referral Partner</option>
@@ -339,25 +339,29 @@
                     </select>
                 </div>
 
-                <!-- Partner Tier -->
+                <!-- Data Source -->
                 <div class="form-group">
-                    <label for="utmPartnerTier" class="required">Partner Tier</label>
-                    <select id="utmPartnerTier">
-                        <option value="">Select Partner Tier</option>
-                        <option value="platinum">Platinum</option>
-                        <option value="gold">Gold</option>
-                        <option value="silver">Silver</option>
-                        <option value="bronze">Bronze</option>
-                        <option value="starter">Starter</option>
-                        <option value="vip">VIP</option>
+                    <label for="utmDataSource" class="required">Data Source</label>
+                    <select id="utmDataSource">
+                        <option value="">Select Data Source</option>
+                        <option value="database">Database</option>
+                        <option value="purchased_list">Purchased List</option>
+                        <option value="scraped">Scraped Data</option>
+                        <option value="manual">Manual Entry</option>
+                        <option value="imported">Imported</option>
+                        <option value="referral">Referral</option>
+                        <option value="event">Event</option>
+                        <option value="webinar">Webinar</option>
+                        <option value="social">Social Media</option>
+                        <option value="other">Other</option>
                     </select>
                 </div>
 
-                <!-- Partner Region -->
+                <!-- Target Region -->
                 <div class="form-group">
-                    <label for="utmPartnerRegion">Partner Region</label>
+                    <label for="utmPartnerRegion">Target Region</label>
                     <select id="utmPartnerRegion">
-                        <option value="">Select Region</option>
+                        <option value="">Select Target Region</option>
                         <option value="north">North India</option>
                         <option value="south">South India</option>
                         <option value="east">East India</option>
@@ -368,18 +372,16 @@
                     </select>
                 </div>
 
-                <!-- Commission Model -->
+                <!-- Target City -->
                 <div class="form-group">
-                    <label for="utmCommissionModel">Commission Model</label>
-                    <select id="utmCommissionModel">
-                        <option value="">Select Commission Model</option>
-                        <option value="flat">Flat Rate</option>
-                        <option value="percentage">Percentage Based</option>
-                        <option value="tiered">Tiered Commission</option>
-                        <option value="performance">Performance Based</option>
-                        <option value="hybrid">Hybrid Model</option>
-                        <option value="recurring">Recurring Commission</option>
-                    </select>
+                    <label for="utmTargetCity">Target City</label>
+                    <input type="text" id="utmTargetCity" placeholder="e.g., Mumbai, Bangalore, Delhi NCR">
+                </div>
+
+                <!-- Referral Code -->
+                <div class="form-group">
+                    <label for="utmReferralCode">Referral Code</label>
+                    <input type="text" id="utmReferralCode" placeholder="e.g., REF123, PARTNER50">
                 </div>
 
                 <!-- Source -->
@@ -700,12 +702,12 @@
             const campaignName = document.getElementById('campaignName').value;
             const createdBy = document.getElementById('createdBy').value;
             const partnerType = document.getElementById('utmPartnerType').value;
-            const partnerTier = document.getElementById('utmPartnerTier').value;
+            const dataSource = document.getElementById('utmDataSource').value;
             const source = document.getElementById('utmSource').value;
             const medium = document.getElementById('utmMedium').value;
             
-            if (!campaignName || !createdBy || !partnerType || !partnerTier || !source || !medium) {
-                alert('Please fill in all required fields: Campaign Name, Created By, Partner Type, Partner Tier, Source, and Medium');
+            if (!campaignName || !createdBy || !partnerType || !dataSource || !source || !medium) {
+                alert('Please fill in all required fields: Campaign Name, Created By, Target Partner Type, Data Source, Source, and Medium');
                 return;
             }
             
@@ -726,14 +728,17 @@
             
             // Optional partner parameters
             const partnerRegion = document.getElementById('utmPartnerRegion').value;
-            const commissionModel = document.getElementById('utmCommissionModel').value;
+            const targetCity = document.getElementById('utmTargetCity').value;
+            const referralCode = document.getElementById('utmReferralCode').value;
             const partnerCampaign = document.getElementById('utmPartnerCampaign').value;
             const targetMarket = document.getElementById('utmTargetMarket').value;
             const content = document.getElementById('utmContent').value;
             const trackingCode = document.getElementById('utmTrackingCode').value;
             
             if (partnerRegion) params.append('utm_partner_region', partnerRegion);
-            if (commissionModel) params.append('utm_commission_model', commissionModel);
+            if (dataSource) params.append('utm_data_source', dataSource);
+            if (targetCity) params.append('utm_target_city', targetCity);
+            if (referralCode) params.append('utm_referral_code', referralCode);
             if (partnerCampaign) params.append('utm_partner_campaign', partnerCampaign);
             if (targetMarket) params.append('utm_target_market', targetMarket);
             if (content) params.append('utm_content', content);
@@ -759,8 +764,7 @@
                     c.utm_source === source && 
                     c.utm_medium === medium && 
                     c.utm_campaign === campaignName.toLowerCase().replace(/\s+/g, '_') &&
-                    c.utm_partner_type === partnerType &&
-                    c.utm_partner_tier === partnerTier
+                    c.utm_partner_type === partnerType
                 );
                 
                 if (existing) {
@@ -792,9 +796,10 @@
                 utm_medium: medium,
                 utm_campaign: campaignName.toLowerCase().replace(/\s+/g, '_'),
                 utm_partner_type: partnerType,
-                utm_partner_tier: partnerTier,
+                utm_data_source: dataSource || null,
                 utm_partner_region: partnerRegion || null,
-                utm_commission_model: commissionModel || null,
+                utm_target_city: targetCity || null,
+                utm_referral_code: referralCode || null,
                 utm_content: content || null,
                 custom_params: {
                     ...customParamsObj,
@@ -870,9 +875,10 @@
         function resetForm() {
             document.getElementById('campaignName').value = '';
             document.getElementById('utmPartnerType').value = '';
-            document.getElementById('utmPartnerTier').value = '';
+            document.getElementById('utmDataSource').value = '';
             document.getElementById('utmPartnerRegion').value = '';
-            document.getElementById('utmCommissionModel').value = '';
+            document.getElementById('utmTargetCity').value = '';
+            document.getElementById('utmReferralCode').value = '';
             document.getElementById('utmSource').value = '';
             document.getElementById('utmMedium').value = '';
             document.getElementById('utmPartnerCampaign').value = '';
@@ -903,8 +909,9 @@
                             ${campaign.is_active === false ? '<span style="color: #ef4444; font-size: 0.85rem; margin-left: 0.5rem;">(Inactive)</span>' : ''}
                         </div>
                         <div class="campaign-details" style="font-size: 0.85rem; color: #64748b;">
-                            ${campaign.utm_partner_type || 'N/A'} • ${campaign.utm_partner_tier || 'N/A'} 
+                            ${campaign.utm_partner_type || 'N/A'} • ${campaign.utm_data_source || 'N/A'} 
                             ${campaign.utm_partner_region ? `• ${campaign.utm_partner_region}` : ''}
+                            ${campaign.utm_target_city ? `• ${campaign.utm_target_city}` : ''}
                             • ${campaign.clicks || 0} clicks
                             • by ${campaign.created_by || 'Unknown'}
                         </div>
