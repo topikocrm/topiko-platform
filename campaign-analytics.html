@@ -374,13 +374,16 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>📊 Campaign Performance Analytics</h1>
+            <h1>📊 Customer Campaign Analytics</h1>
             <div class="header-actions">
                 <button class="btn btn-secondary" onclick="window.location.href='crm.html'">
                     ← Back to CRM
                 </button>
                 <button class="btn btn-secondary" onclick="window.location.href='url-builder.html'">
                     🔗 URL Builder
+                </button>
+                <button class="btn btn-secondary" onclick="window.location.href='partner-analytics.html'" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                    🤝 Partner Analytics
                 </button>
                 <button class="btn btn-primary" onclick="refreshAnalytics()">
                     🔄 Refresh
@@ -447,14 +450,9 @@
         <!-- Campaign Performance Table -->
         <div class="campaigns-section">
             <div class="section-header">
-                <h2 class="section-title">Campaign Performance</h2>
+                <h2 class="section-title">Customer Campaign Performance</h2>
                 <div class="campaign-filters">
                     <input type="text" class="filter-input" id="searchCampaign" placeholder="Search campaigns..." onkeyup="filterCampaigns()">
-                    <select class="filter-select" id="campaignTypeFilter" onchange="filterCampaigns()" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-weight: 600;">
-                        <option value="">All Campaigns</option>
-                        <option value="customer">Customer Campaigns</option>
-                        <option value="partner">Partner Campaigns</option>
-                    </select>
                     <select class="filter-select" id="sourceFilter" onchange="filterCampaigns()">
                         <option value="">All Sources</option>
                         <option value="google">Google</option>
@@ -463,9 +461,6 @@
                         <option value="whatsapp">WhatsApp</option>
                         <option value="email">Email</option>
                         <option value="sms">SMS</option>
-                        <option value="database">Database</option>
-                        <option value="purchased_list">Purchased List</option>
-                        <option value="scraped">Scraped Data</option>
                     </select>
                     <select class="filter-select" id="periodFilter" onchange="filterCampaigns()">
                         <option value="30">Last 30 days</option>
@@ -669,10 +664,11 @@
         
         async function loadAnalytics() {
             try {
-                // Load campaigns
+                // Load customer campaigns only (exclude partner campaigns)
                 const { data: campaigns, error: campaignError } = await supabase
                     .from('short_urls')
                     .select('*')
+                    .or('source.neq.partner,source.is.null')
                     .order('clicks', { ascending: false });
                 
                 if (campaignError) {
@@ -680,12 +676,16 @@
                     return;
                 }
                 
-                allCampaigns = campaigns || [];
+                // Filter out any partner campaigns that might have slipped through
+                allCampaigns = (campaigns || []).filter(c => 
+                    !c.campaign_name?.includes('[PARTNER]') && c.source !== 'partner'
+                );
                 
-                // Load leads with UTM data
+                // Load customer leads only (exclude partner leads)
                 const { data: leads, error: leadError } = await supabase
                     .from('users')
-                    .select('*');
+                    .select('*')
+                    .or('source.neq.partner,source.is.null');
                 
                 if (leadError) {
                     console.error('Error loading leads:', leadError);
@@ -1155,25 +1155,11 @@
         function filterCampaigns() {
             // Implement filtering logic
             const searchTerm = document.getElementById('searchCampaign').value.toLowerCase();
-            const campaignTypeFilter = document.getElementById('campaignTypeFilter').value;
             const sourceFilter = document.getElementById('sourceFilter').value;
             const periodFilter = document.getElementById('periodFilter').value;
             
             // Start with the original campaigns, not the already filtered ones
             let filteredCampaigns = [...allCampaigns];
-            
-            // Filter by campaign type (customer vs partner)
-            if (campaignTypeFilter) {
-                if (campaignTypeFilter === 'partner') {
-                    filteredCampaigns = filteredCampaigns.filter(c => 
-                        c.source === 'partner' || (c.campaign_name && c.campaign_name.includes('[PARTNER]'))
-                    );
-                } else if (campaignTypeFilter === 'customer') {
-                    filteredCampaigns = filteredCampaigns.filter(c => 
-                        c.source !== 'partner' && (!c.campaign_name || !c.campaign_name.includes('[PARTNER]'))
-                    );
-                }
-            }
             
             if (searchTerm) {
                 filteredCampaigns = filteredCampaigns.filter(c => 
