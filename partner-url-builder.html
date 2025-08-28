@@ -303,23 +303,12 @@
             <p>Create trackable partner referral links for TopikoPartner.com with advanced partner tracking parameters</p>
         </div>
 
-        <!-- Partner Identification -->
-        <div class="partner-info-section">
-            <h3>🤝 Partner Information</h3>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="partnerName" class="required">Partner Name/Company</label>
-                    <input type="text" id="partnerName" placeholder="e.g., Digital Solutions India">
-                </div>
-                <div class="form-group">
-                    <label for="partnerEmail" class="required">Partner Email</label>
-                    <input type="email" id="partnerEmail" placeholder="e.g., partner@company.com">
-                </div>
-                <div class="form-group">
-                    <label for="partnerId">Partner ID (Optional)</label>
-                    <input type="text" id="partnerId" placeholder="e.g., PTR001">
-                </div>
-            </div>
+        <!-- Campaign Creator Identification -->
+        <div style="background: #f0f9ff; border: 1px solid #0284c7; border-radius: 8px; padding: 1rem; margin-bottom: 2rem;">
+            <label style="font-weight: 600; color: #0c4a6e; display: block; margin-bottom: 0.5rem;">Created By (Team Member)</label>
+            <input type="text" id="createdBy" placeholder="e.g., raj@topiko.app or Raj Kumar" 
+                   style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+            <small style="color: #64748b;">This helps track who created which partner campaigns</small>
         </div>
 
         <!-- URL Builder Form -->
@@ -612,18 +601,10 @@
         
         // Initialize on load
         window.onload = async function() {
-            // Load saved partner info
-            const savedPartner = localStorage.getItem('partner_creator');
-            if (savedPartner) {
-                try {
-                    const partnerInfo = JSON.parse(savedPartner);
-                    document.getElementById('partnerName').value = partnerInfo.name || '';
-                    document.getElementById('partnerEmail').value = partnerInfo.email || '';
-                    document.getElementById('partnerId').value = partnerInfo.id || '';
-                } catch (e) {
-                    // Handle old format
-                    document.getElementById('partnerName').value = savedPartner;
-                }
+            // Load saved creator name
+            const savedCreator = localStorage.getItem('partner_campaign_creator');
+            if (savedCreator) {
+                document.getElementById('createdBy').value = savedCreator;
             }
             
             displayCustomParameters();
@@ -717,25 +698,19 @@
 
         async function generateURL() {
             const campaignName = document.getElementById('campaignName').value;
-            const partnerName = document.getElementById('partnerName').value;
-            const partnerEmail = document.getElementById('partnerEmail').value;
-            const partnerId = document.getElementById('partnerId').value;
+            const createdBy = document.getElementById('createdBy').value;
             const partnerType = document.getElementById('utmPartnerType').value;
             const partnerTier = document.getElementById('utmPartnerTier').value;
             const source = document.getElementById('utmSource').value;
             const medium = document.getElementById('utmMedium').value;
             
-            if (!campaignName || !partnerName || !partnerEmail || !partnerType || !partnerTier || !source || !medium) {
-                alert('Please fill in all required fields');
+            if (!campaignName || !createdBy || !partnerType || !partnerTier || !source || !medium) {
+                alert('Please fill in all required fields: Campaign Name, Created By, Partner Type, Partner Tier, Source, and Medium');
                 return;
             }
             
-            // Save partner info for next time
-            localStorage.setItem('partner_creator', JSON.stringify({
-                name: partnerName,
-                email: partnerEmail,
-                id: partnerId
-            }));
+            // Save creator name for next time
+            localStorage.setItem('partner_campaign_creator', createdBy);
 
             // Build UTM parameters
             const params = new URLSearchParams();
@@ -763,7 +738,6 @@
             if (targetMarket) params.append('utm_target_market', targetMarket);
             if (content) params.append('utm_content', content);
             if (trackingCode) params.append('utm_tracking_code', trackingCode);
-            if (partnerId) params.append('partner_id', partnerId);
             
             // Add custom parameters
             const customParamsObj = {};
@@ -813,7 +787,7 @@
                 short_code: shortCode,
                 long_url: fullURL,
                 campaign_name: `[PARTNER] ${campaignName}`,
-                created_by: `${partnerName} (${partnerEmail})`,
+                created_by: createdBy,
                 utm_source: source,
                 utm_medium: medium,
                 utm_campaign: campaignName.toLowerCase().replace(/\s+/g, '_'),
@@ -826,8 +800,7 @@
                     ...customParamsObj,
                     partner_campaign: partnerCampaign,
                     target_market: targetMarket,
-                    tracking_code: trackingCode,
-                    partner_id: partnerId
+                    tracking_code: trackingCode
                 },
                 clicks: 0,
                 is_active: true,
