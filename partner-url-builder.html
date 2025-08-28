@@ -384,80 +384,35 @@
                     <input type="text" id="utmReferralCode" placeholder="e.g., REF123, PARTNER50">
                 </div>
 
-                <!-- Source -->
-                <div class="form-group">
-                    <label for="utmSource" class="required">Traffic Source</label>
-                    <select id="utmSource">
-                        <option value="">Select Source</option>
-                        <option value="partner_website">Partner Website</option>
-                        <option value="partner_email">Partner Email</option>
-                        <option value="partner_social">Partner Social Media</option>
-                        <option value="partner_whatsapp">Partner WhatsApp</option>
-                        <option value="partner_event">Partner Event</option>
-                        <option value="partner_webinar">Partner Webinar</option>
-                        <option value="partner_direct">Partner Direct Referral</option>
-                        <option value="partner_network">Partner Network</option>
-                    </select>
-                </div>
-
                 <!-- Medium -->
                 <div class="form-group">
                     <label for="utmMedium" class="required">Medium</label>
                     <select id="utmMedium">
                         <option value="">Select Medium</option>
-                        <option value="partner">Partner Channel</option>
-                        <option value="referral">Referral</option>
-                        <option value="affiliate">Affiliate</option>
-                        <option value="reseller">Reseller Network</option>
-                        <option value="email">Email</option>
-                        <option value="social">Social Media</option>
-                        <option value="event">Event</option>
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="meta">Meta</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="ppc">PPC</option>
+                        <option value="organic">Organic</option>
                         <option value="webinar">Webinar</option>
+                        <option value="email">Email</option>
+                        <option value="sms">SMS</option>
+                        <option value="direct">Direct</option>
+                        <option value="others">Others</option>
                     </select>
                 </div>
 
-                <!-- Partner Campaign Type -->
+                <!-- Target Product -->
                 <div class="form-group">
-                    <label for="utmPartnerCampaign">Partner Campaign Type</label>
-                    <select id="utmPartnerCampaign">
-                        <option value="">Select Campaign Type</option>
-                        <option value="onboarding">Partner Onboarding</option>
-                        <option value="activation">Partner Activation</option>
-                        <option value="promotion">Special Promotion</option>
-                        <option value="seasonal">Seasonal Campaign</option>
-                        <option value="product_launch">Product Launch</option>
-                        <option value="training">Partner Training</option>
-                        <option value="incentive">Incentive Program</option>
-                        <option value="contest">Partner Contest</option>
+                    <label for="utmTargetProduct">Target Product</label>
+                    <select id="utmTargetProduct" multiple style="height: 120px;">
+                        <option value="all">All</option>
+                        <option value="display">Display</option>
+                        <option value="topiko">Topiko</option>
+                        <option value="hebt">HEBT</option>
+                        <option value="flex">FLEX</option>
                     </select>
-                </div>
-
-                <!-- Target Market -->
-                <div class="form-group">
-                    <label for="utmTargetMarket">Target Market</label>
-                    <select id="utmTargetMarket">
-                        <option value="">Select Target Market</option>
-                        <option value="smb">Small & Medium Business</option>
-                        <option value="enterprise">Enterprise</option>
-                        <option value="startup">Startups</option>
-                        <option value="retail">Retail</option>
-                        <option value="ecommerce">E-commerce</option>
-                        <option value="services">Services</option>
-                        <option value="manufacturing">Manufacturing</option>
-                        <option value="healthcare">Healthcare</option>
-                    </select>
-                </div>
-
-                <!-- Content Variant -->
-                <div class="form-group">
-                    <label for="utmContent">Content Variant</label>
-                    <input type="text" id="utmContent" placeholder="e.g., banner_top, email_footer">
-                </div>
-
-                <!-- Tracking Code -->
-                <div class="form-group">
-                    <label for="utmTrackingCode">Partner Tracking Code</label>
-                    <input type="text" id="utmTrackingCode" placeholder="e.g., PTR2025Q1">
+                    <small style="color: #64748b; font-size: 0.75rem;">Hold Ctrl/Cmd to select multiple</small>
                 </div>
             </div>
 
@@ -703,11 +658,10 @@
             const createdBy = document.getElementById('createdBy').value;
             const partnerType = document.getElementById('utmPartnerType').value;
             const dataSource = document.getElementById('utmDataSource').value;
-            const source = document.getElementById('utmSource').value;
             const medium = document.getElementById('utmMedium').value;
             
-            if (!campaignName || !createdBy || !partnerType || !dataSource || !source || !medium) {
-                alert('Please fill in all required fields: Campaign Name, Created By, Target Partner Type, Data Source, Source, and Medium');
+            if (!campaignName || !createdBy || !partnerType || !dataSource || !medium) {
+                alert('Please fill in all required fields: Campaign Name, Created By, Target Partner Type, Data Source, and Medium');
                 return;
             }
             
@@ -717,32 +671,28 @@
             // Build UTM parameters
             const params = new URLSearchParams();
             
-            // Standard UTM parameters
-            params.append('utm_source', source);
+            // Standard UTM parameters - Data Source becomes utm_source
+            params.append('utm_source', dataSource);
             params.append('utm_medium', medium);
             params.append('utm_campaign', campaignName.toLowerCase().replace(/\s+/g, '_'));
             
             // Partner-specific UTM parameters
             params.append('utm_partner_type', partnerType);
-            params.append('utm_partner_tier', partnerTier);
             
             // Optional partner parameters
             const partnerRegion = document.getElementById('utmPartnerRegion').value;
             const targetCity = document.getElementById('utmTargetCity').value;
             const referralCode = document.getElementById('utmReferralCode').value;
-            const partnerCampaign = document.getElementById('utmPartnerCampaign').value;
-            const targetMarket = document.getElementById('utmTargetMarket').value;
-            const content = document.getElementById('utmContent').value;
-            const trackingCode = document.getElementById('utmTrackingCode').value;
+            
+            // Get selected target products
+            const targetProductSelect = document.getElementById('utmTargetProduct');
+            const selectedProducts = Array.from(targetProductSelect.selectedOptions).map(opt => opt.value);
+            const targetProduct = selectedProducts.join(',');
             
             if (partnerRegion) params.append('utm_partner_region', partnerRegion);
-            if (dataSource) params.append('utm_data_source', dataSource);
             if (targetCity) params.append('utm_target_city', targetCity);
             if (referralCode) params.append('utm_referral_code', referralCode);
-            if (partnerCampaign) params.append('utm_partner_campaign', partnerCampaign);
-            if (targetMarket) params.append('utm_target_market', targetMarket);
-            if (content) params.append('utm_content', content);
-            if (trackingCode) params.append('utm_tracking_code', trackingCode);
+            if (targetProduct) params.append('utm_target_product', targetProduct);
             
             // Add custom parameters
             const customParamsObj = {};
@@ -761,7 +711,7 @@
             if (checkDuplicate && !shortCode) {
                 // Check if this exact partner campaign already exists
                 const existing = campaigns.find(c => 
-                    c.utm_source === source && 
+                    c.utm_source === dataSource && 
                     c.utm_medium === medium && 
                     c.utm_campaign === campaignName.toLowerCase().replace(/\s+/g, '_') &&
                     c.utm_partner_type === partnerType
@@ -792,21 +742,15 @@
                 long_url: fullURL,
                 campaign_name: `[PARTNER] ${campaignName}`,
                 created_by: createdBy,
-                utm_source: source,
+                utm_source: dataSource,
                 utm_medium: medium,
                 utm_campaign: campaignName.toLowerCase().replace(/\s+/g, '_'),
                 utm_partner_type: partnerType,
-                utm_data_source: dataSource || null,
                 utm_partner_region: partnerRegion || null,
                 utm_target_city: targetCity || null,
                 utm_referral_code: referralCode || null,
-                utm_content: content || null,
-                custom_params: {
-                    ...customParamsObj,
-                    partner_campaign: partnerCampaign,
-                    target_market: targetMarket,
-                    tracking_code: trackingCode
-                },
+                utm_target_product: targetProduct || null,
+                custom_params: customParamsObj,
                 clicks: 0,
                 is_active: true,
                 source: 'partner' // Mark as partner campaign
@@ -879,12 +823,8 @@
             document.getElementById('utmPartnerRegion').value = '';
             document.getElementById('utmTargetCity').value = '';
             document.getElementById('utmReferralCode').value = '';
-            document.getElementById('utmSource').value = '';
             document.getElementById('utmMedium').value = '';
-            document.getElementById('utmPartnerCampaign').value = '';
-            document.getElementById('utmTargetMarket').value = '';
-            document.getElementById('utmContent').value = '';
-            document.getElementById('utmTrackingCode').value = '';
+            document.getElementById('utmTargetProduct').selectedIndex = -1;
             document.getElementById('customCode').value = '';
             document.getElementById('resultSection').classList.remove('show');
             
@@ -909,9 +849,10 @@
                             ${campaign.is_active === false ? '<span style="color: #ef4444; font-size: 0.85rem; margin-left: 0.5rem;">(Inactive)</span>' : ''}
                         </div>
                         <div class="campaign-details" style="font-size: 0.85rem; color: #64748b;">
-                            ${campaign.utm_partner_type || 'N/A'} • ${campaign.utm_data_source || 'N/A'} 
+                            ${campaign.utm_partner_type || 'N/A'} • ${campaign.utm_source || 'N/A'} 
                             ${campaign.utm_partner_region ? `• ${campaign.utm_partner_region}` : ''}
                             ${campaign.utm_target_city ? `• ${campaign.utm_target_city}` : ''}
+                            ${campaign.utm_target_product ? `• Products: ${campaign.utm_target_product}` : ''}
                             • ${campaign.clicks || 0} clicks
                             • by ${campaign.created_by || 'Unknown'}
                         </div>
