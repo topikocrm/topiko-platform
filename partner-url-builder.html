@@ -736,6 +736,11 @@
             
             const shortURL = `${window.location.origin}/p/${shortCode}`;
             
+            // Add referral code to custom params if provided
+            if (referralCode) {
+                customParamsObj.utm_referral_code = referralCode;
+            }
+            
             // Save to Supabase with partner-specific fields
             const campaignData = {
                 short_code: shortCode,
@@ -748,7 +753,6 @@
                 utm_partner_type: partnerType,
                 utm_partner_region: partnerRegion || null,
                 utm_target_city: targetCity || null,
-                utm_referral_code: referralCode || null,
                 utm_target_product: targetProduct || null,
                 custom_params: customParamsObj,
                 clicks: 0,
