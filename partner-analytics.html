@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partner Analytics Dashboard - Topiko</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #764ba2;
+        }
+
+        .header h1 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header p {
+            color: #64748b;
+        }
+
+        .partner-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .filters-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 0.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .stat-change.positive {
+            color: #10b981;
+        }
+
+        .stat-change.negative {
+            color: #ef4444;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-card h3 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .table-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .table-section h2 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8fafc;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.75rem;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 0.75rem;
+            color: #1e293b;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: #d4f4dd;
+            color: #14532d;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #78350f;
+        }
+
+        .status-badge.inactive {
+            background: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tier-badge.platinum {
+            background: linear-gradient(135deg, #e5e7eb, #9ca3af);
+            color: #111827;
+        }
+
+        .tier-badge.gold {
+            background: linear-gradient(135deg, #fef3c7, #f59e0b);
+            color: #78350f;
+        }
+
+        .tier-badge.silver {
+            background: linear-gradient(135deg, #f3f4f6, #d1d5db);
+            color: #374151;
+        }
+
+        .tier-badge.bronze {
+            background: linear-gradient(135deg, #fed7aa, #ea580c);
+            color: #7c2d12;
+        }
+
+        .tier-badge.starter {
+            background: linear-gradient(135deg, #ddd6fe, #9333ea);
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(118, 75, 162, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .performance-chart {
+            height: 300px;
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            padding: 1rem 0;
+        }
+
+        .chart-bar {
+            width: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+        }
+
+        .chart-bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: #64748b;
+            white-space: nowrap;
+        }
+
+        .chart-bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                📊 Partner Analytics Dashboard
+                <span class="partner-badge">PARTNER INSIGHTS</span>
+            </h1>
+            <p>Track and analyze partner performance, conversions, and campaign effectiveness</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="dateRange">Date Range</label>
+                    <select id="dateRange" onchange="updateAnalytics()">
+                        <option value="7">Last 7 Days</option>
+                        <option value="30" selected>Last 30 Days</option>
+                        <option value="90">Last 90 Days</option>
+                        <option value="365">Last Year</option>
+                        <option value="all">All Time</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="partnerType">Partner Type</label>
+                    <select id="partnerType" onchange="updateAnalytics()">
+                        <option value="all">All Types</option>
+                        <option value="reseller">Reseller</option>
+                        <option value="affiliate">Affiliate</option>
+                        <option value="referral">Referral</option>
+                        <option value="agency">Agency</option>
+                        <option value="consultant">Consultant</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="partnerTier">Partner Tier</label>
+                    <select id="partnerTier" onchange="updateAnalytics()">
+                        <option value="all">All Tiers</option>
+                        <option value="platinum">Platinum</option>
+                        <option value="gold">Gold</option>
+                        <option value="silver">Silver</option>
+                        <option value="bronze">Bronze</option>
+                        <option value="starter">Starter</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="partnerRegion">Region</label>
+                    <select id="partnerRegion" onchange="updateAnalytics()">
+                        <option value="all">All Regions</option>
+                        <option value="north">North India</option>
+                        <option value="south">South India</option>
+                        <option value="east">East India</option>
+                        <option value="west">West India</option>
+                        <option value="central">Central India</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🤝</div>
+                <div class="stat-value" id="totalPartners">0</div>
+                <div class="stat-label">Total Partners</div>
+                <div class="stat-change positive">+0% from last period</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-value" id="activePartners">0</div>
+                <div class="stat-label">Active Partners</div>
+                <div class="stat-change positive">+0% from last period</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-value" id="totalReferrals">0</div>
+                <div class="stat-label">Total Referrals</div>
+                <div class="stat-change positive">+0% from last period</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="conversionRate">0%</div>
+                <div class="stat-label">Conversion Rate</div>
+                <div class="stat-change positive">+0% from last period</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value" id="avgDealSize">₹0</div>
+                <div class="stat-label">Avg Deal Size</div>
+                <div class="stat-change positive">+0% from last period</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-value" id="avgConversionTime">0d</div>
+                <div class="stat-label">Avg Conversion Time</div>
+                <div class="stat-change negative">-0% from last period</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>Partner Distribution by Type</h3>
+                <div class="performance-chart" id="typeChart">
+                    <!-- Chart bars will be dynamically added -->
+                    <div class="loading">Loading chart data...</div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Partner Distribution by Tier</h3>
+                <div class="performance-chart" id="tierChart">
+                    <!-- Chart bars will be dynamically added -->
+                    <div class="loading">Loading chart data...</div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Referrals by Region</h3>
+                <div class="performance-chart" id="regionChart">
+                    <!-- Chart bars will be dynamically added -->
+                    <div class="loading">Loading chart data...</div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Monthly Performance Trend</h3>
+                <div class="performance-chart" id="trendChart">
+                    <!-- Chart bars will be dynamically added -->
+                    <div class="loading">Loading chart data...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Partners Table -->
+        <div class="table-section">
+            <h2>Top Performing Partners</h2>
+            <table id="partnersTable">
+                <thead>
+                    <tr>
+                        <th>Partner Name</th>
+                        <th>Company</th>
+                        <th>Type</th>
+                        <th>Tier</th>
+                        <th>Region</th>
+                        <th>Referrals</th>
+                        <th>Conversions</th>
+                        <th>Conv. Rate</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                    </tr>
+                </thead>
+                <tbody id="partnersTableBody">
+                    <tr>
+                        <td colspan="10" class="loading">Loading partner data...</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="exportData()">📥 Export Data</button>
+                <button class="btn btn-secondary" onclick="refreshData()">🔄 Refresh</button>
+                <button class="btn btn-secondary" onclick="window.location.href='partner-url-builder.html'">🔗 Create Campaign</button>
+            </div>
+        </div>
+
+        <!-- Recent Partner Activities -->
+        <div class="table-section">
+            <h2>Recent Partner Activities</h2>
+            <table id="activitiesTable">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Partner</th>
+                        <th>Activity</th>
+                        <th>Campaign</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody id="activitiesTableBody">
+                    <tr>
+                        <td colspan="5" class="loading">Loading activity data...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Include Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Store analytics data
+        let partnersData = [];
+        let campaignsData = [];
+        let analyticsData = {};
+
+        // Initialize on load
+        window.onload = async function() {
+            await loadAnalyticsData();
+            updateCharts();
+            updateMetrics();
+        };
+
+        // Load analytics data from Supabase
+        async function loadAnalyticsData() {
+            try {
+                // Get date range
+                const dateRange = document.getElementById('dateRange').value;
+                const startDate = getStartDate(dateRange);
+                
+                // Build query filters
+                let query = supabase
+                    .from('users')
+                    .select('*')
+                    .eq('source', 'partner');
+                
+                // Apply date filter
+                if (startDate) {
+                    query = query.gte('created_at', startDate);
+                }
+                
+                // Apply type filter
+                const partnerType = document.getElementById('partnerType').value;
+                if (partnerType !== 'all') {
+                    query = query.eq('utm_partner_type', partnerType);
+                }
+                
+                // Apply tier filter
+                const partnerTier = document.getElementById('partnerTier').value;
+                if (partnerTier !== 'all') {
+                    query = query.eq('utm_partner_tier', partnerTier);
+                }
+                
+                // Apply region filter
+                const partnerRegion = document.getElementById('partnerRegion').value;
+                if (partnerRegion !== 'all') {
+                    query = query.eq('utm_partner_region', partnerRegion);
+                }
+                
+                // Execute query
+                const { data: partners, error: partnersError } = await query
+                    .order('created_at', { ascending: false });
+                
+                if (partnersError) {
+                    console.error('Error loading partners:', partnersError);
+                    showError('Failed to load partner data');
+                    return;
+                }
+                
+                partnersData = partners || [];
+                
+                // Load campaign data
+                const { data: campaigns, error: campaignsError } = await supabase
+                    .from('short_urls')
+                    .select('*')
+                    .eq('source', 'partner')
+                    .order('created_at', { ascending: false });
+                
+                if (campaignsError) {
+                    console.error('Error loading campaigns:', campaignsError);
+                }
+                
+                campaignsData = campaigns || [];
+                
+                // Process analytics
+                processAnalytics();
+                
+            } catch (error) {
+                console.error('Error in loadAnalyticsData:', error);
+                showError('Failed to load analytics data');
+            }
+        }
+
+        function getStartDate(days) {
+            if (days === 'all') return null;
+            const date = new Date();
+            date.setDate(date.getDate() - parseInt(days));
+            return date.toISOString();
+        }
+
+        function processAnalytics() {
+            // Calculate metrics
+            analyticsData = {
+                totalPartners: partnersData.length,
+                activePartners: partnersData.filter(p => p.partner_status === 'Active').length,
+                pendingPartners: partnersData.filter(p => p.partner_status === 'Pending Review').length,
+                totalReferrals: campaignsData.reduce((sum, c) => sum + (c.clicks || 0), 0),
+                conversions: partnersData.filter(p => p.registration_completed).length,
+                
+                // Group by type
+                byType: partnersData.reduce((acc, p) => {
+                    const type = p.utm_partner_type || 'Other';
+                    acc[type] = (acc[type] || 0) + 1;
+                    return acc;
+                }, {}),
+                
+                // Group by tier
+                byTier: partnersData.reduce((acc, p) => {
+                    const tier = p.utm_partner_tier || 'Unassigned';
+                    acc[tier] = (acc[tier] || 0) + 1;
+                    return acc;
+                }, {}),
+                
+                // Group by region
+                byRegion: partnersData.reduce((acc, p) => {
+                    const region = p.utm_partner_region || 'Unspecified';
+                    acc[region] = (acc[region] || 0) + 1;
+                    return acc;
+                }, {})
+            };
+            
+            // Update displays
+            updateMetrics();
+            updateCharts();
+            updatePartnersTable();
+            updateActivitiesTable();
+        }
+
+        function updateMetrics() {
+            // Update metric cards
+            document.getElementById('totalPartners').textContent = analyticsData.totalPartners || 0;
+            document.getElementById('activePartners').textContent = analyticsData.activePartners || 0;
+            document.getElementById('totalReferrals').textContent = analyticsData.totalReferrals || 0;
+            
+            // Calculate conversion rate
+            const conversionRate = analyticsData.totalReferrals > 0 
+                ? ((analyticsData.conversions / analyticsData.totalReferrals) * 100).toFixed(1)
+                : 0;
+            document.getElementById('conversionRate').textContent = conversionRate + '%';
+            
+            // Mock data for now (would come from actual sales data)
+            document.getElementById('avgDealSize').textContent = '₹25,000';
+            document.getElementById('avgConversionTime').textContent = '7d';
+        }
+
+        function updateCharts() {
+            // Update Type Chart
+            updateBarChart('typeChart', analyticsData.byType || {});
+            
+            // Update Tier Chart
+            updateBarChart('tierChart', analyticsData.byTier || {});
+            
+            // Update Region Chart
+            updateBarChart('regionChart', analyticsData.byRegion || {});
+            
+            // Update Trend Chart (mock data for now)
+            const trendData = {
+                'Jan': 12,
+                'Feb': 18,
+                'Mar': 25,
+                'Apr': 22,
+                'May': 30,
+                'Jun': 35
+            };
+            updateBarChart('trendChart', trendData);
+        }
+
+        function updateBarChart(chartId, data) {
+            const chartContainer = document.getElementById(chartId);
+            
+            if (!data || Object.keys(data).length === 0) {
+                chartContainer.innerHTML = '<div class="empty-state">No data available</div>';
+                return;
+            }
+            
+            const maxValue = Math.max(...Object.values(data));
+            const chartHTML = Object.entries(data).map(([label, value]) => {
+                const height = maxValue > 0 ? (value / maxValue) * 250 : 0;
+                return `
+                    <div class="chart-bar" style="height: ${height}px" title="${label}: ${value}">
+                        <div class="chart-bar-value">${value}</div>
+                        <div class="chart-bar-label">${label}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            chartContainer.innerHTML = chartHTML;
+        }
+
+        function updatePartnersTable() {
+            const tbody = document.getElementById('partnersTableBody');
+            
+            if (partnersData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="empty-state">
+                            <div class="empty-state-icon">🤝</div>
+                            <div>No partners found. Start by inviting partners to join your program!</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Sort by most recent and take top 10
+            const topPartners = partnersData.slice(0, 10);
+            
+            tbody.innerHTML = topPartners.map(partner => {
+                const tierClass = (partner.utm_partner_tier || 'starter').toLowerCase();
+                const statusClass = partner.partner_status === 'Active' ? 'active' : 
+                                   partner.partner_status === 'Pending Review' ? 'pending' : 'inactive';
+                
+                // Calculate mock referral data (would come from actual tracking)
+                const referrals = Math.floor(Math.random() * 50);
+                const conversions = Math.floor(referrals * 0.3);
+                const convRate = referrals > 0 ? ((conversions / referrals) * 100).toFixed(0) : 0;
+                
+                return `
+                    <tr>
+                        <td>${partner.name || 'N/A'}</td>
+                        <td>${partner.business_name || 'N/A'}</td>
+                        <td>${partner.utm_partner_type || 'N/A'}</td>
+                        <td><span class="tier-badge ${tierClass}">${partner.utm_partner_tier || 'Starter'}</span></td>
+                        <td>${partner.utm_partner_region || 'N/A'}</td>
+                        <td>${referrals}</td>
+                        <td>${conversions}</td>
+                        <td>${convRate}%</td>
+                        <td><span class="status-badge ${statusClass}">${partner.partner_status || 'Pending'}</span></td>
+                        <td>${new Date(partner.created_at).toLocaleDateString()}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateActivitiesTable() {
+            const tbody = document.getElementById('activitiesTableBody');
+            
+            // Combine partner and campaign data for activities
+            const activities = [];
+            
+            // Add partner registrations
+            partnersData.slice(0, 5).forEach(partner => {
+                activities.push({
+                    time: new Date(partner.created_at),
+                    partner: partner.name || 'Unknown',
+                    activity: 'Partner Registration',
+                    campaign: partner.utm_campaign || 'Direct',
+                    result: 'New Partner'
+                });
+            });
+            
+            // Add campaign activities
+            campaignsData.slice(0, 5).forEach(campaign => {
+                activities.push({
+                    time: new Date(campaign.created_at),
+                    partner: campaign.created_by || 'Unknown',
+                    activity: 'Campaign Created',
+                    campaign: campaign.campaign_name || 'Unnamed',
+                    result: `${campaign.clicks || 0} clicks`
+                });
+            });
+            
+            // Sort by time
+            activities.sort((a, b) => b.time - a.time);
+            
+            if (activities.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">No recent activities</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = activities.slice(0, 10).map(activity => `
+                <tr>
+                    <td>${formatTime(activity.time)}</td>
+                    <td>${activity.partner}</td>
+                    <td>${activity.activity}</td>
+                    <td>${activity.campaign}</td>
+                    <td>${activity.result}</td>
+                </tr>
+            `).join('');
+        }
+
+        function formatTime(date) {
+            const now = new Date();
+            const diff = now - date;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return `${days}d ago`;
+            if (hours > 0) return `${hours}h ago`;
+            return 'Just now';
+        }
+
+        function updateAnalytics() {
+            loadAnalyticsData();
+        }
+
+        function exportData() {
+            // Convert data to CSV
+            const csvData = partnersData.map(p => ({
+                Name: p.name,
+                Company: p.business_name,
+                Email: p.email,
+                Phone: p.phone,
+                Type: p.utm_partner_type,
+                Tier: p.utm_partner_tier,
+                Region: p.utm_partner_region,
+                Status: p.partner_status,
+                'Joined Date': new Date(p.created_at).toLocaleDateString()
+            }));
+            
+            // Convert to CSV string
+            const headers = Object.keys(csvData[0] || {});
+            const csv = [
+                headers.join(','),
+                ...csvData.map(row => headers.map(h => `"${row[h] || ''}"`).join(','))
+            ].join('\n');
+            
+            // Download CSV
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `partner-analytics-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        function refreshData() {
+            loadAnalyticsData();
+        }
+
+        function showError(message) {
+            console.error(message);
+            // You can add a notification system here
+        }
+    </script>
+</body>
+</html>
