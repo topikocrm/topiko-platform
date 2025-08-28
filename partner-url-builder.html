@@ -736,10 +736,10 @@
             
             const shortURL = `${window.location.origin}/p/${shortCode}`;
             
-            // Add referral code to custom params if provided
-            if (referralCode) {
-                customParamsObj.utm_referral_code = referralCode;
-            }
+            // Add all extra fields to custom params
+            if (referralCode) customParamsObj.utm_referral_code = referralCode;
+            if (targetCity) customParamsObj.utm_target_city = targetCity;
+            if (targetProduct) customParamsObj.utm_target_product = targetProduct;
             
             // Save to Supabase with partner-specific fields
             const campaignData = {
@@ -752,8 +752,6 @@
                 utm_campaign: campaignName.toLowerCase().replace(/\s+/g, '_'),
                 utm_partner_type: partnerType,
                 utm_partner_region: partnerRegion || null,
-                utm_target_city: targetCity || null,
-                utm_target_product: targetProduct || null,
                 custom_params: customParamsObj,
                 clicks: 0,
                 is_active: true,
@@ -855,8 +853,8 @@
                         <div class="campaign-details" style="font-size: 0.85rem; color: #64748b;">
                             ${campaign.utm_partner_type || 'N/A'} • ${campaign.utm_source || 'N/A'} 
                             ${campaign.utm_partner_region ? `• ${campaign.utm_partner_region}` : ''}
-                            ${campaign.utm_target_city ? `• ${campaign.utm_target_city}` : ''}
-                            ${campaign.utm_target_product ? `• Products: ${campaign.utm_target_product}` : ''}
+                            ${campaign.custom_params?.utm_target_city ? `• ${campaign.custom_params.utm_target_city}` : ''}
+                            ${campaign.custom_params?.utm_target_product ? `• Products: ${campaign.custom_params.utm_target_product}` : ''}
                             • ${campaign.clicks || 0} clicks
                             • by ${campaign.created_by || 'Unknown'}
                         </div>
