@@ -40,8 +40,8 @@ const DIRECT_IMAGE_MAP = {
     'dress-western-003': '/images/products/fashion/womens-clothing/western/shirt-dress/shirt-dress.jpg',
     
     // ========== FOOTWEAR ==========
-    'shoes-formal-001': '/images/products/footwear/mens/formal/oxford-black/oxford-black.jpg',
-    'shoes-formal-002': '/images/products/footwear/mens/formal/brogues-brown/brogues-brown.jpg',
+    'shoes-formal-001': '/images/products/footwear/mens/formal/oxford-shoes-black/oxford-shoes-black.png',
+    'shoes-formal-002': '/images/products/footwear/mens/formal/derby-shoes-brown/derby-shoes-brown.png',
     
     'sneakers-sports-001': '/images/products/footwear/mens/sports/running-shoes/running-shoes.png',
     'sneakers-sports-002': '/images/products/footwear/mens/sports/basketball-shoes/basketball-shoes.jpg',
@@ -50,14 +50,16 @@ const DIRECT_IMAGE_MAP = {
     'sandals-women-002': '/images/products/footwear/womens/sandals/wedge-sandals/wedge-sandals.jpg',
     
     // ========== ACCESSORIES ==========
-    'handbag-leather-001': '/images/products/fashion/accessories/bags/tote-bag/tote-bag.jpg',
+    'handbag-leather-001': '/images/products/fashion/accessories/bags/handbag-tote/handbag-tote.png',
     'handbag-leather-002': '/images/products/fashion/accessories/bags/sling-bag/sling-bag.png',
     
-    'watch-analog-001': '/images/products/jewelry/watches/mens/analog-steel/analog-steel.jpg',
+    'watch-analog-001': '/images/products/fashion/accessories/watches/analog-watch-mens/analog-watch-mens.jpeg',
     'watch-analog-002': '/images/products/jewelry/watches/womens/analog-gold/analog-gold.jpg',
     
     'sunglasses-uv-001': '/images/products/fashion/accessories/sunglasses/aviator/aviator.jpg',
     'wallet-leather-001': '/images/products/fashion/accessories/wallets/mens-leather/mens-leather.jpg',
+    'cap-sports-001': '/images/products/fashion/accessories/caps/baseball-cap/baseball-cap.png',
+    'luxury-handbag-001': '/images/products/fashion/accessories/bags/handbag-tote/handbag-tote.png',
     
     // ========== ELECTRONICS ==========
     'mobile-samsung-001': '/images/products/electronics/mobiles/smartphones/samsung-s23/samsung-s23.jpg',
