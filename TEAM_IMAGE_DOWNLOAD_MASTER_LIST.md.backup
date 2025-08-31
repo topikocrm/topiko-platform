@@ -1,0 +1,1033 @@
+# 📸 TEAM IMAGE DOWNLOAD MASTER LIST
+## Complete Product Catalog - 1000 Products
+
+---
+
+## 📋 SPECIFICATIONS REQUIRED
+- **Format**: `.jpg` (MANDATORY)
+- **Size**: `800x800px` (MINIMUM)
+- **Aspect Ratio**: `1:1` (Square)
+- **File Name**: `[product-name].jpg` (Use exact name from table below)
+- **Quality**: High resolution, clear product visibility
+- **Background**: White or neutral preferred
+
+---
+
+## 📁 BASE FOLDER PATH
+```
+/Users/murali/Projects/GitCode/topiko-platform/images/products/
+```
+
+## 📊 CATEGORY SUMMARY WITH COUNTS
+
+| Category | Total Products | Subcategories |
+|----------|---------------|---------------|
+| **Fashion** | 250 | Men's (55), Women's (80), Kids (40), Accessories (40), Others (35) |
+| **Electronics** | 150 | Mobiles (30), Laptops (30), Audio (30), Gaming (30), Appliances (30) |
+| **Food & Beverages** | 150 | Indian (60), International (20), Sweets (40), Bakery (35), Beverages (35) |
+| **Grocery & Staples** | 100 | Rice/Grains (20), Pulses (15), Oils (10), Spices (15), Dairy (15), Snacks (15), F&V (10) |
+| **Beauty & Personal Care** | 100 | Makeup (25), Skincare (25), Hair Care (25), Bath & Body (25) |
+| **Home & Furniture** | 100 | Living Room (20), Bedroom (20), Kitchen (30), Decor (30) |
+| **Sports & Fitness** | 30 | Cricket (6), Football (3), Badminton/Tennis (5), Fitness (10), Nutrition (6) |
+| **Health & Medical** | 30 | Medicines (10), Devices (10), First Aid (5), Personal (5) |
+| **Jewelry** | 30 | Gold (8), Diamond (4), Silver (4), Fashion (7), Watches (7) |
+| **Footwear** | 30 | Men's (12), Women's (10), Kids (5), Accessories (3) |
+| **Books & Stationery** | 30 | Fiction (3), Non-Fiction (3), Educational (4), Notebooks/Pens (10), Office (10) |
+| **TOTAL** | **1000** | |
+
+---
+
+## ✅ COMPLETE PRODUCT LIST (1000 PRODUCTS)
+
+### 🛍️ FASHION CATEGORY (250 Products Total)
+- **Men's Clothing**: 55 products
+- **Women's Clothing**: 80 products  
+- **Kids Clothing**: 40 products
+- **Fashion Accessories**: 40 products
+- **Others**: 35 products
+
+#### MEN'S CLOTHING (55 Products Total)
+- Shirts: 15 products
+- T-Shirts: 10 products
+- Jeans & Trousers: 10 products
+- Ethnic Wear: 10 products
+- Winter Wear: 10 products
+
+##### SHIRTS (15 Products)
+**Full Path**: `/images/products/fashion/mens-clothing/shirts/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `formal-white-shirt/` | `formal-white-shirt.jpg` | 800x800px | White formal shirt for office wear |
+| ☐ | `formal-blue-shirt/` | `formal-white-shirt.jpg` | 800x800px | Blue formal shirt for business |
+| ☐ | `formal-black-shirt/` | `formal-white-shirt.jpg` | 800x800px | Black formal shirt elegant style |
+| ☐ | `formal-grey-shirt/` | `formal-white-shirt.jpg` | 800x800px | Grey formal shirt professional look |
+| ☐ | `formal-striped-shirt/` | `formal-white-shirt.jpg` | 800x800px | Striped formal shirt for office |
+| ☐ | `casual-checkered-shirt/` | `formal-white-shirt.jpg` | 800x800px | Checkered casual shirt |
+| ☐ | `casual-denim-shirt/` | `formal-white-shirt.jpg` | 800x800px | Denim casual shirt |
+| ☐ | `casual-linen-shirt/` | `formal-white-shirt.jpg` | 800x800px | Linen casual shirt for summer |
+| ☐ | `casual-printed-shirt/` | `formal-white-shirt.jpg` | 800x800px | Printed casual shirt trendy design |
+| ☐ | `casual-plain-shirt/` | `formal-white-shirt.jpg` | 800x800px | Plain casual shirt solid color |
+| ☐ | `party-wear-shirt/` | `formal-white-shirt.jpg` | 800x800px | Party wear designer shirt |
+| ☐ | `silk-shirt/` | `formal-white-shirt.jpg` | 800x800px | Silk shirt premium quality |
+| ☐ | `cotton-shirt/` | `formal-white-shirt.jpg` | 800x800px | Cotton shirt comfortable wear |
+| ☐ | `half-sleeve-shirt/` | `formal-white-shirt.jpg` | 800x800px | Half sleeve casual shirt |
+| ☐ | `mandarin-collar-shirt/` | `formal-white-shirt.jpg` | 800x800px | Mandarin collar stylish shirt |
+
+##### T-SHIRTS (10 Products)
+**Full Path**: `/images/products/fashion/mens-clothing/tshirts/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `polo-navy-blue/` | `formal-white-shirt.jpg` | 800x800px | Navy blue polo t-shirt |
+| ☐ | `polo-white/` | `formal-white-shirt.jpg` | 800x800px | White polo t-shirt classic |
+| ☐ | `round-neck-black/` | `formal-white-shirt.jpg` | 800x800px | Black round neck t-shirt |
+| ☐ | `round-neck-grey/` | `formal-white-shirt.jpg` | 800x800px | Grey round neck t-shirt |
+| ☐ | `v-neck-blue/` | `formal-white-shirt.jpg` | 800x800px | Blue V-neck t-shirt |
+| ☐ | `graphic-red/` | `formal-white-shirt.jpg` | 800x800px | Red graphic print t-shirt |
+| ☐ | `henley-green/` | `formal-white-shirt.jpg` | 800x800px | Green henley t-shirt |
+| ☐ | `full-sleeve-tshirt/` | `formal-white-shirt.jpg` | 800x800px | Full sleeve t-shirt |
+| ☐ | `oversized-tshirt/` | `formal-white-shirt.jpg` | 800x800px | Oversized trendy t-shirt |
+| ☐ | `sports-tshirt/` | `formal-white-shirt.jpg` | 800x800px | Sports performance t-shirt |
+
+##### JEANS & TROUSERS (10 Products)
+**Full Path**: `/images/products/fashion/mens-clothing/jeans/` & `/fashion/mens-clothing/trousers/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `jeans/slim-fit-blue/` | `formal-white-shirt.jpg` | 800x800px | Slim fit blue jeans |
+| ☐ | `jeans/regular-fit-black/` | `formal-white-shirt.jpg` | 800x800px | Regular fit black jeans |
+| ☐ | `jeans/skinny-grey/` | `formal-white-shirt.jpg` | 800x800px | Skinny grey jeans |
+| ☐ | `jeans/ripped-jeans/` | `formal-white-shirt.jpg` | 800x800px | Ripped trendy jeans |
+| ☐ | `jeans/bootcut-jeans/` | `formal-white-shirt.jpg` | 800x800px | Bootcut classic jeans |
+| ☐ | `trousers/formal-black/` | `formal-white-shirt.jpg` | 800x800px | Black formal trousers |
+| ☐ | `trousers/formal-navy/` | `formal-white-shirt.jpg` | 800x800px | Navy formal trousers |
+| ☐ | `trousers/formal-grey/` | `formal-white-shirt.jpg` | 800x800px | Grey formal trousers |
+| ☐ | `trousers/chinos-beige/` | `formal-white-shirt.jpg` | 800x800px | Beige chinos casual |
+| ☐ | `trousers/cargo-khaki/` | `formal-white-shirt.jpg` | 800x800px | Khaki cargo pants |
+
+##### ETHNIC WEAR (10 Products)
+**Full Path**: `/images/products/fashion/mens-clothing/ethnic/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `kurta-white-cotton/` | `formal-white-shirt.jpg` | 800x800px | White cotton kurta traditional |
+| ☐ | `kurta-blue-silk/` | `formal-white-shirt.jpg` | 800x800px | Blue silk kurta festive |
+| ☐ | `kurta-pajama-set/` | `formal-white-shirt.jpg` | 800x800px | Kurta pajama complete set |
+| ☐ | `sherwani-golden/` | `formal-white-shirt.jpg` | 800x800px | Golden sherwani wedding wear |
+| ☐ | `nehru-jacket-black/` | `formal-white-shirt.jpg` | 800x800px | Black Nehru jacket |
+| ☐ | `dhoti-white/` | `formal-white-shirt.jpg` | 800x800px | White traditional dhoti |
+| ☐ | `pathani-suit/` | `formal-white-shirt.jpg` | 800x800px | Pathani suit set |
+| ☐ | `bandhgala-suit/` | `formal-white-shirt.jpg` | 800x800px | Bandhgala formal suit |
+| ☐ | `modi-jacket/` | `formal-white-shirt.jpg` | 800x800px | Modi style jacket |
+| ☐ | `lungi-cotton/` | `formal-white-shirt.jpg` | 800x800px | Cotton lungi traditional |
+
+##### WINTER WEAR (10 Products)
+**Full Path**: `/images/products/fashion/mens-clothing/winter/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `sweater-wool-navy/` | `formal-white-shirt.jpg` | 800x800px | Navy wool sweater |
+| ☐ | `sweater-cable-knit/` | `formal-white-shirt.jpg` | 800x800px | Cable knit sweater |
+| ☐ | `hoodie-black/` | `formal-white-shirt.jpg` | 800x800px | Black hoodie sweatshirt |
+| ☐ | `hoodie-grey/` | `formal-white-shirt.jpg` | 800x800px | Grey hoodie casual |
+| ☐ | `sweatshirt-blue/` | `formal-white-shirt.jpg` | 800x800px | Blue sweatshirt |
+| ☐ | `jacket-leather-black/` | `formal-white-shirt.jpg` | 800x800px | Black leather jacket |
+| ☐ | `jacket-denim/` | `formal-white-shirt.jpg` | 800x800px | Denim jacket casual |
+| ☐ | `jacket-bomber/` | `formal-white-shirt.jpg` | 800x800px | Bomber jacket trendy |
+| ☐ | `windcheater-red/` | `formal-white-shirt.jpg` | 800x800px | Red windcheater jacket |
+| ☐ | `blazer-navy/` | `formal-white-shirt.jpg` | 800x800px | Navy blazer formal |
+
+#### WOMEN'S CLOTHING (80 Products Total)
+- Sarees: 15 products
+- Kurtis & Suits: 15 products
+- Lehenga: 10 products
+- Western Wear: 20 products
+- Others: 20 products
+
+##### SAREES (15 Products)
+**Full Path**: `/images/products/fashion/womens-clothing/sarees/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `silk-red-saree/` | `formal-white-shirt.jpg` | 800x800px | Red silk saree traditional |
+| ☐ | `cotton-blue-saree/` | `formal-white-shirt.jpg` | 800x800px | Blue cotton saree daily wear |
+| ☐ | `georgette-pink-saree/` | `formal-white-shirt.jpg` | 800x800px | Pink georgette saree |
+| ☐ | `chiffon-yellow-saree/` | `formal-white-shirt.jpg` | 800x800px | Yellow chiffon saree |
+| ☐ | `banarasi-gold-saree/` | `formal-white-shirt.jpg` | 800x800px | Gold Banarasi saree wedding |
+| ☐ | `kanjivaram-saree/` | `formal-white-shirt.jpg` | 800x800px | Kanjivaram silk saree |
+| ☐ | `designer-saree/` | `formal-white-shirt.jpg` | 800x800px | Designer party wear saree |
+| ☐ | `printed-saree/` | `formal-white-shirt.jpg` | 800x800px | Printed casual saree |
+| ☐ | `embroidered-saree/` | `formal-white-shirt.jpg` | 800x800px | Embroidered festive saree |
+| ☐ | `party-wear-saree/` | `formal-white-shirt.jpg` | 800x800px | Party wear glamorous saree |
+| ☐ | `casual-saree/` | `formal-white-shirt.jpg` | 800x800px | Casual daily wear saree |
+| ☐ | `wedding-saree/` | `formal-white-shirt.jpg` | 800x800px | Wedding special saree |
+| ☐ | `half-saree/` | `formal-white-shirt.jpg` | 800x800px | Half saree traditional |
+| ☐ | `net-saree/` | `formal-white-shirt.jpg` | 800x800px | Net saree designer |
+| ☐ | `organza-saree/` | `formal-white-shirt.jpg` | 800x800px | Organza saree elegant |
+
+##### KURTIS & SUITS (15 Products)
+**Full Path**: `/images/products/fashion/womens-clothing/kurtis/` & `/fashion/womens-clothing/suits/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `kurtis/cotton-white-kurti/` | `formal-white-shirt.jpg` | 800x800px | White cotton kurti |
+| ☐ | `kurtis/printed-blue-kurti/` | `formal-white-shirt.jpg` | 800x800px | Blue printed kurti |
+| ☐ | `kurtis/embroidered-kurti/` | `formal-white-shirt.jpg` | 800x800px | Embroidered designer kurti |
+| ☐ | `kurtis/long-black-kurti/` | `formal-white-shirt.jpg` | 800x800px | Long black kurti |
+| ☐ | `kurtis/short-red-kurti/` | `formal-white-shirt.jpg` | 800x800px | Short red kurti |
+| ☐ | `kurtis/anarkali-kurti/` | `formal-white-shirt.jpg` | 800x800px | Anarkali style kurti |
+| ☐ | `kurtis/straight-kurti/` | `formal-white-shirt.jpg` | 800x800px | Straight cut kurti |
+| ☐ | `kurtis/a-line-kurti/` | `formal-white-shirt.jpg` | 800x800px | A-line kurti modern |
+| ☐ | `suits/salwar-kameez/` | `formal-white-shirt.jpg` | 800x800px | Salwar kameez set |
+| ☐ | `suits/churidar-suit/` | `formal-white-shirt.jpg` | 800x800px | Churidar suit elegant |
+| ☐ | `suits/patiala-suit/` | `formal-white-shirt.jpg` | 800x800px | Patiala suit traditional |
+| ☐ | `suits/anarkali-suit/` | `formal-white-shirt.jpg` | 800x800px | Anarkali suit festive |
+| ☐ | `suits/palazzo-suit/` | `formal-white-shirt.jpg` | 800x800px | Palazzo suit modern |
+| ☐ | `suits/sharara-suit/` | `formal-white-shirt.jpg` | 800x800px | Sharara suit wedding |
+| ☐ | `suits/gharara-suit/` | `formal-white-shirt.jpg` | 800x800px | Gharara suit traditional |
+
+##### LEHENGA (10 Products)
+**Full Path**: `/images/products/fashion/womens-clothing/lehenga/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `bridal-red-lehenga/` | `formal-white-shirt.jpg` | 800x800px | Red bridal lehenga |
+| ☐ | `designer-pink-lehenga/` | `formal-white-shirt.jpg` | 800x800px | Pink designer lehenga |
+| ☐ | `party-blue-lehenga/` | `formal-white-shirt.jpg` | 800x800px | Blue party wear lehenga |
+| ☐ | `wedding-golden-lehenga/` | `formal-white-shirt.jpg` | 800x800px | Golden wedding lehenga |
+| ☐ | `crop-top-lehenga/` | `formal-white-shirt.jpg` | 800x800px | Crop top modern lehenga |
+| ☐ | `jacket-lehenga/` | `formal-white-shirt.jpg` | 800x800px | Jacket style lehenga |
+| ☐ | `printed-lehenga/` | `formal-white-shirt.jpg` | 800x800px | Printed casual lehenga |
+| ☐ | `embroidered-lehenga/` | `formal-white-shirt.jpg` | 800x800px | Embroidered heavy lehenga |
+| ☐ | `silk-lehenga/` | `formal-white-shirt.jpg` | 800x800px | Silk traditional lehenga |
+| ☐ | `net-lehenga/` | `formal-white-shirt.jpg` | 800x800px | Net designer lehenga |
+
+##### WESTERN WEAR (20 Products)
+**Full Path**: `/images/products/fashion/womens-clothing/western/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `top-casual-white/` | `formal-white-shirt.jpg` | 800x800px | White casual top |
+| ☐ | `top-formal-black/` | `formal-white-shirt.jpg` | 800x800px | Black formal top |
+| ☐ | `crop-top-pink/` | `formal-white-shirt.jpg` | 800x800px | Pink crop top trendy |
+| ☐ | `tunic-blue/` | `formal-white-shirt.jpg` | 800x800px | Blue tunic top |
+| ☐ | `off-shoulder-top/` | `formal-white-shirt.jpg` | 800x800px | Off shoulder stylish top |
+| ☐ | `shirt-formal-white/` | `formal-white-shirt.jpg` | 800x800px | White formal shirt women |
+| ☐ | `shirt-denim/` | `formal-white-shirt.jpg` | 800x800px | Denim shirt casual |
+| ☐ | `tshirt-grey/` | `formal-white-shirt.jpg` | 800x800px | Grey t-shirt women |
+| ☐ | `dress-maxi-floral/` | `formal-white-shirt.jpg` | 800x800px | Floral maxi dress |
+| ☐ | `dress-bodycon-black/` | `formal-white-shirt.jpg` | 800x800px | Black bodycon dress |
+| ☐ | `dress-aline-blue/` | `formal-white-shirt.jpg` | 800x800px | Blue A-line dress |
+| ☐ | `jumpsuit-denim/` | `formal-white-shirt.jpg` | 800x800px | Denim jumpsuit |
+| ☐ | `jeans-blue/` | `formal-white-shirt.jpg` | 800x800px | Blue jeans women |
+| ☐ | `jeans-black/` | `formal-white-shirt.jpg` | 800x800px | Black jeans skinny |
+| ☐ | `jeggings-black/` | `formal-white-shirt.jpg` | 800x800px | Black jeggings |
+| ☐ | `palazzo-printed/` | `formal-white-shirt.jpg` | 800x800px | Printed palazzo pants |
+| ☐ | `skirt-pencil-black/` | `formal-white-shirt.jpg` | 800x800px | Black pencil skirt |
+| ☐ | `skirt-aline-blue/` | `formal-white-shirt.jpg` | 800x800px | Blue A-line skirt |
+| ☐ | `shorts-denim/` | `formal-white-shirt.jpg` | 800x800px | Denim shorts women |
+| ☐ | `blazer-formal/` | `formal-white-shirt.jpg` | 800x800px | Formal blazer women |
+
+#### KIDS CLOTHING (40 Products Total)
+- Boys Clothing: 20 products
+- Girls Clothing: 20 products
+
+##### BOYS CLOTHING (20 Products)
+**Full Path**: `/images/products/fashion/kids-clothing/boys/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `tshirt-spiderman/` | `formal-white-shirt.jpg` | 800x800px | Spiderman t-shirt kids |
+| ☐ | `tshirt-batman/` | `formal-white-shirt.jpg` | 800x800px | Batman t-shirt boys |
+| ☐ | `shirt-checked/` | `formal-white-shirt.jpg` | 800x800px | Checked shirt boys |
+| ☐ | `shirt-plain/` | `formal-white-shirt.jpg` | 800x800px | Plain shirt kids |
+| ☐ | `jeans-blue/` | `formal-white-shirt.jpg` | 800x800px | Blue jeans boys |
+| ☐ | `shorts-khaki/` | `formal-white-shirt.jpg` | 800x800px | Khaki shorts kids |
+| ☐ | `tracksuit-sports/` | `formal-white-shirt.jpg` | 800x800px | Sports tracksuit boys |
+| ☐ | `kurta-white/` | `formal-white-shirt.jpg` | 800x800px | White kurta boys ethnic |
+| ☐ | `sherwani-kids/` | `formal-white-shirt.jpg` | 800x800px | Kids sherwani festive |
+| ☐ | `blazer-black/` | `formal-white-shirt.jpg` | 800x800px | Black blazer boys |
+| ☐ | `school-uniform-shirt/` | `formal-white-shirt.jpg` | 800x800px | School uniform shirt |
+| ☐ | `school-uniform-pant/` | `formal-white-shirt.jpg` | 800x800px | School uniform pants |
+| ☐ | `sweater-blue/` | `formal-white-shirt.jpg` | 800x800px | Blue sweater boys |
+| ☐ | `jacket-winter/` | `formal-white-shirt.jpg` | 800x800px | Winter jacket boys |
+| ☐ | `raincoat-yellow/` | `formal-white-shirt.jpg` | 800x800px | Yellow raincoat kids |
+| ☐ | `nightsuit-printed/` | `formal-white-shirt.jpg` | 800x800px | Printed night suit |
+| ☐ | `thermal-set/` | `formal-white-shirt.jpg` | 800x800px | Thermal set boys |
+| ☐ | `swimming-trunk/` | `formal-white-shirt.jpg` | 800x800px | Swimming trunks boys |
+| ☐ | `romper-baby/` | `formal-white-shirt.jpg` | 800x800px | Baby romper boys |
+| ☐ | `onesie-pack/` | `formal-white-shirt.jpg` | 800x800px | Onesie pack baby |
+
+##### GIRLS CLOTHING (20 Products)
+**Full Path**: `/images/products/fashion/kids-clothing/girls/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `frock-party-pink/` | `formal-white-shirt.jpg` | 800x800px | Pink party frock |
+| ☐ | `frock-casual-blue/` | `formal-white-shirt.jpg` | 800x800px | Blue casual frock |
+| ☐ | `frock-printed/` | `formal-white-shirt.jpg` | 800x800px | Printed frock girls |
+| ☐ | `top-embroidered/` | `formal-white-shirt.jpg` | 800x800px | Embroidered top girls |
+| ☐ | `legging-black/` | `formal-white-shirt.jpg` | 800x800px | Black leggings girls |
+| ☐ | `jeans-denim/` | `formal-white-shirt.jpg` | 800x800px | Denim jeans girls |
+| ☐ | `skirt-pleated/` | `formal-white-shirt.jpg` | 800x800px | Pleated skirt girls |
+| ☐ | `lehenga-kids/` | `formal-white-shirt.jpg` | 800x800px | Kids lehenga festive |
+| ☐ | `anarkali-kids/` | `formal-white-shirt.jpg` | 800x800px | Anarkali dress girls |
+| ☐ | `kurti-set/` | `formal-white-shirt.jpg` | 800x800px | Kurti set girls ethnic |
+| ☐ | `school-uniform/` | `formal-white-shirt.jpg` | 800x800px | School uniform girls |
+| ☐ | `sweater-pink/` | `formal-white-shirt.jpg` | 800x800px | Pink sweater girls |
+| ☐ | `jacket-winter/` | `formal-white-shirt.jpg` | 800x800px | Winter jacket girls |
+| ☐ | `raincoat-printed/` | `formal-white-shirt.jpg` | 800x800px | Printed raincoat girls |
+| ☐ | `nightsuit-cotton/` | `formal-white-shirt.jpg` | 800x800px | Cotton night suit girls |
+| ☐ | `thermal-set/` | `formal-white-shirt.jpg` | 800x800px | Thermal set girls |
+| ☐ | `swimming-costume/` | `formal-white-shirt.jpg` | 800x800px | Swimming costume girls |
+| ☐ | `romper-baby/` | `formal-white-shirt.jpg` | 800x800px | Baby romper girls |
+| ☐ | `onesie-cute/` | `formal-white-shirt.jpg` | 800x800px | Cute onesie baby |
+| ☐ | `dungaree-denim/` | `formal-white-shirt.jpg` | 800x800px | Denim dungaree girls |
+
+#### FASHION ACCESSORIES (40 Products)
+**Full Path**: `/images/products/fashion/accessories/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `belts/leather-black-belt/` | `formal-white-shirt.jpg` | 800x800px | Black leather belt |
+| ☐ | `belts/leather-brown-belt/` | `formal-white-shirt.jpg` | 800x800px | Brown leather belt |
+| ☐ | `belts/formal-belt/` | `formal-white-shirt.jpg` | 800x800px | Formal belt men |
+| ☐ | `belts/casual-belt/` | `formal-white-shirt.jpg` | 800x800px | Casual belt |
+| ☐ | `belts/chain-belt/` | `formal-white-shirt.jpg` | 800x800px | Chain belt women |
+| ☐ | `ties/silk-blue-tie/` | `formal-white-shirt.jpg` | 800x800px | Blue silk tie |
+| ☐ | `ties/red-tie/` | `formal-white-shirt.jpg` | 800x800px | Red formal tie |
+| ☐ | `ties/bow-tie-black/` | `formal-white-shirt.jpg` | 800x800px | Black bow tie |
+| ☐ | `wallets/leather-wallet-mens/` | `formal-white-shirt.jpg` | 800x800px | Men's leather wallet |
+| ☐ | `wallets/canvas-wallet/` | `formal-white-shirt.jpg` | 800x800px | Canvas wallet casual |
+| ☐ | `wallets/card-holder/` | `formal-white-shirt.jpg` | 800x800px | Card holder leather |
+| ☐ | `wallets/womens-wallet/` | `formal-white-shirt.jpg` | 800x800px | Women's wallet stylish |
+| ☐ | `watches/analog-watch-mens/` | `formal-white-shirt.jpg` | 800x800px | Men's analog watch |
+| ☐ | `watches/digital-watch/` | `formal-white-shirt.jpg` | 800x800px | Digital sports watch |
+| ☐ | `watches/smart-watch/` | `formal-white-shirt.jpg` | 800x800px | Smart watch modern |
+| ☐ | `watches/womens-watch/` | `formal-white-shirt.jpg` | 800x800px | Women's elegant watch |
+| ☐ | `sunglasses/aviator-sunglasses/` | `formal-white-shirt.jpg` | 800x800px | Aviator sunglasses |
+| ☐ | `sunglasses/wayfarer-sunglasses/` | `formal-white-shirt.jpg` | 800x800px | Wayfarer sunglasses |
+| ☐ | `sunglasses/cat-eye-sunglasses/` | `formal-white-shirt.jpg` | 800x800px | Cat eye sunglasses |
+| ☐ | `sunglasses/sports-sunglasses/` | `formal-white-shirt.jpg` | 800x800px | Sports sunglasses |
+| ☐ | `bags/handbag-tote/` | `formal-white-shirt.jpg` | 800x800px | Tote handbag women |
+| ☐ | `bags/satchel-bag/` | `formal-white-shirt.jpg` | 800x800px | Satchel bag leather |
+| ☐ | `bags/clutch-gold/` | `formal-white-shirt.jpg` | 800x800px | Gold clutch party |
+| ☐ | `bags/backpack-leather/` | `formal-white-shirt.jpg` | 800x800px | Leather backpack |
+| ☐ | `bags/laptop-bag/` | `formal-white-shirt.jpg` | 800x800px | Laptop bag professional |
+| ☐ | `bags/duffle-bag/` | `formal-white-shirt.jpg` | 800x800px | Duffle bag travel |
+| ☐ | `bags/sling-bag/` | `formal-white-shirt.jpg` | 800x800px | Sling bag casual |
+| ☐ | `jewelry/earrings-studs/` | `formal-white-shirt.jpg` | 800x800px | Stud earrings |
+| ☐ | `jewelry/earrings-hoops/` | `formal-white-shirt.jpg` | 800x800px | Hoop earrings |
+| ☐ | `jewelry/necklace-chain/` | `formal-white-shirt.jpg` | 800x800px | Chain necklace |
+| ☐ | `jewelry/bracelet-charm/` | `formal-white-shirt.jpg` | 800x800px | Charm bracelet |
+| ☐ | `jewelry/anklet-silver/` | `formal-white-shirt.jpg` | 800x800px | Silver anklet |
+| ☐ | `jewelry/ring-fashion/` | `formal-white-shirt.jpg` | 800x800px | Fashion ring |
+| ☐ | `caps/baseball-cap/` | `formal-white-shirt.jpg` | 800x800px | Baseball cap |
+| ☐ | `caps/fedora-hat/` | `formal-white-shirt.jpg` | 800x800px | Fedora hat stylish |
+| ☐ | `scarves/wool-scarf/` | `formal-white-shirt.jpg` | 800x800px | Wool scarf winter |
+| ☐ | `scarves/silk-stole/` | `formal-white-shirt.jpg` | 800x800px | Silk stole elegant |
+| ☐ | `socks/formal-socks/` | `formal-white-shirt.jpg` | 800x800px | Formal socks men |
+| ☐ | `socks/sports-socks/` | `formal-white-shirt.jpg` | 800x800px | Sports socks |
+| ☐ | `socks/ankle-socks/` | `formal-white-shirt.jpg` | 800x800px | Ankle socks pack |
+
+---
+
+### 📱 ELECTRONICS CATEGORY (150 Products Total)
+- **Mobile Phones & Tablets**: 30 products
+- **Laptops & Computers**: 30 products
+- **Audio & Entertainment**: 30 products
+- **Gaming & Cameras**: 30 products
+- **Home Appliances**: 30 products
+
+#### MOBILE PHONES & TABLETS (30 Products)
+**Full Path**: `/images/products/electronics/mobiles/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `smartphones/iphone-15-pro/` | `formal-white-shirt.jpg` | 800x800px | iPhone 15 Pro flagship |
+| ☐ | `smartphones/iphone-14/` | `formal-white-shirt.jpg` | 800x800px | iPhone 14 standard |
+| ☐ | `smartphones/samsung-s24-ultra/` | `formal-white-shirt.jpg` | 800x800px | Samsung S24 Ultra |
+| ☐ | `smartphones/samsung-a54/` | `formal-white-shirt.jpg` | 800x800px | Samsung A54 mid-range |
+| ☐ | `smartphones/oneplus-12/` | `formal-white-shirt.jpg` | 800x800px | OnePlus 12 flagship |
+| ☐ | `smartphones/oneplus-nord/` | `formal-white-shirt.jpg` | 800x800px | OnePlus Nord series |
+| ☐ | `smartphones/xiaomi-14/` | `formal-white-shirt.jpg` | 800x800px | Xiaomi 14 flagship |
+| ☐ | `smartphones/redmi-note-13/` | `formal-white-shirt.jpg` | 800x800px | Redmi Note 13 |
+| ☐ | `smartphones/realme-11-pro/` | `formal-white-shirt.jpg` | 800x800px | Realme 11 Pro |
+| ☐ | `smartphones/oppo-reno-11/` | `formal-white-shirt.jpg` | 800x800px | Oppo Reno 11 |
+| ☐ | `smartphones/vivo-v29/` | `formal-white-shirt.jpg` | 800x800px | Vivo V29 camera phone |
+| ☐ | `smartphones/nothing-phone-2/` | `formal-white-shirt.jpg` | 800x800px | Nothing Phone 2 |
+| ☐ | `smartphones/pixel-8-pro/` | `formal-white-shirt.jpg` | 800x800px | Google Pixel 8 Pro |
+| ☐ | `smartphones/motorola-edge/` | `formal-white-shirt.jpg` | 800x800px | Motorola Edge |
+| ☐ | `smartphones/nokia-g42/` | `formal-white-shirt.jpg` | 800x800px | Nokia G42 5G |
+| ☐ | `tablets/ipad-pro-m2/` | `formal-white-shirt.jpg` | 800x800px | iPad Pro M2 chip |
+| ☐ | `tablets/ipad-air/` | `formal-white-shirt.jpg` | 800x800px | iPad Air latest |
+| ☐ | `tablets/ipad-mini/` | `formal-white-shirt.jpg` | 800x800px | iPad Mini compact |
+| ☐ | `tablets/samsung-tab-s9/` | `formal-white-shirt.jpg` | 800x800px | Samsung Tab S9 |
+| ☐ | `tablets/lenovo-tab/` | `formal-white-shirt.jpg` | 800x800px | Lenovo Tab series |
+| ☐ | `accessories/phone-case-clear/` | `formal-white-shirt.jpg` | 800x800px | Clear phone case |
+| ☐ | `accessories/phone-case-leather/` | `formal-white-shirt.jpg` | 800x800px | Leather phone case |
+| ☐ | `accessories/screen-guard-tempered/` | `formal-white-shirt.jpg` | 800x800px | Tempered glass guard |
+| ☐ | `accessories/charger-fast/` | `formal-white-shirt.jpg` | 800x800px | Fast charger 65W |
+| ☐ | `accessories/charger-wireless/` | `formal-white-shirt.jpg` | 800x800px | Wireless charger |
+| ☐ | `accessories/power-bank-10000/` | `formal-white-shirt.jpg` | 800x800px | 10000mAh power bank |
+| ☐ | `accessories/power-bank-20000/` | `formal-white-shirt.jpg` | 800x800px | 20000mAh power bank |
+| ☐ | `accessories/earbuds-tws/` | `formal-white-shirt.jpg` | 800x800px | TWS earbuds |
+| ☐ | `accessories/selfie-stick/` | `formal-white-shirt.jpg` | 800x800px | Selfie stick tripod |
+| ☐ | `accessories/car-holder/` | `formal-white-shirt.jpg` | 800x800px | Car phone holder |
+
+#### LAPTOPS & COMPUTERS (30 Products)
+**Full Path**: `/images/products/electronics/laptops/` & `/images/products/electronics/computers/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `gaming/asus-rog-strix/` | `formal-white-shirt.jpg` | 800x800px | ASUS ROG Strix gaming |
+| ☐ | `gaming/msi-gaming/` | `formal-white-shirt.jpg` | 800x800px | MSI gaming laptop |
+| ☐ | `gaming/hp-omen/` | `formal-white-shirt.jpg` | 800x800px | HP Omen gaming |
+| ☐ | `business/dell-xps-13/` | `formal-white-shirt.jpg` | 800x800px | Dell XPS 13 ultrabook |
+| ☐ | `business/lenovo-thinkpad/` | `formal-white-shirt.jpg` | 800x800px | Lenovo ThinkPad |
+| ☐ | `business/hp-elitebook/` | `formal-white-shirt.jpg` | 800x800px | HP EliteBook business |
+| ☐ | `macbooks/macbook-pro-16/` | `formal-white-shirt.jpg` | 800x800px | MacBook Pro 16-inch |
+| ☐ | `macbooks/macbook-air-m2/` | `formal-white-shirt.jpg` | 800x800px | MacBook Air M2 |
+| ☐ | `macbooks/macbook-pro-14/` | `formal-white-shirt.jpg` | 800x800px | MacBook Pro 14-inch |
+| ☐ | `budget/hp-pavilion/` | `formal-white-shirt.jpg` | 800x800px | HP Pavilion budget |
+| ☐ | `budget/asus-vivobook/` | `formal-white-shirt.jpg` | 800x800px | ASUS VivoBook |
+| ☐ | `budget/lenovo-ideapad/` | `formal-white-shirt.jpg` | 800x800px | Lenovo IdeaPad |
+| ☐ | `2in1/surface-pro-9/` | `formal-white-shirt.jpg` | 800x800px | Surface Pro 9 |
+| ☐ | `2in1/hp-spectre/` | `formal-white-shirt.jpg` | 800x800px | HP Spectre x360 |
+| ☐ | `2in1/lenovo-yoga/` | `formal-white-shirt.jpg` | 800x800px | Lenovo Yoga 2-in-1 |
+| ☐ | `computers/desktops/gaming-pc-custom/` | `formal-white-shirt.jpg` | 800x800px | Custom gaming PC |
+| ☐ | `computers/desktops/imac-24/` | `formal-white-shirt.jpg` | 800x800px | iMac 24-inch |
+| ☐ | `computers/desktops/dell-optiplex/` | `formal-white-shirt.jpg` | 800x800px | Dell OptiPlex desktop |
+| ☐ | `computers/peripherals/monitor-4k/` | `formal-white-shirt.jpg` | 800x800px | 4K monitor 27-inch |
+| ☐ | `computers/peripherals/monitor-curved/` | `formal-white-shirt.jpg` | 800x800px | Curved gaming monitor |
+| ☐ | `computers/peripherals/keyboard-mechanical/` | `formal-white-shirt.jpg` | 800x800px | Mechanical keyboard |
+| ☐ | `computers/peripherals/mouse-gaming/` | `formal-white-shirt.jpg` | 800x800px | Gaming mouse RGB |
+| ☐ | `computers/peripherals/webcam-hd/` | `formal-white-shirt.jpg` | 800x800px | HD webcam 1080p |
+| ☐ | `computers/peripherals/printer-laser/` | `formal-white-shirt.jpg` | 800x800px | Laser printer |
+| ☐ | `computers/peripherals/scanner-flatbed/` | `formal-white-shirt.jpg` | 800x800px | Flatbed scanner |
+| ☐ | `computers/storage/ssd-1tb/` | `formal-white-shirt.jpg` | 800x800px | 1TB SSD drive |
+| ☐ | `computers/storage/hard-drive-external/` | `formal-white-shirt.jpg` | 800x800px | External hard drive |
+| ☐ | `computers/storage/pen-drive-64gb/` | `formal-white-shirt.jpg` | 800x800px | 64GB pen drive |
+| ☐ | `computers/storage/memory-card-128gb/` | `formal-white-shirt.jpg` | 800x800px | 128GB memory card |
+| ☐ | `computers/networking/router-wifi6/` | `formal-white-shirt.jpg` | 800x800px | WiFi 6 router |
+
+#### AUDIO & ENTERTAINMENT (30 Products)
+**Full Path**: `/images/products/electronics/audio/` & `/images/products/electronics/tv/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `headphones/sony-wh1000xm5/` | `formal-white-shirt.jpg` | 800x800px | Sony WH-1000XM5 |
+| ☐ | `headphones/bose-qc45/` | `formal-white-shirt.jpg` | 800x800px | Bose QC45 |
+| ☐ | `headphones/airpods-pro/` | `formal-white-shirt.jpg` | 800x800px | AirPods Pro |
+| ☐ | `headphones/beats-studio/` | `formal-white-shirt.jpg` | 800x800px | Beats Studio |
+| ☐ | `headphones/jbl-tune/` | `formal-white-shirt.jpg` | 800x800px | JBL Tune headphones |
+| ☐ | `earbuds/samsung-buds/` | `formal-white-shirt.jpg` | 800x800px | Samsung Galaxy Buds |
+| ☐ | `earbuds/oneplus-buds/` | `formal-white-shirt.jpg` | 800x800px | OnePlus Buds |
+| ☐ | `earbuds/realme-buds/` | `formal-white-shirt.jpg` | 800x800px | Realme Buds |
+| ☐ | `earbuds/boat-airdopes/` | `formal-white-shirt.jpg` | 800x800px | boAt Airdopes |
+| ☐ | `earbuds/noise-buds/` | `formal-white-shirt.jpg` | 800x800px | Noise earbuds |
+| ☐ | `speakers/jbl-flip-6/` | `formal-white-shirt.jpg` | 800x800px | JBL Flip 6 |
+| ☐ | `speakers/bose-soundlink/` | `formal-white-shirt.jpg` | 800x800px | Bose SoundLink |
+| ☐ | `speakers/marshall-speaker/` | `formal-white-shirt.jpg` | 800x800px | Marshall speaker |
+| ☐ | `speakers/sony-portable/` | `formal-white-shirt.jpg` | 800x800px | Sony portable speaker |
+| ☐ | `speakers/boat-stone/` | `formal-white-shirt.jpg` | 800x800px | boAt Stone speaker |
+| ☐ | `home-audio/soundbar-samsung/` | `formal-white-shirt.jpg` | 800x800px | Samsung soundbar |
+| ☐ | `home-audio/home-theater-sony/` | `formal-white-shirt.jpg` | 800x800px | Sony home theater |
+| ☐ | `home-audio/alexa-echo/` | `formal-white-shirt.jpg` | 800x800px | Amazon Echo Alexa |
+| ☐ | `home-audio/google-home/` | `formal-white-shirt.jpg` | 800x800px | Google Home speaker |
+| ☐ | `home-audio/amplifier-stereo/` | `formal-white-shirt.jpg` | 800x800px | Stereo amplifier |
+| ☐ | `tv/smart-tv/samsung-55-inch/` | `formal-white-shirt.jpg` | 800x800px | Samsung 55" TV |
+| ☐ | `tv/smart-tv/lg-oled-65/` | `formal-white-shirt.jpg` | 800x800px | LG OLED 65" TV |
+| ☐ | `tv/smart-tv/sony-bravia-43/` | `formal-white-shirt.jpg` | 800x800px | Sony Bravia 43" |
+| ☐ | `tv/smart-tv/mi-tv-32/` | `formal-white-shirt.jpg` | 800x800px | Mi TV 32" |
+| ☐ | `tv/smart-tv/oneplus-tv-50/` | `formal-white-shirt.jpg` | 800x800px | OnePlus TV 50" |
+| ☐ | `tv/accessories/fire-tv-stick/` | `formal-white-shirt.jpg` | 800x800px | Fire TV Stick |
+| ☐ | `tv/accessories/chromecast/` | `formal-white-shirt.jpg` | 800x800px | Google Chromecast |
+| ☐ | `tv/accessories/set-top-box/` | `formal-white-shirt.jpg` | 800x800px | HD Set Top Box |
+| ☐ | `tv/accessories/projector-4k/` | `formal-white-shirt.jpg` | 800x800px | 4K projector |
+| ☐ | `tv/accessories/dvd-player/` | `formal-white-shirt.jpg` | 800x800px | DVD player |
+
+#### GAMING & CAMERAS (30 Products)
+**Full Path**: `/images/products/electronics/gaming/` & `/images/products/electronics/cameras/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `gaming/consoles/playstation-5/` | `formal-white-shirt.jpg` | 800x800px | PlayStation 5 console |
+| ☐ | `gaming/consoles/xbox-series-x/` | `formal-white-shirt.jpg` | 800x800px | Xbox Series X |
+| ☐ | `gaming/consoles/nintendo-switch/` | `formal-white-shirt.jpg` | 800x800px | Nintendo Switch |
+| ☐ | `gaming/accessories/ps5-controller/` | `formal-white-shirt.jpg` | 800x800px | PS5 DualSense |
+| ☐ | `gaming/accessories/xbox-controller/` | `formal-white-shirt.jpg` | 800x800px | Xbox controller |
+| ☐ | `gaming/accessories/gaming-headset/` | `formal-white-shirt.jpg` | 800x800px | Gaming headset |
+| ☐ | `gaming/accessories/gaming-keyboard/` | `formal-white-shirt.jpg` | 800x800px | RGB gaming keyboard |
+| ☐ | `gaming/accessories/gaming-mouse/` | `formal-white-shirt.jpg` | 800x800px | Gaming mouse |
+| ☐ | `gaming/accessories/gaming-chair/` | `formal-white-shirt.jpg` | 800x800px | Gaming chair |
+| ☐ | `gaming/accessories/steering-wheel/` | `formal-white-shirt.jpg` | 800x800px | Racing wheel |
+| ☐ | `cameras/dslr/canon-eos-r5/` | `formal-white-shirt.jpg` | 800x800px | Canon EOS R5 |
+| ☐ | `cameras/dslr/nikon-d850/` | `formal-white-shirt.jpg` | 800x800px | Nikon D850 |
+| ☐ | `cameras/dslr/sony-alpha/` | `formal-white-shirt.jpg` | 800x800px | Sony Alpha series |
+| ☐ | `cameras/mirrorless/fujifilm-xt5/` | `formal-white-shirt.jpg` | 800x800px | Fujifilm X-T5 |
+| ☐ | `cameras/mirrorless/panasonic-lumix/` | `formal-white-shirt.jpg` | 800x800px | Panasonic Lumix |
+| ☐ | `cameras/action/gopro-hero-12/` | `formal-white-shirt.jpg` | 800x800px | GoPro Hero 12 |
+| ☐ | `cameras/action/dji-action/` | `formal-white-shirt.jpg` | 800x800px | DJI Action camera |
+| ☐ | `cameras/action/insta360/` | `formal-white-shirt.jpg` | 800x800px | Insta360 camera |
+| ☐ | `cameras/instant/instax-mini/` | `formal-white-shirt.jpg` | 800x800px | Instax Mini |
+| ☐ | `cameras/instant/polaroid/` | `formal-white-shirt.jpg` | 800x800px | Polaroid camera |
+| ☐ | `cameras/accessories/lens-wide-angle/` | `formal-white-shirt.jpg` | 800x800px | Wide angle lens |
+| ☐ | `cameras/accessories/lens-telephoto/` | `formal-white-shirt.jpg` | 800x800px | Telephoto lens |
+| ☐ | `cameras/accessories/tripod-professional/` | `formal-white-shirt.jpg` | 800x800px | Professional tripod |
+| ☐ | `cameras/accessories/gimbal-stabilizer/` | `formal-white-shirt.jpg` | 800x800px | Gimbal stabilizer |
+| ☐ | `cameras/accessories/camera-bag/` | `formal-white-shirt.jpg` | 800x800px | Camera bag |
+| ☐ | `wearables/smartwatch/apple-watch-9/` | `formal-white-shirt.jpg` | 800x800px | Apple Watch 9 |
+| ☐ | `wearables/smartwatch/samsung-galaxy-watch/` | `formal-white-shirt.jpg` | 800x800px | Galaxy Watch |
+| ☐ | `wearables/fitness/fitbit-charge/` | `formal-white-shirt.jpg` | 800x800px | Fitbit Charge |
+| ☐ | `wearables/fitness/mi-band-8/` | `formal-white-shirt.jpg` | 800x800px | Mi Band 8 |
+| ☐ | `wearables/vr/meta-quest-3/` | `formal-white-shirt.jpg` | 800x800px | Meta Quest 3 VR |
+
+#### HOME APPLIANCES (30 Products)
+**Full Path**: `/images/products/electronics/appliances/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `kitchen/refrigerator-lg-double/` | `formal-white-shirt.jpg` | 800x800px | LG double door fridge |
+| ☐ | `kitchen/refrigerator-samsung-single/` | `formal-white-shirt.jpg` | 800x800px | Samsung single door |
+| ☐ | `kitchen/microwave-ifb/` | `formal-white-shirt.jpg` | 800x800px | IFB microwave oven |
+| ☐ | `kitchen/mixer-grinder-preethi/` | `formal-white-shirt.jpg` | 800x800px | Preethi mixer grinder |
+| ☐ | `kitchen/water-purifier-kent/` | `formal-white-shirt.jpg` | 800x800px | Kent RO purifier |
+| ☐ | `washing/washing-machine-front-load/` | `formal-white-shirt.jpg` | 800x800px | Front load washer |
+| ☐ | `washing/washing-machine-top-load/` | `formal-white-shirt.jpg` | 800x800px | Top load washer |
+| ☐ | `washing/dishwasher-bosch/` | `formal-white-shirt.jpg` | 800x800px | Bosch dishwasher |
+| ☐ | `cooling/ac-split-1-5-ton/` | `formal-white-shirt.jpg` | 800x800px | 1.5 ton split AC |
+| ☐ | `cooling/ac-window/` | `formal-white-shirt.jpg` | 800x800px | Window AC |
+| ☐ | `cooling/air-cooler/` | `formal-white-shirt.jpg` | 800x800px | Air cooler |
+| ☐ | `cooling/ceiling-fan/` | `formal-white-shirt.jpg` | 800x800px | Ceiling fan |
+| ☐ | `cooling/table-fan/` | `formal-white-shirt.jpg` | 800x800px | Table fan |
+| ☐ | `cooling/exhaust-fan/` | `formal-white-shirt.jpg` | 800x800px | Exhaust fan |
+| ☐ | `heating/room-heater/` | `formal-white-shirt.jpg` | 800x800px | Room heater |
+| ☐ | `heating/water-heater-geyser/` | `formal-white-shirt.jpg` | 800x800px | Water heater geyser |
+| ☐ | `heating/induction-cooktop/` | `formal-white-shirt.jpg` | 800x800px | Induction cooktop |
+| ☐ | `small/electric-kettle/` | `formal-white-shirt.jpg` | 800x800px | Electric kettle |
+| ☐ | `small/coffee-maker/` | `formal-white-shirt.jpg` | 800x800px | Coffee maker |
+| ☐ | `small/toaster/` | `formal-white-shirt.jpg` | 800x800px | Bread toaster |
+| ☐ | `small/sandwich-maker/` | `formal-white-shirt.jpg` | 800x800px | Sandwich maker |
+| ☐ | `small/rice-cooker/` | `formal-white-shirt.jpg` | 800x800px | Rice cooker |
+| ☐ | `small/steam-iron/` | `formal-white-shirt.jpg` | 800x800px | Steam iron |
+| ☐ | `small/vacuum-cleaner/` | `formal-white-shirt.jpg` | 800x800px | Vacuum cleaner |
+| ☐ | `small/air-fryer/` | `formal-white-shirt.jpg` | 800x800px | Air fryer |
+| ☐ | `small/juicer/` | `formal-white-shirt.jpg` | 800x800px | Juicer machine |
+| ☐ | `small/hand-blender/` | `formal-white-shirt.jpg` | 800x800px | Hand blender |
+| ☐ | `small/food-processor/` | `formal-white-shirt.jpg` | 800x800px | Food processor |
+| ☐ | `small/egg-boiler/` | `formal-white-shirt.jpg` | 800x800px | Egg boiler |
+| ☐ | `small/hair-dryer/` | `formal-white-shirt.jpg` | 800x800px | Hair dryer |
+
+---
+
+### 🍕 FOOD & BEVERAGES CATEGORY (150 Products Total)
+- **Indian Food**: 60 products (North Indian: 20, South Indian: 20, Street Food: 20)
+- **International Cuisine**: 20 products
+- **Sweets & Desserts**: 40 products
+- **Bakery Products**: 35 products
+- **Beverages**: 35 products (Note: Some products overlap, total unique: 150)
+
+#### INDIAN FOOD - NORTH INDIAN (20 Products)
+**Full Path**: `/images/products/food/indian/north-indian/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `biryani-chicken/` | `formal-white-shirt.jpg` | 800x800px | Chicken biryani |
+| ☐ | `biryani-mutton/` | `formal-white-shirt.jpg` | 800x800px | Mutton biryani |
+| ☐ | `biryani-veg/` | `formal-white-shirt.jpg` | 800x800px | Veg biryani |
+| ☐ | `butter-chicken/` | `formal-white-shirt.jpg` | 800x800px | Butter chicken curry |
+| ☐ | `dal-makhani/` | `formal-white-shirt.jpg` | 800x800px | Dal makhani |
+| ☐ | `paneer-butter-masala/` | `formal-white-shirt.jpg` | 800x800px | Paneer butter masala |
+| ☐ | `chole-bhature/` | `formal-white-shirt.jpg` | 800x800px | Chole bhature |
+| ☐ | `rajma-chawal/` | `formal-white-shirt.jpg` | 800x800px | Rajma chawal |
+| ☐ | `kadai-paneer/` | `formal-white-shirt.jpg` | 800x800px | Kadai paneer |
+| ☐ | `naan-roti/` | `formal-white-shirt.jpg` | 800x800px | Naan and roti |
+| ☐ | `tandoori-chicken/` | `formal-white-shirt.jpg` | 800x800px | Tandoori chicken |
+| ☐ | `chicken-tikka/` | `formal-white-shirt.jpg` | 800x800px | Chicken tikka |
+| ☐ | `seekh-kebab/` | `formal-white-shirt.jpg` | 800x800px | Seekh kebab |
+| ☐ | `paneer-tikka/` | `formal-white-shirt.jpg` | 800x800px | Paneer tikka |
+| ☐ | `aloo-paratha/` | `formal-white-shirt.jpg` | 800x800px | Aloo paratha |
+| ☐ | `palak-paneer/` | `formal-white-shirt.jpg` | 800x800px | Palak paneer |
+| ☐ | `chicken-curry/` | `formal-white-shirt.jpg` | 800x800px | Chicken curry |
+| ☐ | `mutton-curry/` | `formal-white-shirt.jpg` | 800x800px | Mutton curry |
+| ☐ | `fish-curry/` | `formal-white-shirt.jpg` | 800x800px | Fish curry |
+| ☐ | `malai-kofta/` | `formal-white-shirt.jpg` | 800x800px | Malai kofta |
+
+#### INDIAN FOOD - SOUTH INDIAN (20 Products)
+**Full Path**: `/images/products/food/indian/south-indian/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `dosa-masala/` | `formal-white-shirt.jpg` | 800x800px | Masala dosa |
+| ☐ | `idli-sambar/` | `formal-white-shirt.jpg` | 800x800px | Idli sambar |
+| ☐ | `vada-sambar/` | `formal-white-shirt.jpg` | 800x800px | Vada sambar |
+| ☐ | `uttapam/` | `formal-white-shirt.jpg` | 800x800px | Uttapam |
+| ☐ | `pongal/` | `formal-white-shirt.jpg` | 800x800px | Ven pongal |
+| ☐ | `rasam-rice/` | `formal-white-shirt.jpg` | 800x800px | Rasam rice |
+| ☐ | `curd-rice/` | `formal-white-shirt.jpg` | 800x800px | Curd rice |
+| ☐ | `appam/` | `formal-white-shirt.jpg` | 800x800px | Appam with stew |
+| ☐ | `pesarattu/` | `formal-white-shirt.jpg` | 800x800px | Pesarattu dosa |
+| ☐ | `bisi-bele-bath/` | `formal-white-shirt.jpg` | 800x800px | Bisi bele bath |
+| ☐ | `puttu/` | `formal-white-shirt.jpg` | 800x800px | Puttu kadala |
+| ☐ | `upma/` | `formal-white-shirt.jpg` | 800x800px | Rava upma |
+| ☐ | `medu-vada/` | `formal-white-shirt.jpg` | 800x800px | Medu vada |
+| ☐ | `rava-dosa/` | `formal-white-shirt.jpg` | 800x800px | Rava dosa |
+| ☐ | `set-dosa/` | `formal-white-shirt.jpg` | 800x800px | Set dosa |
+| ☐ | `neer-dosa/` | `formal-white-shirt.jpg` | 800x800px | Neer dosa |
+| ☐ | `akki-roti/` | `formal-white-shirt.jpg` | 800x800px | Akki roti |
+| ☐ | `ragi-mudde/` | `formal-white-shirt.jpg` | 800x800px | Ragi mudde |
+| ☐ | `chicken-chettinad/` | `formal-white-shirt.jpg` | 800x800px | Chicken chettinad |
+| ☐ | `fish-fry/` | `formal-white-shirt.jpg` | 800x800px | Kerala fish fry |
+
+#### STREET FOOD (20 Products)
+**Full Path**: `/images/products/food/indian/street-food/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `pav-bhaji/` | `formal-white-shirt.jpg` | 800x800px | Pav bhaji |
+| ☐ | `vada-pav/` | `formal-white-shirt.jpg` | 800x800px | Vada pav |
+| ☐ | `bhel-puri/` | `formal-white-shirt.jpg` | 800x800px | Bhel puri |
+| ☐ | `pani-puri/` | `formal-white-shirt.jpg` | 800x800px | Pani puri/Golgappa |
+| ☐ | `samosa/` | `formal-white-shirt.jpg` | 800x800px | Samosa |
+| ☐ | `kachori/` | `formal-white-shirt.jpg` | 800x800px | Kachori |
+| ☐ | `momos-veg/` | `formal-white-shirt.jpg` | 800x800px | Veg momos |
+| ☐ | `momos-chicken/` | `formal-white-shirt.jpg` | 800x800px | Chicken momos |
+| ☐ | `chaat-papdi/` | `formal-white-shirt.jpg` | 800x800px | Papdi chaat |
+| ☐ | `aloo-tikki/` | `formal-white-shirt.jpg` | 800x800px | Aloo tikki |
+| ☐ | `dahi-bhalla/` | `formal-white-shirt.jpg` | 800x800px | Dahi bhalla |
+| ☐ | `sev-puri/` | `formal-white-shirt.jpg` | 800x800px | Sev puri |
+| ☐ | `ragda-pattice/` | `formal-white-shirt.jpg` | 800x800px | Ragda pattice |
+| ☐ | `dabeli/` | `formal-white-shirt.jpg` | 800x800px | Kutchi dabeli |
+| ☐ | `frankie-roll/` | `formal-white-shirt.jpg` | 800x800px | Frankie roll |
+| ☐ | `egg-roll/` | `formal-white-shirt.jpg` | 800x800px | Egg roll |
+| ☐ | `chicken-roll/` | `formal-white-shirt.jpg` | 800x800px | Chicken roll |
+| ☐ | `kulfi/` | `formal-white-shirt.jpg` | 800x800px | Kulfi ice cream |
+| ☐ | `lassi/` | `formal-white-shirt.jpg` | 800x800px | Lassi glass |
+| ☐ | `jalebi/` | `formal-white-shirt.jpg` | 800x800px | Hot jalebi |
+
+#### INTERNATIONAL CUISINE (20 Products)
+**Full Path**: `/images/products/food/international/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `chinese/noodles-hakka/` | `formal-white-shirt.jpg` | 800x800px | Hakka noodles |
+| ☐ | `chinese/fried-rice/` | `formal-white-shirt.jpg` | 800x800px | Fried rice |
+| ☐ | `chinese/manchurian/` | `formal-white-shirt.jpg` | 800x800px | Manchurian |
+| ☐ | `chinese/spring-rolls/` | `formal-white-shirt.jpg` | 800x800px | Spring rolls |
+| ☐ | `chinese/wontons/` | `formal-white-shirt.jpg` | 800x800px | Wontons |
+| ☐ | `italian/pizza-margherita/` | `formal-white-shirt.jpg` | 800x800px | Margherita pizza |
+| ☐ | `italian/pasta-alfredo/` | `formal-white-shirt.jpg` | 800x800px | Pasta alfredo |
+| ☐ | `italian/lasagna/` | `formal-white-shirt.jpg` | 800x800px | Lasagna |
+| ☐ | `italian/risotto/` | `formal-white-shirt.jpg` | 800x800px | Risotto |
+| ☐ | `italian/bruschetta/` | `formal-white-shirt.jpg` | 800x800px | Bruschetta |
+| ☐ | `american/burger-chicken/` | `formal-white-shirt.jpg` | 800x800px | Chicken burger |
+| ☐ | `american/burger-veg/` | `formal-white-shirt.jpg` | 800x800px | Veg burger |
+| ☐ | `american/hot-dog/` | `formal-white-shirt.jpg` | 800x800px | Hot dog |
+| ☐ | `american/sandwich-club/` | `formal-white-shirt.jpg` | 800x800px | Club sandwich |
+| ☐ | `american/wings/` | `formal-white-shirt.jpg` | 800x800px | Chicken wings |
+| ☐ | `mexican/tacos/` | `formal-white-shirt.jpg` | 800x800px | Tacos |
+| ☐ | `mexican/burrito/` | `formal-white-shirt.jpg` | 800x800px | Burrito wrap |
+| ☐ | `mexican/quesadilla/` | `formal-white-shirt.jpg` | 800x800px | Quesadilla |
+| ☐ | `japanese/sushi/` | `formal-white-shirt.jpg` | 800x800px | Sushi platter |
+| ☐ | `thai/pad-thai/` | `formal-white-shirt.jpg` | 800x800px | Pad Thai noodles |
+
+#### SWEETS & DESSERTS (40 Products)
+**Full Path**: `/images/products/food/sweets/` & `/images/products/food/desserts/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `traditional/gulab-jamun/` | `formal-white-shirt.jpg` | 800x800px | Gulab jamun |
+| ☐ | `traditional/rasgulla/` | `formal-white-shirt.jpg` | 800x800px | Rasgulla |
+| ☐ | `traditional/rasmalai/` | `formal-white-shirt.jpg` | 800x800px | Ras malai |
+| ☐ | `traditional/kaju-katli/` | `formal-white-shirt.jpg` | 800x800px | Kaju katli |
+| ☐ | `traditional/soan-papdi/` | `formal-white-shirt.jpg` | 800x800px | Soan papdi |
+| ☐ | `traditional/ladoo-motichoor/` | `formal-white-shirt.jpg` | 800x800px | Motichoor ladoo |
+| ☐ | `traditional/ladoo-besan/` | `formal-white-shirt.jpg` | 800x800px | Besan ladoo |
+| ☐ | `traditional/barfi-milk/` | `formal-white-shirt.jpg` | 800x800px | Milk barfi |
+| ☐ | `traditional/barfi-coconut/` | `formal-white-shirt.jpg` | 800x800px | Coconut barfi |
+| ☐ | `traditional/halwa-gajar/` | `formal-white-shirt.jpg` | 800x800px | Gajar halwa |
+| ☐ | `traditional/halwa-moong/` | `formal-white-shirt.jpg` | 800x800px | Moong dal halwa |
+| ☐ | `traditional/jalebi/` | `formal-white-shirt.jpg` | 800x800px | Jalebi |
+| ☐ | `traditional/imarti/` | `formal-white-shirt.jpg` | 800x800px | Imarti |
+| ☐ | `traditional/rabri/` | `formal-white-shirt.jpg` | 800x800px | Rabri |
+| ☐ | `traditional/kheer/` | `formal-white-shirt.jpg` | 800x800px | Rice kheer |
+| ☐ | `bengali/sandesh/` | `formal-white-shirt.jpg` | 800x800px | Sandesh |
+| ☐ | `bengali/mishti-doi/` | `formal-white-shirt.jpg` | 800x800px | Mishti doi |
+| ☐ | `bengali/chom-chom/` | `formal-white-shirt.jpg` | 800x800px | Chom chom |
+| ☐ | `bengali/kalakand/` | `formal-white-shirt.jpg` | 800x800px | Kalakand |
+| ☐ | `bengali/ras-malai/` | `formal-white-shirt.jpg` | 800x800px | Bengali ras malai |
+| ☐ | `ice-cream/vanilla/` | `formal-white-shirt.jpg` | 800x800px | Vanilla ice cream |
+| ☐ | `ice-cream/chocolate/` | `formal-white-shirt.jpg` | 800x800px | Chocolate ice cream |
+| ☐ | `ice-cream/strawberry/` | `formal-white-shirt.jpg` | 800x800px | Strawberry ice cream |
+| ☐ | `ice-cream/butterscotch/` | `formal-white-shirt.jpg` | 800x800px | Butterscotch ice cream |
+| ☐ | `ice-cream/kulfi-malai/` | `formal-white-shirt.jpg` | 800x800px | Malai kulfi |
+| ☐ | `cakes/chocolate-cake/` | `formal-white-shirt.jpg` | 800x800px | Chocolate cake |
+| ☐ | `cakes/black-forest/` | `formal-white-shirt.jpg` | 800x800px | Black forest cake |
+| ☐ | `cakes/red-velvet/` | `formal-white-shirt.jpg` | 800x800px | Red velvet cake |
+| ☐ | `cakes/pineapple-cake/` | `formal-white-shirt.jpg` | 800x800px | Pineapple cake |
+| ☐ | `cakes/butterscotch-cake/` | `formal-white-shirt.jpg` | 800x800px | Butterscotch cake |
+| ☐ | `pastries/chocolate-pastry/` | `formal-white-shirt.jpg` | 800x800px | Chocolate pastry |
+| ☐ | `pastries/strawberry-pastry/` | `formal-white-shirt.jpg` | 800x800px | Strawberry pastry |
+| ☐ | `pastries/blueberry-cheesecake/` | `formal-white-shirt.jpg` | 800x800px | Blueberry cheesecake |
+| ☐ | `western/brownie-walnut/` | `formal-white-shirt.jpg` | 800x800px | Walnut brownie |
+| ☐ | `western/donut-glazed/` | `formal-white-shirt.jpg` | 800x800px | Glazed donut |
+| ☐ | `western/macaron/` | `formal-white-shirt.jpg` | 800x800px | Macaron set |
+| ☐ | `western/tiramisu/` | `formal-white-shirt.jpg` | 800x800px | Tiramisu |
+| ☐ | `western/mousse-chocolate/` | `formal-white-shirt.jpg` | 800x800px | Chocolate mousse |
+| ☐ | `western/pudding-caramel/` | `formal-white-shirt.jpg` | 800x800px | Caramel pudding |
+| ☐ | `western/pancake/` | `formal-white-shirt.jpg` | 800x800px | Pancakes stack |
+
+#### BAKERY PRODUCTS (35 Products)
+**Full Path**: `/images/products/food/bakery/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `breads/white-bread/` | `formal-white-shirt.jpg` | 800x800px | White bread loaf |
+| ☐ | `breads/brown-bread/` | `formal-white-shirt.jpg` | 800x800px | Brown bread |
+| ☐ | `breads/multigrain-bread/` | `formal-white-shirt.jpg` | 800x800px | Multigrain bread |
+| ☐ | `breads/garlic-bread/` | `formal-white-shirt.jpg` | 800x800px | Garlic bread |
+| ☐ | `breads/baguette/` | `formal-white-shirt.jpg` | 800x800px | French baguette |
+| ☐ | `breads/pita-bread/` | `formal-white-shirt.jpg` | 800x800px | Pita bread |
+| ☐ | `buns/burger-bun/` | `formal-white-shirt.jpg` | 800x800px | Burger buns |
+| ☐ | `buns/pav-bun/` | `formal-white-shirt.jpg` | 800x800px | Pav buns |
+| ☐ | `buns/hot-dog-bun/` | `formal-white-shirt.jpg` | 800x800px | Hot dog buns |
+| ☐ | `croissant/plain-croissant/` | `formal-white-shirt.jpg` | 800x800px | Plain croissant |
+| ☐ | `croissant/chocolate-croissant/` | `formal-white-shirt.jpg` | 800x800px | Chocolate croissant |
+| ☐ | `croissant/almond-croissant/` | `formal-white-shirt.jpg` | 800x800px | Almond croissant |
+| ☐ | `indian-breads/naan-plain/` | `formal-white-shirt.jpg` | 800x800px | Plain naan |
+| ☐ | `indian-breads/naan-butter/` | `formal-white-shirt.jpg` | 800x800px | Butter naan |
+| ☐ | `indian-breads/naan-garlic/` | `formal-white-shirt.jpg` | 800x800px | Garlic naan |
+| ☐ | `indian-breads/kulcha/` | `formal-white-shirt.jpg` | 800x800px | Kulcha |
+| ☐ | `indian-breads/roti-tandoori/` | `formal-white-shirt.jpg` | 800x800px | Tandoori roti |
+| ☐ | `indian-breads/paratha/` | `formal-white-shirt.jpg` | 800x800px | Plain paratha |
+| ☐ | `cookies/butter-cookies/` | `formal-white-shirt.jpg` | 800x800px | Butter cookies |
+| ☐ | `cookies/chocolate-chip/` | `formal-white-shirt.jpg` | 800x800px | Chocolate chip cookies |
+| ☐ | `cookies/oatmeal-cookies/` | `formal-white-shirt.jpg` | 800x800px | Oatmeal cookies |
+| ☐ | `cookies/almond-cookies/` | `formal-white-shirt.jpg` | 800x800px | Almond cookies |
+| ☐ | `biscuits/marie-biscuit/` | `formal-white-shirt.jpg` | 800x800px | Marie biscuits |
+| ☐ | `biscuits/cream-biscuit/` | `formal-white-shirt.jpg` | 800x800px | Cream biscuits |
+| ☐ | `biscuits/digestive-biscuit/` | `formal-white-shirt.jpg` | 800x800px | Digestive biscuits |
+| ☐ | `snacks/puff-veg/` | `formal-white-shirt.jpg` | 800x800px | Veg puff |
+| ☐ | `snacks/puff-chicken/` | `formal-white-shirt.jpg` | 800x800px | Chicken puff |
+| ☐ | `snacks/samosa-mini/` | `formal-white-shirt.jpg` | 800x800px | Mini samosa |
+| ☐ | `snacks/kachori-mini/` | `formal-white-shirt.jpg` | 800x800px | Mini kachori |
+| ☐ | `muffins/blueberry-muffin/` | `formal-white-shirt.jpg` | 800x800px | Blueberry muffin |
+| ☐ | `muffins/chocolate-muffin/` | `formal-white-shirt.jpg` | 800x800px | Chocolate muffin |
+| ☐ | `muffins/banana-muffin/` | `formal-white-shirt.jpg` | 800x800px | Banana muffin |
+| ☐ | `others/rusk/` | `formal-white-shirt.jpg` | 800x800px | Tea rusk |
+| ☐ | `others/breadstick/` | `formal-white-shirt.jpg` | 800x800px | Breadsticks |
+| ☐ | `others/pizza-base/` | `formal-white-shirt.jpg` | 800x800px | Pizza base |
+
+#### BEVERAGES (35 Products)
+**Full Path**: `/images/products/food/beverages/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `tea/masala-chai/` | `formal-white-shirt.jpg` | 800x800px | Masala chai |
+| ☐ | `tea/green-tea/` | `formal-white-shirt.jpg` | 800x800px | Green tea |
+| ☐ | `tea/black-tea/` | `formal-white-shirt.jpg` | 800x800px | Black tea |
+| ☐ | `tea/lemon-tea/` | `formal-white-shirt.jpg` | 800x800px | Lemon tea |
+| ☐ | `tea/iced-tea/` | `formal-white-shirt.jpg` | 800x800px | Iced tea |
+| ☐ | `coffee/espresso/` | `formal-white-shirt.jpg` | 800x800px | Espresso shot |
+| ☐ | `coffee/cappuccino/` | `formal-white-shirt.jpg` | 800x800px | Cappuccino |
+| ☐ | `coffee/latte/` | `formal-white-shirt.jpg` | 800x800px | Cafe latte |
+| ☐ | `coffee/americano/` | `formal-white-shirt.jpg` | 800x800px | Americano |
+| ☐ | `coffee/cold-coffee/` | `formal-white-shirt.jpg` | 800x800px | Cold coffee |
+| ☐ | `coffee/filter-coffee/` | `formal-white-shirt.jpg` | 800x800px | Filter coffee |
+| ☐ | `juices/orange-juice/` | `formal-white-shirt.jpg` | 800x800px | Orange juice |
+| ☐ | `juices/apple-juice/` | `formal-white-shirt.jpg` | 800x800px | Apple juice |
+| ☐ | `juices/mango-juice/` | `formal-white-shirt.jpg` | 800x800px | Mango juice |
+| ☐ | `juices/mixed-fruit/` | `formal-white-shirt.jpg` | 800x800px | Mixed fruit juice |
+| ☐ | `juices/sugarcane-juice/` | `formal-white-shirt.jpg` | 800x800px | Sugarcane juice |
+| ☐ | `shakes/chocolate-shake/` | `formal-white-shirt.jpg` | 800x800px | Chocolate shake |
+| ☐ | `shakes/vanilla-shake/` | `formal-white-shirt.jpg` | 800x800px | Vanilla shake |
+| ☐ | `shakes/strawberry-shake/` | `formal-white-shirt.jpg` | 800x800px | Strawberry shake |
+| ☐ | `shakes/mango-shake/` | `formal-white-shirt.jpg` | 800x800px | Mango shake |
+| ☐ | `shakes/banana-shake/` | `formal-white-shirt.jpg` | 800x800px | Banana shake |
+| ☐ | `traditional/lassi-sweet/` | `formal-white-shirt.jpg` | 800x800px | Sweet lassi |
+| ☐ | `traditional/lassi-mango/` | `formal-white-shirt.jpg` | 800x800px | Mango lassi |
+| ☐ | `traditional/buttermilk/` | `formal-white-shirt.jpg` | 800x800px | Buttermilk |
+| ☐ | `traditional/coconut-water/` | `formal-white-shirt.jpg` | 800x800px | Coconut water |
+| ☐ | `traditional/jaljeera/` | `formal-white-shirt.jpg` | 800x800px | Jaljeera |
+| ☐ | `sodas/cola/` | `formal-white-shirt.jpg` | 800x800px | Cola drink |
+| ☐ | `sodas/lemon-soda/` | `formal-white-shirt.jpg` | 800x800px | Lemon soda |
+| ☐ | `sodas/orange-soda/` | `formal-white-shirt.jpg` | 800x800px | Orange soda |
+| ☐ | `mocktails/virgin-mojito/` | `formal-white-shirt.jpg` | 800x800px | Virgin mojito |
+| ☐ | `mocktails/blue-lagoon/` | `formal-white-shirt.jpg` | 800x800px | Blue lagoon |
+| ☐ | `energy/energy-drink/` | `formal-white-shirt.jpg` | 800x800px | Energy drink |
+| ☐ | `energy/sports-drink/` | `formal-white-shirt.jpg` | 800x800px | Sports drink |
+| ☐ | `water/mineral-water/` | `formal-white-shirt.jpg` | 800x800px | Mineral water |
+| ☐ | `water/packaged-water/` | `formal-white-shirt.jpg` | 800x800px | Packaged water |
+
+---
+
+### 🛒 GROCERY & STAPLES CATEGORY (100 Products Total)
+- **Rice & Grains**: 20 products
+- **Pulses & Lentils**: 15 products
+- **Oils & Ghee**: 10 products
+- **Spices & Masalas**: 15 products
+- **Dairy Products**: 15 products
+- **Snacks & Dry Fruits**: 15 products
+- **Fruits & Vegetables**: 10 products
+
+#### RICE & GRAINS (20 Products)
+**Full Path**: `/images/products/grocery/rice/` & `/images/products/grocery/flour/` & `/images/products/grocery/grains/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `rice/basmati/basmati-premium/` | `formal-white-shirt.jpg` | 800x800px | Premium basmati rice |
+| ☐ | `rice/basmati/basmati-regular/` | `formal-white-shirt.jpg` | 800x800px | Regular basmati rice |
+| ☐ | `rice/regular/sona-masoori/` | `formal-white-shirt.jpg` | 800x800px | Sona masoori rice |
+| ☐ | `rice/regular/ponni-rice/` | `formal-white-shirt.jpg` | 800x800px | Ponni rice |
+| ☐ | `rice/regular/kolam-rice/` | `formal-white-shirt.jpg` | 800x800px | Kolam rice |
+| ☐ | `rice/special/brown-rice/` | `formal-white-shirt.jpg` | 800x800px | Brown rice healthy |
+| ☐ | `rice/special/red-rice/` | `formal-white-shirt.jpg` | 800x800px | Red rice Kerala |
+| ☐ | `rice/special/black-rice/` | `formal-white-shirt.jpg` | 800x800px | Black rice organic |
+| ☐ | `flour/wheat/wheat-flour-regular/` | `formal-white-shirt.jpg` | 800x800px | Regular wheat flour |
+| ☐ | `flour/wheat/wheat-flour-multigrain/` | `formal-white-shirt.jpg` | 800x800px | Multigrain atta |
+| ☐ | `flour/wheat/whole-wheat-atta/` | `formal-white-shirt.jpg` | 800x800px | Whole wheat atta |
+| ☐ | `flour/other/besan-flour/` | `formal-white-shirt.jpg` | 800x800px | Besan gram flour |
+| ☐ | `flour/other/maida-flour/` | `formal-white-shirt.jpg` | 800x800px | Maida refined flour |
+| ☐ | `flour/other/rice-flour/` | `formal-white-shirt.jpg` | 800x800px | Rice flour |
+| ☐ | `flour/other/ragi-flour/` | `formal-white-shirt.jpg` | 800x800px | Ragi flour |
+| ☐ | `flour/other/corn-flour/` | `formal-white-shirt.jpg` | 800x800px | Corn flour |
+| ☐ | `grains/semolina-rava/` | `formal-white-shirt.jpg` | 800x800px | Semolina rava |
+| ☐ | `grains/broken-wheat/` | `formal-white-shirt.jpg` | 800x800px | Broken wheat daliya |
+| ☐ | `grains/quinoa/` | `formal-white-shirt.jpg` | 800x800px | Quinoa organic |
+| ☐ | `grains/oats/` | `formal-white-shirt.jpg` | 800x800px | Rolled oats |
+
+#### PULSES & LENTILS (15 Products)
+**Full Path**: `/images/products/grocery/pulses/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `dal/toor-dal/` | `formal-white-shirt.jpg` | 800x800px | Toor dal arhar |
+| ☐ | `dal/moong-dal/` | `formal-white-shirt.jpg` | 800x800px | Moong dal yellow |
+| ☐ | `dal/masoor-dal/` | `formal-white-shirt.jpg` | 800x800px | Masoor dal red |
+| ☐ | `dal/chana-dal/` | `formal-white-shirt.jpg` | 800x800px | Chana dal split |
+| ☐ | `dal/urad-dal/` | `formal-white-shirt.jpg` | 800x800px | Urad dal black |
+| ☐ | `beans/rajma-kidney/` | `formal-white-shirt.jpg` | 800x800px | Rajma kidney beans |
+| ☐ | `beans/chana-kabuli/` | `formal-white-shirt.jpg` | 800x800px | Kabuli chana |
+| ☐ | `beans/chana-kala/` | `formal-white-shirt.jpg` | 800x800px | Kala chana |
+| ☐ | `beans/lobia/` | `formal-white-shirt.jpg` | 800x800px | Lobia black eye |
+| ☐ | `beans/soybean/` | `formal-white-shirt.jpg` | 800x800px | Soybean |
+| ☐ | `peas/green-peas/` | `formal-white-shirt.jpg` | 800x800px | Green peas dried |
+| ☐ | `peas/white-peas/` | `formal-white-shirt.jpg` | 800x800px | White peas |
+| ☐ | `others/peanuts/` | `formal-white-shirt.jpg` | 800x800px | Raw peanuts |
+| ☐ | `others/horse-gram/` | `formal-white-shirt.jpg` | 800x800px | Horse gram |
+| ☐ | `others/moth-beans/` | `formal-white-shirt.jpg` | 800x800px | Moth beans |
+
+#### OILS & GHEE (10 Products)
+**Full Path**: `/images/products/grocery/oils/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `cooking/sunflower-oil/` | `formal-white-shirt.jpg` | 800x800px | Sunflower oil |
+| ☐ | `cooking/mustard-oil/` | `formal-white-shirt.jpg` | 800x800px | Mustard oil |
+| ☐ | `cooking/coconut-oil/` | `formal-white-shirt.jpg` | 800x800px | Coconut oil |
+| ☐ | `cooking/groundnut-oil/` | `formal-white-shirt.jpg` | 800x800px | Groundnut oil |
+| ☐ | `cooking/rice-bran-oil/` | `formal-white-shirt.jpg` | 800x800px | Rice bran oil |
+| ☐ | `cooking/soybean-oil/` | `formal-white-shirt.jpg` | 800x800px | Soybean oil |
+| ☐ | `special/olive-oil/` | `formal-white-shirt.jpg` | 800x800px | Olive oil extra virgin |
+| ☐ | `special/sesame-oil/` | `formal-white-shirt.jpg` | 800x800px | Sesame oil |
+| ☐ | `ghee/cow-ghee/` | `formal-white-shirt.jpg` | 800x800px | Cow ghee pure |
+| ☐ | `ghee/buffalo-ghee/` | `formal-white-shirt.jpg` | 800x800px | Buffalo ghee |
+
+#### SPICES & MASALAS (15 Products)
+**Full Path**: `/images/products/grocery/spices/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `whole/cumin-seeds/` | `formal-white-shirt.jpg` | 800x800px | Cumin seeds jeera |
+| ☐ | `whole/coriander-seeds/` | `formal-white-shirt.jpg` | 800x800px | Coriander seeds |
+| ☐ | `whole/mustard-seeds/` | `formal-white-shirt.jpg` | 800x800px | Mustard seeds |
+| ☐ | `whole/fenugreek-seeds/` | `formal-white-shirt.jpg` | 800x800px | Fenugreek methi seeds |
+| ☐ | `whole/black-pepper/` | `formal-white-shirt.jpg` | 800x800px | Black pepper whole |
+| ☐ | `powder/turmeric-powder/` | `formal-white-shirt.jpg` | 800x800px | Turmeric powder |
+| ☐ | `powder/red-chilli-powder/` | `formal-white-shirt.jpg` | 800x800px | Red chilli powder |
+| ☐ | `powder/coriander-powder/` | `formal-white-shirt.jpg` | 800x800px | Coriander powder |
+| ☐ | `powder/garam-masala/` | `formal-white-shirt.jpg` | 800x800px | Garam masala |
+| ☐ | `powder/sambar-powder/` | `formal-white-shirt.jpg` | 800x800px | Sambar powder |
+| ☐ | `special/saffron/` | `formal-white-shirt.jpg` | 800x800px | Saffron kesar |
+| ☐ | `special/cardamom/` | `formal-white-shirt.jpg` | 800x800px | Green cardamom |
+| ☐ | `special/cinnamon/` | `formal-white-shirt.jpg` | 800x800px | Cinnamon sticks |
+| ☐ | `special/cloves/` | `formal-white-shirt.jpg` | 800x800px | Cloves |
+| ☐ | `special/nutmeg/` | `formal-white-shirt.jpg` | 800x800px | Nutmeg jaiphal |
+
+#### DAIRY PRODUCTS (15 Products)
+**Full Path**: `/images/products/grocery/dairy/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `milk/full-cream-milk/` | `formal-white-shirt.jpg` | 800x800px | Full cream milk |
+| ☐ | `milk/toned-milk/` | `formal-white-shirt.jpg` | 800x800px | Toned milk |
+| ☐ | `milk/skimmed-milk/` | `formal-white-shirt.jpg` | 800x800px | Skimmed milk |
+| ☐ | `milk/flavored-milk/` | `formal-white-shirt.jpg` | 800x800px | Flavored milk chocolate |
+| ☐ | `curd/plain-curd/` | `formal-white-shirt.jpg` | 800x800px | Plain curd dahi |
+| ☐ | `curd/greek-yogurt/` | `formal-white-shirt.jpg` | 800x800px | Greek yogurt |
+| ☐ | `cheese/cheese-cubes/` | `formal-white-shirt.jpg` | 800x800px | Cheese cubes |
+| ☐ | `cheese/cheese-slices/` | `formal-white-shirt.jpg` | 800x800px | Cheese slices |
+| ☐ | `cheese/mozzarella/` | `formal-white-shirt.jpg` | 800x800px | Mozzarella cheese |
+| ☐ | `cheese/paneer/` | `formal-white-shirt.jpg` | 800x800px | Fresh paneer |
+| ☐ | `butter/salted-butter/` | `formal-white-shirt.jpg` | 800x800px | Salted butter |
+| ☐ | `butter/unsalted-butter/` | `formal-white-shirt.jpg` | 800x800px | Unsalted butter |
+| ☐ | `others/cream/` | `formal-white-shirt.jpg` | 800x800px | Fresh cream |
+| ☐ | `others/condensed-milk/` | `formal-white-shirt.jpg` | 800x800px | Condensed milk |
+| ☐ | `others/milk-powder/` | `formal-white-shirt.jpg` | 800x800px | Milk powder |
+
+#### SNACKS & DRY FRUITS (15 Products)
+**Full Path**: `/images/products/grocery/snacks/` & `/images/products/grocery/dry-fruits/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `chips/potato-chips/` | `formal-white-shirt.jpg` | 800x800px | Potato chips |
+| ☐ | `chips/banana-chips/` | `formal-white-shirt.jpg` | 800x800px | Banana chips |
+| ☐ | `namkeen/mixture/` | `formal-white-shirt.jpg` | 800x800px | Namkeen mixture |
+| ☐ | `namkeen/bhujia/` | `formal-white-shirt.jpg` | 800x800px | Bhujia sev |
+| ☐ | `namkeen/chakli/` | `formal-white-shirt.jpg` | 800x800px | Chakli murukku |
+| ☐ | `nuts/almonds/` | `formal-white-shirt.jpg` | 800x800px | Almonds badam |
+| ☐ | `nuts/cashews/` | `formal-white-shirt.jpg` | 800x800px | Cashews kaju |
+| ☐ | `nuts/walnuts/` | `formal-white-shirt.jpg` | 800x800px | Walnuts akhrot |
+| ☐ | `nuts/pistachios/` | `formal-white-shirt.jpg` | 800x800px | Pistachios pista |
+| ☐ | `dried/raisins/` | `formal-white-shirt.jpg` | 800x800px | Raisins kishmish |
+| ☐ | `dried/dates/` | `formal-white-shirt.jpg` | 800x800px | Dates khajoor |
+| ☐ | `dried/figs/` | `formal-white-shirt.jpg` | 800x800px | Dried figs anjeer |
+| ☐ | `dried/apricots/` | `formal-white-shirt.jpg` | 800x800px | Dried apricots |
+| ☐ | `seeds/flax-seeds/` | `formal-white-shirt.jpg` | 800x800px | Flax seeds |
+| ☐ | `seeds/chia-seeds/` | `formal-white-shirt.jpg` | 800x800px | Chia seeds |
+
+#### FRUITS & VEGETABLES (10 Products)
+**Full Path**: `/images/products/grocery/fruits/` & `/images/products/grocery/vegetables/`
+
+| ☐ | Folder Name | Image File | Size Required | Description |
+|---|-------------|------------|---------------|-------------|
+| ☐ | `seasonal/mango-alphonso/` | `formal-white-shirt.jpg` | 800x800px | Alphonso mango |
+| ☐ | `seasonal/apple-kashmiri/` | `formal-white-shirt.jpg` | 800x800px | Kashmir apple |
+| ☐ | `regular/banana/` | `formal-white-shirt.jpg` | 800x800px | Banana bunch |
+| ☐ | `regular/orange/` | `formal-white-shirt.jpg` | 800x800px | Orange |
+| ☐ | `exotic/avocado/` | `formal-white-shirt.jpg` | 800x800px | Avocado |
+| ☐ | `regular/tomato/` | `formal-white-shirt.jpg` | 800x800px | Tomatoes |
+| ☐ | `regular/potato/` | `formal-white-shirt.jpg` | 800x800px | Potatoes |
+| ☐ | `regular/onion/` | `formal-white-shirt.jpg` | 800x800px | Onions |
+| ☐ | `leafy/spinach/` | `formal-white-shirt.jpg` | 800x800px | Spinach palak |
+| ☐ | `leafy/coriander/` | `formal-white-shirt.jpg` | 800x800px | Coriander leaves |
+
+---
+
+---
+
+### 💄 BEAUTY & PERSONAL CARE (100 Products Total)
+- **Makeup**: 25 products
+- **Skincare**: 25 products
+- **Hair Care**: 25 products
+- **Bath & Body**: 25 products
+
+### 🏠 HOME & FURNITURE (100 Products Total)
+- **Living Room Furniture**: 20 products
+- **Bedroom Furniture**: 20 products
+- **Kitchen & Dining**: 30 products
+- **Home Decor**: 30 products
+
+### ⚽ SPORTS & FITNESS (30 Products Total)
+- **Cricket Equipment**: 6 products
+- **Football Equipment**: 3 products
+- **Badminton & Tennis**: 5 products
+- **Fitness Equipment**: 10 products
+- **Sports Nutrition**: 6 products
+
+### 🏥 HEALTH & MEDICAL (30 Products Total)
+- **Medicines**: 10 products
+- **Medical Devices**: 10 products
+- **First Aid**: 5 products
+- **Personal Care**: 5 products
+
+### 💍 JEWELRY (30 Products Total)
+- **Gold Jewelry**: 8 products
+- **Diamond Jewelry**: 4 products
+- **Silver Jewelry**: 4 products
+- **Fashion Jewelry**: 7 products
+- **Watches**: 7 products
+
+### 👟 FOOTWEAR (30 Products Total)
+- **Men's Footwear**: 12 products
+- **Women's Footwear**: 10 products
+- **Kids Footwear**: 5 products
+- **Accessories**: 3 products
+
+### 📚 BOOKS & STATIONERY (30 Products Total)
+- **Fiction Books**: 3 products
+- **Non-Fiction Books**: 3 products
+- **Educational Books**: 4 products
+- **Notebooks & Pens**: 10 products
+- **Office Supplies**: 10 products
+
+## 📊 DOWNLOAD TRACKING SHEET
+
+### Priority 1 - Fashion (250 products) - Team A
+- [ ] Men's Clothing (55 products)
+- [ ] Women's Clothing (80 products)
+- [ ] Kids Clothing (40 products)
+- [ ] Fashion Accessories (40 products)
+- [ ] Remaining Fashion (35 products)
+
+### Priority 2 - Electronics (150 products) - Team B
+- [ ] Mobile & Tablets (30 products)
+- [ ] Laptops & Computers (30 products)
+- [ ] Audio & Entertainment (30 products)
+- [ ] Gaming & Cameras (30 products)
+- [ ] Home Appliances (30 products)
+
+### Priority 3 - Food (150 products) - Team C
+- [ ] Indian Food (40 products)
+- [ ] International Food (20 products)
+- [ ] Sweets & Desserts (40 products)
+- [ ] Bakery (35 products)
+- [ ] Beverages (35 products)
+
+### Priority 4 - Grocery (100 products) - Team D
+- [ ] Rice & Grains (20 products)
+- [ ] Pulses & Lentils (15 products)
+- [ ] Oils & Spices (25 products)
+- [ ] Dairy & Snacks (30 products)
+- [ ] Fruits & Vegetables (10 products)
+
+### Priority 5 - Others (350 products) - Team E
+- [ ] Beauty & Personal Care (100 products)
+- [ ] Home & Furniture (100 products)
+- [ ] Sports & Fitness (30 products)
+- [ ] Health & Medical (30 products)
+- [ ] Jewelry (30 products)
+- [ ] Footwear (30 products)
+- [ ] Books & Stationery (30 products)
+
+---
+
+## 📝 NOTES FOR TEAM
+
+1. **File Naming**: MUST be exactly `main.jpg` (all lowercase)
+2. **Image Quality**: High resolution, clear product visibility
+3. **Background**: White or neutral preferred
+4. **Size**: 800x800px minimum (1:1 ratio)
+5. **Format**: JPG only
+
+## ✅ COMPLETION CHECKLIST
+
+- [ ] All 1000 folders have main.jpg
+- [ ] Images are 800x800px or larger
+- [ ] File names are correct (main.jpg)
+- [ ] Images are clear and professional
+- [ ] Upload verified in correct folders
+
+---
+
+**Document Version**: 1.0
+**Created Date**: December 30, 2024
+**Total Products**: 1000
+**Total Categories**: 11 Major Categories
+**Status**: READY FOR IMAGE DOWNLOAD AND UPLOAD
+
+---
+
+END OF DOCUMENT
