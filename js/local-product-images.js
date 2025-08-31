@@ -982,78 +982,18 @@
             return LOCAL_PRODUCT_IMAGES[productId];
         }
         
-        // Remove number suffixes first
-        const baseId = productId.replace(/-\d+$/, '');
-        
         // Try variations of the product ID
         const variations = [
             productId,
-            baseId, // Without numbers
             productId.replace(/-/g, '_'),
             productId.replace(/_/g, '-'),
             productId.toLowerCase(),
-            baseId.replace(/-/g, '_'),
-            baseId.replace(/_/g, '-'),
+            productId.replace(/-\d+$/, ''), // Remove trailing numbers
         ];
         
-        // Add word reversal variations for compound names
-        const parts = baseId.split('-');
-        if (parts.length === 2) {
-            // Two-word reversals
-            variations.push(`${parts[1]}-${parts[0]}`);
-            variations.push(`${parts[0]}_${parts[1]}`);
-            variations.push(`${parts[1]}_${parts[0]}`);
-        }
-        if (parts.length === 3) {
-            // Three-word variations
-            variations.push(`${parts[1]}-${parts[0]}-${parts[2]}`);
-            variations.push(`${parts[2]}-${parts[1]}-${parts[0]}`);
-            variations.push(`${parts[0]}-${parts[2]}-${parts[1]}`);
-            variations.push(`${parts[1]}-${parts[2]}-${parts[0]}`);
-            variations.push(`${parts[2]}-${parts[0]}-${parts[1]}`);
-        }
-        
-        // Try all variations
         for (let variant of variations) {
             if (LOCAL_PRODUCT_IMAGES[variant]) {
                 return LOCAL_PRODUCT_IMAGES[variant];
-            }
-        }
-        
-        // Fuzzy matching - find images containing key words
-        if (parts.length >= 2) {
-            const significantParts = parts.filter(p => p.length > 3); // Skip short words
-            
-            for (let imageId in LOCAL_PRODUCT_IMAGES) {
-                if (LOCAL_PRODUCT_IMAGES[imageId] === null) continue;
-                
-                // Check if image ID contains significant parts
-                let matchCount = 0;
-                for (let part of significantParts) {
-                    if (imageId.includes(part)) {
-                        matchCount++;
-                    }
-                }
-                
-                // If we match at least half the significant parts, use it
-                if (matchCount > 0 && matchCount >= significantParts.length / 2) {
-                    return LOCAL_PRODUCT_IMAGES[imageId];
-                }
-            }
-        }
-        
-        // Category-based fuzzy search
-        if (category && parts.length > 0) {
-            const mainWord = parts[0]; // Usually the main product type
-            
-            for (let imageId in LOCAL_PRODUCT_IMAGES) {
-                if (LOCAL_PRODUCT_IMAGES[imageId] === null) continue;
-                
-                // Check if image is in same category and contains main word
-                const imagePath = LOCAL_PRODUCT_IMAGES[imageId];
-                if (imagePath.includes(`/${category}/`) && imageId.includes(mainWord)) {
-                    return imagePath;
-                }
             }
         }
         
