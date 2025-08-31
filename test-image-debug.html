@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Debug Test</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-image {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: white;
+        }
+        .test-image img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+        .image-info {
+            font-size: 10px;
+            margin-top: 5px;
+            word-break: break-all;
+        }
+        .success { border-color: green; background: #f0fff0; }
+        .error { border-color: red; background: #fff0f0; }
+        .status { 
+            padding: 2px 5px; 
+            border-radius: 3px; 
+            color: white;
+            font-size: 10px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .status-success { background: green; }
+        .status-error { background: red; }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Image Loading Debug Test</h1>
+        
+        <div class="test-section">
+            <h2>1. Script Loading Test</h2>
+            <div id="scriptTest"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. Direct Path Test (Hardcoded)</h2>
+            <div id="directTest"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. LocalProductImages Test</h2>
+            <div id="localTest"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>4. Sample Product Images</h2>
+            <div id="sampleImages"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>5. Console Output</h2>
+            <pre id="console"></pre>
+        </div>
+    </div>
+    
+    <script src="js/local-product-images.js"></script>
+    
+    <script>
+        const log = (msg) => {
+            console.log(msg);
+            document.getElementById('console').innerHTML += msg + '\n';
+        };
+        
+        // Test 1: Check if script loaded
+        const scriptTest = document.getElementById('scriptTest');
+        if (window.LocalProductImages) {
+            scriptTest.innerHTML = '<span class="status status-success">✓ LocalProductImages loaded</span>';
+            log('✓ LocalProductImages is loaded');
+            log('Total images: ' + window.LocalProductImages.totalImages);
+            log('Missing images: ' + window.LocalProductImages.missingImages);
+        } else {
+            scriptTest.innerHTML = '<span class="status status-error">✗ LocalProductImages NOT loaded</span>';
+            log('✗ LocalProductImages is NOT loaded');
+        }
+        
+        // Test 2: Direct path test
+        const directTest = document.getElementById('directTest');
+        const testPaths = [
+            '/images/products/fashion/mens-clothing/ethnic/kurta-white-cotton/kurta-white-cotton.png',
+            '/images/products/fashion/mens-clothing/ethnic/kurta-blue-silk/kurta-blue-silk.png',
+            '/images/products/home/bedroom/wardrobes/3-door-wardrobe/3-door-wardrobe.jpg'
+        ];
+        
+        testPaths.forEach(path => {
+            const container = document.createElement('div');
+            container.className = 'test-image';
+            
+            const img = document.createElement('img');
+            img.src = path;
+            
+            const info = document.createElement('div');
+            info.className = 'image-info';
+            info.innerHTML = path.split('/').pop();
+            
+            img.onload = () => {
+                container.classList.add('success');
+                info.innerHTML += '<br><span class="status status-success">Loaded</span>';
+                log('✓ Direct load success: ' + path);
+            };
+            
+            img.onerror = () => {
+                container.classList.add('error');
+                info.innerHTML += '<br><span class="status status-error">Failed</span>';
+                log('✗ Direct load failed: ' + path);
+            };
+            
+            container.appendChild(img);
+            container.appendChild(info);
+            directTest.appendChild(container);
+        });
+        
+        // Test 3: LocalProductImages test
+        if (window.LocalProductImages) {
+            const localTest = document.getElementById('localTest');
+            const testProducts = [
+                'kurta-white-cotton',
+                'kurta-blue-silk',
+                '3-door-wardrobe',
+                'foam-mattress',
+                'chest-drawers'
+            ];
+            
+            testProducts.forEach(productId => {
+                const container = document.createElement('div');
+                container.className = 'test-image';
+                
+                const imagePath = window.LocalProductImages.getLocalProductImage(productId, 'fashion');
+                
+                const img = document.createElement('img');
+                img.src = imagePath;
+                
+                const info = document.createElement('div');
+                info.className = 'image-info';
+                info.innerHTML = `${productId}<br><small>${imagePath}</small>`;
+                
+                img.onload = () => {
+                    container.classList.add('success');
+                    info.innerHTML += '<br><span class="status status-success">Loaded</span>';
+                    log('✓ LocalProductImages load success: ' + productId);
+                };
+                
+                img.onerror = () => {
+                    container.classList.add('error');
+                    info.innerHTML += '<br><span class="status status-error">Failed</span>';
+                    log('✗ LocalProductImages load failed: ' + productId + ' -> ' + imagePath);
+                };
+                
+                container.appendChild(img);
+                container.appendChild(info);
+                localTest.appendChild(container);
+            });
+        }
+        
+        // Test 4: Sample from actual mappings
+        if (window.LocalProductImages && window.LocalProductImages.LOCAL_PRODUCT_IMAGES) {
+            const sampleImages = document.getElementById('sampleImages');
+            const allProducts = Object.entries(window.LocalProductImages.LOCAL_PRODUCT_IMAGES);
+            
+            // Get first 10 non-null entries
+            const samples = allProducts.filter(([id, path]) => path !== null).slice(0, 10);
+            
+            log('\n=== Sample Mappings ===');
+            samples.forEach(([productId, imagePath]) => {
+                log(`${productId}: ${imagePath}`);
+                
+                const container = document.createElement('div');
+                container.className = 'test-image';
+                
+                const img = document.createElement('img');
+                img.src = imagePath;
+                
+                const info = document.createElement('div');
+                info.className = 'image-info';
+                info.innerHTML = `${productId}<br><small>${imagePath}</small>`;
+                
+                img.onload = () => {
+                    container.classList.add('success');
+                    info.innerHTML += '<br><span class="status status-success">Loaded</span>';
+                };
+                
+                img.onerror = () => {
+                    container.classList.add('error');
+                    info.innerHTML += '<br><span class="status status-error">Failed</span>';
+                };
+                
+                container.appendChild(img);
+                container.appendChild(info);
+                sampleImages.appendChild(container);
+            });
+        }
+    </script>
+</body>
+</html>

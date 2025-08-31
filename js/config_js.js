@@ -193,14 +193,30 @@ const ENHANCED_FALLBACK_IMAGES = {
     ]
 };
 
-// Smart image retrieval with SVG fallback
+// Smart image retrieval with local images priority
 function getReliableProductImage(product, category, subcategory, attemptIndex = 0) {
     const productName = product.name || product.id || 'Product';
+    const productId = product.id || productName.toLowerCase().replace(/\s+/g, '-');
     
-    // Level 1: Direct mapped images (real product photos) - but only on first attempt
+    // Level 0: LOCAL IMAGES FIRST - Check our 872 local product images
+    if (window.LocalProductImages && attemptIndex === 0) {
+        const localImage = window.LocalProductImages.getLocalProductImage(productId, category);
+        if (localImage) {
+            // Check if it's an actual image or a placeholder
+            if (window.LocalProductImages.hasLocalImage(productId)) {
+                console.log(`🖼️ Using local image for ${productId}`);
+            } else {
+                console.log(`📦 Using category placeholder for ${productId}`);
+            }
+            return localImage;
+        }
+    }
+    
+    // Level 1: Direct mapped images (external URLs) - only as backup
     if (attemptIndex === 0 && window.DirectProductImages) {
         const directImage = window.DirectProductImages.getDirectProductImage(product.id);
-        if (directImage) {
+        if (directImage && !directImage.startsWith('http')) {
+            // Skip external URLs, prefer local
             console.log(`✅ Using direct image for ${product.id}`);
             return directImage;
         }

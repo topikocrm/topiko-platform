@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Product Images Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .stat {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        select, input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        
+        .category-section {
+            margin: 30px 0;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        
+        .category-title {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .category-count {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .image-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .image-container {
+            position: relative;
+            width: 100%;
+            padding-top: 100%;
+            background: #f0f0f0;
+        }
+        
+        .image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-info {
+            padding: 15px;
+        }
+        
+        .product-id {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            word-break: break-all;
+        }
+        
+        .image-path {
+            color: #666;
+            font-size: 0.75em;
+            word-break: break-all;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            margin-top: 5px;
+        }
+        
+        .status-loaded {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .status-error {
+            background: #f44336;
+            color: white;
+        }
+        
+        .status-placeholder {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .collapsed .images-grid {
+            display: none;
+        }
+        
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+        
+        .collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+        
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+        }
+        
+        .search-box input {
+            width: 100%;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <div class="container">
+        <h1>🖼️ Local Product Images Test</h1>
+        <p style="color: #666; margin-bottom: 20px;">Testing 872 locally stored product images with smart fallback system</p>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="totalImages">0</div>
+                <div class="stat-label">Total Images</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="loadedImages">0</div>
+                <div class="stat-label">Successfully Loaded</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="placeholderImages">0</div>
+                <div class="stat-label">Using Placeholders</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="errorImages">0</div>
+                <div class="stat-label">Load Errors</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="filter-group">
+                <label>Category:</label>
+                <select id="categoryFilter" onchange="filterImages()">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label>Status:</label>
+                <select id="statusFilter" onchange="filterImages()">
+                    <option value="">All Status</option>
+                    <option value="loaded">Loaded</option>
+                    <option value="placeholder">Placeholders</option>
+                    <option value="error">Errors</option>
+                </select>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by product ID..." onkeyup="filterImages()">
+            </div>
+            
+            <button onclick="reloadAllImages()">🔄 Reload All</button>
+            <button onclick="toggleAllCategories()">⚡ Toggle All</button>
+        </div>
+        
+        <div id="categoriesContainer"></div>
+    </div>
+    
+    <!-- Load the local product images script -->
+    <script src="js/local-product-images.js"></script>
+    
+    <script>
+        let imageStats = {
+            total: 0,
+            loaded: 0,
+            placeholder: 0,
+            error: 0
+        };
+        
+        let allImages = [];
+        let categories = {};
+        
+        // Initialize the test
+        function initTest() {
+            if (!window.LocalProductImages) {
+                alert('LocalProductImages not loaded! Please check js/local-product-images.js');
+                return;
+            }
+            
+            console.log('LocalProductImages loaded:', window.LocalProductImages);
+            
+            // Get all product images
+            const productImages = window.LocalProductImages.LOCAL_PRODUCT_IMAGES;
+            
+            // Organize by category
+            for (const [productId, imagePath] of Object.entries(productImages)) {
+                // Determine category from path or use fallback
+                let category = 'uncategorized';
+                if (imagePath && imagePath !== null) {
+                    const pathParts = imagePath.split('/');
+                    if (pathParts.length > 3) {
+                        category = pathParts[3]; // /images/products/[category]/...
+                    }
+                } else {
+                    // Try to guess category from product ID
+                    const categoryGuess = guessCategory(productId);
+                    if (categoryGuess) category = categoryGuess;
+                }
+                
+                if (!categories[category]) {
+                    categories[category] = [];
+                }
+                
+                categories[category].push({
+                    productId: productId,
+                    imagePath: imagePath || window.LocalProductImages.getLocalProductImage(productId, category),
+                    status: 'pending',
+                    category: category
+                });
+                
+                allImages.push({
+                    productId: productId,
+                    imagePath: imagePath || window.LocalProductImages.getLocalProductImage(productId, category),
+                    status: 'pending',
+                    category: category
+                });
+            }
+            
+            imageStats.total = allImages.length;
+            updateStats();
+            
+            // Populate category filter
+            const categoryFilter = document.getElementById('categoryFilter');
+            Object.keys(categories).sort().forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = `${cat} (${categories[cat].length})`;
+                categoryFilter.appendChild(option);
+            });
+            
+            // Render categories
+            renderCategories();
+            
+            // Hide loading overlay
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+        
+        function guessCategory(productId) {
+            const categoryMap = {
+                'kurta': 'fashion',
+                'shirt': 'fashion',
+                'tshirt': 'fashion',
+                'jeans': 'fashion',
+                'saree': 'fashion',
+                'lehenga': 'fashion',
+                'kurti': 'fashion',
+                'dress': 'fashion',
+                'shoes': 'footwear',
+                'sneakers': 'footwear',
+                'sandals': 'footwear',
+                'handbag': 'fashion',
+                'watch': 'jewelry',
+                'sunglasses': 'fashion',
+                'wallet': 'fashion',
+                'mobile': 'electronics',
+                'laptop': 'electronics',
+                'headphones': 'electronics',
+                'earbuds': 'electronics',
+                'biryani': 'food',
+                'pizza': 'food',
+                'burger': 'food',
+                'dosa': 'food',
+                'samosa': 'food',
+                'gulab': 'food',
+                'rice': 'grocery',
+                'oil': 'grocery',
+                'dal': 'grocery',
+                'atta': 'grocery',
+                'facewash': 'beauty',
+                'lipstick': 'beauty',
+                'shampoo': 'beauty',
+                'perfume': 'beauty',
+                'sofa': 'home',
+                'bed': 'home',
+                'wardrobe': 'home',
+                'dining': 'home'
+            };
+            
+            for (const [key, cat] of Object.entries(categoryMap)) {
+                if (productId.toLowerCase().includes(key)) {
+                    return cat;
+                }
+            }
+            return null;
+        }
+        
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+            container.innerHTML = '';
+            
+            Object.keys(categories).sort().forEach(category => {
+                const section = document.createElement('div');
+                section.className = 'category-section';
+                section.id = `category-${category}`;
+                
+                const header = document.createElement('div');
+                header.className = 'category-header';
+                header.onclick = () => toggleCategory(category);
+                header.innerHTML = `
+                    <div class="category-title">
+                        <span class="toggle-icon">▼</span> ${category.toUpperCase()}
+                    </div>
+                    <div class="category-count">${categories[category].length} products</div>
+                `;
+                
+                const grid = document.createElement('div');
+                grid.className = 'images-grid';
+                
+                categories[category].forEach(item => {
+                    const card = createImageCard(item);
+                    grid.appendChild(card);
+                });
+                
+                section.appendChild(header);
+                section.appendChild(grid);
+                container.appendChild(section);
+            });
+        }
+        
+        function createImageCard(item) {
+            const card = document.createElement('div');
+            card.className = 'image-card';
+            card.dataset.productId = item.productId;
+            card.dataset.category = item.category;
+            card.dataset.status = item.status;
+            
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'image-container';
+            
+            const img = document.createElement('img');
+            img.src = item.imagePath;
+            img.alt = item.productId;
+            img.loading = 'lazy';
+            
+            img.onload = function() {
+                if (item.imagePath.includes('placeholder')) {
+                    item.status = 'placeholder';
+                    imageStats.placeholder++;
+                } else {
+                    item.status = 'loaded';
+                    imageStats.loaded++;
+                }
+                card.dataset.status = item.status;
+                updateCardStatus(card, item.status);
+                updateStats();
+            };
+            
+            img.onerror = function() {
+                item.status = 'error';
+                imageStats.error++;
+                card.dataset.status = item.status;
+                img.src = '/images/products/placeholders/default.svg';
+                updateCardStatus(card, item.status);
+                updateStats();
+            };
+            
+            imageContainer.appendChild(img);
+            
+            const info = document.createElement('div');
+            info.className = 'image-info';
+            info.innerHTML = `
+                <div class="product-id">${item.productId}</div>
+                <div class="image-path">${item.imagePath}</div>
+                <span class="status-badge" id="status-${item.productId}">Loading...</span>
+            `;
+            
+            card.appendChild(imageContainer);
+            card.appendChild(info);
+            
+            return card;
+        }
+        
+        function updateCardStatus(card, status) {
+            const badge = card.querySelector('.status-badge');
+            badge.className = 'status-badge';
+            
+            if (status === 'loaded') {
+                badge.classList.add('status-loaded');
+                badge.textContent = '✓ Loaded';
+            } else if (status === 'placeholder') {
+                badge.classList.add('status-placeholder');
+                badge.textContent = '⚠ Placeholder';
+            } else if (status === 'error') {
+                badge.classList.add('status-error');
+                badge.textContent = '✗ Error';
+            }
+        }
+        
+        function updateStats() {
+            document.getElementById('totalImages').textContent = imageStats.total;
+            document.getElementById('loadedImages').textContent = imageStats.loaded;
+            document.getElementById('placeholderImages').textContent = imageStats.placeholder;
+            document.getElementById('errorImages').textContent = imageStats.error;
+        }
+        
+        function toggleCategory(category) {
+            const section = document.getElementById(`category-${category}`);
+            section.classList.toggle('collapsed');
+        }
+        
+        function toggleAllCategories() {
+            const sections = document.querySelectorAll('.category-section');
+            const allCollapsed = Array.from(sections).every(s => s.classList.contains('collapsed'));
+            
+            sections.forEach(section => {
+                if (allCollapsed) {
+                    section.classList.remove('collapsed');
+                } else {
+                    section.classList.add('collapsed');
+                }
+            });
+        }
+        
+        function filterImages() {
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            const cards = document.querySelectorAll('.image-card');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const productId = card.dataset.productId.toLowerCase();
+                const category = card.dataset.category;
+                const status = card.dataset.status;
+                
+                let show = true;
+                
+                if (categoryFilter && category !== categoryFilter) {
+                    show = false;
+                }
+                
+                if (statusFilter && status !== statusFilter) {
+                    show = false;
+                }
+                
+                if (searchTerm && !productId.includes(searchTerm)) {
+                    show = false;
+                }
+                
+                card.style.display = show ? 'block' : 'none';
+                if (show) visibleCount++;
+            });
+            
+            // Show/hide categories based on visible cards
+            document.querySelectorAll('.category-section').forEach(section => {
+                const hasVisibleCards = section.querySelectorAll('.image-card[style="display: block;"], .image-card:not([style])').length > 0;
+                section.style.display = hasVisibleCards ? 'block' : 'none';
+            });
+        }
+        
+        function reloadAllImages() {
+            imageStats = {
+                total: allImages.length,
+                loaded: 0,
+                placeholder: 0,
+                error: 0
+            };
+            updateStats();
+            
+            document.querySelectorAll('.image-card img').forEach(img => {
+                const originalSrc = img.src;
+                img.src = '';
+                setTimeout(() => {
+                    img.src = originalSrc;
+                }, 10);
+            });
+        }
+        
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', initTest);
+    </script>
+</body>
+</html>

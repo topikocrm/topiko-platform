@@ -1,68 +1,115 @@
 /* ========================================
    DIRECT PRODUCT IMAGE MAPPING
-   Simple, clean mappings to working image URLs only
+   Maps product IDs to local image files
    ======================================== */
 
-// Direct mapping - product ID to working image URL
+// Direct mapping - product ID to local image path
 const DIRECT_IMAGE_MAP = {
     // ========== MEN'S WEAR ==========
-    'kurta-cotton-001': 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=400&h=400&fit=crop',
-    'kurta-cotton-002': 'https://images.unsplash.com/photo-1566479179817-c0efeb382d13?w=400&h=400&fit=crop',
-    'kurta-cotton-003': 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=400&h=400&fit=crop',
+    'kurta-cotton-001': '/images/products/fashion/mens-clothing/ethnic/kurta-white-cotton/kurta-white-cotton.png',
+    'kurta-cotton-002': '/images/products/fashion/mens-clothing/ethnic/kurta-blue-silk/kurta-blue-silk.png',
+    'kurta-cotton-003': '/images/products/fashion/mens-clothing/ethnic/kurta-pajama-set/kurta-pajama-set.png',
     
-    'shirt-formal-001': 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&h=400&fit=crop',
-    'shirt-formal-002': 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=400&fit=crop',
-    'shirt-formal-003': 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&h=400&fit=crop',
+    'shirt-formal-001': '/images/products/fashion/mens-clothing/shirts/formal-white-shirt/formal-white-shirt.png',
+    'shirt-formal-002': '/images/products/fashion/mens-clothing/shirts/formal-blue-shirt/formal-blue-shirt.jpg',
+    'shirt-formal-003': '/images/products/fashion/mens-clothing/shirts/formal-black-shirt/formal-black-shirt.png',
     
-    'tshirt-casual-001': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop',
-    'tshirt-casual-002': 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400&h=400&fit=crop',
-    'tshirt-casual-003': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop',
+    'tshirt-casual-001': '/images/products/fashion/mens-clothing/tshirts/polo-navy-blue/polo-navy-blue.jpeg',
+    'tshirt-casual-002': '/images/products/fashion/mens-clothing/tshirts/round-neck-black/round-neck-black.png',
+    'tshirt-casual-003': '/images/products/fashion/mens-clothing/tshirts/v-neck-blue/v-neck-blue.png',
     
-    'jeans-casual-001': 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop',
-    'jeans-casual-002': 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&h=400&fit=crop',
-    'jeans-casual-003': 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop',
+    'jeans-casual-001': '/images/products/fashion/mens-clothing/jeans/slim-fit-blue/slim-fit-blue.png',
+    'jeans-casual-002': '/images/products/fashion/mens-clothing/jeans/regular-fit-black/regular-fit-black.jpeg',
+    'jeans-casual-003': '/images/products/fashion/mens-clothing/jeans/skinny-grey/skinny-grey.webp',
     
     // ========== WOMEN'S WEAR ==========
-    'saree-silk-001': 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=400&fit=crop',
-    'saree-silk-002': 'https://images.unsplash.com/photo-1583391733975-4770270d3c5e?w=400&h=400&fit=crop',
-    'saree-silk-003': 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=400&fit=crop',
+    'saree-silk-001': '/images/products/fashion/womens-clothing/sarees/silk-red-saree/silk-red-saree.png',
+    'saree-silk-002': '/images/products/fashion/womens-clothing/sarees/cotton-blue-saree/cotton-blue-saree.png',
+    'saree-silk-003': '/images/products/fashion/womens-clothing/sarees/georgette-pink-saree/georgette-pink-saree.jpeg',
     
-    'lehenga-wedding-001': 'https://images.unsplash.com/photo-1594736797933-d0ea8baa3b9a?w=400&h=400&fit=crop',
-    'lehenga-wedding-002': 'https://images.unsplash.com/photo-1583391733975-4770270d3c5e?w=400&h=400&fit=crop',
-    'lehenga-wedding-003': 'https://images.unsplash.com/photo-1594736797933-d0ea8baa3b9a?w=400&h=400&fit=crop',
+    'lehenga-wedding-001': '/images/products/fashion/womens-clothing/lehenga/bridal-red-lehenga/bridal-red-lehenga.png',
+    'lehenga-wedding-002': '/images/products/fashion/womens-clothing/lehenga/party-blue-lehenga/party-blue-lehenga.png',
+    'lehenga-wedding-003': '/images/products/fashion/womens-clothing/lehenga/crop-top-lehenga/crop-top-lehenga.png',
     
-    'kurti-cotton-001': 'https://images.unsplash.com/photo-1583391733975-4770270d3c5e?w=400&h=400&fit=crop',
-    'kurti-cotton-002': 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=400&fit=crop',
-    'kurti-cotton-003': 'https://images.unsplash.com/photo-1583391733975-4770270d3c5e?w=400&h=400&fit=crop',
+    'kurti-cotton-001': '/images/products/fashion/womens-clothing/kurtis/cotton-white-kurti/cotton-white-kurti.jpeg',
+    'kurti-cotton-002': '/images/products/fashion/womens-clothing/kurtis/printed-blue-kurti/printed-blue-kurti.jpeg',
+    'kurti-cotton-003': '/images/products/fashion/womens-clothing/kurtis/embroidered-kurti/embroidered-kurti.png',
     
-    'dress-western-001': 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=400&fit=crop',
-    'dress-western-002': 'https://images.unsplash.com/photo-1566479179817-c0efeb382d13?w=400&h=400&fit=crop',
-    'dress-western-003': 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=400&fit=crop',
+    'dress-western-001': '/images/products/fashion/womens-clothing/western/midi-dress/midi-dress.jpg',
+    'dress-western-002': '/images/products/fashion/womens-clothing/western/maxi-dress/maxi-dress.jpg',
+    'dress-western-003': '/images/products/fashion/womens-clothing/western/shirt-dress/shirt-dress.jpg',
     
     // ========== FOOTWEAR ==========
-    'shoes-formal-001': 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop',
-    'shoes-formal-002': 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop',
+    'shoes-formal-001': '/images/products/footwear/mens/formal/oxford-black/oxford-black.jpg',
+    'shoes-formal-002': '/images/products/footwear/mens/formal/brogues-brown/brogues-brown.jpg',
     
-    'sneakers-sports-001': 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&h=400&fit=crop',
-    'sneakers-sports-002': 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&h=400&fit=crop',
+    'sneakers-sports-001': '/images/products/footwear/mens/sports/running-shoes/running-shoes.png',
+    'sneakers-sports-002': '/images/products/footwear/mens/sports/basketball-shoes/basketball-shoes.jpg',
     
-    'sandals-women-001': 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&h=400&fit=crop',
-    'sandals-women-002': 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&h=400&fit=crop',
+    'sandals-women-001': '/images/products/footwear/womens/sandals/flat-sandals/flat-sandals.png',
+    'sandals-women-002': '/images/products/footwear/womens/sandals/wedge-sandals/wedge-sandals.jpg',
     
     // ========== ACCESSORIES ==========
-    'handbag-leather-001': 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop',
-    'handbag-leather-002': 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop',
+    'handbag-leather-001': '/images/products/fashion/accessories/bags/tote-bag/tote-bag.jpg',
+    'handbag-leather-002': '/images/products/fashion/accessories/bags/sling-bag/sling-bag.png',
     
-    'watch-analog-001': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop',
-    'watch-analog-002': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop',
+    'watch-analog-001': '/images/products/jewelry/watches/mens/analog-steel/analog-steel.jpg',
+    'watch-analog-002': '/images/products/jewelry/watches/womens/analog-gold/analog-gold.jpg',
     
-    'sunglasses-uv-001': 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&h=400&fit=crop',
-    'wallet-leather-001': 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=400&fit=crop'
+    'sunglasses-uv-001': '/images/products/fashion/accessories/sunglasses/aviator/aviator.jpg',
+    'wallet-leather-001': '/images/products/fashion/accessories/wallets/mens-leather/mens-leather.jpg',
+    
+    // ========== ELECTRONICS ==========
+    'mobile-samsung-001': '/images/products/electronics/mobiles/smartphones/samsung-s23/samsung-s23.jpg',
+    'mobile-iphone-001': '/images/products/electronics/mobiles/smartphones/iphone-15/iphone-15.jpg',
+    'laptop-dell-001': '/images/products/electronics/laptops/business/dell-inspiron/dell-inspiron.jpg',
+    'laptop-hp-001': '/images/products/electronics/laptops/budget/hp-pavilion/hp-pavilion.png',
+    'headphones-sony-001': '/images/products/electronics/audio/headphones/sony-wh1000xm5/sony-wh1000xm5.png',
+    'earbuds-boat-001': '/images/products/electronics/audio/earbuds/boat-airdopes/boat-airdopes.png',
+    
+    // ========== FOOD ==========
+    'biryani-chicken-001': '/images/products/food/indian/north-indian/chicken-biryani/chicken-biryani.jpg',
+    'pizza-margherita-001': '/images/products/food/international/italian/pizza-margherita/pizza-margherita.png',
+    'burger-veg-001': '/images/products/food/international/american/burger/burger.jpg',
+    'dosa-masala-001': '/images/products/food/indian/south-indian/masala-dosa/masala-dosa.jpg',
+    'samosa-001': '/images/products/food/indian/street-food/samosa/samosa.png',
+    'gulab-jamun-001': '/images/products/food/sweets/traditional/gulab-jamun/gulab-jamun.png',
+    
+    // ========== GROCERY ==========
+    'rice-basmati-001': '/images/products/grocery/rice/rice/basmati/basmati-premium/basmati-premium.jpg',
+    'oil-sunflower-001': '/images/products/grocery/oils/cooking/sunflower-oil/sunflower-oil.png',
+    'dal-toor-001': '/images/products/grocery/pulses/dal/toor-dal/toor-dal.webp',
+    'atta-wheat-001': '/images/products/grocery/rice/flour/wheat/whole-wheat-atta/whole-wheat-atta.jpg',
+    
+    // ========== BEAUTY ==========
+    'facewash-001': '/images/products/beauty/skincare/cleansers/face-wash-gel/face-wash-gel.png',
+    'lipstick-red-001': '/images/products/beauty/makeup/lips/lipstick-red/lipstick-red.png',
+    'shampoo-001': '/images/products/beauty/haircare/shampoo/anti-dandruff/anti-dandruff.jpg',
+    'perfume-001': '/images/products/beauty/fragrances/perfumes/perfume-women/perfume-women.jpg',
+    
+    // ========== HOME & FURNITURE ==========
+    'sofa-3seater-001': '/images/products/home/living-room/sofas/3-seater-fabric/3-seater-fabric.jpg',
+    'bed-double-001': '/images/products/home/bedroom/beds/double-bed-wooden/double-bed-wooden.png',
+    'wardrobe-3door-001': '/images/products/home/bedroom/wardrobes/3-door-wardrobe/3-door-wardrobe.jpg',
+    'dining-table-001': '/images/products/home/dining/dining-tables/6-seater-wooden/6-seater-wooden.jpg'
 };
 
 // Simple function to get image URL for product ID
 function getDirectProductImage(productId) {
-    return DIRECT_IMAGE_MAP[productId] || null;
+    // First check direct mapping
+    if (DIRECT_IMAGE_MAP[productId]) {
+        return DIRECT_IMAGE_MAP[productId];
+    }
+    
+    // If LocalProductImages is loaded, use it as fallback
+    if (window.LocalProductImages) {
+        const localImage = window.LocalProductImages.getLocalProductImage(productId);
+        if (localImage && !localImage.includes('placeholder')) {
+            return localImage;
+        }
+    }
+    
+    return null;
 }
 
 // Export for global use
@@ -72,5 +119,5 @@ if (typeof window !== 'undefined') {
         getDirectProductImage
     };
     
-    console.log(`✅ Direct Product Images loaded - ${Object.keys(DIRECT_IMAGE_MAP).length} working mappings`);
+    console.log(`✅ Direct Product Images loaded - ${Object.keys(DIRECT_IMAGE_MAP).length} local mappings`);
 }
