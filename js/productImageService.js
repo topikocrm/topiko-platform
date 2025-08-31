@@ -326,6 +326,26 @@ class ProductImageService {
         // Try different sources in order
         let imageUrl = null;
 
+        // 0. PRIORITY: Try LOCAL images first (our 872 mapped images)
+        if (window.LocalProductImages) {
+            const localImage = window.LocalProductImages.getLocalProductImage(productId, category);
+            if (localImage && window.LocalProductImages.hasLocalImage(productId)) {
+                console.log(`🖼️ Using local image for ${productId}`);
+                this.saveToCache(productId, localImage);
+                return localImage;
+            }
+        }
+
+        // 0.5. Also check DirectProductImages for exact mappings
+        if (window.DirectProductImages) {
+            const directImage = window.DirectProductImages.getDirectProductImage(productId);
+            if (directImage && !directImage.startsWith('http')) {
+                console.log(`✅ Using direct mapped image for ${productId}`);
+                this.saveToCache(productId, directImage);
+                return directImage;
+            }
+        }
+
         // 1. Try static curated images first (if enabled)
         if (IMAGE_CONFIG.USE_STATIC_IMAGES && window.StaticProductImages) {
             imageUrl = window.StaticProductImages.getStaticProductImage(productName);
