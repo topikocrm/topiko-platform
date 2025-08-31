@@ -991,6 +991,17 @@
             productId.replace(/-\d+$/, ''), // Remove trailing numbers
         ];
         
+        // Add word reversal variations for compound names
+        const baseId = productId.replace(/-\d+$/, ''); // Remove numbers first
+        const parts = baseId.split('-');
+        if (parts.length === 2) {
+            variations.push(`${parts[1]}-${parts[0]}`); // Reverse two-word names
+        }
+        if (parts.length === 3) {
+            variations.push(`${parts[1]}-${parts[0]}-${parts[2]}`); // Swap first two
+            variations.push(`${parts[2]}-${parts[1]}-${parts[0]}`); // Full reverse
+        }
+        
         for (let variant of variations) {
             if (LOCAL_PRODUCT_IMAGES[variant]) {
                 return LOCAL_PRODUCT_IMAGES[variant];

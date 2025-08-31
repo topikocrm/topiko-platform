@@ -74,6 +74,13 @@ const DIRECT_IMAGE_MAP = {
     'dosa-masala-001': '/images/products/food/indian/south-indian/masala-dosa/masala-dosa.jpg',
     'samosa-001': '/images/products/food/indian/street-food/samosa/samosa.png',
     'gulab-jamun-001': '/images/products/food/sweets/traditional/gulab-jamun/gulab-jamun.png',
+    'gajar-halwa-001': '/images/products/food/sweets/traditional/halwa-gajar/halwa-gajar.png',
+    'rasmalai-001': '/images/products/food/sweets/traditional/rasmalai/rasmalai.png',
+    'rasgulla-001': '/images/products/food/sweets/traditional/rasgulla/rasgulla.webp',
+    'kheer-rice-001': '/images/products/food/sweets/traditional/kheer/kheer.webp',
+    'kulfi-malai-001': '/images/products/food/desserts/ice-cream/kulfi-malai/kulfi-malai.png',
+    'chocolate-cake-001': '/images/products/food/desserts/cakes/chocolate-cake/chocolate-cake.png',
+    'chole-bhature-001': '/images/products/food/indian/north-indian/chole-bhature/chole-bhature.png',
     
     // ========== GROCERY ==========
     'rice-basmati-001': '/images/products/grocery/rice/rice/basmati/basmati-premium/basmati-premium.jpg',
