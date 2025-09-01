@@ -1467,10 +1467,13 @@ async function completeRegistration() {
 
     window.TopikoUtils.showNotification('Creating your free account...', 'info');
     
-    // Get UTM data to include in user record
+    // Get UTM data for external API (but not for Supabase until columns are added)
     const utmData = window.TopikoUtils ? window.TopikoUtils.getStoredUTMData() : {};
     
-    // Complete user data with all new fields including UTM parameters
+    // Store UTM data in app state for later use
+    window.topikoApp.utmData = utmData;
+    
+    // Complete user data with only existing database fields
     const userData = {
         name, email, phone,
         business_name: business,
@@ -1479,19 +1482,10 @@ async function completeRegistration() {
         address: address || null,
         selected_language: window.topikoApp.selectedLanguage,
         selected_goals: window.topikoApp.selectedGoals,
-        // Add UTM parameters
-        utm_source: utmData.utm_source || null,
-        utm_medium: utmData.utm_medium || null,
-        utm_campaign: utmData.utm_campaign || null,
-        utm_term: utmData.utm_term || null,
-        utm_content: utmData.utm_content || null,
-        utm_state: utmData.utm_state || null,
-        utm_language: utmData.utm_language || null,
-        utm_category: utmData.utm_category || null,
-        utm_agent: utmData.utm_agent || null,
-        custom_params: utmData.custom_params || null,
-        referrer: utmData.referrer || null,
         created_at: new Date().toISOString()
+        // UTM fields commented out until database columns are added:
+        // utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+        // utm_state, utm_language, utm_category, utm_agent, custom_params, referrer
     };
 
     const userResult = await window.TopikoUtils.saveToSupabase(userData, 'users');
@@ -1500,7 +1494,7 @@ async function completeRegistration() {
         window.topikoApp.currentUserId = userResult.data[0].id;
         window.TopikoUtils.addDebugLog(`✅ User created: ${window.topikoApp.currentUserId}`, 'success');
         
-        // Complete lead intelligence data with all new fields including UTM
+        // Complete lead intelligence data with existing database fields only
         const leadData = {
             user_id: window.topikoApp.currentUserId,
             lead_score: window.topikoApp.leadScore,
@@ -1515,11 +1509,9 @@ async function completeRegistration() {
             budget_range: window.topikoApp.qualifyingAnswers.budget, 
             decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes', 
             online_presence: window.topikoApp.qualifyingAnswers.online_presence,
-            // Include UTM data in lead intelligence
-            utm_source: utmData.utm_source || null,
-            utm_medium: utmData.utm_medium || null,
-            utm_campaign: utmData.utm_campaign || null,
             created_at: new Date().toISOString()
+            // UTM fields removed until database columns are added:
+            // utm_source, utm_medium, utm_campaign, utm_state, utm_agent
         };
         
         await window.TopikoUtils.saveToSupabase(leadData, 'lead_intelligence');
@@ -2935,23 +2927,25 @@ async function proceedToThemes() {
         // Save products count to user record
         if (window.topikoApp.currentUserId) {
             const productsCount = selectedProducts.length;
-            try {
-                const { error } = await supabase
-                    .from('users')
-                    .update({ 
-                        products_count: productsCount,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', window.topikoApp.currentUserId);
-                
-                if (error) {
-                    console.error('Failed to save products count:', error);
-                } else {
-                    console.log(`✅ Products count (${productsCount}) saved to user record`);
-                }
-            } catch (err) {
-                console.error('Error saving products count:', err);
-            }
+            // Commented out until products_count column is added to users table
+            // try {
+            //     const { error } = await supabase
+            //         .from('users')
+            //         .update({ 
+            //             products_count: productsCount,
+            //             updated_at: new Date().toISOString()
+            //         })
+            //         .eq('id', window.topikoApp.currentUserId);
+            //     
+            //     if (error) {
+            //         console.error('Failed to save products count:', error);
+            //     } else {
+            //         console.log(`✅ Products count (${productsCount}) saved to user record`);
+            //     }
+            // } catch (err) {
+            //     console.error('Error saving products count:', err);
+            // }
+            console.log(`📊 Products count: ${productsCount} (not saved to DB - column missing)`);
         }
         
         // Call original Topiko API (restored from backup)
