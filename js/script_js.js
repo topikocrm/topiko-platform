@@ -1467,7 +1467,10 @@ async function completeRegistration() {
 
     window.TopikoUtils.showNotification('Creating your free account...', 'info');
     
-    // Complete user data with all new fields
+    // Get UTM data to include in user record
+    const utmData = window.TopikoUtils ? window.TopikoUtils.getStoredUTMData() : {};
+    
+    // Complete user data with all new fields including UTM parameters
     const userData = {
         name, email, phone,
         business_name: business,
@@ -1476,6 +1479,18 @@ async function completeRegistration() {
         address: address || null,
         selected_language: window.topikoApp.selectedLanguage,
         selected_goals: window.topikoApp.selectedGoals,
+        // Add UTM parameters
+        utm_source: utmData.utm_source || null,
+        utm_medium: utmData.utm_medium || null,
+        utm_campaign: utmData.utm_campaign || null,
+        utm_term: utmData.utm_term || null,
+        utm_content: utmData.utm_content || null,
+        utm_state: utmData.utm_state || null,
+        utm_language: utmData.utm_language || null,
+        utm_category: utmData.utm_category || null,
+        utm_agent: utmData.utm_agent || null,
+        custom_params: utmData.custom_params || null,
+        referrer: utmData.referrer || null,
         created_at: new Date().toISOString()
     };
 
@@ -1485,7 +1500,7 @@ async function completeRegistration() {
         window.topikoApp.currentUserId = userResult.data[0].id;
         window.TopikoUtils.addDebugLog(`✅ User created: ${window.topikoApp.currentUserId}`, 'success');
         
-        // Complete lead intelligence data with all new fields
+        // Complete lead intelligence data with all new fields including UTM
         const leadData = {
             user_id: window.topikoApp.currentUserId,
             lead_score: window.topikoApp.leadScore,
@@ -1500,6 +1515,10 @@ async function completeRegistration() {
             budget_range: window.topikoApp.qualifyingAnswers.budget, 
             decision_maker: window.topikoApp.qualifyingAnswers.decision_maker === 'yes', 
             online_presence: window.topikoApp.qualifyingAnswers.online_presence,
+            // Include UTM data in lead intelligence
+            utm_source: utmData.utm_source || null,
+            utm_medium: utmData.utm_medium || null,
+            utm_campaign: utmData.utm_campaign || null,
             created_at: new Date().toISOString()
         };
         
