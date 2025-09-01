@@ -3211,7 +3211,7 @@
                 custom_params: rawLead.custom_params || null,
                 device_type: intel.device_type || 'Unknown',
                 
-                products_count: rawLead.products_count || 0,
+                products_count: rawLead.products_count || intel.products_count || 0,
                 
                 lead_status: rawLead.lead_status || intel.lead_status || 'New',
                 assigned_sdr_id: rawLead.assigned_sdr_id || intel.assigned_sdr_id || null,
@@ -3219,7 +3219,7 @@
                 next_followup_date: rawLead.next_followup_date || intel.next_followup_date || null,
                 lead_notes: rawLead.lead_notes || intel.lead_notes || '',
                 
-                created_at: rawLead.created_at || intel.created_at || rawLead.completed_at || null,
+                created_at: rawLead.created_at || intel.created_at || rawLead.completed_at || rawLead.updated_at || null,
                 
                 data_source: rawLead.lead_intelligence ? 'supabase' : 'crm'
             };
