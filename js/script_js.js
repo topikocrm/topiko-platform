@@ -2937,6 +2937,34 @@ async function proceedToThemes() {
         
         // Call original Topiko API (restored from backup)
         const businessData = composePreviewJSON();
+        
+        // Add UTM parameters to the business data
+        if (window.TopikoUtils && window.TopikoUtils.getStoredUTMData) {
+            const utmData = window.TopikoUtils.getStoredUTMData();
+            // Add UTM parameters to the business data object
+            businessData.utm_source = utmData.utm_source || null;
+            businessData.utm_medium = utmData.utm_medium || null;
+            businessData.utm_campaign = utmData.utm_campaign || null;
+            businessData.utm_term = utmData.utm_term || null;
+            businessData.utm_content = utmData.utm_content || null;
+            businessData.utm_state = utmData.utm_state || null;
+            businessData.utm_language = utmData.utm_language || null;
+            businessData.utm_category = utmData.utm_category || null;
+            businessData.utm_agent = utmData.utm_agent || null;
+            businessData.referrer = utmData.referrer || null;
+            
+            // Add custom parameters if they exist
+            if (utmData.custom_params) {
+                businessData.custom_utm_params = utmData.custom_params;
+            }
+            
+            console.log('📊 UTM data added to API call:', {
+                utm_source: businessData.utm_source,
+                utm_medium: businessData.utm_medium,
+                utm_campaign: businessData.utm_campaign
+            });
+        }
+        
         await callTopikoAPI(JSON.stringify(businessData));
         console.log('✅ Original Topiko API called successfully');
         
