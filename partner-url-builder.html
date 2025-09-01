@@ -734,7 +734,8 @@
                 }
             }
             
-            const shortURL = `${window.location.origin}/c.html?code=${shortCode}`;
+            // Use clean URL format (Vercel handles the rewrite)
+            const shortURL = `https://topiko.app/c/${shortCode}`;
             
             // Add all extra fields to custom params
             if (referralCode) customParamsObj.utm_referral_code = referralCode;
@@ -920,14 +921,16 @@
         }
         
         function copyShortURL(shortCode) {
-            const text = `${window.location.origin}/p/${shortCode}`;
+            // Use clean URL format for partners
+            const text = `https://topiko.app/c/${shortCode}`;
             navigator.clipboard.writeText(text).then(() => {
                 showNotification('✅ Partner short URL copied to clipboard!', 'success');
             });
         }
         
         function viewQRCode(shortCode) {
-            const shortURL = `${window.location.origin}/c.html?code=${shortCode}`;
+            // Use clean URL format
+            const shortURL = `https://topiko.app/c/${shortCode}`;
             window.open(`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(shortURL)}`, '_blank');
         }
         

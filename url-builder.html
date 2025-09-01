@@ -948,9 +948,15 @@
             // Add custom parameters
             const customParamsObj = {};
             customParameters.forEach(param => {
+                // Add each custom parameter to the URL
                 params.append(param.name, param.value);
                 customParamsObj[param.name] = param.value;
             });
+            
+            // Log custom parameters for debugging
+            if (customParameters.length > 0) {
+                console.log('Adding custom parameters:', customParamsObj);
+            }
             
             // Generate full URL
             const fullURL = `${BASE_URL}?${params.toString()}`;
@@ -984,7 +990,8 @@
                 }
             }
             
-            const shortURL = `${window.location.origin}/c.html?code=${shortCode}`;
+            // Use clean URL format (Vercel handles the rewrite)
+            const shortURL = `https://topiko.app/c/${shortCode}`;
             
             // Save to Supabase
             const campaignData = {
@@ -1002,6 +1009,7 @@
                 utm_content: content || null,
                 utm_term: term || null,
                 custom_params: Object.keys(customParamsObj).length > 0 ? customParamsObj : null,
+                source: 'customer', // Mark as customer campaign for analytics
                 clicks: 0,
                 is_active: true
             };
@@ -1021,11 +1029,18 @@
                 
                 console.log('Campaign saved:', data);
                 
-                // Display results
+                // Display results with clean URL format
                 document.getElementById('fullURL').textContent = fullURL;
                 document.getElementById('shortURL').textContent = shortURL;
                 
-                // Generate QR Code
+                // Log for debugging
+                console.log('Campaign URLs:', {
+                    shortCode,
+                    shortURL,
+                    customParams: customParamsObj
+                });
+                
+                // Generate QR Code with the working URL format
                 const qrCodeImg = document.getElementById('qrCode');
                 qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shortURL)}`;
                 qrCodeImg.style.display = 'block';
@@ -1204,6 +1219,7 @@
         }
         
         function copyShortURL(shortCode) {
+            // Use clean URL format
             const text = `https://topiko.app/c/${shortCode}`;
             navigator.clipboard.writeText(text).then(() => {
                 showNotification('✅ Short URL copied to clipboard!', 'success');
@@ -1211,6 +1227,7 @@
         }
         
         function viewQRCode(shortCode) {
+            // Use clean URL format
             const shortURL = `https://topiko.app/c/${shortCode}`;
             window.open(`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(shortURL)}`, '_blank');
         }

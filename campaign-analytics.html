@@ -668,7 +668,8 @@
                 const { data: campaigns, error: campaignError } = await supabase
                     .from('short_urls')
                     .select('*')
-                    .or('source.neq.partner,source.is.null')
+                    .or('source.eq.customer,source.is.null')
+                    .not('utm_source', 'ilike', 'partner%')
                     .order('clicks', { ascending: false });
                 
                 if (campaignError) {
