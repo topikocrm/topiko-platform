@@ -264,8 +264,107 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
             .form-grid {
                 grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .header {
+                padding: 1.5rem;
+            }
+            
+            .builder-section {
+                padding: 1.5rem;
+            }
+            
+            .campaign-list {
+                padding: 1.5rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .button-group .btn {
+                width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .campaign-item {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 1rem;
+            }
+            
+            .campaign-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .url-display {
+                padding-right: 70px;
+                font-size: 0.85rem;
+            }
+            
+            .copy-btn {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.6rem;
+            }
+            
+            /* Fix custom parameters on mobile */
+            #customParametersContainer > div {
+                flex-direction: column;
+                align-items: stretch !important;
+            }
+            
+            #customParametersContainer span:first-child {
+                min-width: auto !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .form-group input,
+            .form-group select {
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+            
+            /* Fix custom parameters inputs on small screens */
+            .custom-param-inputs {
+                flex-direction: column !important;
+                align-items: stretch !important;
+            }
+            
+            .custom-param-inputs input {
+                width: 100% !important;
+            }
+            
+            .add-param-btn {
+                width: 100% !important;
+            }
+            
+            /* Fix custom parameter items */
+            .custom-param-item {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+            
+            .custom-param-item span:first-child {
+                min-width: auto !important;
+            }
+            
+            .custom-param-item button {
+                align-self: flex-end;
             }
         }
     </style>
@@ -476,13 +575,13 @@
                     <!-- Custom parameters will be added here -->
                 </div>
                 
-                <div style="margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+                <div class="custom-param-inputs" style="margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                     <input type="text" id="newParamName" placeholder="Parameter name (e.g., utm_offer)" 
-                           style="flex: 1; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                           style="flex: 1; min-width: 150px; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
                     <input type="text" id="newParamValue" placeholder="Parameter value (e.g., 50off)" 
-                           style="flex: 1; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
-                    <button onclick="addCustomParameter()" 
-                            style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                           style="flex: 1; min-width: 150px; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    <button onclick="addCustomParameter()" class="add-param-btn"
+                            style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; white-space: nowrap;">
                         + Add
                     </button>
                 </div>
@@ -889,11 +988,11 @@
             }
             
             container.innerHTML = customParameters.map((param, index) => `
-                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; padding: 0.5rem; background: white; border-radius: 6px; border: 1px solid #e2e8f0;">
-                    <span style="font-weight: 600; color: #475569; min-width: 150px;">${param.name}:</span>
-                    <span style="flex: 1; color: #1e293b;">${param.value}</span>
+                <div class="custom-param-item" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; padding: 0.5rem; background: white; border-radius: 6px; border: 1px solid #e2e8f0; flex-wrap: wrap;">
+                    <span style="font-weight: 600; color: #475569; min-width: 150px; word-break: break-all;">${param.name}:</span>
+                    <span style="flex: 1; color: #1e293b; min-width: 100px; word-break: break-all;">${param.value}</span>
                     <button onclick="removeCustomParameter(${index})" 
-                            style="background: #ef4444; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                            style="background: #ef4444; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; white-space: nowrap;">
                         Remove
                     </button>
                 </div>
@@ -1138,13 +1237,13 @@
             }
             
             listContainer.innerHTML = campaigns.slice(0, 10).map(campaign => `
-                <div class="campaign-item" style="${campaign.is_active === false ? 'opacity: 0.6; background: #fef2f2;' : 'background: #f8fafc;'} border-radius: 12px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                    <div class="campaign-info">
-                        <div class="campaign-name" style="font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">
+                <div class="campaign-item" style="${campaign.is_active === false ? 'opacity: 0.6; background: #fef2f2;' : 'background: #f8fafc;'} border-radius: 12px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.75rem;">
+                    <div class="campaign-info" style="flex: 1; min-width: 200px;">
+                        <div class="campaign-name" style="font-weight: 600; color: #1e293b; margin-bottom: 0.25rem; word-break: break-word;">
                             ${campaign.campaign_name || 'Unnamed Campaign'}
                             ${campaign.is_active === false ? '<span style="color: #ef4444; font-size: 0.85rem; margin-left: 0.5rem;">(Inactive)</span>' : ''}
                         </div>
-                        <div class="campaign-details" style="font-size: 0.85rem; color: #64748b;">
+                        <div class="campaign-details" style="font-size: 0.85rem; color: #64748b; word-break: break-word;">
                             ${campaign.utm_source || 'N/A'} • ${campaign.utm_medium || 'N/A'} 
                             ${campaign.utm_state ? `• ${campaign.utm_state}` : ''}
                             ${campaign.utm_language ? `• ${campaign.utm_language}` : ''}
@@ -1152,7 +1251,7 @@
                             • by ${campaign.created_by || 'Unknown'}
                         </div>
                     </div>
-                    <div class="campaign-actions" style="display: flex; gap: 0.5rem;">
+                    <div class="campaign-actions" style="display: flex; gap: 0.5rem; flex-shrink: 0;">
                         <button class="icon-btn" onclick="copyShortURL('${campaign.short_code}')" title="Copy Short URL">
                             📋
                         </button>
