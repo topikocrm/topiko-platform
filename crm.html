@@ -2414,6 +2414,19 @@
                                     <span style="margin-right: 0.25rem;">📋</span> Kanban
                                 </button>
                             </div>
+                            
+                            <!-- Kanban Date Filter -->
+                            <div id="kanbanDateFilter" style="display: none; flex-direction: row; gap: 0.5rem; align-items: center;">
+                                <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Period:</span>
+                                <select id="kanbanPeriod" onchange="updateKanbanPeriod(this.value)" style="padding: 0.4rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.85rem; background: white;">
+                                    <option value="all">All Time</option>
+                                    <option value="today">Today</option>
+                                    <option value="week" selected>This Week</option>
+                                    <option value="month">This Month</option>
+                                    <option value="quarter">This Quarter</option>
+                                </select>
+                            </div>
+                            
                             <div id="compactToggle" style="display: block;">
                                 <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.85rem; color: #64748b;">
                                     <input type="checkbox" id="compactModeCheckbox" onchange="toggleCompactMode(this.checked)" style="cursor: pointer;">
@@ -3363,6 +3376,14 @@
             currentView = view;
             localStorage.setItem('crm_view_preference', view);
             
+            // Show/hide Kanban date filter
+            const kanbanDateFilter = document.getElementById('kanbanDateFilter');
+            if (view === 'kanban') {
+                kanbanDateFilter.style.display = 'flex';
+            } else {
+                kanbanDateFilter.style.display = 'none';
+            }
+            
             // Show/hide compact toggle based on view
             const compactToggle = document.getElementById('compactToggle');
             if (view === 'cards') {
@@ -3528,31 +3549,95 @@
         }
         
         // KANBAN VIEW RENDERING
+        let kanbanPeriod = 'week'; // Default to week view
+        
+        function updateKanbanPeriod(period) {
+            kanbanPeriod = period;
+            localStorage.setItem('crm_kanban_period', period);
+            applyFilters(); // Re-render with new period
+        }
+        
+        function filterLeadsByPeriod(leads, period) {
+            if (period === 'all') return leads;
+            
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            return leads.filter(lead => {
+                if (!lead.created_at) return false;
+                const leadDate = new Date(lead.created_at);
+                
+                switch(period) {
+                    case 'today':
+                        return leadDate >= today;
+                    
+                    case 'week':
+                        const weekStart = new Date(today);
+                        weekStart.setDate(today.getDate() - today.getDay());
+                        return leadDate >= weekStart;
+                    
+                    case 'month':
+                        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                        return leadDate >= monthStart;
+                    
+                    case 'quarter':
+                        const quarter = Math.floor(now.getMonth() / 3);
+                        const quarterStart = new Date(now.getFullYear(), quarter * 3, 1);
+                        return leadDate >= quarterStart;
+                    
+                    default:
+                        return true;
+                }
+            });
+        }
+        
         function renderKanbanView(leads) {
             const leadsGrid = document.getElementById('leadsGrid');
             leadsGrid.className = 'kanban-container';
+            
+            // Filter leads by selected period
+            const periodFilter = document.getElementById('kanbanPeriod');
+            const selectedPeriod = periodFilter ? periodFilter.value : kanbanPeriod;
+            const filteredLeads = filterLeadsByPeriod(leads, selectedPeriod);
             
             const statuses = ['New', 'Contacted', 'Qualified', 'Negotiation', 'Closed'];
             const leadsByStatus = {};
             
             // Group leads by status
             statuses.forEach(status => {
-                leadsByStatus[status] = leads.filter(lead => 
+                leadsByStatus[status] = filteredLeads.filter(lead => 
                     (lead.lead_pipeline_status || 'New') === status
                 );
             });
             
-            const kanbanHTML = statuses.map(status => `
-                <div class="kanban-column">
-                    <div class="kanban-header">
-                        <span>${status}</span>
-                        <span class="kanban-count">${leadsByStatus[status].length}</span>
-                    </div>
-                    <div class="kanban-cards">
-                        ${leadsByStatus[status].map(lead => createKanbanCard(lead)).join('')}
+            // Add period indicator
+            const periodText = {
+                'all': 'All Time',
+                'today': 'Today',
+                'week': 'This Week',
+                'month': 'This Month',
+                'quarter': 'This Quarter'
+            }[selectedPeriod];
+            
+            const kanbanHTML = `
+                <div style="grid-column: 1 / -1; padding: 0.75rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; margin-bottom: 1rem; text-align: center;">
+                    <div style="font-size: 0.9rem; font-weight: 600;">Kanban Board - ${periodText}</div>
+                    <div style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">
+                        ${filteredLeads.length} leads • ${leads.length - filteredLeads.length} filtered out
                     </div>
                 </div>
-            `).join('');
+                ${statuses.map(status => `
+                    <div class="kanban-column">
+                        <div class="kanban-header">
+                            <span>${status}</span>
+                            <span class="kanban-count">${leadsByStatus[status].length}</span>
+                        </div>
+                        <div class="kanban-cards">
+                            ${leadsByStatus[status].map(lead => createKanbanCard(lead)).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
             
             leadsGrid.innerHTML = kanbanHTML;
         }
@@ -5256,6 +5341,16 @@
         // INITIALIZATION (ENHANCED WITH DEBUGGING)
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Mobile-First Topiko CRM v5.0 Initialized');
+            
+            // Initialize Kanban period from localStorage
+            const savedPeriod = localStorage.getItem('crm_kanban_period');
+            if (savedPeriod) {
+                kanbanPeriod = savedPeriod;
+                const periodSelect = document.getElementById('kanbanPeriod');
+                if (periodSelect) {
+                    periodSelect.value = savedPeriod;
+                }
+            }
             
             // Add event delegation for dropdown buttons
             document.addEventListener('click', function(e) {

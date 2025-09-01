@@ -2924,28 +2924,28 @@ async function proceedToThemes() {
             return;
         }
         
-        // Save products count to user record
+        // Save products count to lead_intelligence record
         if (window.topikoApp.currentUserId) {
             const productsCount = selectedProducts.length;
-            // Commented out until products_count column is added to users table
-            // try {
-            //     const { error } = await supabase
-            //         .from('users')
-            //         .update({ 
-            //             products_count: productsCount,
-            //             updated_at: new Date().toISOString()
-            //         })
-            //         .eq('id', window.topikoApp.currentUserId);
-            //     
-            //     if (error) {
-            //         console.error('Failed to save products count:', error);
-            //     } else {
-            //         console.log(`✅ Products count (${productsCount}) saved to user record`);
-            //     }
-            // } catch (err) {
-            //     console.error('Error saving products count:', err);
-            // }
-            console.log(`📊 Products count: ${productsCount} (not saved to DB - column missing)`);
+            
+            // Update lead_intelligence with products_count
+            try {
+                const { error } = await supabase
+                    .from('lead_intelligence')
+                    .update({ 
+                        products_count: productsCount,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('user_id', window.topikoApp.currentUserId);
+                
+                if (error) {
+                    console.error('Failed to save products count to lead_intelligence:', error);
+                } else {
+                    console.log(`✅ Products count (${productsCount}) saved to lead_intelligence`);
+                }
+            } catch (err) {
+                console.error('Error saving products count:', err);
+            }
         }
         
         // Call original Topiko API (restored from backup)
@@ -3134,6 +3134,21 @@ async function completeSetup() {
         try {
             await window.TopikoUtils.saveToSupabase(leadData, 'lead_completion');
             console.log('✅ Lead completion data saved to Supabase');
+            
+            // Update lead_intelligence with products_count
+            const { error: updateError } = await supabase
+                .from('lead_intelligence')
+                .update({ 
+                    products_count: window.topikoApp?.userProducts?.length || 0,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('user_id', window.topikoApp.currentUserId);
+            
+            if (updateError) {
+                console.error('Failed to update products_count in lead_intelligence:', updateError);
+            } else {
+                console.log(`✅ Updated products_count (${window.topikoApp?.userProducts?.length || 0}) in lead_intelligence`);
+            }
         } catch (error) {
             console.warn(`⚠️ Supabase save failed: ${error.message}`);
         }
