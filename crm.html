@@ -3219,7 +3219,7 @@
                 next_followup_date: rawLead.next_followup_date || intel.next_followup_date || null,
                 lead_notes: rawLead.lead_notes || intel.lead_notes || '',
                 
-                created_at: rawLead.created_at || new Date().toISOString(),
+                created_at: rawLead.created_at || intel.created_at || rawLead.completed_at || null,
                 
                 data_source: rawLead.lead_intelligence ? 'supabase' : 'crm'
             };
