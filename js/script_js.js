@@ -3328,42 +3328,38 @@ function handleCustomTimeInput(input) {
 }
 
 // Format date and time for SMS (e.g., "Aug 28 4pm")
-function formatSlotForSMS(dateLabel, timeLabel) {
+function formatSlotForSMS(dateLabel, timeLabel, slotDateTime) {
     let formattedSlot = '';
     
-    // Handle special date labels
-    if (dateLabel === 'Today' || dateLabel === 'Tomorrow' || dateLabel === 'Day After') {
-        // Get actual date
-        const now = new Date();
-        let targetDate = new Date();
-        
-        if (dateLabel === 'Tomorrow') {
-            targetDate.setDate(now.getDate() + 1);
-        } else if (dateLabel === 'Day After') {
-            targetDate.setDate(now.getDate() + 2);
-        }
-        
-        // Format as "Aug 28"
-        const month = targetDate.toLocaleDateString('en-US', { month: 'short' });
-        const day = targetDate.getDate();
+    // If we have the actual slot DateTime, use it for accurate date
+    if (slotDateTime && slotDateTime instanceof Date) {
+        // Use the actual date from the slot
+        const month = slotDateTime.toLocaleDateString('en-IN', { month: 'short' });
+        const day = slotDateTime.getDate();
         formattedSlot = `${month} ${day}`;
     } else if (dateLabel === 'Custom Time') {
         // For custom time, just use what user entered
         return timeLabel;
     } else {
-        // Use the date label as is (already formatted like "Aug 28")
+        // For other cases without dateTime, use the dateLabel as is
         formattedSlot = dateLabel;
     }
     
-    // Format time (convert "04:00 PM" to "4pm")
+    // Format time (convert "04:00 PM" or "04:00 pm" to "4pm")
     if (timeLabel) {
-        const timeParts = timeLabel.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+        // Handle various time formats
+        const timeParts = timeLabel.match(/(\d{1,2}):(\d{2})\s*(AM|PM|am|pm)/i);
         if (timeParts) {
             let hour = parseInt(timeParts[1]);
+            const minutes = timeParts[2];
             const period = timeParts[3].toLowerCase();
             
-            // Remove leading zero and format as "4pm"
-            formattedSlot += ` ${hour}${period}`;
+            // Format as "4pm" or "4:30pm" (include minutes only if not :00)
+            if (minutes === '00') {
+                formattedSlot += ` ${hour}${period}`;
+            } else {
+                formattedSlot += ` ${hour}:${minutes}${period}`;
+            }
         } else {
             // If time format doesn't match, use as is
             formattedSlot += ` ${timeLabel}`;
@@ -3374,7 +3370,7 @@ function formatSlotForSMS(dateLabel, timeLabel) {
 }
 
 // Send SMS for call scheduling confirmation
-async function sendCallScheduleSMS(dateLabel, timeLabel) {
+async function sendCallScheduleSMS(dateLabel, timeLabel, slotDateTime) {
     // Get phone number from session
     const phoneNumber = window.topikoApp?.userPhone;
     
@@ -3383,8 +3379,8 @@ async function sendCallScheduleSMS(dateLabel, timeLabel) {
         return false;
     }
     
-    // Format the slot as "Aug 28 4pm"
-    const formattedSlot = formatSlotForSMS(dateLabel, timeLabel);
+    // Format the slot as "Aug 28 4pm" using the actual dateTime
+    const formattedSlot = formatSlotForSMS(dateLabel, timeLabel, slotDateTime);
     
     // Format message for call schedule confirmation
     const message = `Your call with Topiko team is scheduled for ${formattedSlot}. For any assistance call 885 886 8889. -TOPIKO`;
@@ -3446,7 +3442,7 @@ async function confirmScheduleAndComplete() {
     }
     
     // Format the slot for database storage
-    const formattedSlot = slotData ? formatSlotForSMS(slotData.dateLabel, slotData.timeLabel) : selectedSlot;
+    const formattedSlot = slotData ? formatSlotForSMS(slotData.dateLabel, slotData.timeLabel, slotData.dateTime) : selectedSlot;
     
     // Save scheduling data (removed scheduled_date and scheduled_time - not in DB schema)
     const schedulingData = {
@@ -3467,7 +3463,7 @@ async function confirmScheduleAndComplete() {
     
     // Send SMS confirmation
     if (slotData?.dateLabel && slotData?.timeLabel) {
-        const smsSent = await sendCallScheduleSMS(slotData.dateLabel, slotData.timeLabel);
+        const smsSent = await sendCallScheduleSMS(slotData.dateLabel, slotData.timeLabel, slotData.dateTime);
         if (smsSent) {
             window.TopikoUtils.showNotification('📱 SMS confirmation sent to your phone', 'success');
         }
