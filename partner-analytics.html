@@ -762,10 +762,12 @@
         async function loadPartnerAnalytics() {
             try {
                 // Load partner campaigns
+                // Filter to show only records from Sep 1, 2025 onwards
                 const { data: campaigns, error: campaignError } = await supabase
                     .from('short_urls')
                     .select('*')
                     .or('source.eq.partner,campaign_name.like.%[PARTNER]%')
+                    .gte('created_at', '2025-09-01T00:00:00')
                     .order('created_at', { ascending: false });
                 
                 if (campaignError) {
@@ -777,10 +779,12 @@
                 filteredCampaigns = [...allPartnerCampaigns];
                 
                 // Load partner leads
+                // Filter to show only records from Sep 1, 2025 onwards
                 const { data: leads, error: leadError } = await supabase
                     .from('users')
                     .select('*')
-                    .eq('source', 'partner');
+                    .eq('source', 'partner')
+                    .gte('created_at', '2025-09-01T00:00:00');
                 
                 if (leadError) {
                     console.error('Error loading partner leads:', leadError);

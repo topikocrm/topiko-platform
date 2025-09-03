@@ -729,11 +729,15 @@
                 dateFrom.setDate(dateFrom.getDate() - parseInt(dateRange));
                 
                 // 1. Get Visits (clicks from short_urls)
+                // Also filter to show only records from Sep 1, 2025 onwards
+                const minDate = new Date('2025-09-01T00:00:00');
+                const effectiveDate = dateFrom > minDate ? dateFrom : minDate;
+                
                 const { data: visitData, error: visitError } = await supabase
                     .from('short_urls')
                     .select('clicks, utm_source, utm_medium')
                     .eq('source', 'partner')
-                    .gte('created_at', dateFrom.toISOString());
+                    .gte('created_at', effectiveDate.toISOString());
 
                 if (!visitError && visitData) {
                     funnelData.visits = visitData.reduce((sum, item) => sum + (item.clicks || 0), 0);
@@ -744,7 +748,7 @@
                     .from('users')
                     .select('*')
                     .eq('source', 'partner')
-                    .gte('created_at', dateFrom.toISOString());
+                    .gte('created_at', effectiveDate.toISOString());
 
                 if (!partnerError && partnerData) {
                     // Count registrations

@@ -3074,7 +3074,9 @@
             const timeoutId = setTimeout(() => controller.abort(), 10000);
             
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*&order=created_at.desc`, {
+                // Filter to show only records from Sep 1, 2025 onwards
+                const dateFilter = '&created_at=gte.2025-09-01T00:00:00';
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*&order=created_at.desc${dateFilter}`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
@@ -3103,7 +3105,9 @@
             console.log('🧠 Fetching lead intelligence...');
             
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence?select=*&order=created_at.desc`, {
+                // Filter to show only records from Sep 1, 2025 onwards
+                const dateFilter = '&created_at=gte.2025-09-01T00:00:00';
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/lead_intelligence?select=*&order=created_at.desc${dateFilter}`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,

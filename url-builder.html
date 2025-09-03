@@ -869,9 +869,11 @@
         // Load campaigns from Supabase
         async function loadCampaigns() {
             try {
+                // Filter to show only records from Sep 1, 2025 onwards
                 const { data, error } = await supabase
                     .from('short_urls')
                     .select('*')
+                    .gte('created_at', '2025-09-01T00:00:00')
                     .order('created_at', { ascending: false })
                     .limit(50);
                 
@@ -1207,9 +1209,11 @@
 
         async function loadCampaigns() {
             try {
+                // Filter to show only records from Sep 1, 2025 onwards
                 const { data, error } = await supabase
                     .from('short_urls')
                     .select('*')
+                    .gte('created_at', '2025-09-01T00:00:00')
                     .order('created_at', { ascending: false })
                     .limit(100);
                 
