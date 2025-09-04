@@ -624,9 +624,9 @@ function getFullThemeName(themeId) {
         'grocery': 'Theme Beauty',  // TEMPORARY: Changed from 'Cart & Carry' for testing
         // 'grocery': 'Cart & Carry',  // ORIGINAL: Commented out for testing
         'ecommerce': 'Global Lane',
-        'food': 'Gourmet Bloom',
-        'beauty': 'Urban Luxe',
-        'jewelry': 'Urban Luxe'
+        'food': 'Fashion Theme',  // Updated from 'Gourmet Bloom'
+        'beauty': 'Generic Ecommerce',  // Updated from 'Urban Luxe'
+        'jewelry': 'Grocery Theme'  // Updated from 'Urban Luxe'
     };
     
     return themeTemplateIds[themeId] || 'modern';
@@ -3087,9 +3087,9 @@ function getFullThemeName(themeId) {
         'grocery': 'Theme Beauty',  // TEMPORARY: Changed from 'Cart & Carry' for testing
         // 'grocery': 'Cart & Carry',  // ORIGINAL: Commented out for testing
         'ecommerce': 'Global Lane',
-        'food': 'Gourmet Bloom',
-        'beauty': 'Urban Luxe',
-        'jewelry': 'Urban Luxe'
+        'food': 'Fashion Theme',  // Updated from 'Gourmet Bloom'
+        'beauty': 'Generic Ecommerce',  // Updated from 'Urban Luxe'
+        'jewelry': 'Grocery Theme'  // Updated from 'Urban Luxe'
     };
     return themeMap[themeId] || themeId;
 }
