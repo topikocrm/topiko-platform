@@ -2930,6 +2930,8 @@ async function proceedToThemes() {
             const productsCount = selectedProducts.length;
             
             // Update lead_intelligence with products_count
+            // Commenting out temporarily as products_count column doesn't exist
+            /*
             try {
                 const { error } = await supabase
                     .from('lead_intelligence')
@@ -2947,6 +2949,7 @@ async function proceedToThemes() {
             } catch (err) {
                 console.error('Error saving products count:', err);
             }
+            */
         }
         
         // Call original Topiko API (restored from backup)
