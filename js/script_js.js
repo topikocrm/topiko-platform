@@ -620,13 +620,12 @@ function getFullThemeName(themeId) {
         'professional': 'professional',
         'traditional': 'traditional',
         'creative': 'creative',
-        'luxury': 'Urban Luxe',
-        'grocery': 'Theme Beauty',  // TEMPORARY: Changed from 'Cart & Carry' for testing
-        // 'grocery': 'Cart & Carry',  // ORIGINAL: Commented out for testing
-        'ecommerce': 'Global Lane',
-        'food': 'Fashion Theme',  // Updated from 'Gourmet Bloom'
-        'beauty': 'Generic Ecommerce',  // Updated from 'Urban Luxe'
-        'jewelry': 'Grocery Theme'  // Updated from 'Urban Luxe'
+        'luxury': 'Jewellery Theme',  // Style District -> Jewellery Theme
+        'grocery': 'Theme Beauty',  // Cart & Carry -> Theme Beauty (keeping as is)
+        'ecommerce': 'Generic Theme',  // Global Lane -> Generic Theme
+        'food': 'Food Theme',  // Gourmet Bloom -> Food Theme
+        'beauty': 'Generic Ecommerce',  // Urban Luxe -> Generic Ecommerce
+        'jewelry': 'Grocery Theme'  // Carat Curve -> Grocery Theme
     };
     
     return themeTemplateIds[themeId] || 'modern';
@@ -3086,13 +3085,12 @@ function getFullThemeName(themeId) {
         'professional': 'Professional & Corporate',
         'traditional': 'Traditional & Classic',
         'creative': 'Creative & Artistic',
-        'luxury': 'Urban Luxe',
-        'grocery': 'Theme Beauty',  // TEMPORARY: Changed from 'Cart & Carry' for testing
-        // 'grocery': 'Cart & Carry',  // ORIGINAL: Commented out for testing
-        'ecommerce': 'Global Lane',
-        'food': 'Fashion Theme',  // Updated from 'Gourmet Bloom'
-        'beauty': 'Generic Ecommerce',  // Updated from 'Urban Luxe'
-        'jewelry': 'Grocery Theme'  // Updated from 'Urban Luxe'
+        'luxury': 'Jewellery Theme',  // Style District -> Jewellery Theme
+        'grocery': 'Theme Beauty',  // Cart & Carry -> Theme Beauty (keeping as is)
+        'ecommerce': 'Generic Theme',  // Global Lane -> Generic Theme
+        'food': 'Food Theme',  // Gourmet Bloom -> Food Theme
+        'beauty': 'Generic Ecommerce',  // Urban Luxe -> Generic Ecommerce
+        'jewelry': 'Grocery Theme'  // Carat Curve -> Grocery Theme
     };
     return themeMap[themeId] || themeId;
 }
