@@ -156,14 +156,21 @@
     // Convert the LOCAL_PRODUCT_IMAGES to a full product database
     const IMAGE_BASED_PRODUCTS = [];
     
-    // Import the image mappings from LocalProductImages
-    if (window.LocalProductImages && window.LocalProductImages.LOCAL_PRODUCT_IMAGES) {
+    // Function to initialize products
+    function initializeProducts() {
+        // Import the image mappings from LocalProductImages
+        if (!window.LocalProductImages || !window.LocalProductImages.LOCAL_PRODUCT_IMAGES) {
+            console.error('LocalProductImages not loaded yet!');
+            return false;
+        }
+        
         const imageMap = window.LocalProductImages.LOCAL_PRODUCT_IMAGES;
         let productIndex = 0;
+        console.log('Processing image mappings:', Object.keys(imageMap).length);
         
         for (const [imageId, imagePath] of Object.entries(imageMap)) {
             // Skip null entries (products without images)
-            if (!imagePath) continue;
+            if (!imagePath || imagePath === 'null') continue;
             
             // Extract category and subcategory from image path
             // Example: 'images/products/beauty/makeup/face/blush/Makeup_blush.png'
@@ -199,20 +206,32 @@
             IMAGE_BASED_PRODUCTS.push(product);
             productIndex++;
         }
+        
+        // Organize products by category and subcategory for easy access
+        const PRODUCTS_BY_CATEGORY = {};
+        
+        IMAGE_BASED_PRODUCTS.forEach(product => {
+            if (!PRODUCTS_BY_CATEGORY[product.category]) {
+                PRODUCTS_BY_CATEGORY[product.category] = {};
+            }
+            if (!PRODUCTS_BY_CATEGORY[product.category][product.subcategory]) {
+                PRODUCTS_BY_CATEGORY[product.category][product.subcategory] = [];
+            }
+            PRODUCTS_BY_CATEGORY[product.category][product.subcategory].push(product);
+        });
+        
+        console.log(`✅ Created ${IMAGE_BASED_PRODUCTS.length} products from images`);
+        return { products: IMAGE_BASED_PRODUCTS, byCategory: PRODUCTS_BY_CATEGORY };
     }
     
-    // Organize products by category and subcategory for easy access
-    const PRODUCTS_BY_CATEGORY = {};
+    // Initialize and export
+    let PRODUCTS_BY_CATEGORY = {};
     
-    IMAGE_BASED_PRODUCTS.forEach(product => {
-        if (!PRODUCTS_BY_CATEGORY[product.category]) {
-            PRODUCTS_BY_CATEGORY[product.category] = {};
-        }
-        if (!PRODUCTS_BY_CATEGORY[product.category][product.subcategory]) {
-            PRODUCTS_BY_CATEGORY[product.category][product.subcategory] = [];
-        }
-        PRODUCTS_BY_CATEGORY[product.category][product.subcategory].push(product);
-    });
+    // Try to initialize immediately if LocalProductImages is ready
+    const initResult = initializeProducts();
+    if (initResult) {
+        PRODUCTS_BY_CATEGORY = initResult.byCategory;
+    }
     
     // Export for global use
     window.ImageBasedProducts = {
@@ -259,5 +278,29 @@
         }
     };
     
-    console.log(`✅ Image-based products database loaded: ${IMAGE_BASED_PRODUCTS.length} products with real images`);
+    // Fallback initialization on DOM ready if products weren't loaded
+    if (IMAGE_BASED_PRODUCTS.length === 0) {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                const result = initializeProducts();
+                if (result) {
+                    PRODUCTS_BY_CATEGORY = result.byCategory;
+                    window.ImageBasedProducts.BY_CATEGORY = PRODUCTS_BY_CATEGORY;
+                    console.log(`✅ Image-based products initialized on DOM ready: ${IMAGE_BASED_PRODUCTS.length} products`);
+                }
+            });
+        } else {
+            // DOM already loaded, try again
+            setTimeout(() => {
+                const result = initializeProducts();
+                if (result) {
+                    PRODUCTS_BY_CATEGORY = result.byCategory;
+                    window.ImageBasedProducts.BY_CATEGORY = PRODUCTS_BY_CATEGORY;
+                    console.log(`✅ Image-based products initialized delayed: ${IMAGE_BASED_PRODUCTS.length} products`);
+                }
+            }, 100);
+        }
+    } else {
+        console.log(`✅ Image-based products database loaded: ${IMAGE_BASED_PRODUCTS.length} products with real images`);
+    }
 })();

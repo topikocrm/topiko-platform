@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Products Loading</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>Debug Products Loading</h1>
+    <div id="results"></div>
+
+    <!-- Load all dependencies in order -->
+    <script src="js/config_js.js"></script>
+    <script src="js/utils_js.js"></script>
+    <script src="js/local-product-images.js"></script>
+    <script src="js/image-based-products.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function log(message, type = 'info') {
+            results.innerHTML += `<div class="${type}">${message}</div>`;
+            console.log(message);
+        }
+        
+        // Check what's loaded
+        setTimeout(() => {
+            log('=== Checking Loaded Modules ===');
+            
+            // Check config
+            if (window.TopikoConfig) {
+                log('✓ TopikoConfig loaded', 'success');
+                const dbKeys = Object.keys(window.TopikoConfig.INDIAN_PRODUCTS_DB || {});
+                log(`  - INDIAN_PRODUCTS_DB categories: ${dbKeys.length}`, 'info');
+            } else {
+                log('✗ TopikoConfig NOT loaded', 'error');
+            }
+            
+            // Check LocalProductImages
+            if (window.LocalProductImages) {
+                log('✓ LocalProductImages loaded', 'success');
+                const imageCount = Object.keys(window.LocalProductImages.LOCAL_PRODUCT_IMAGES || {}).length;
+                log(`  - Image mappings: ${imageCount}`, 'info');
+            } else {
+                log('✗ LocalProductImages NOT loaded', 'error');
+            }
+            
+            // Check ImageBasedProducts
+            if (window.ImageBasedProducts) {
+                log('✓ ImageBasedProducts loaded', 'success');
+                log(`  - Total products: ${window.ImageBasedProducts.ALL_PRODUCTS.length}`, 'info');
+                
+                // Get sample products
+                const sampleProducts = window.ImageBasedProducts.ALL_PRODUCTS.slice(0, 5);
+                log('  - Sample products:', 'info');
+                sampleProducts.forEach(p => {
+                    log(`    • ${p.id}: ${p.name} (${p.category}/${p.subcategory})`, 'info');
+                });
+                
+                // Test getProductsForCategories
+                const fashionProducts = window.ImageBasedProducts.getProductsForCategories(['fashion']);
+                log(`  - Fashion products: ${fashionProducts.length}`, 'info');
+            } else {
+                log('✗ ImageBasedProducts NOT loaded', 'error');
+            }
+            
+            // Check if getProductsForSelectedCategories exists
+            if (typeof getProductsForSelectedCategories === 'function') {
+                log('✓ getProductsForSelectedCategories function exists', 'success');
+            } else {
+                log('✗ getProductsForSelectedCategories function NOT found', 'error');
+            }
+            
+        }, 500);
+    </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Products Load</title>
+</head>
+<body>
+    <h1>Test Products Loading</h1>
+    <div id="output"></div>
+
+    <script src="js/config_js.js"></script>
+    <script src="js/utils_js.js"></script>
+    <script src="js/local-product-images.js"></script>
+    <script src="js/image-based-products.js"></script>
+    <script src="js/script_js.js"></script>
+    
+    <script>
+        window.topikoApp = {
+            selectedSubcategories: []
+        };
+        
+        setTimeout(() => {
+            const output = document.getElementById('output');
+            
+            // Test direct access
+            if (window.ImageBasedProducts) {
+                output.innerHTML += `<p>✅ ImageBasedProducts exists</p>`;
+                output.innerHTML += `<p>Total products: ${window.ImageBasedProducts.ALL_PRODUCTS.length}</p>`;
+                
+                // Show first 3 products
+                const first3 = window.ImageBasedProducts.ALL_PRODUCTS.slice(0, 3);
+                output.innerHTML += `<p>First 3 products:</p>`;
+                first3.forEach(p => {
+                    output.innerHTML += `<p>- ${p.id}: ${p.name}</p>`;
+                });
+                
+                // Test the function with boutique category
+                document.getElementById = function(id) {
+                    if (id === 'category') {
+                        return { value: 'boutique' };
+                    }
+                    return null;
+                };
+                
+                const products = getProductsForSelectedCategories();
+                output.innerHTML += `<p>Products for boutique: ${products.length}</p>`;
+                
+                // Show first 3 boutique products
+                const first3Boutique = products.slice(0, 3);
+                output.innerHTML += `<p>First 3 boutique products:</p>`;
+                first3Boutique.forEach(p => {
+                    output.innerHTML += `<p>- ${p.id}: ${p.name}</p>`;
+                });
+            } else {
+                output.innerHTML += `<p>❌ ImageBasedProducts NOT loaded!</p>`;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
