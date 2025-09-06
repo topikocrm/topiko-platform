@@ -328,9 +328,11 @@ class ProductImageService {
 
         // 0. PRIORITY: Try LOCAL images first (our 872 mapped images)
         if (window.LocalProductImages) {
-            const localImage = window.LocalProductImages.getLocalProductImage(productId, category);
-            if (localImage && window.LocalProductImages.hasLocalImage(productId)) {
-                console.log(`🖼️ Using local image for ${productId}`);
+            // Pass product name for smart matching
+            const localImage = window.LocalProductImages.getLocalProductImage(productId, category, productName);
+            // Check if it's not a placeholder
+            if (localImage && !localImage.includes('placeholders')) {
+                console.log(`🖼️ Using local image for ${productId} (${productName})`);
                 this.saveToCache(productId, localImage);
                 return localImage;
             }
@@ -350,11 +352,11 @@ class ProductImageService {
         if (IMAGE_CONFIG.USE_STATIC_IMAGES && window.StaticProductImages) {
             imageUrl = window.StaticProductImages.getStaticProductImage(productName);
             if (imageUrl) {
-                const isValid = await this.testImageUrl(imageUrl);
-                if (isValid) {
+                const validUrl = await this.testImageUrl(imageUrl);
+                if (validUrl) {
                     console.log(`✅ Using static image for ${productName}`);
-                    this.saveToCache(productId, imageUrl);
-                    return imageUrl;
+                    this.saveToCache(productId, validUrl);
+                    return validUrl;
                 }
             }
         }
@@ -384,10 +386,10 @@ class ProductImageService {
         if (!IMAGE_CONFIG.USE_DEMO_MODE) {
             imageUrl = this.getFreeCDNImage(productName, category);
             // Test if the image actually loads
-            const isValid = await this.testImageUrl(imageUrl);
-            if (isValid) {
+            const validUrl = await this.testImageUrl(imageUrl);
+            if (validUrl) {
                 console.log(`✅ Using free CDN image for ${productName}`);
-                return imageUrl;
+                return validUrl;
             }
         }
 
@@ -397,12 +399,30 @@ class ProductImageService {
         return placeholder;
     }
 
-    // Preload image to check if it works
-    testImageUrl(url) {
+    // Preload image to check if it works, with WebP fallback
+    async testImageUrl(url) {
         return new Promise((resolve) => {
             const img = new Image();
-            img.onload = () => resolve(true);
-            img.onerror = () => resolve(false);
+            img.onload = () => resolve(url); // Return the working URL
+            img.onerror = async () => {
+                // If original fails, try WebP version
+                if (!url.endsWith('.webp')) {
+                    const webpUrl = url.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+                    if (webpUrl !== url) {
+                        const webpImg = new Image();
+                        webpImg.onload = () => {
+                            console.log(`✅ Found WebP version: ${webpUrl}`);
+                            resolve(webpUrl); // Return the WebP URL
+                        };
+                        webpImg.onerror = () => resolve(false);
+                        webpImg.src = webpUrl;
+                    } else {
+                        resolve(false);
+                    }
+                } else {
+                    resolve(false);
+                }
+            };
             img.src = url;
         });
     }
@@ -421,17 +441,17 @@ class ProductImageService {
             const imageUrl = await this.getProductImage(productId, productName, category, subcategory);
             
             // 3. Test if image loads
-            const isValid = await this.testImageUrl(imageUrl);
+            const validUrl = await this.testImageUrl(imageUrl);
             
-            if (isValid && imageUrl !== placeholder) {
+            if (validUrl && validUrl !== placeholder) {
                 // Create new image element for smooth transition
                 const newImg = new Image();
                 newImg.onload = () => {
-                    imgElement.src = imageUrl;
+                    imgElement.src = validUrl;
                     imgElement.classList.remove('image-loading', 'image-placeholder');
                     imgElement.classList.add('image-loaded');
                 };
-                newImg.src = imageUrl;
+                newImg.src = validUrl;
             } else {
                 // Keep placeholder without blur
                 imgElement.classList.remove('image-loading');

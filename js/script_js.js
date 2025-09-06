@@ -1856,6 +1856,40 @@ function getProductsForSelectedCategories() {
     const businessCategory = document.getElementById('category')?.value;
     const selectedSubcategories = window.topikoApp.selectedSubcategories;
     
+    // Use Image-Based Products if available (products with real images)
+    if (window.ImageBasedProducts) {
+        console.log('🖼️ Using Image-Based Products with real images');
+        
+        // Get products based on business category mapping
+        const categoryMapping = {
+            'boutique': ['fashion', 'footwear', 'bags', 'jewelry', 'beauty'],
+            'home-foods': ['food', 'grocery'],
+            'salons': ['beauty', 'health'],
+            'grocery': ['grocery', 'food'],
+            'electronics': ['electronics'],
+            'furniture': ['home'],
+            'general': ['fashion', 'beauty', 'electronics', 'home', 'footwear']
+        };
+        
+        const relevantCategories = categoryMapping[businessCategory] || ['fashion', 'beauty'];
+        let products = window.ImageBasedProducts.getProductsForCategories(relevantCategories);
+        
+        // Filter by selected subcategories if any
+        if (selectedSubcategories && selectedSubcategories.length > 0) {
+            products = products.filter(product => {
+                // Check if product's subcategory matches any selected subcategory
+                return selectedSubcategories.some(subcat => 
+                    product.subcategory.toLowerCase().includes(subcat.toLowerCase()) || 
+                    subcat.toLowerCase().includes(product.subcategory.toLowerCase())
+                );
+            });
+        }
+        
+        console.log(`📦 Found ${products.length} products with real images for ${businessCategory}`);
+        return products;
+    }
+    
+    // Fallback to old database if image-based products not available
     if (!businessCategory || !window.TopikoConfig.INDIAN_PRODUCTS_DB[businessCategory]) {
         return [];
     }
@@ -2117,31 +2151,47 @@ function createProductCardWithVariants(product) {
         product = { ...product, ...userProduct };
     }
     
-    // Get reliable image with new service
-    let reliableImageUrl;
-    if (window.ProductImageService) {
-        // Use new image service with static images
-        reliableImageUrl = 'images/products/placeholders/default.svg'; // Start with placeholder
-        // Load real image asynchronously
+    // Get reliable image - prioritize local images
+    let reliableImageUrl = 'images/products/placeholders/default.svg'; // Default placeholder
+    
+    // First try LocalProductImages with smart matching
+    if (window.LocalProductImages) {
+        const localImage = window.LocalProductImages.getLocalProductImage(
+            product.id, 
+            product.category || 'general',
+            product.name
+        );
+        if (localImage && !localImage.includes('placeholders')) {
+            reliableImageUrl = localImage;
+            console.log(`✅ Using local image for ${product.name}: ${localImage}`);
+        } else {
+            // If no local image found, use appropriate placeholder
+            reliableImageUrl = localImage || 'images/products/placeholders/default.svg';
+        }
+    }
+    
+    // Optional: Try ProductImageService for external images (if needed)
+    if (window.ProductImageService && reliableImageUrl.includes('placeholders')) {
+        // Load better image asynchronously if we only have placeholder
         window.ProductImageService.getProductImage(
             product.id,
             product.name,
             product.category,
             product.subcategory
         ).then(url => {
-            const imgElements = document.querySelectorAll(`[data-product-id="${product.id}"] .product-selector-image`);
-            imgElements.forEach(img => {
-                if (img) img.style.backgroundImage = `url("${url}")`;
-            });
+            if (url && !url.includes('placeholders')) {
+                // Update the image in the DOM
+                const card = document.querySelector(`[data-product-card-id="${product.id}"]`);
+                if (card) {
+                    const imgDiv = card.querySelector('.product-selector-image');
+                    if (imgDiv) {
+                        imgDiv.style.backgroundImage = `url("${url}")`;
+                    }
+                }
+            }
+        }).catch(err => {
+            console.warn(`Failed to load image for ${product.name}:`, err);
         });
-    } else {
-        // Fallback to old system
-        reliableImageUrl = window.TopikoConfig.getReliableProductImage(
-            product, 
-            product.category, 
-            product.subcategory, 
-            0
-        );
     }
     
     // Enhanced: More robust price extraction
@@ -2208,7 +2258,7 @@ function createProductCardWithVariants(product) {
     const formattedPrice = Math.round(basePrice).toLocaleString();
     
     return `
-        <div class="product-card-selector ${selectedClass}" data-product-id="${product.id}">
+        <div class="product-card-selector ${selectedClass}" data-product-id="${product.id}" data-product-card-id="${product.id}">
             <div class="product-selector-image" 
                  style="background-image: url('${reliableImageUrl}');"
                  onerror="handleImageError(this, '${product.id}', '${product.category}', '${product.subcategory}')">

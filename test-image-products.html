@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image-Based Products Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        .success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .product-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .product-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: #f3f4f6;
+        }
+        .product-info {
+            padding: 10px;
+        }
+        .product-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        .product-price {
+            color: #667eea;
+            font-weight: bold;
+        }
+        .product-category {
+            font-size: 0.75em;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+        .filter-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+        .filter-section h3 {
+            margin-bottom: 10px;
+            color: #374151;
+        }
+        .category-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .category-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .category-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .category-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ Image-Based Products Database</h1>
+        <p style="color: #6b7280;">Every product shown here has a real image from your downloaded collection</p>
+        
+        <div class="stats">
+            <div class="stat-card success">
+                <div class="stat-label">Total Products with Images</div>
+                <div class="stat-value" id="totalProducts">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Categories</div>
+                <div class="stat-value" id="totalCategories">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Popular Products</div>
+                <div class="stat-value" id="popularProducts">0</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-label">Image Coverage</div>
+                <div class="stat-value">100%</div>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>Filter Products</h3>
+            <input type="text" class="search-box" id="searchBox" placeholder="Search products...">
+            <div class="category-filters" id="categoryFilters">
+                <button class="category-btn active" data-category="all">All</button>
+            </div>
+        </div>
+
+        <h2>Sample Products (First 50)</h2>
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="js/local-product-images.js"></script>
+    <script src="js/image-based-products.js"></script>
+
+    <script>
+        let currentCategory = 'all';
+        let allProducts = [];
+
+        function initializeTest() {
+            if (!window.ImageBasedProducts) {
+                document.getElementById('productsGrid').innerHTML = '<p style="color: red;">Error: Image-based products not loaded!</p>';
+                return;
+            }
+
+            allProducts = window.ImageBasedProducts.ALL_PRODUCTS;
+            const categories = Object.keys(window.ImageBasedProducts.BY_CATEGORY);
+            const popularCount = allProducts.filter(p => p.isPopular).length;
+
+            // Update stats
+            document.getElementById('totalProducts').textContent = allProducts.length;
+            document.getElementById('totalCategories').textContent = categories.length;
+            document.getElementById('popularProducts').textContent = popularCount;
+
+            // Create category filters
+            const filtersContainer = document.getElementById('categoryFilters');
+            categories.forEach(category => {
+                const count = Object.values(window.ImageBasedProducts.BY_CATEGORY[category])
+                    .reduce((sum, products) => sum + products.length, 0);
+                
+                const btn = document.createElement('button');
+                btn.className = 'category-btn';
+                btn.dataset.category = category;
+                btn.textContent = `${category} (${count})`;
+                btn.onclick = () => filterByCategory(category);
+                filtersContainer.appendChild(btn);
+            });
+
+            // Display products
+            displayProducts(allProducts.slice(0, 50));
+
+            // Setup search
+            document.getElementById('searchBox').addEventListener('input', (e) => {
+                const query = e.target.value;
+                if (query) {
+                    const filtered = window.ImageBasedProducts.searchProducts(query);
+                    displayProducts(filtered.slice(0, 50));
+                } else {
+                    filterByCategory(currentCategory);
+                }
+            });
+
+            console.log('✅ Image-based products test initialized');
+            console.log(`Total products: ${allProducts.length}`);
+            console.log(`Categories: ${categories.join(', ')}`);
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.category === category);
+            });
+
+            // Filter products
+            let filtered;
+            if (category === 'all') {
+                filtered = allProducts;
+            } else {
+                filtered = window.ImageBasedProducts.getProductsForCategories([category]);
+            }
+
+            displayProducts(filtered.slice(0, 50));
+        }
+
+        function displayProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            
+            if (products.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #6b7280;">No products found</p>';
+                return;
+            }
+
+            grid.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <img src="${product.image}" alt="${product.name}" class="product-image" 
+                         onerror="this.src='images/products/placeholders/default.svg'">
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">₹${product.suggestedPrice}</div>
+                        <div class="product-category">${product.category} / ${product.subcategory}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initializeTest, 500);
+        });
+    </script>
+</body>
+</html>

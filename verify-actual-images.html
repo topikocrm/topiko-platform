@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Actual Image Files</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+        }
+        h1 {
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+        }
+        .summary-card.success { background: linear-gradient(135deg, #10b981, #059669); }
+        .summary-card.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .summary-card.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .summary-card.info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        
+        .summary-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .summary-label {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 30px 0;
+        }
+        
+        .image-test {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .image-test.success {
+            border-color: #10b981;
+            background: #d1fae5;
+        }
+        
+        .image-test.error {
+            border-color: #ef4444;
+            background: #fee2e2;
+        }
+        
+        .image-test img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+        
+        .image-name {
+            font-size: 0.75em;
+            color: #374151;
+            word-break: break-all;
+        }
+        
+        .missing-section {
+            margin: 30px 0;
+        }
+        
+        .missing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .missing-table th {
+            background: #f3f4f6;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .missing-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .missing-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        .file-path {
+            font-family: monospace;
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        
+        .product-id {
+            font-family: monospace;
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e5e7eb;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .category-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+        
+        .category-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 10px;
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            margin: 10px 10px 10px 0;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Actual Image Files Verification</h1>
+        <p class="subtitle">Testing which image files actually exist on disk vs. which are missing</p>
+        
+        <div class="summary" id="summary">
+            <div class="summary-card info">
+                <div class="summary-label">Total Mapped</div>
+                <div class="summary-value" id="totalMapped">0</div>
+            </div>
+            <div class="summary-card success">
+                <div class="summary-label">Files Exist</div>
+                <div class="summary-value" id="filesExist">0</div>
+            </div>
+            <div class="summary-card error">
+                <div class="summary-label">Files Missing</div>
+                <div class="summary-value" id="filesMissing">0</div>
+            </div>
+            <div class="summary-card warning">
+                <div class="summary-label">Coverage</div>
+                <div class="summary-value" id="coverage">0%</div>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%">
+                <span id="progressText">Testing images...</span>
+            </div>
+        </div>
+        
+        <div class="export-section">
+            <button class="export-btn" onclick="exportMissingFiles()">📊 Export Missing Files List</button>
+            <button class="export-btn" onclick="showOnlyMissing()">🔴 Show Only Missing</button>
+            <button class="export-btn" onclick="showOnlyFound()">🟢 Show Only Found</button>
+            <button class="export-btn" onclick="showAll()">🔵 Show All</button>
+        </div>
+        
+        <div id="testResults"></div>
+        
+        <div class="missing-section">
+            <h2>Missing Image Files (Need to be Added)</h2>
+            <div id="missingFilesList"></div>
+        </div>
+        
+        <div class="missing-section">
+            <h2>Category Breakdown</h2>
+            <div id="categoryBreakdown"></div>
+        </div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="js/local-product-images.js"></script>
+    <script src="js/image-based-products.js"></script>
+
+    <script>
+        let testResults = {
+            total: 0,
+            found: 0,
+            missing: 0,
+            missingFiles: [],
+            foundFiles: [],
+            byCategory: {}
+        };
+
+        async function verifyAllImages() {
+            console.log('Starting image verification...');
+            
+            // Get all mapped images from LocalProductImages
+            if (!window.LocalProductImages || !window.LocalProductImages.LOCAL_PRODUCT_IMAGES) {
+                document.getElementById('testResults').innerHTML = '<p style="color: red;">Error: LocalProductImages not loaded!</p>';
+                return;
+            }
+            
+            const imageMap = window.LocalProductImages.LOCAL_PRODUCT_IMAGES;
+            const totalImages = Object.entries(imageMap).filter(([id, path]) => path !== null).length;
+            
+            testResults.total = totalImages;
+            let tested = 0;
+            
+            // Test each image path
+            for (const [productId, imagePath] of Object.entries(imageMap)) {
+                if (imagePath === null) continue;
+                
+                tested++;
+                updateProgress(tested, totalImages);
+                
+                // Extract category from path
+                const pathParts = imagePath.split('/');
+                const category = pathParts[2] || 'unknown';
+                
+                if (!testResults.byCategory[category]) {
+                    testResults.byCategory[category] = {
+                        total: 0,
+                        found: 0,
+                        missing: 0,
+                        missingFiles: []
+                    };
+                }
+                
+                testResults.byCategory[category].total++;
+                
+                // Test if image loads
+                const result = await testImageExists(imagePath);
+                
+                if (result && result.exists) {
+                    testResults.found++;
+                    testResults.byCategory[category].found++;
+                    testResults.foundFiles.push({
+                        id: productId,
+                        path: result.path, // Use the actual path (might be WebP)
+                        category: category,
+                        format: result.format
+                    });
+                } else {
+                    testResults.missing++;
+                    testResults.byCategory[category].missing++;
+                    testResults.missingFiles.push({
+                        id: productId,
+                        path: imagePath,
+                        category: category,
+                        filename: imagePath.split('/').pop()
+                    });
+                    testResults.byCategory[category].missingFiles.push({
+                        id: productId,
+                        path: imagePath
+                    });
+                }
+            }
+            
+            displayResults();
+        }
+
+        function testImageExists(imagePath) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                
+                img.onload = () => {
+                    // Check if it's not a placeholder
+                    if (img.width > 1 && img.height > 1) {
+                        resolve({ exists: true, path: imagePath, format: 'original' });
+                    } else {
+                        resolve({ exists: false });
+                    }
+                };
+                
+                img.onerror = () => {
+                    // Try WebP version if original fails
+                    if (!imagePath.endsWith('.webp')) {
+                        const webpPath = imagePath.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+                        
+                        const webpImg = new Image();
+                        webpImg.onload = () => {
+                            console.log(`✅ Found WebP alternative: ${webpPath}`);
+                            resolve({ exists: true, path: webpPath, format: 'webp' });
+                        };
+                        
+                        webpImg.onerror = () => {
+                            resolve({ exists: false });
+                        };
+                        
+                        webpImg.src = webpPath;
+                    } else {
+                        resolve({ exists: false });
+                    }
+                };
+                
+                // Set timeout for slow loading
+                setTimeout(() => {
+                    resolve({ exists: false });
+                }, 3000);
+                
+                img.src = imagePath;
+            });
+        }
+
+        function updateProgress(current, total) {
+            const percentage = Math.round((current / total) * 100);
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = `${current} / ${total} (${percentage}%)`;
+        }
+
+        function displayResults() {
+            // Update summary
+            document.getElementById('totalMapped').textContent = testResults.total;
+            document.getElementById('filesExist').textContent = testResults.found;
+            document.getElementById('filesMissing').textContent = testResults.missing;
+            document.getElementById('coverage').textContent = 
+                Math.round((testResults.found / testResults.total) * 100) + '%';
+            
+            // Hide progress bar
+            document.querySelector('.progress-bar').style.display = 'none';
+            
+            // Display missing files list
+            if (testResults.missingFiles.length > 0) {
+                let html = '<table class="missing-table">';
+                html += '<thead><tr><th>Product ID</th><th>Missing File Path</th><th>Category</th></tr></thead>';
+                html += '<tbody>';
+                
+                testResults.missingFiles.forEach(file => {
+                    html += `<tr>
+                        <td><span class="product-id">${file.id}</span></td>
+                        <td><span class="file-path">${file.path}</span></td>
+                        <td>${file.category}</td>
+                    </tr>`;
+                });
+                
+                html += '</tbody></table>';
+                document.getElementById('missingFilesList').innerHTML = html;
+            } else {
+                document.getElementById('missingFilesList').innerHTML = 
+                    '<p style="color: #10b981; font-size: 1.2em;">✅ All image files exist!</p>';
+            }
+            
+            // Display category breakdown
+            let categoryHtml = '';
+            for (const [category, stats] of Object.entries(testResults.byCategory)) {
+                const coverage = Math.round((stats.found / stats.total) * 100);
+                const bgColor = coverage === 100 ? '#d1fae5' : coverage > 50 ? '#fef3c7' : '#fee2e2';
+                
+                categoryHtml += `
+                    <div class="category-section" style="background: ${bgColor};">
+                        <div class="category-title">
+                            ${category.toUpperCase()} 
+                            <span style="float: right;">
+                                ${stats.found}/${stats.total} (${coverage}%)
+                            </span>
+                        </div>
+                        ${stats.missing > 0 ? `
+                            <div style="margin-top: 10px; color: #ef4444;">
+                                Missing: ${stats.missingFiles.map(f => f.id).join(', ')}
+                            </div>
+                        ` : '<div style="color: #10b981;">✓ All images present</div>'}
+                    </div>
+                `;
+            }
+            document.getElementById('categoryBreakdown').innerHTML = categoryHtml;
+            
+            console.log('=== VERIFICATION COMPLETE ===');
+            console.log(`Total: ${testResults.total}`);
+            console.log(`Found: ${testResults.found}`);
+            console.log(`Missing: ${testResults.missing}`);
+            console.log(`Coverage: ${Math.round((testResults.found / testResults.total) * 100)}%`);
+            
+            if (testResults.missingFiles.length > 0) {
+                console.log('\n=== MISSING FILES ===');
+                testResults.missingFiles.forEach(f => {
+                    console.log(`${f.id}: ${f.path}`);
+                });
+            }
+        }
+
+        function exportMissingFiles() {
+            let text = 'MISSING IMAGE FILES REPORT\n';
+            text += '=' . repeat(50) + '\n\n';
+            text += `Total Mapped: ${testResults.total}\n`;
+            text += `Files Found: ${testResults.found}\n`;
+            text += `Files Missing: ${testResults.missing}\n`;
+            text += `Coverage: ${Math.round((testResults.found / testResults.total) * 100)}%\n\n`;
+            
+            if (testResults.missingFiles.length > 0) {
+                text += 'MISSING FILES:\n';
+                text += '-'.repeat(30) + '\n\n';
+                
+                for (const [category, stats] of Object.entries(testResults.byCategory)) {
+                    if (stats.missing > 0) {
+                        text += `\n${category.toUpperCase()} (${stats.missing} missing)\n`;
+                        stats.missingFiles.forEach(f => {
+                            text += `  - ${f.id}: ${f.path}\n`;
+                        });
+                    }
+                }
+            }
+            
+            // Download file
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'missing-images-verification.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showOnlyMissing() {
+            // Implementation for filtering view
+            console.log('Showing only missing files...');
+        }
+
+        function showOnlyFound() {
+            // Implementation for filtering view
+            console.log('Showing only found files...');
+        }
+
+        function showAll() {
+            // Implementation for showing all
+            console.log('Showing all files...');
+        }
+
+        // Start verification on load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(verifyAllImages, 500);
+        });
+    </script>
+</body>
+</html>

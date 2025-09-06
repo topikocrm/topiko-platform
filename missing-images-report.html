@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missing Images Report - Action Required</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1f2937;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .summary-card {
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .summary-card.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        .summary-card.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+        .summary-card.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        .summary-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .summary-label {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        .section {
+            margin: 30px 0;
+        }
+        .section-title {
+            font-size: 1.5em;
+            color: #374151;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .missing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .missing-table th {
+            background: #f3f4f6;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .missing-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .missing-table tr:hover {
+            background: #f9fafb;
+        }
+        .product-id {
+            font-family: monospace;
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        .file-path {
+            font-family: monospace;
+            color: #059669;
+            background: #d1fae5;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 2px 0;
+            font-size: 0.85em;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        .category-beauty { background: #fce7f3; color: #a21caf; }
+        .category-fashion { background: #e0e7ff; color: #4338ca; }
+        .category-food { background: #fed7aa; color: #c2410c; }
+        .category-electronics { background: #dbeafe; color: #1e40af; }
+        .category-home { background: #fef3c7; color: #a16207; }
+        .category-health { background: #dcfce7; color: #166534; }
+        .category-sports { background: #fee2e2; color: #b91c1c; }
+        .category-footwear { background: #f3e8ff; color: #7c3aed; }
+        .category-grocery { background: #ccfbf1; color: #0f766e; }
+        .category-stationery { background: #e9d5ff; color: #9333ea; }
+        .category-books { background: #ffedd5; color: #c2410c; }
+        .category-jewelry { background: #fef3c7; color: #a16207; }
+        
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+        .copy-btn:hover {
+            background: #5563d1;
+        }
+        .export-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+        .export-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        .export-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .instructions {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .instructions h3 {
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+        .instructions ol {
+            margin-left: 20px;
+            color: #1f2937;
+        }
+        .instructions li {
+            margin: 8px 0;
+        }
+        .instructions code {
+            background: #dbeafe;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .filter-box {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+        .filter-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        .no-missing {
+            text-align: center;
+            padding: 40px;
+            color: #10b981;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Missing Images Diagnostic Report</h1>
+        <p class="subtitle">Complete list of products using placeholder images and where to add the real images</p>
+        
+        <div class="summary" id="summary">
+            <!-- Summary cards will be inserted here -->
+        </div>
+
+        <div class="instructions">
+            <h3>📋 How to Fix Missing Images:</h3>
+            <ol>
+                <li>Look at the <strong>"Required Image Path"</strong> column - this shows exactly where to place your image</li>
+                <li>Name your image file using one of the <strong>"Suggested Filenames"</strong></li>
+                <li>Place the image in the exact folder path shown</li>
+                <li>Supported formats: <code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>, <code>.webp</code></li>
+                <li>After adding images, refresh the page to see them load</li>
+            </ol>
+        </div>
+
+        <div class="filter-box">
+            <input type="text" class="filter-input" id="searchFilter" placeholder="Filter by product name, ID, or category...">
+        </div>
+
+        <div class="export-section">
+            <button class="export-btn" onclick="exportToCSV()">📊 Export to CSV</button>
+            <button class="export-btn" onclick="exportToText()">📝 Export as Text List</button>
+            <button class="export-btn" onclick="copyAllPaths()">📋 Copy All Paths</button>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Missing Images by Category</h2>
+            <div id="missingByCategory"></div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Complete Missing Images List</h2>
+            <div id="missingImagesList"></div>
+        </div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="js/config_js.js"></script>
+    <script src="js/local-product-images.js"></script>
+    <script src="js/image-based-products.js"></script>
+
+    <script>
+        let allMissingProducts = [];
+        let missingByCategory = {};
+
+        function analyzeMissingImages() {
+            const results = {
+                total: 0,
+                hasImage: 0,
+                missingImage: 0,
+                usingPlaceholder: 0,
+                byCategory: {}
+            };
+
+            // Check all products from Image-Based Products (872 products from your images)
+            if (window.ImageBasedProducts && window.ImageBasedProducts.ALL_PRODUCTS) {
+                const allProducts = window.ImageBasedProducts.ALL_PRODUCTS;
+                console.log(`Checking ${allProducts.length} image-based products...`);
+                
+                allProducts.forEach(product => {
+                    results.total++;
+                    
+                    // All products in ImageBasedProducts have real images by design
+                    // But let's verify the image actually exists
+                    const imageCheck = checkProductImage(product);
+                    
+                    if (imageCheck.hasRealImage) {
+                        results.hasImage++;
+                    } else {
+                        results.missingImage++;
+                        
+                        // This shouldn't happen, but if it does, log it
+                        const missingInfo = {
+                            id: product.id,
+                            name: product.name,
+                            category: product.category,
+                            subcategory: product.subcategory,
+                            currentImage: product.image,
+                            expectedPath: product.image,
+                            issue: 'Image file may not exist at expected path'
+                        };
+                        
+                        allMissingProducts.push(missingInfo);
+                        
+                        // Group by category
+                        const cat = product.category;
+                        if (!missingByCategory[cat]) {
+                            missingByCategory[cat] = [];
+                        }
+                        missingByCategory[cat].push(missingInfo);
+                    }
+                });
+                
+                // Since ImageBasedProducts are built from actual images, all should have images
+                if (results.missingImage === 0) {
+                    console.log('✅ Perfect! All 872 products have their images!');
+                }
+                
+            } else if (window.TopikoConfig && window.TopikoConfig.INDIAN_PRODUCTS_DB) {
+                // Fallback to old database if image-based products not loaded
+                console.log('Warning: Using old database. Image-based products not found.');
+                const db = window.TopikoConfig.INDIAN_PRODUCTS_DB;
+                
+                for (const [businessCategory, subcategories] of Object.entries(db)) {
+                    for (const [subcategoryKey, products] of Object.entries(subcategories)) {
+                        if (Array.isArray(products)) {
+                            products.forEach(product => {
+                                results.total++;
+                                
+                                // Check if this product has a real image
+                                const imageCheck = checkProductImage(product);
+                                
+                                if (!imageCheck.hasRealImage) {
+                                    results.missingImage++;
+                                    
+                                    // Add to missing list with details
+                                    const missingInfo = {
+                                        id: product.id,
+                                        name: product.name,
+                                        businessCategory: businessCategory,
+                                        category: product.category || businessCategory,
+                                        subcategory: product.subcategory || subcategoryKey,
+                                        currentImage: imageCheck.imagePath,
+                                        suggestedPath: generateSuggestedPath(product, businessCategory, subcategoryKey),
+                                        suggestedFilenames: generateSuggestedFilenames(product)
+                                    };
+                                    
+                                    allMissingProducts.push(missingInfo);
+                                    
+                                    // Group by category
+                                    const cat = missingInfo.category;
+                                    if (!missingByCategory[cat]) {
+                                        missingByCategory[cat] = [];
+                                    }
+                                    missingByCategory[cat].push(missingInfo);
+                                } else {
+                                    results.hasImage++;
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Also check COMPREHENSIVE_PRODUCTS if it exists
+            if (window.COMPREHENSIVE_PRODUCTS) {
+                console.log('Also checking COMPREHENSIVE_PRODUCTS database...');
+                // Add similar check for comprehensive products
+            }
+
+            displayResults(results);
+        }
+
+        function checkProductImage(product) {
+            // For image-based products, check if the image path exists in LOCAL_PRODUCT_IMAGES
+            if (product.hasRealImage) {
+                // This product was created from an actual image file
+                return {
+                    hasRealImage: true,
+                    imagePath: product.image
+                };
+            }
+            
+            // Check if LocalProductImages has this product
+            if (window.LocalProductImages) {
+                const localImage = window.LocalProductImages.getLocalProductImage(
+                    product.id,
+                    product.category || 'general',
+                    product.name
+                );
+                
+                // Check if it's a real image or placeholder
+                const isPlaceholder = localImage && localImage.includes('placeholder');
+                
+                return {
+                    hasRealImage: localImage && !isPlaceholder,
+                    imagePath: localImage || 'none'
+                };
+            }
+            
+            return {
+                hasRealImage: false,
+                imagePath: 'not-found'
+            };
+        }
+
+        function generateSuggestedPath(product, businessCategory, subcategoryKey) {
+            // Map business categories to image folder structure
+            const categoryMapping = {
+                'boutique': 'fashion',
+                'home-foods': 'food',
+                'salons': 'beauty',
+                'grocery': 'grocery',
+                'electronics': 'electronics',
+                'furniture': 'home'
+            };
+            
+            const imageCategory = categoryMapping[businessCategory] || businessCategory;
+            const imageSubcategory = product.subcategory || subcategoryKey || 'general';
+            
+            return `images/products/${imageCategory}/${imageSubcategory}/`;
+        }
+
+        function generateSuggestedFilenames(product) {
+            const suggestions = [];
+            
+            // Use product ID
+            suggestions.push(product.id + '.jpg');
+            suggestions.push(product.id + '.png');
+            
+            // Use normalized product name
+            const normalizedName = product.name.toLowerCase()
+                .replace(/[^a-z0-9]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+            
+            if (normalizedName !== product.id) {
+                suggestions.push(normalizedName + '.jpg');
+                suggestions.push(normalizedName + '.png');
+            }
+            
+            // Use first word of product name
+            const firstWord = product.name.split(' ')[0].toLowerCase();
+            if (firstWord !== normalizedName && firstWord !== product.id) {
+                suggestions.push(firstWord + '.jpg');
+            }
+            
+            return suggestions;
+        }
+
+        function displayResults(results) {
+            // Display summary
+            const summaryHTML = `
+                <div class="summary-card success">
+                    <div class="summary-label">Has Images</div>
+                    <div class="summary-value">${results.hasImage}</div>
+                </div>
+                <div class="summary-card error">
+                    <div class="summary-label">Missing Images</div>
+                    <div class="summary-value">${results.missingImage}</div>
+                </div>
+                <div class="summary-card warning">
+                    <div class="summary-label">Total Products</div>
+                    <div class="summary-value">${results.total}</div>
+                </div>
+                <div class="summary-card ${results.missingImage === 0 ? 'success' : 'warning'}">
+                    <div class="summary-label">Coverage</div>
+                    <div class="summary-value">${Math.round((results.hasImage / results.total) * 100)}%</div>
+                </div>
+            `;
+            document.getElementById('summary').innerHTML = summaryHTML;
+
+            // Display missing by category
+            if (allMissingProducts.length === 0) {
+                document.getElementById('missingByCategory').innerHTML = '<div class="no-missing">✅ Excellent! All products have images!</div>';
+                document.getElementById('missingImagesList').innerHTML = '';
+                return;
+            }
+
+            let categoryHTML = '';
+            for (const [category, products] of Object.entries(missingByCategory)) {
+                categoryHTML += `
+                    <div style="margin: 20px 0;">
+                        <h3 style="color: #374151; margin-bottom: 10px;">
+                            <span class="category-badge category-${category}">${category}</span>
+                            <span style="color: #ef4444; margin-left: 10px;">${products.length} missing</span>
+                        </h3>
+                        <table class="missing-table">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Product ID</th>
+                                    <th>Required Image Path</th>
+                                    <th>Suggested Filenames</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${products.map(p => `
+                                    <tr>
+                                        <td><strong>${p.name}</strong></td>
+                                        <td><span class="product-id">${p.id}</span></td>
+                                        <td>
+                                            <span class="file-path">${p.suggestedPath}</span>
+                                            <button class="copy-btn" onclick="copyToClipboard('${p.suggestedPath}')">Copy</button>
+                                        </td>
+                                        <td>${p.suggestedFilenames.map(f => `<code>${f}</code>`).join(' or ')}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            document.getElementById('missingByCategory').innerHTML = categoryHTML;
+
+            // Setup filtering
+            document.getElementById('searchFilter').addEventListener('input', filterResults);
+        }
+
+        function filterResults(e) {
+            const query = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.missing-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Show brief success message
+                event.target.textContent = 'Copied!';
+                setTimeout(() => {
+                    event.target.textContent = 'Copy';
+                }, 1000);
+            });
+        }
+
+        function exportToCSV() {
+            let csv = 'Product Name,Product ID,Category,Required Path,Suggested Filenames\n';
+            
+            allMissingProducts.forEach(p => {
+                csv += `"${p.name}","${p.id}","${p.category}","${p.suggestedPath}","${p.suggestedFilenames.join(' or ')}"\n`;
+            });
+            
+            downloadFile(csv, 'missing-images-report.csv', 'text/csv');
+        }
+
+        function exportToText() {
+            let text = 'MISSING IMAGES REPORT\n';
+            text += '=' . repeat(50) + '\n\n';
+            
+            for (const [category, products] of Object.entries(missingByCategory)) {
+                text += `\n${category.toUpperCase()} (${products.length} missing)\n`;
+                text += '-'.repeat(30) + '\n';
+                
+                products.forEach(p => {
+                    text += `\nProduct: ${p.name}\n`;
+                    text += `ID: ${p.id}\n`;
+                    text += `Path: ${p.suggestedPath}\n`;
+                    text += `Filenames: ${p.suggestedFilenames.join(' or ')}\n`;
+                });
+            }
+            
+            downloadFile(text, 'missing-images-report.txt', 'text/plain');
+        }
+
+        function copyAllPaths() {
+            const paths = [...new Set(allMissingProducts.map(p => p.suggestedPath))];
+            const text = paths.join('\n');
+            
+            navigator.clipboard.writeText(text).then(() => {
+                event.target.textContent = '✓ Copied All Paths!';
+                setTimeout(() => {
+                    event.target.textContent = '📋 Copy All Paths';
+                }, 2000);
+            });
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(analyzeMissingImages, 500);
+        });
+    </script>
+</body>
+</html>

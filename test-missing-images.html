@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Missing Product Images</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .missing-list {
+            margin-top: 20px;
+        }
+        .category {
+            margin: 20px 0;
+        }
+        .category h3 {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .product-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .found {
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .missing {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .partial {
+            background: #fff3cd;
+            border-color: #ffeeba;
+        }
+        .product-name {
+            font-weight: 500;
+        }
+        .image-path {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Image Coverage Report</h1>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalProducts">0</div>
+                <div>Total Products</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="foundImages">0</div>
+                <div>Images Found</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="missingImages">0</div>
+                <div>Missing Images</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="coveragePercent">0%</div>
+                <div>Coverage</div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #d4edda;"></div>
+                <span>Has Image</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #fff3cd;"></div>
+                <span>Using Partial Match</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #f8d7da;"></div>
+                <span>Missing (Using Placeholder)</span>
+            </div>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="js/config_js.js"></script>
+    <script src="js/local-product-images.js"></script>
+
+    <script>
+        // Wait for config to load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                testImageCoverage();
+            }, 500);
+        });
+
+        // Test all products and find missing images
+        async function testImageCoverage() {
+            const results = {
+                total: 0,
+                found: 0,
+                missing: 0,
+                partial: 0,
+                byCategory: {}
+            };
+
+            const missingProducts = [];
+            const foundProducts = [];
+            const partialProducts = [];
+
+            // Get all products from all business categories
+            const allProducts = [];
+            
+            if (window.TopikoConfig && window.TopikoConfig.INDIAN_PRODUCTS_DB) {
+                const db = window.TopikoConfig.INDIAN_PRODUCTS_DB;
+                
+                // Iterate through all business categories (boutique, grocery, etc.)
+                for (const [businessCategory, subcategories] of Object.entries(db)) {
+                    // Iterate through subcategories (mens-wear, womens-wear, etc.)
+                    for (const [subcategoryKey, products] of Object.entries(subcategories)) {
+                        if (Array.isArray(products)) {
+                            products.forEach(product => {
+                                // Add business category to product for reference
+                                allProducts.push({
+                                    ...product,
+                                    businessCategory: businessCategory,
+                                    subcategoryKey: subcategoryKey
+                                });
+                            });
+                        }
+                    }
+                }
+                
+                console.log(`Found ${allProducts.length} total products to test`);
+            } else {
+                console.error('Products database not loaded!');
+                document.getElementById('results').innerHTML = '<p style="color: red;">Error: Products database not loaded. Make sure config_js.js is properly loaded.</p>';
+                return;
+            }
+
+            for (const product of allProducts) {
+                results.total++;
+
+                // Get category for this product
+                const category = product.category || 'general';
+                if (!results.byCategory[category]) {
+                    results.byCategory[category] = {
+                        total: 0,
+                        found: 0,
+                        missing: 0,
+                        partial: 0,
+                        products: []
+                    };
+                }
+                results.byCategory[category].total++;
+
+                // Test image matching
+                const imageResult = testProductImage(product);
+                
+                results.byCategory[category].products.push({
+                    name: product.name,
+                    id: product.id,
+                    status: imageResult.status,
+                    imagePath: imageResult.path,
+                    matchType: imageResult.matchType
+                });
+
+                if (imageResult.status === 'found') {
+                    results.found++;
+                    results.byCategory[category].found++;
+                    foundProducts.push(product.name);
+                } else if (imageResult.status === 'partial') {
+                    results.partial++;
+                    results.byCategory[category].partial++;
+                    partialProducts.push(product.name);
+                } else {
+                    results.missing++;
+                    results.byCategory[category].missing++;
+                    missingProducts.push(product.name);
+                }
+            }
+
+            // Update stats
+            document.getElementById('totalProducts').textContent = results.total;
+            document.getElementById('foundImages').textContent = results.found + results.partial;
+            document.getElementById('missingImages').textContent = results.missing;
+            document.getElementById('coveragePercent').textContent = 
+                Math.round(((results.found + results.partial) / results.total) * 100) + '%';
+
+            // Display detailed results
+            displayResults(results);
+
+            // Log summary to console
+            console.log('=== IMAGE COVERAGE SUMMARY ===');
+            console.log(`Total Products: ${results.total}`);
+            console.log(`Direct Matches: ${results.found}`);
+            console.log(`Partial Matches: ${results.partial}`);
+            console.log(`Missing Images: ${results.missing}`);
+            console.log(`Coverage: ${Math.round(((results.found + results.partial) / results.total) * 100)}%`);
+            
+            if (missingProducts.length > 0) {
+                console.log('\n=== MISSING IMAGES (Need to add) ===');
+                console.log(missingProducts.join('\n'));
+            }
+
+            return results;
+        }
+
+        function testProductImage(product) {
+            // Test using LocalProductImages logic
+            const localImage = window.LocalProductImages.getLocalProductImage(
+                product.id,
+                product.category || 'general',
+                product.name
+            );
+
+            if (localImage && !localImage.includes('placeholders')) {
+                // Check if it's a direct match or partial match
+                if (window.LocalProductImages.LOCAL_PRODUCT_IMAGES[product.id]) {
+                    return {
+                        status: 'found',
+                        path: localImage,
+                        matchType: 'direct'
+                    };
+                } else {
+                    return {
+                        status: 'partial',
+                        path: localImage,
+                        matchType: 'smart-match'
+                    };
+                }
+            } else {
+                return {
+                    status: 'missing',
+                    path: localImage || 'placeholder',
+                    matchType: 'none'
+                };
+            }
+        }
+
+        function displayResults(results) {
+            const container = document.getElementById('results');
+            let html = '<div class="missing-list">';
+
+            // Sort categories by missing count (worst first)
+            const sortedCategories = Object.entries(results.byCategory)
+                .sort((a, b) => b[1].missing - a[1].missing);
+
+            for (const [category, data] of sortedCategories) {
+                const coverage = Math.round(((data.found + data.partial) / data.total) * 100);
+                
+                html += `
+                    <div class="category">
+                        <h3>${category.toUpperCase()} - ${coverage}% coverage 
+                            (${data.found} found, ${data.partial} partial, ${data.missing} missing of ${data.total})</h3>
+                        <div class="products-list">
+                `;
+
+                // Sort products by status (missing first)
+                data.products.sort((a, b) => {
+                    const order = { missing: 0, partial: 1, found: 2 };
+                    return order[a.status] - order[b.status];
+                });
+
+                for (const product of data.products) {
+                    html += `
+                        <div class="product-item ${product.status}">
+                            <div>
+                                <span class="product-name">${product.name}</span>
+                                <span class="image-path">(${product.id})</span>
+                            </div>
+                            <div>
+                                <span>${product.matchType}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
