@@ -2382,6 +2382,13 @@ function toggleProductSelection(productId) {
     const index = window.topikoApp.selectedProductIds.indexOf(productId);
     let product = findProductById(productId);
     
+    // Check if product was found
+    if (!product) {
+        console.error(`Product not found: ${productId}`);
+        window.TopikoUtils.showNotification('Product not found', 'error');
+        return;
+    }
+    
     if (index > -1) {
         // Remove product
         window.topikoApp.selectedProductIds.splice(index, 1);
@@ -2456,6 +2463,15 @@ function updateProductCard(productId) {
 function findProductById(productId) {
     let foundProduct = null;
     
+    // First check ImageBasedProducts if available
+    if (window.ImageBasedProducts && window.ImageBasedProducts.ALL_PRODUCTS) {
+        foundProduct = window.ImageBasedProducts.ALL_PRODUCTS.find(p => p.id === productId);
+        if (foundProduct) {
+            return foundProduct;
+        }
+    }
+    
+    // Fallback to INDIAN_PRODUCTS_DB
     Object.keys(window.TopikoConfig.INDIAN_PRODUCTS_DB).forEach(categoryKey => {
         Object.keys(window.TopikoConfig.INDIAN_PRODUCTS_DB[categoryKey]).forEach(subcategoryKey => {
             const products = window.TopikoConfig.INDIAN_PRODUCTS_DB[categoryKey][subcategoryKey];
