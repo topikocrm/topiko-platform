@@ -1389,6 +1389,17 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🌍 DOM loaded, initializing translation system...');
             
+            // Initialize topikoApp if not already initialized
+            if (!window.topikoApp) {
+                window.topikoApp = {
+                    selectedCategories: [],
+                    selectedSubcategories: [],
+                    selectedProductIds: [],
+                    userProducts: []
+                };
+                console.log('✅ Initialized topikoApp');
+            }
+            
             // Direct initialization without waitForTranslations (since it's not defined here)
             if (window.TopikoTranslations) {
                 console.log('✅ TopikoTranslations available at DOM ready');

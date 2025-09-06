@@ -1854,7 +1854,7 @@ function loadFilteredProductsGrid() {
 
 function getProductsForSelectedCategories() {
     const businessCategory = document.getElementById('category')?.value;
-    const selectedSubcategories = window.topikoApp.selectedSubcategories;
+    const selectedSubcategories = window.topikoApp.selectedSubcategories || [];
     
     // First try to use the original database (INDIAN_PRODUCTS_DB)
     if (businessCategory && window.TopikoConfig.INDIAN_PRODUCTS_DB[businessCategory]) {

@@ -228,9 +228,20 @@
     let PRODUCTS_BY_CATEGORY = {};
     
     // Try to initialize immediately if LocalProductImages is ready
-    const initResult = initializeProducts();
+    let initResult = initializeProducts();
     if (initResult) {
         PRODUCTS_BY_CATEGORY = initResult.byCategory;
+    } else {
+        // If not ready, try again after a short delay
+        setTimeout(() => {
+            initResult = initializeProducts();
+            if (initResult) {
+                PRODUCTS_BY_CATEGORY = initResult.byCategory;
+                window.ImageBasedProducts.BY_CATEGORY = PRODUCTS_BY_CATEGORY;
+                window.ImageBasedProducts.ALL_PRODUCTS = IMAGE_BASED_PRODUCTS;
+                console.log(`✅ Image-based products initialized (delayed): ${IMAGE_BASED_PRODUCTS.length} products`);
+            }
+        }, 100);
     }
     
     // Export for global use
