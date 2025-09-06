@@ -1856,9 +1856,42 @@ function getProductsForSelectedCategories() {
     const businessCategory = document.getElementById('category')?.value;
     const selectedSubcategories = window.topikoApp.selectedSubcategories;
     
-    // Use Image-Based Products if available (products with real images)
-    if (window.ImageBasedProducts) {
-        console.log('🖼️ Using Image-Based Products with real images');
+    // First try to use the original database (INDIAN_PRODUCTS_DB)
+    if (businessCategory && window.TopikoConfig.INDIAN_PRODUCTS_DB[businessCategory]) {
+        let relevantProducts = [];
+        
+        // Get products from the business category database
+        const categoryData = window.TopikoConfig.INDIAN_PRODUCTS_DB[businessCategory];
+        
+        // If user selected specific subcategories, filter to those
+        if (selectedSubcategories && selectedSubcategories.length > 0) {
+            Object.keys(categoryData).forEach(categoryKey => {
+                const products = categoryData[categoryKey];
+                if (Array.isArray(products)) {
+                    // Filter products that match selected subcategories
+                    const filteredProducts = products.filter(product => 
+                        selectedSubcategories.includes(product.subcategory)
+                    );
+                    relevantProducts = relevantProducts.concat(filteredProducts);
+                }
+            });
+        } else {
+            // No subcategories selected, get all products from the category
+            Object.keys(categoryData).forEach(categoryKey => {
+                const products = categoryData[categoryKey];
+                if (Array.isArray(products)) {
+                    relevantProducts = relevantProducts.concat(products);
+                }
+            });
+        }
+        
+        console.log(`📦 Found ${relevantProducts.length} products from database for ${businessCategory}`);
+        return relevantProducts;
+    }
+    
+    // Fallback to Image-Based Products if database doesn't have products
+    if (window.ImageBasedProducts && window.ImageBasedProducts.ALL_PRODUCTS.length > 0) {
+        console.log('🖼️ Using Image-Based Products as fallback');
         
         // Get products based on business category mapping
         const categoryMapping = {
@@ -1885,52 +1918,11 @@ function getProductsForSelectedCategories() {
             });
         }
         
-        console.log(`📦 Found ${products.length} products with real images for ${businessCategory}`);
+        console.log(`📦 Found ${products.length} fallback products with real images`);
         return products;
     }
     
-    // Fallback to old database if image-based products not available
-    if (!businessCategory || !window.TopikoConfig.INDIAN_PRODUCTS_DB[businessCategory]) {
-        return [];
-    }
-    
-    let relevantProducts = [];
-    
-    // Get products from the business category database
-    const categoryData = window.TopikoConfig.INDIAN_PRODUCTS_DB[businessCategory];
-    
-    // If user selected specific subcategories, filter to those
-    if (selectedSubcategories.length > 0) {
-        Object.keys(categoryData).forEach(categoryKey => {
-            const products = categoryData[categoryKey];
-            if (Array.isArray(products)) {
-                // Filter products that match selected subcategories
-                const filteredProducts = products.filter(product => 
-                    selectedSubcategories.includes(product.subcategory)
-                );
-                relevantProducts = [...relevantProducts, ...filteredProducts];
-            }
-        });
-    } else {
-        // If no subcategories selected, show all products from selected main categories
-        const selectedCategories = window.topikoApp.selectedCategories;
-        selectedCategories.forEach(selectedCat => {
-            if (categoryData[selectedCat]) {
-                relevantProducts = [...relevantProducts, ...categoryData[selectedCat]];
-            }
-        });
-    }
-    
-    // Add custom products from userProducts
-    const customProducts = window.topikoApp.userProducts.filter(p => p.isCustom);
-    relevantProducts = [...relevantProducts, ...customProducts];
-    
-    console.log(`📦 getProductsForSelectedCategories: Found ${customProducts.length} custom products`);
-    if (customProducts.length > 0) {
-        console.log('Custom products:', customProducts.map(p => ({name: p.name, price: p.price})));
-    }
-    
-    return relevantProducts;
+    return [];
 }
 
 function setupProductControls() {
