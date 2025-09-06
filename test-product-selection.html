@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Product Selection</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .test-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            background: #667eea;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .test-btn:hover {
+            background: #5563d1;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f4fd;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .error {
+            background: #fee;
+            color: #c00;
+        }
+        .success {
+            background: #efe;
+            color: #060;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Product Selection Functions</h1>
+        
+        <div class="test-section">
+            <h2>1. Test findProductById</h2>
+            <button class="test-btn" onclick="testFindProduct('kurta-white-cotton')">Find: kurta-white-cotton (NEW)</button>
+            <button class="test-btn" onclick="testFindProduct('kurta-mens-cotton')">Find: kurta-mens-cotton (OLD)</button>
+            <button class="test-btn" onclick="testFindProduct('tawa-nonstick')">Find: tawa-nonstick (WebP)</button>
+            <button class="test-btn" onclick="testFindProduct('invalid-product')">Find: invalid-product</button>
+            <div id="findResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. Test toggleProductSelection</h2>
+            <button class="test-btn" onclick="testToggleProduct('kurta-white-cotton')">Toggle: kurta-white-cotton (NEW)</button>
+            <button class="test-btn" onclick="testToggleProduct('tawa-nonstick')">Toggle: tawa-nonstick (WebP)</button>
+            <button class="test-btn" onclick="testToggleProduct('body-wash')">Toggle: body-wash</button>
+            <button class="test-btn" onclick="testToggleProduct('invalid-product')">Toggle: invalid-product</button>
+            <div id="toggleResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. Current State</h2>
+            <button class="test-btn" onclick="showCurrentState()">Show State</button>
+            <div id="stateResult" class="result"></div>
+        </div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="js/config_js.js"></script>
+    <script src="js/utils_js.js"></script>
+    <script src="js/local-product-images.js"></script>
+    <script src="js/image-based-products.js"></script>
+    <script src="js/script_js.js"></script>
+
+    <script>
+        // Initialize app
+        if (!window.topikoApp) {
+            window.topikoApp = {
+                selectedProductIds: [],
+                userProducts: []
+            };
+        }
+
+        function testFindProduct(productId) {
+            const resultDiv = document.getElementById('findResult');
+            try {
+                const product = findProductById(productId);
+                if (product) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `✅ Found: ${product.name}<br>
+                        ID: ${product.id}<br>
+                        Price: ₹${product.price || product.suggestedPrice}<br>
+                        Category: ${product.category}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `❌ Product not found: ${productId}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        function testToggleProduct(productId) {
+            const resultDiv = document.getElementById('toggleResult');
+            try {
+                // Check state before toggle
+                const wasBefore = window.topikoApp.selectedProductIds.includes(productId);
+                console.log(`Before toggle: ${productId} was ${wasBefore ? 'selected' : 'not selected'}`);
+                console.log('Selected IDs before:', [...window.topikoApp.selectedProductIds]);
+                
+                toggleProductSelection(productId);
+                
+                // Check state after toggle
+                const isSelected = window.topikoApp.selectedProductIds.includes(productId);
+                console.log(`After toggle: ${productId} is ${isSelected ? 'selected' : 'not selected'}`);
+                console.log('Selected IDs after:', [...window.topikoApp.selectedProductIds]);
+                
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `✅ Product ${productId}:<br>
+                    Was: ${wasBefore ? 'SELECTED' : 'UNSELECTED'}<br>
+                    Now: ${isSelected ? 'SELECTED' : 'UNSELECTED'}<br>
+                    Total selected: ${window.topikoApp.selectedProductIds.length}`;
+                showCurrentState();
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `❌ Error: ${error.message}<br>Stack: ${error.stack}`;
+            }
+        }
+
+        function showCurrentState() {
+            const resultDiv = document.getElementById('stateResult');
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = `
+                <strong>Selected IDs:</strong> ${JSON.stringify(window.topikoApp.selectedProductIds, null, 2)}<br>
+                <strong>User Products Count:</strong> ${window.topikoApp.userProducts.length}<br>
+                <strong>User Products:</strong><br>
+                ${window.topikoApp.userProducts.map(p => `- ${p.name} (${p.id})`).join('<br>')}
+            `;
+        }
+
+        // Show initial state
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                showCurrentState();
+                console.log('Test page ready. ImageBasedProducts available:', !!window.ImageBasedProducts);
+            }, 500);
+        });
+    </script>
+</body>
+</html>

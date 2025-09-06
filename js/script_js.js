@@ -2379,6 +2379,10 @@ function toggleProductSelection(productId) {
         window.topikoApp.selectedProductIds = [];
     }
     
+    if (!window.topikoApp.userProducts) {
+        window.topikoApp.userProducts = [];
+    }
+    
     const index = window.topikoApp.selectedProductIds.indexOf(productId);
     let product = findProductById(productId);
     
