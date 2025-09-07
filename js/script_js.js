@@ -1146,6 +1146,8 @@ async function submitRegistration() {
         return;
     }
 
+    // COMMENTED OUT OTP VALIDATION - BYPASSING FOR NOW
+    /*
     // Send OTP
     const phoneWithoutCode = validatedPhone.replace('+91', '');
     const otpSent = await sendOTP(phoneWithoutCode);
@@ -1163,6 +1165,12 @@ async function submitRegistration() {
             submitBtn.innerHTML = 'Show My Business Online';
         }
     }
+    */
+    
+    // BYPASS: Directly proceed to registration without OTP
+    window.topikoApp.otpVerified = true; // Mark as verified without actual verification
+    window.TopikoUtils.showNotification('Processing registration...', 'info');
+    await completeRegistration();
 }
 
 // ========================================
@@ -1205,6 +1213,8 @@ async function checkPhoneUnique(phone) {
     }
 }
 
+// COMMENTED OUT - OTP FUNCTIONS TEMPORARILY DISABLED
+/*
 // Send OTP to phone number
 async function sendOTP(phoneNumber) {
     const cleanPhone = validatePhoneNumber(phoneNumber);
@@ -1286,7 +1296,10 @@ async function sendOTP(phoneNumber) {
         return true; // Still show modal so user can use master OTP
     }
 }
+*/
 
+// COMMENTED OUT - RESEND OTP FUNCTIONALITY
+/*
 // Resend OTP functionality
 let resendAttempts = 0;
 let resendTimer = null;
@@ -1326,7 +1339,10 @@ async function resendOTP() {
         window.TopikoUtils.showNotification('Failed to resend OTP', 'error');
     }
 }
+*/
 
+// COMMENTED OUT - OTP MODAL FUNCTIONS
+/*
 function showOtpModal() {
     // Reset resend attempts
     resendAttempts = 0;
@@ -1380,7 +1396,10 @@ function handleOtpInput(input, index) {
         verifyBtn.style.opacity = '0.5';
     }
 }
+*/
 
+// COMMENTED OUT - OTP VERIFICATION
+/*
 async function verifyOtp() {
     // Disable the verify button immediately
     const verifyBtn = document.getElementById('verifyOtpBtn');
@@ -1451,7 +1470,9 @@ async function verifyOtp() {
         }
     }
 }
+*/
 
+// REGISTRATION COMPLETION (KEPT ACTIVE - NEEDED FOR BYPASS)
 async function completeRegistration() {
     const name = document.getElementById('fullName').value.trim();
     const email = document.getElementById('email').value.trim();
@@ -1885,13 +1906,13 @@ function getProductsForSelectedCategories() {
             });
         }
         
-        console.log(`📦 Found ${relevantProducts.length} products from database for ${businessCategory}`);
+        // Removed console.log for faster loading
         return relevantProducts;
     }
     
     // Fallback to Image-Based Products if database doesn't have products
     if (window.ImageBasedProducts && window.ImageBasedProducts.ALL_PRODUCTS.length > 0) {
-        console.log('🖼️ Using Image-Based Products as fallback');
+        // Using Image-Based Products as fallback
         
         // Get products based on business category mapping
         const categoryMapping = {
@@ -1918,7 +1939,7 @@ function getProductsForSelectedCategories() {
             });
         }
         
-        console.log(`📦 Found ${products.length} fallback products with real images`);
+        // Return fallback products
         return products;
     }
     

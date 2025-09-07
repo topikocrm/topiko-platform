@@ -166,7 +166,7 @@
         
         const imageMap = window.LocalProductImages.LOCAL_PRODUCT_IMAGES;
         let productIndex = 0;
-        console.log('Processing image mappings:', Object.keys(imageMap).length);
+        // Remove console.log for faster loading
         
         for (const [imageId, imagePath] of Object.entries(imageMap)) {
             // Skip null entries (products without images)
@@ -220,28 +220,26 @@
             PRODUCTS_BY_CATEGORY[product.category][product.subcategory].push(product);
         });
         
-        console.log(`✅ Created ${IMAGE_BASED_PRODUCTS.length} products from images`);
+        // Removed console.log for faster loading
         return { products: IMAGE_BASED_PRODUCTS, byCategory: PRODUCTS_BY_CATEGORY };
     }
     
     // Initialize and export
     let PRODUCTS_BY_CATEGORY = {};
+    let initialized = false;
     
-    // Try to initialize immediately if LocalProductImages is ready
-    let initResult = initializeProducts();
-    if (initResult) {
-        PRODUCTS_BY_CATEGORY = initResult.byCategory;
-    } else {
-        // If not ready, try again after a short delay
-        setTimeout(() => {
-            initResult = initializeProducts();
-            if (initResult) {
-                PRODUCTS_BY_CATEGORY = initResult.byCategory;
+    // Lazy initialization - only when needed
+    function ensureInitialized() {
+        if (!initialized && window.LocalProductImages) {
+            const result = initializeProducts();
+            if (result) {
+                PRODUCTS_BY_CATEGORY = result.byCategory;
                 window.ImageBasedProducts.BY_CATEGORY = PRODUCTS_BY_CATEGORY;
                 window.ImageBasedProducts.ALL_PRODUCTS = IMAGE_BASED_PRODUCTS;
-                console.log(`✅ Image-based products initialized (delayed): ${IMAGE_BASED_PRODUCTS.length} products`);
+                initialized = true;
             }
-        }, 100);
+        }
+        return initialized;
     }
     
     // Export for global use
@@ -251,11 +249,13 @@
         
         // Get products by category
         getProductsByCategory: function(category) {
+            ensureInitialized();
             return PRODUCTS_BY_CATEGORY[category] || {};
         },
         
         // Get all products for selected categories
         getProductsForCategories: function(categories) {
+            ensureInitialized();
             const products = [];
             categories.forEach(category => {
                 if (PRODUCTS_BY_CATEGORY[category]) {
@@ -289,29 +289,5 @@
         }
     };
     
-    // Fallback initialization on DOM ready if products weren't loaded
-    if (IMAGE_BASED_PRODUCTS.length === 0) {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-                const result = initializeProducts();
-                if (result) {
-                    PRODUCTS_BY_CATEGORY = result.byCategory;
-                    window.ImageBasedProducts.BY_CATEGORY = PRODUCTS_BY_CATEGORY;
-                    console.log(`✅ Image-based products initialized on DOM ready: ${IMAGE_BASED_PRODUCTS.length} products`);
-                }
-            });
-        } else {
-            // DOM already loaded, try again
-            setTimeout(() => {
-                const result = initializeProducts();
-                if (result) {
-                    PRODUCTS_BY_CATEGORY = result.byCategory;
-                    window.ImageBasedProducts.BY_CATEGORY = PRODUCTS_BY_CATEGORY;
-                    console.log(`✅ Image-based products initialized delayed: ${IMAGE_BASED_PRODUCTS.length} products`);
-                }
-            }, 100);
-        }
-    } else {
-        console.log(`✅ Image-based products database loaded: ${IMAGE_BASED_PRODUCTS.length} products with real images`);
-    }
+    // Products will be initialized lazily when first accessed
 })();
