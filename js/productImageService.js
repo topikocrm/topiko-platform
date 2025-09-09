@@ -1,146 +1,65 @@
 /* ========================================
-   PRODUCT IMAGE SERVICE
-   Smart image loading with multiple sources and caching
+   PRODUCT IMAGE SERVICE - GOOGLE DRIVE VERSION
+   Loads product images from Google Drive CDN
    ======================================== */
 
 // Configuration
 const IMAGE_CONFIG = {
-    // Free API keys - Replace with your own for production
-    PEXELS_API_KEY: 'YOUR_PEXELS_API_KEY', // Get free at: https://www.pexels.com/api/
-    PIXABAY_API_KEY: 'YOUR_PIXABAY_API_KEY', // Get free at: https://pixabay.com/api/docs/
+    // Google Drive Configuration
+    GOOGLE_DRIVE_BASE_URL: 'https://drive.google.com/uc?export=view&id=',
+    GOOGLE_DRIVE_FOLDER_URL: 'https://drive.google.com/drive/folders/1gvnE_UccnBzZAaTzUYq7SWaHzVXtI_rG',
     
-    // For demo, we'll use a different approach
-    USE_DEMO_MODE: true,
-    USE_STATIC_IMAGES: true, // Use curated static image URLs
+    // Image loading settings
+    USE_GOOGLE_DRIVE: true,
+    USE_UNSPLASH_FALLBACK: true,
     
     // Cache settings
-    CACHE_DURATION: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+    CACHE_DURATION: 24 * 60 * 60 * 1000, // 24 hours
     CACHE_KEY_PREFIX: 'topiko_img_',
-    
-    // Placeholder paths - use relative path for file:// protocol
-    PLACEHOLDER_BASE_PATH: 'images/products/placeholders/',
     
     // Image dimensions
     DEFAULT_WIDTH: 400,
     DEFAULT_HEIGHT: 400
 };
 
-// Category to placeholder mapping
-const CATEGORY_PLACEHOLDERS = {
-    'boutique': 'clothing.svg',
-    'mens-wear': 'clothing.svg',
-    'womens-wear': 'clothing.svg',
-    'kids-wear': 'kids.svg',
-    'home-foods': 'food.svg',
-    'north-indian': 'food.svg',
-    'south-indian': 'food.svg',
-    'sweets-desserts': 'food.svg',
-    'beverages': 'food.svg',
-    'salons': 'beauty.svg',
-    'hair-services': 'beauty.svg',
-    'beauty-services': 'beauty.svg',
-    'spa-wellness': 'beauty.svg',
-    'grocery': 'grocery.svg',
-    'fresh-produce': 'grocery.svg',
-    'staples': 'grocery.svg',
-    'packaged-foods': 'grocery.svg',
-    'furniture': 'furniture.svg',
-    'electronics': 'electronics.svg',
-    'mobile-devices': 'electronics.svg',
-    'computers': 'electronics.svg',
-    'home-appliances': 'electronics.svg',
-    'footwear': 'footwear.svg',
-    'accessories': 'accessories.svg',
-    'fitness': 'default.svg',
-    'restaurants': 'food.svg',
-    'default': 'default.svg'
+// Google Drive file IDs for product images
+// You'll need to map your actual file IDs here
+const GOOGLE_DRIVE_IMAGE_MAPPINGS = {
+    // Example mapping structure - replace with your actual Drive file IDs
+    // Format: 'product-slug': 'google-drive-file-id',
+    // To get file ID: Open image in Drive, click Share, copy the ID from the URL
+    
+    // Men's Clothing
+    'formal-cotton-shirt': '1_example_file_id_here',
+    'casual-tshirt': '1_example_file_id_here',
+    'slim-fit-jeans': '1_example_file_id_here',
+    
+    // Add your actual mappings here
+    // The ID is the part after /d/ in the Drive share URL
+    // Example: https://drive.google.com/file/d/1ABC123XYZ/view -> ID is 1ABC123XYZ
 };
 
-// Indian product keyword mapping for better search results
-const PRODUCT_KEYWORDS = {
-    // Clothing
-    'kurta': 'kurta,mens,clothing,indian,traditional',
-    'saree': 'saree,womens,indian,silk,traditional',
-    'lehenga': 'lehenga,indian,bridal,wedding,dress',
-    'salwar': 'salwar,kameez,indian,womens,dress',
-    'sherwani': 'sherwani,indian,mens,formal,wedding',
-    'anarkali': 'anarkali,indian,womens,dress,ethnic',
-    'shirt': 'mens,shirt,formal,clothing,business',
-    'tshirt': 'tshirt,casual,mens,clothing',
-    't-shirt': 'tshirt,casual,mens,clothing',
-    'jeans': 'jeans,denim,pants,casual,clothing',
-    'dress': 'womens,dress,fashion,clothing',
-    'kids': 'kids,children,clothing,fashion',
-    'party dress': 'kids,party,dress,children,clothing',
-    
-    // Food
-    'biryani': 'biryani,indian,rice,food,chicken',
-    'dosa': 'dosa,indian,food,breakfast,south',
-    'idli': 'idli,indian,food,breakfast,south',
-    'samosa': 'samosa,indian,snack,food,fried',
-    'butter chicken': 'butter,chicken,curry,indian,food',
-    'dal': 'dal,lentils,indian,food,curry',
-    'paneer': 'paneer,indian,cheese,food,curry',
-    'tandoori': 'tandoori,indian,grilled,chicken,food',
-    'masala': 'spices,indian,masala,cooking',
-    'chai': 'chai,tea,indian,beverage,drink',
-    'lassi': 'lassi,yogurt,indian,drink,beverage',
-    'coffee': 'coffee,beverage,drink,cafe',
-    
-    // Grocery
-    'tomato': 'tomatoes,fresh,vegetables,produce,red',
-    'tomatoes': 'tomatoes,fresh,vegetables,produce,red',
-    'onion': 'onions,vegetables,produce,fresh',
-    'potato': 'potatoes,vegetables,produce,fresh',
-    'banana': 'bananas,fruit,fresh,produce,yellow',
-    'apple': 'apples,fruit,fresh,produce,red',
-    'carrot': 'carrots,vegetables,fresh,produce,orange',
-    'spinach': 'spinach,leafy,greens,vegetables,fresh',
-    'mango': 'mangoes,fruit,tropical,fresh,indian',
-    'rice': 'rice,grain,food,staple,white',
-    'vegetables': 'vegetables,fresh,produce,market',
-    'fruits': 'fruits,fresh,produce,market',
-    
-    // Electronics
-    'laptop': 'laptop,computer,technology,electronics',
-    'gaming': 'gaming,computer,laptop,electronics',
-    'smartphone': 'smartphone,mobile,phone,electronics',
-    'phone': 'smartphone,mobile,phone,electronics',
-    
-    // Beauty
-    'facial': 'facial,beauty,spa,skincare,treatment',
-    'haircut': 'haircut,salon,barber,hairstyle',
-    'massage': 'massage,spa,relaxation,wellness',
-    'makeup': 'makeup,cosmetics,beauty,salon',
-    
-    // Footwear
-    'shoes': 'shoes,footwear,formal,mens',
-    'sandals': 'sandals,footwear,womens,casual',
-    'sneakers': 'sneakers,shoes,sports,running',
-    'running': 'running,shoes,sports,athletics',
-    
-    // Accessories
-    'handbag': 'handbag,purse,womens,leather,fashion',
-    'watch': 'watch,timepiece,accessories,fashion',
-    'wallet': 'wallet,leather,mens,accessories',
-    'sunglasses': 'sunglasses,eyewear,fashion,accessories',
-    
-    // Sweets
-    'gulab jamun': 'gulab,jamun,indian,sweet,dessert',
-    'rasgulla': 'rasgulla,indian,sweet,dessert',
-    'jalebi': 'jalebi,indian,sweet,dessert,orange',
-    'kulfi': 'kulfi,indian,icecream,dessert',
-    'halwa': 'halwa,indian,sweet,dessert',
-    'cake': 'cake,dessert,bakery,chocolate',
-    
-    // Default fallbacks
-    'default': 'product,shopping,retail'
+// Category to image mapping for fallbacks
+const CATEGORY_IMAGE_MAPPINGS = {
+    'mens-clothing': 'default-mens-clothing',
+    'womens-clothing': 'default-womens-clothing',
+    'kids-wear': 'default-kids-wear',
+    'footwear': 'default-footwear',
+    'accessories': 'default-accessories',
+    'restaurants': 'default-food',
+    'home-cooked-food': 'default-food',
+    'sweets-desserts': 'default-sweets',
+    'beverages': 'default-beverages',
+    'fresh-produce': 'default-vegetables',
+    'electronics': 'default-electronics',
+    'beauty-wellness': 'default-beauty',
+    'salons-spas': 'default-salon'
 };
 
 class ProductImageService {
     constructor() {
         this.imageCache = this.loadCache();
-        this.loadingImages = new Map(); // Track images being loaded
+        this.loadingImages = new Map();
     }
 
     // Load cache from localStorage
@@ -153,7 +72,6 @@ class ProductImageService {
                     if (data && data.expires > Date.now()) {
                         cache[key.replace(IMAGE_CONFIG.CACHE_KEY_PREFIX, '')] = data.url;
                     } else {
-                        // Clean expired cache
                         localStorage.removeItem(key);
                     }
                 }
@@ -182,113 +100,56 @@ class ProductImageService {
         }
     }
 
-    // Get keywords for product
-    getSearchKeywords(productName, category) {
-        const nameLower = productName.toLowerCase();
-        
-        // Check if we have specific keywords for this product
-        for (const [key, keywords] of Object.entries(PRODUCT_KEYWORDS)) {
-            if (nameLower.includes(key)) {
-                return keywords;
+    // Get Google Drive direct link
+    getGoogleDriveUrl(fileId) {
+        if (!fileId) return null;
+        return `${IMAGE_CONFIG.GOOGLE_DRIVE_BASE_URL}${fileId}`;
+    }
+
+    // Get product image from Google Drive
+    getGoogleDriveImage(productSlug, productName) {
+        // Try exact match first
+        if (GOOGLE_DRIVE_IMAGE_MAPPINGS[productSlug]) {
+            return this.getGoogleDriveUrl(GOOGLE_DRIVE_IMAGE_MAPPINGS[productSlug]);
+        }
+
+        // Try product name variations
+        const nameVariations = [
+            productName.toLowerCase().replace(/\s+/g, '-'),
+            productName.toLowerCase().replace(/\s+/g, '_'),
+            productName.toLowerCase().replace(/[^a-z0-9]/g, '')
+        ];
+
+        for (const variant of nameVariations) {
+            if (GOOGLE_DRIVE_IMAGE_MAPPINGS[variant]) {
+                return this.getGoogleDriveUrl(GOOGLE_DRIVE_IMAGE_MAPPINGS[variant]);
             }
         }
-        
-        // Fallback to category-based search
-        const categoryKeywords = {
-            'boutique': 'fashion clothing indian',
-            'home-foods': 'indian food cuisine',
-            'salons': 'beauty salon spa',
-            'grocery': 'vegetables fruits grocery',
-            'electronics': 'gadgets electronics devices',
-            'furniture': 'furniture home decor',
-            'footwear': 'shoes footwear indian'
+
+        return null;
+    }
+
+    // Get Unsplash fallback image
+    getUnsplashFallback(productName, category) {
+        const searchTerms = {
+            'mens-clothing': 'mens fashion clothing',
+            'womens-clothing': 'womens fashion clothing',
+            'kids-wear': 'kids children clothing',
+            'footwear': 'shoes footwear fashion',
+            'accessories': 'fashion accessories jewelry',
+            'restaurants': 'indian food restaurant',
+            'home-cooked-food': 'homemade food indian',
+            'sweets-desserts': 'indian sweets desserts',
+            'beverages': 'beverages drinks coffee tea',
+            'fresh-produce': 'vegetables fruits fresh',
+            'electronics': 'electronics gadgets technology',
+            'beauty-wellness': 'beauty salon spa wellness',
+            'salons-spas': 'salon spa beauty treatment'
         };
-        
-        return categoryKeywords[category] || productName;
-    }
 
-    // Get placeholder SVG path
-    getPlaceholderPath(category, subcategory) {
-        const filename = CATEGORY_PLACEHOLDERS[subcategory] || 
-                        CATEGORY_PLACEHOLDERS[category] || 
-                        CATEGORY_PLACEHOLDERS['default'];
-        return IMAGE_CONFIG.PLACEHOLDER_BASE_PATH + filename;
-    }
-
-    // Fetch from Lorem Picsum (no API key needed)
-    async fetchFromPicsum() {
-        try {
-            // Lorem Picsum provides random images
-            const seed = Math.random().toString(36).substring(7);
-            return `https://picsum.photos/seed/${seed}/${IMAGE_CONFIG.DEFAULT_WIDTH}/${IMAGE_CONFIG.DEFAULT_HEIGHT}`;
-        } catch (e) {
-            console.warn('Picsum fetch failed:', e);
-            return null;
-        }
-    }
-
-    // Fetch from Pexels API
-    async fetchFromPexels(keywords) {
-        if (IMAGE_CONFIG.USE_DEMO_MODE || !IMAGE_CONFIG.PEXELS_API_KEY || IMAGE_CONFIG.PEXELS_API_KEY === 'YOUR_PEXELS_API_KEY') {
-            return null; // Skip if no API key
-        }
-
-        try {
-            const response = await fetch(
-                `https://api.pexels.com/v1/search?query=${encodeURIComponent(keywords)}&per_page=1&orientation=square`,
-                {
-                    headers: {
-                        'Authorization': IMAGE_CONFIG.PEXELS_API_KEY
-                    }
-                }
-            );
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.photos && data.photos.length > 0) {
-                    return data.photos[0].src.medium;
-                }
-            }
-        } catch (e) {
-            console.warn('Pexels API error:', e);
-        }
-        return null;
-    }
-
-    // Fetch from Pixabay API
-    async fetchFromPixabay(keywords) {
-        if (IMAGE_CONFIG.USE_DEMO_MODE || !IMAGE_CONFIG.PIXABAY_API_KEY || IMAGE_CONFIG.PIXABAY_API_KEY === 'YOUR_PIXABAY_API_KEY') {
-            return null; // Skip if no API key
-        }
-
-        try {
-            const response = await fetch(
-                `https://pixabay.com/api/?key=${IMAGE_CONFIG.PIXABAY_API_KEY}&q=${encodeURIComponent(keywords)}&image_type=photo&per_page=3&min_width=${IMAGE_CONFIG.DEFAULT_WIDTH}&min_height=${IMAGE_CONFIG.DEFAULT_HEIGHT}`
-            );
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.hits && data.hits.length > 0) {
-                    return data.hits[0].webformatURL;
-                }
-            }
-        } catch (e) {
-            console.warn('Pixabay API error:', e);
-        }
-        return null;
-    }
-
-    // Use free CDN service (no API key needed)
-    getFreeCDNImage(productName, category) {
-        // Map products to specific image search terms
-        const searchTerm = this.getSearchKeywords(productName, category);
-        
-        // Use Unsplash Source with specific search terms (better than random)
-        // This will at least try to find relevant images
+        const searchTerm = searchTerms[category] || productName;
         const encodedSearch = encodeURIComponent(searchTerm);
         
-        // Return Unsplash source with product-specific search
-        // Fallback to placeholder if this fails
         return `https://source.unsplash.com/${IMAGE_CONFIG.DEFAULT_WIDTH}x${IMAGE_CONFIG.DEFAULT_HEIGHT}/?${encodedSearch}`;
     }
 
@@ -296,7 +157,7 @@ class ProductImageService {
     async getProductImage(productId, productName, category, subcategory) {
         // 1. Check cache first
         if (this.imageCache[productId]) {
-            console.log(`✅ Using cached image for ${productId}`);
+            console.log(`✅ Using cached image for ${productName}`);
             return this.imageCache[productId];
         }
 
@@ -321,145 +182,83 @@ class ProductImageService {
 
     // Load image with fallback chain
     async loadImageWithFallbacks(productId, productName, category, subcategory) {
-        const keywords = this.getSearchKeywords(productName, category);
-        
-        // Try different sources in order
         let imageUrl = null;
 
-        // 0. PRIORITY: Try LOCAL images first (our 872 mapped images)
-        if (window.LocalProductImages) {
-            // Pass product name for smart matching
-            const localImage = window.LocalProductImages.getLocalProductImage(productId, category, productName);
-            // Check if it's not a placeholder
-            if (localImage && !localImage.includes('placeholders')) {
-                console.log(`🖼️ Using local image for ${productId} (${productName})`);
-                this.saveToCache(productId, localImage);
-                return localImage;
-            }
-        }
-
-        // 0.5. Also check DirectProductImages for exact mappings
-        if (window.DirectProductImages) {
-            const directImage = window.DirectProductImages.getDirectProductImage(productId);
-            if (directImage && !directImage.startsWith('http')) {
-                console.log(`✅ Using direct mapped image for ${productId}`);
-                this.saveToCache(productId, directImage);
-                return directImage;
-            }
-        }
-
-        // 1. Try static curated images first (if enabled)
-        if (IMAGE_CONFIG.USE_STATIC_IMAGES && window.StaticProductImages) {
-            imageUrl = window.StaticProductImages.getStaticProductImage(productName);
+        // 1. Try Google Drive first if enabled
+        if (IMAGE_CONFIG.USE_GOOGLE_DRIVE) {
+            const productSlug = productName.toLowerCase().replace(/\s+/g, '-');
+            imageUrl = this.getGoogleDriveImage(productSlug, productName);
+            
             if (imageUrl) {
                 const validUrl = await this.testImageUrl(imageUrl);
                 if (validUrl) {
-                    console.log(`✅ Using static image for ${productName}`);
+                    console.log(`✅ Using Google Drive image for ${productName}`);
                     this.saveToCache(productId, validUrl);
                     return validUrl;
                 }
             }
         }
 
-        // 2. Try Pexels API
-        if (!IMAGE_CONFIG.USE_DEMO_MODE) {
-            imageUrl = await this.fetchFromPexels(keywords);
-            if (imageUrl) {
-                console.log(`✅ Found image from Pexels for ${productName}`);
-                this.saveToCache(productId, imageUrl);
-                return imageUrl;
-            }
-        }
-
-        // 3. Try Pixabay API
-        if (!IMAGE_CONFIG.USE_DEMO_MODE) {
-            imageUrl = await this.fetchFromPixabay(keywords);
-            if (imageUrl) {
-                console.log(`✅ Found image from Pixabay for ${productName}`);
-                this.saveToCache(productId, imageUrl);
-                return imageUrl;
-            }
-        }
-
-        // 4. Skip free CDN in demo mode - go straight to placeholder
-        // Free CDNs give random images which is worse than placeholders
-        if (!IMAGE_CONFIG.USE_DEMO_MODE) {
-            imageUrl = this.getFreeCDNImage(productName, category);
-            // Test if the image actually loads
+        // 2. Try Unsplash fallback
+        if (IMAGE_CONFIG.USE_UNSPLASH_FALLBACK) {
+            imageUrl = this.getUnsplashFallback(productName, subcategory || category);
             const validUrl = await this.testImageUrl(imageUrl);
             if (validUrl) {
-                console.log(`✅ Using free CDN image for ${productName}`);
+                console.log(`✅ Using Unsplash fallback for ${productName}`);
+                this.saveToCache(productId, validUrl);
                 return validUrl;
             }
         }
 
-        // 5. Use local SVG placeholder as final fallback
-        const placeholder = this.getPlaceholderPath(category, subcategory);
-        console.log(`ℹ️ Using SVG placeholder for ${productName}`);
-        return placeholder;
+        // 3. Return a default placeholder URL
+        const placeholderUrl = `https://via.placeholder.com/${IMAGE_CONFIG.DEFAULT_WIDTH}x${IMAGE_CONFIG.DEFAULT_HEIGHT}/6366f1/ffffff?text=${encodeURIComponent(productName.substring(0, 20))}`;
+        console.log(`ℹ️ Using placeholder for ${productName}`);
+        return placeholderUrl;
     }
 
-    // Preload image to check if it works, with WebP fallback
+    // Test if image URL loads successfully
     async testImageUrl(url) {
         return new Promise((resolve) => {
             const img = new Image();
-            img.onload = () => resolve(url); // Return the working URL
-            img.onerror = async () => {
-                // If original fails, try WebP version
-                if (!url.endsWith('.webp')) {
-                    const webpUrl = url.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-                    if (webpUrl !== url) {
-                        const webpImg = new Image();
-                        webpImg.onload = () => {
-                            console.log(`✅ Found WebP version: ${webpUrl}`);
-                            resolve(webpUrl); // Return the WebP URL
-                        };
-                        webpImg.onerror = () => resolve(false);
-                        webpImg.src = webpUrl;
-                    } else {
-                        resolve(false);
-                    }
-                } else {
-                    resolve(false);
-                }
-            };
+            img.onload = () => resolve(url);
+            img.onerror = () => resolve(false);
             img.src = url;
+            
+            // Timeout after 5 seconds
+            setTimeout(() => resolve(false), 5000);
         });
     }
 
     // Update image element with progressive loading
     async updateImageElement(imgElement, productId, productName, category, subcategory) {
-        // 1. Set placeholder immediately
-        const placeholder = this.getPlaceholderPath(category, subcategory);
-        imgElement.src = placeholder;
-        // Don't add blur for SVG placeholders
-        imgElement.classList.remove('image-loading');
-        imgElement.classList.add('image-placeholder');
+        // 1. Set loading state
+        imgElement.classList.add('image-loading');
+        
+        // 2. Set temporary placeholder
+        const tempPlaceholder = `https://via.placeholder.com/${IMAGE_CONFIG.DEFAULT_WIDTH}x${IMAGE_CONFIG.DEFAULT_HEIGHT}/f3f4f6/9ca3af?text=Loading...`;
+        imgElement.src = tempPlaceholder;
 
-        // 2. Load real image
         try {
+            // 3. Load real image
             const imageUrl = await this.getProductImage(productId, productName, category, subcategory);
             
-            // 3. Test if image loads
-            const validUrl = await this.testImageUrl(imageUrl);
-            
-            if (validUrl && validUrl !== placeholder) {
-                // Create new image element for smooth transition
-                const newImg = new Image();
-                newImg.onload = () => {
-                    imgElement.src = validUrl;
-                    imgElement.classList.remove('image-loading', 'image-placeholder');
-                    imgElement.classList.add('image-loaded');
-                };
-                newImg.src = validUrl;
-            } else {
-                // Keep placeholder without blur
+            // 4. Update image source
+            const newImg = new Image();
+            newImg.onload = () => {
+                imgElement.src = imageUrl;
                 imgElement.classList.remove('image-loading');
-                imgElement.classList.add('image-placeholder');
-            }
+                imgElement.classList.add('image-loaded');
+            };
+            newImg.onerror = () => {
+                // Keep placeholder on error
+                imgElement.classList.remove('image-loading');
+                imgElement.classList.add('image-error');
+            };
+            newImg.src = imageUrl;
         } catch (e) {
             console.warn(`Failed to load image for ${productName}:`, e);
-            // Placeholder is already set, so we're good
+            imgElement.classList.remove('image-loading');
+            imgElement.classList.add('image-error');
         }
     }
 
@@ -497,43 +296,53 @@ if (!document.getElementById('product-image-styles')) {
     style.id = 'product-image-styles';
     style.innerHTML = `
         .image-loading {
-            filter: blur(2px);
-            transition: filter 0.3s ease;
-        }
-        
-        .image-placeholder {
-            filter: blur(0) !important;
-            opacity: 1 !important;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
         }
         
         .image-loaded {
-            filter: blur(0);
+            opacity: 1;
             animation: fadeIn 0.5s ease;
         }
         
+        .image-error {
+            opacity: 0.8;
+        }
+        
         @keyframes fadeIn {
-            from { opacity: 0.7; }
+            from { opacity: 0.6; }
             to { opacity: 1; }
         }
         
-        .product-image-error {
-            background: linear-gradient(135deg, #f0f1ff 0%, #e0e7ff 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6366f1;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        /* Ensure SVG images are crisp */
-        img[src$=".svg"] {
-            image-rendering: crisp-edges;
-            image-rendering: -webkit-optimize-contrast;
+        .product-image {
+            object-fit: cover;
+            background-color: #f3f4f6;
         }
     `;
     document.head.appendChild(style);
 }
 
-console.log('✅ Product Image Service initialized');
+// Helper function to add Google Drive image mappings
+window.addGoogleDriveImageMapping = function(productSlug, fileId) {
+    GOOGLE_DRIVE_IMAGE_MAPPINGS[productSlug] = fileId;
+    console.log(`✅ Added Google Drive mapping for ${productSlug}`);
+};
+
+// Helper to batch add mappings
+window.addGoogleDriveImageMappings = function(mappings) {
+    Object.assign(GOOGLE_DRIVE_IMAGE_MAPPINGS, mappings);
+    console.log(`✅ Added ${Object.keys(mappings).length} Google Drive mappings`);
+};
+
+console.log('✅ Product Image Service (Google Drive) initialized');
 console.log('📊 Cache stats:', window.ProductImageService.getCacheStats());
+console.log('🌐 Google Drive integration:', IMAGE_CONFIG.USE_GOOGLE_DRIVE ? 'Enabled' : 'Disabled');
+console.log('📸 Unsplash fallback:', IMAGE_CONFIG.USE_UNSPLASH_FALLBACK ? 'Enabled' : 'Disabled');
+
+// Instructions for adding Google Drive images:
+console.log(`
+📌 To add Google Drive image mappings:
+1. Get the file ID from your Google Drive share URL
+2. Use: window.addGoogleDriveImageMapping('product-slug', 'file-id')
+3. Or batch add: window.addGoogleDriveImageMappings({ 'slug1': 'id1', 'slug2': 'id2' })
+`);
