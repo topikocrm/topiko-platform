@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Readiness Campaign URL Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #3b82f6;
+        }
+
+        .header h1 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #64748b;
+        }
+
+        .digital-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+
+        .builder-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .required::after {
+            content: ' *';
+            color: #ef4444;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .result-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .url-display {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .copy-btn:hover {
+            background: #059669;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .qr-code img {
+            border: 4px solid white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .campaign-list {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .campaign-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .campaign-info {
+            flex-grow: 1;
+        }
+
+        .campaign-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .campaign-details {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .campaign-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            padding: 0.5rem;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .digital-info-section {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border: 2px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .digital-info-section h3 {
+            color: #1e40af;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .header {
+                padding: 1.5rem;
+            }
+            
+            .builder-section {
+                padding: 1.5rem;
+            }
+            
+            .campaign-list {
+                padding: 1.5rem;
+            }
+            
+            .digital-info-section {
+                padding: 1rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .button-group .btn {
+                width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .campaign-item {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 1rem;
+            }
+            
+            .campaign-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .url-display {
+                padding-right: 70px;
+                font-size: 0.85rem;
+            }
+            
+            .copy-btn {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.6rem;
+            }
+            
+            .digital-badge {
+                display: block;
+                margin-left: 0;
+                margin-top: 0.5rem;
+                width: fit-content;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .form-group input,
+            .form-group select {
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Digital Readiness Campaign URL Builder <span class="digital-badge">DIGITAL GROWTH</span></h1>
+            <p>Create trackable URLs for Digital Growth Assessment campaigns with business-specific tracking parameters</p>
+        </div>
+
+        <!-- Campaign Creator Identification -->
+        <div style="background: #f0f9ff; border: 1px solid #0284c7; border-radius: 8px; padding: 1rem; margin-bottom: 2rem;">
+            <label style="font-weight: 600; color: #0c4a6e; display: block; margin-bottom: 0.5rem;">Created By (Team Member)</label>
+            <input type="text" id="createdBy" placeholder="e.g., raj@topiko.app or Raj Kumar" 
+                   style="width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+            <small style="color: #64748b;">This helps track who created which Digital Readiness campaigns</small>
+        </div>
+
+        <!-- URL Builder Form -->
+        <div class="builder-section">
+            <h2 style="margin-bottom: 1.5rem;">Create Digital Readiness Campaign URL</h2>
+            
+            <div class="form-grid">
+                <!-- Campaign Name -->
+                <div class="form-group">
+                    <label for="campaignName" class="required">Campaign Name</label>
+                    <input type="text" id="campaignName" placeholder="e.g., Q1 2025 Digital Growth Campaign">
+                </div>
+
+                <!-- Target Business Type -->
+                <div class="form-group">
+                    <label for="utmBusinessType" class="required">Target Business Type</label>
+                    <select id="utmBusinessType">
+                        <option value="">Select Business Type</option>
+                        <option value="small_business">Small Business (1-50 employees)</option>
+                        <option value="medium_enterprise">Medium Enterprise (51-200 employees)</option>
+                        <option value="large_enterprise">Large Enterprise (200+ employees)</option>
+                        <option value="startup">Startup</option>
+                        <option value="solo_entrepreneur">Solo Entrepreneur</option>
+                        <option value="freelancer">Freelancer</option>
+                    </select>
+                </div>
+
+                <!-- Industry Sector -->
+                <div class="form-group">
+                    <label for="utmIndustry" class="required">Industry Sector</label>
+                    <select id="utmIndustry">
+                        <option value="">Select Industry</option>
+                        <option value="retail">Retail & E-commerce</option>
+                        <option value="manufacturing">Manufacturing</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="education">Education</option>
+                        <option value="finance">Finance & Banking</option>
+                        <option value="real_estate">Real Estate</option>
+                        <option value="food_beverage">Food & Beverage</option>
+                        <option value="professional_services">Professional Services</option>
+                        <option value="technology">Technology</option>
+                        <option value="automotive">Automotive</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Digital Maturity Level -->
+                <div class="form-group">
+                    <label for="utmDigitalMaturity">Digital Maturity Level</label>
+                    <select id="utmDigitalMaturity">
+                        <option value="">Select Maturity Level</option>
+                        <option value="beginner">Beginner (Basic digital presence)</option>
+                        <option value="intermediate">Intermediate (Some digital tools)</option>
+                        <option value="advanced">Advanced (Integrated digital strategy)</option>
+                        <option value="expert">Expert (Digital transformation leader)</option>
+                    </select>
+                </div>
+
+                <!-- Growth Stage -->
+                <div class="form-group">
+                    <label for="utmGrowthStage">Growth Stage</label>
+                    <select id="utmGrowthStage">
+                        <option value="">Select Growth Stage</option>
+                        <option value="startup">Startup Phase</option>
+                        <option value="growth">Growth Phase</option>
+                        <option value="mature">Mature Business</option>
+                        <option value="transformation">Digital Transformation</option>
+                        <option value="scaling">Scaling Phase</option>
+                    </select>
+                </div>
+
+                <!-- Data Source -->
+                <div class="form-group">
+                    <label for="utmDataSource" class="required">Data Source</label>
+                    <select id="utmDataSource">
+                        <option value="">Select Data Source</option>
+                        <option value="website">Website Organic</option>
+                        <option value="social_media">Social Media</option>
+                        <option value="database">Database</option>
+                        <option value="referral">Referral</option>
+                        <option value="webinar">Webinar</option>
+                        <option value="event">Event</option>
+                        <option value="email_campaign">Email Campaign</option>
+                        <option value="paid_ads">Paid Advertising</option>
+                        <option value="content_marketing">Content Marketing</option>
+                        <option value="partnerships">Partnerships</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Target Region -->
+                <div class="form-group">
+                    <label for="utmRegion">Target Region</label>
+                    <select id="utmRegion">
+                        <option value="">Select Target Region</option>
+                        <option value="north">North India</option>
+                        <option value="south">South India</option>
+                        <option value="east">East India</option>
+                        <option value="west">West India</option>
+                        <option value="central">Central India</option>
+                        <option value="northeast">Northeast India</option>
+                        <option value="international">International</option>
+                    </select>
+                </div>
+
+                <!-- Medium -->
+                <div class="form-group">
+                    <label for="utmMedium" class="required">Medium</label>
+                    <select id="utmMedium">
+                        <option value="">Select Medium</option>
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="email">Email</option>
+                        <option value="social">Social Media</option>
+                        <option value="ppc">PPC</option>
+                        <option value="organic">Organic</option>
+                        <option value="webinar">Webinar</option>
+                        <option value="sms">SMS</option>
+                        <option value="direct">Direct</option>
+                        <option value="content">Content Marketing</option>
+                        <option value="video">Video</option>
+                        <option value="others">Others</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Custom Parameters Section -->
+            <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: #1e293b;">
+                    🔧 Additional Digital Assessment Parameters 
+                    <span style="font-size: 0.8rem; color: #64748b; font-weight: normal;">(Add business-specific tracking)</span>
+                </h3>
+                
+                <div id="customParametersContainer">
+                    <!-- Custom parameters will be added here -->
+                </div>
+                
+                <div class="custom-param-inputs" style="margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                    <input type="text" id="newParamName" placeholder="Parameter name (e.g., business_size)" 
+                           style="flex: 1; min-width: 150px; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    <input type="text" id="newParamValue" placeholder="Parameter value (e.g., small)" 
+                           style="flex: 1; min-width: 150px; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    <button onclick="addCustomParameter()" class="add-param-btn"
+                            style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; white-space: nowrap;">
+                        + Add
+                    </button>
+                </div>
+                
+                <div style="margin-top: 0.5rem;">
+                    <small style="color: #64748b;">💡 Examples: business_size, revenue_range, digital_goals, challenges, solution_interest</small>
+                </div>
+            </div>
+
+            <!-- Short URL Options -->
+            <div style="margin-top: 2rem; padding: 1.5rem; background: #f0fdf4; border-radius: 12px; border: 1px solid #86efac;">
+                <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: #166534;">
+                    🔗 Digital Readiness Short URL Settings
+                </h3>
+                
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label for="customCode" style="font-weight: 600; color: #166534; display: block; margin-bottom: 0.5rem;">
+                            Custom Digital Readiness Code (Optional)
+                        </label>
+                        <input type="text" id="customCode" placeholder="e.g., DR-GROWTH-2025" 
+                               pattern="[A-Za-z0-9\-_]+" maxlength="20"
+                               style="width: 100%; padding: 0.5rem; border: 1px solid #86efac; border-radius: 6px;">
+                        <small style="color: #64748b;">Leave empty for auto-generated code. Use letters, numbers, dash, underscore only.</small>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" id="checkDuplicate" checked>
+                        <label for="checkDuplicate" style="font-size: 0.9rem; color: #166534;">
+                            Reuse existing short URL if same Digital Readiness campaign exists
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="generateURL()">Generate Digital Readiness URL</button>
+                <button class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                <button class="btn btn-secondary" onclick="generateBulkURLs()">Bulk Generate</button>
+            </div>
+
+            <!-- Result Section -->
+            <div id="resultSection" class="result-section">
+                <h3 style="margin-bottom: 1rem;">Generated Digital Readiness Campaign URLs</h3>
+                
+                <div>
+                    <label style="font-weight: 600; color: #475569;">Full Digital Readiness URL:</label>
+                    <div class="url-display">
+                        <span id="fullURL"></span>
+                        <button class="copy-btn" onclick="copyURL('fullURL')">Copy</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label style="font-weight: 600; color: #475569;">Short Digital Readiness URL:</label>
+                    <div class="url-display">
+                        <span id="shortURL"></span>
+                        <button class="copy-btn" onclick="copyURL('shortURL')">Copy</button>
+                    </div>
+                </div>
+
+                <div class="qr-code">
+                    <h4 style="margin-bottom: 1rem;">Digital Readiness QR Code</h4>
+                    <img id="qrCode" src="" alt="QR Code" style="display: none;">
+                </div>
+
+                <div id="successMessage" class="success-message">
+                    ✅ Digital Readiness URL copied to clipboard!
+                </div>
+            </div>
+        </div>
+
+        <!-- Digital Readiness Campaign Statistics -->
+        <div class="builder-section">
+            <h2 style="margin-bottom: 1.5rem;">Digital Readiness Performance Statistics</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Digital Campaigns</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Assessment Completions</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                    <div class="stat-value">0%</div>
+                    <div class="stat-label">Conversion Rate</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #ec4899, #db2777);">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Active Campaigns</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Digital Readiness Campaigns -->
+        <div class="campaign-list">
+            <h2 style="margin-bottom: 1.5rem;">Recent Digital Readiness Campaigns</h2>
+            <div id="campaignList">
+                <!-- Campaign items will be added here dynamically -->
+                <p style="color: #94a3b8; text-align: center;">No Digital Readiness campaigns created yet. Create your first campaign above!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Base URL for the Digital Readiness assessment form (update this to your deployed URL)
+        const BASE_URL = 'https://your-digitalreadiness-domain.com/digitalreadiness';
+        
+        // Store campaigns temporarily
+        let campaigns = [];
+        let customParameters = [];
+        
+        // Initialize on load
+        window.onload = async function() {
+            // Load saved creator name
+            const savedCreator = localStorage.getItem('digitalreadiness_campaign_creator');
+            if (savedCreator) {
+                document.getElementById('createdBy').value = savedCreator;
+            }
+            
+            displayCustomParameters();
+            await loadCampaigns();
+            updateStats();
+            updateCampaignList();
+        };
+        
+        // Load Digital Readiness campaigns from Supabase
+        async function loadCampaigns() {
+            try {
+                const { data, error } = await supabase
+                    .from('short_urls')
+                    .select('*')
+                    .eq('source', 'digitalreadiness')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+                
+                if (error) {
+                    console.error('Error loading Digital Readiness campaigns:', error);
+                    showNotification('Failed to load campaigns from database', 'error');
+                } else {
+                    campaigns = data || [];
+                    console.log('Loaded Digital Readiness campaigns:', campaigns.length);
+                }
+            } catch (e) {
+                console.error('Error:', e);
+                campaigns = [];
+            }
+        }
+        
+        function addCustomParameter() {
+            const nameInput = document.getElementById('newParamName');
+            const valueInput = document.getElementById('newParamValue');
+            
+            const name = nameInput.value.trim();
+            const value = valueInput.value.trim();
+            
+            if (!name || !value) {
+                alert('Please enter both parameter name and value');
+                return;
+            }
+            
+            // Validate parameter name
+            if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
+                alert('Parameter name should start with a letter or underscore and contain only letters, numbers, and underscores');
+                return;
+            }
+            
+            // Check for duplicates
+            if (customParameters.find(p => p.name === name)) {
+                alert('This parameter already exists. Remove it first to add a new value.');
+                return;
+            }
+            
+            // Add to custom parameters
+            customParameters.push({ name, value });
+            
+            // Clear inputs
+            nameInput.value = '';
+            valueInput.value = '';
+            
+            // Update display
+            displayCustomParameters();
+        }
+        
+        function removeCustomParameter(index) {
+            customParameters.splice(index, 1);
+            displayCustomParameters();
+        }
+        
+        function displayCustomParameters() {
+            const container = document.getElementById('customParametersContainer');
+            
+            if (customParameters.length === 0) {
+                container.innerHTML = '<p style="color: #94a3b8; font-size: 0.9rem;">No custom Digital Readiness parameters added yet</p>';
+                return;
+            }
+            
+            container.innerHTML = customParameters.map((param, index) => `
+                <div class="custom-param-item" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; padding: 0.5rem; background: white; border-radius: 6px; border: 1px solid #e2e8f0; flex-wrap: wrap;">
+                    <span style="font-weight: 600; color: #475569; min-width: 150px; word-break: break-all;">${param.name}:</span>
+                    <span style="flex: 1; color: #1e293b; min-width: 100px; word-break: break-all;">${param.value}</span>
+                    <button onclick="removeCustomParameter(${index})" 
+                            style="background: #ef4444; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                        Remove
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        async function generateURL() {
+            const campaignName = document.getElementById('campaignName').value;
+            const createdBy = document.getElementById('createdBy').value;
+            const businessType = document.getElementById('utmBusinessType').value;
+            const industry = document.getElementById('utmIndustry').value;
+            const dataSource = document.getElementById('utmDataSource').value;
+            const medium = document.getElementById('utmMedium').value;
+            
+            if (!campaignName || !createdBy || !businessType || !industry || !dataSource || !medium) {
+                alert('Please fill in all required fields: Campaign Name, Created By, Business Type, Industry, Data Source, and Medium');
+                return;
+            }
+            
+            // Save creator name for next time
+            localStorage.setItem('digitalreadiness_campaign_creator', createdBy);
+
+            // Build UTM parameters
+            const params = new URLSearchParams();
+            
+            // Standard UTM parameters
+            params.append('utm_source', dataSource);
+            params.append('utm_medium', medium);
+            params.append('utm_campaign', campaignName.toLowerCase().replace(/\s+/g, '_'));
+            
+            // Digital Readiness specific UTM parameters
+            params.append('utm_business_type', businessType);
+            params.append('utm_industry', industry);
+            
+            // Optional parameters
+            const digitalMaturity = document.getElementById('utmDigitalMaturity').value;
+            const growthStage = document.getElementById('utmGrowthStage').value;
+            const region = document.getElementById('utmRegion').value;
+            
+            if (digitalMaturity) params.append('utm_digital_maturity', digitalMaturity);
+            if (growthStage) params.append('utm_growth_stage', growthStage);
+            if (region) params.append('utm_region', region);
+            
+            // Add custom parameters
+            const customParamsObj = {};
+            customParameters.forEach(param => {
+                params.append(param.name, param.value);
+                customParamsObj[param.name] = param.value;
+            });
+            
+            // Generate full URL
+            const fullURL = `${BASE_URL}?${params.toString()}`;
+            
+            // Check for duplicate if enabled
+            let shortCode = document.getElementById('customCode').value.trim();
+            const checkDuplicate = document.getElementById('checkDuplicate').checked;
+            
+            if (checkDuplicate && !shortCode) {
+                // Check if this exact Digital Readiness campaign already exists
+                const existing = campaigns.find(c => 
+                    c.utm_source === dataSource && 
+                    c.utm_medium === medium && 
+                    c.utm_campaign === campaignName.toLowerCase().replace(/\s+/g, '_') &&
+                    c.utm_business_type === businessType &&
+                    c.utm_industry === industry
+                );
+                
+                if (existing) {
+                    shortCode = existing.short_code;
+                    console.log('Reusing existing Digital Readiness short code:', shortCode);
+                }
+            }
+            
+            // Generate short code if not provided or found
+            if (!shortCode) {
+                shortCode = 'DR' + generateShortCode(); // Prefix with DR for Digital Readiness
+            } else {
+                // Validate custom code
+                if (!/^[A-Za-z0-9\-_]+$/.test(shortCode)) {
+                    alert('Short code can only contain letters, numbers, dash, and underscore');
+                    return;
+                }
+            }
+            
+            // Use clean URL format (Vercel handles the rewrite)
+            const shortURL = `https://topiko.app/c/${shortCode}`;
+            
+            // Add extra fields to custom params
+            if (digitalMaturity) customParamsObj.utm_digital_maturity = digitalMaturity;
+            if (growthStage) customParamsObj.utm_growth_stage = growthStage;
+            if (region) customParamsObj.utm_region = region;
+            
+            // Save to Supabase with Digital Readiness specific fields
+            const campaignData = {
+                short_code: shortCode,
+                long_url: fullURL,
+                campaign_name: `[DIGITAL_READINESS] ${campaignName}`,
+                created_by: createdBy,
+                utm_source: dataSource,
+                utm_medium: medium,
+                utm_campaign: campaignName.toLowerCase().replace(/\s+/g, '_'),
+                utm_business_type: businessType,
+                utm_industry: industry,
+                custom_params: customParamsObj,
+                clicks: 0,
+                is_active: true,
+                source: 'digitalreadiness' // Mark as Digital Readiness campaign
+            };
+            
+            try {
+                const { data, error } = await supabase
+                    .from('short_urls')
+                    .upsert(campaignData, { onConflict: 'short_code' })
+                    .select()
+                    .single();
+                
+                if (error) {
+                    console.error('Error saving Digital Readiness campaign:', error);
+                    alert('Failed to save Digital Readiness campaign: ' + error.message);
+                    return;
+                }
+                
+                console.log('Digital Readiness campaign saved:', data);
+                
+                // Display results
+                document.getElementById('fullURL').textContent = fullURL;
+                document.getElementById('shortURL').textContent = shortURL;
+                
+                // Generate QR Code
+                const qrCodeImg = document.getElementById('qrCode');
+                qrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shortURL)}`;
+                qrCodeImg.style.display = 'block';
+                
+                // Show result section
+                document.getElementById('resultSection').classList.add('show');
+                
+                // Reload campaigns and update display
+                await loadCampaigns();
+                updateCampaignList();
+                updateStats();
+                
+                showNotification('Digital Readiness campaign URL created successfully!', 'success');
+                
+            } catch (e) {
+                console.error('Error:', e);
+                alert('Failed to save Digital Readiness campaign. Please try again.');
+            }
+        }
+
+        function generateShortCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < 5; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function copyURL(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const successMsg = document.getElementById('successMessage');
+                successMsg.classList.add('show');
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 2000);
+            });
+        }
+
+        function resetForm() {
+            document.getElementById('campaignName').value = '';
+            document.getElementById('utmBusinessType').value = '';
+            document.getElementById('utmIndustry').value = '';
+            document.getElementById('utmDigitalMaturity').value = '';
+            document.getElementById('utmGrowthStage').value = '';
+            document.getElementById('utmDataSource').value = '';
+            document.getElementById('utmRegion').value = '';
+            document.getElementById('utmMedium').value = '';
+            document.getElementById('customCode').value = '';
+            document.getElementById('resultSection').classList.remove('show');
+            
+            // Clear custom parameters
+            customParameters = [];
+            displayCustomParameters();
+        }
+
+        async function updateCampaignList() {
+            const listContainer = document.getElementById('campaignList');
+            
+            if (campaigns.length === 0) {
+                listContainer.innerHTML = '<p style="color: #94a3b8; text-align: center;">No Digital Readiness campaigns created yet. Create your first campaign above!</p>';
+                return;
+            }
+            
+            listContainer.innerHTML = campaigns.slice(0, 10).map(campaign => `
+                <div class="campaign-item" style="${campaign.is_active === false ? 'opacity: 0.6; background: #fef2f2;' : 'background: #f8fafc;'} border-radius: 12px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.75rem;">
+                    <div class="campaign-info" style="flex: 1; min-width: 200px;">
+                        <div class="campaign-name" style="font-weight: 600; color: #1e293b; margin-bottom: 0.25rem; word-break: break-word;">
+                            ${campaign.campaign_name || 'Unnamed Campaign'}
+                            ${campaign.is_active === false ? '<span style="color: #ef4444; font-size: 0.85rem; margin-left: 0.5rem;">(Inactive)</span>' : ''}
+                        </div>
+                        <div class="campaign-details" style="font-size: 0.85rem; color: #64748b; word-break: break-word;">
+                            ${campaign.utm_business_type || 'N/A'} • ${campaign.utm_industry || 'N/A'} • ${campaign.utm_source || 'N/A'}
+                            ${campaign.custom_params?.utm_region ? `• ${campaign.custom_params.utm_region}` : ''}
+                            ${campaign.custom_params?.utm_digital_maturity ? `• ${campaign.custom_params.utm_digital_maturity}` : ''}
+                            • ${campaign.clicks || 0} clicks
+                            • by ${campaign.created_by || 'Unknown'}
+                        </div>
+                    </div>
+                    <div class="campaign-actions" style="display: flex; gap: 0.5rem; flex-shrink: 0;">
+                        <button class="icon-btn" onclick="copyShortURL('${campaign.short_code}')" title="Copy Short URL">
+                            📋
+                        </button>
+                        <button class="icon-btn" onclick="viewQRCode('${campaign.short_code}')" title="View QR Code">
+                            📱
+                        </button>
+                        <button class="icon-btn" 
+                                onclick="toggleCampaignStatus('${campaign.short_code}', ${campaign.is_active !== false})" 
+                                title="${campaign.is_active === false ? 'Activate Campaign' : 'Deactivate Campaign'}"
+                                style="font-size: 1rem;">
+                            ${campaign.is_active === false ? '🔴' : '🟢'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function updateStats() {
+            const totalCampaigns = campaigns.length;
+            const totalClicks = campaigns.reduce((sum, c) => sum + (c.clicks || 0), 0);
+            const activeCampaigns = campaigns.filter(c => c.is_active !== false).length;
+            
+            // Calculate conversion rate (needs integration with users table)
+            const conversionRate = '0%'; // Will be calculated from actual Digital Readiness conversions
+            
+            document.querySelector('.stats-grid .stat-card:nth-child(1) .stat-value').textContent = totalCampaigns;
+            document.querySelector('.stats-grid .stat-card:nth-child(2) .stat-value').textContent = totalClicks;
+            document.querySelector('.stats-grid .stat-card:nth-child(3) .stat-value').textContent = conversionRate;
+            document.querySelector('.stats-grid .stat-card:nth-child(4) .stat-value').textContent = activeCampaigns;
+        }
+
+        function generateBulkURLs() {
+            alert('Bulk Digital Readiness URL generation feature coming soon! This will allow you to upload a CSV and generate URLs for multiple campaigns at once.');
+        }
+
+        async function toggleCampaignStatus(shortCode, currentStatus) {
+            try {
+                const { error } = await supabase
+                    .from('short_urls')
+                    .update({ is_active: !currentStatus })
+                    .eq('short_code', shortCode);
+                
+                if (error) throw error;
+                
+                showNotification(
+                    currentStatus ? 'Digital Readiness campaign deactivated!' : 'Digital Readiness campaign activated!',
+                    currentStatus ? 'warning' : 'success'
+                );
+                
+                // Refresh the campaign list
+                await loadCampaigns();
+                updateCampaignList();
+                updateStats();
+            } catch (error) {
+                console.error('Error toggling campaign status:', error);
+                showNotification('Failed to update campaign status', 'error');
+            }
+        }
+        
+        function copyShortURL(shortCode) {
+            // Use clean URL format for Digital Readiness
+            const text = `https://topiko.app/c/${shortCode}`;
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('✅ Digital Readiness short URL copied to clipboard!', 'success');
+            });
+        }
+        
+        function viewQRCode(shortCode) {
+            // Use clean URL format
+            const shortURL = `https://topiko.app/c/${shortCode}`;
+            window.open(`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(shortURL)}`, '_blank');
+        }
+        
+        function showNotification(message, type = 'info') {
+            // Create notification element if it doesn't exist
+            let notification = document.getElementById('notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'notification';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                    color: white;
+                    font-weight: 600;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 10000;
+                    transition: opacity 0.3s;
+                `;
+                document.body.appendChild(notification);
+            }
+            
+            notification.textContent = message;
+            notification.style.display = 'block';
+            notification.style.opacity = '1';
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
