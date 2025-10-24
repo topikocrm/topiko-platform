@@ -390,6 +390,16 @@
             <h2 style="margin-bottom: 1.5rem;">Create New Campaign URL</h2>
             
             <div class="form-grid">
+                <!-- Campaign Type -->
+                <div class="form-group">
+                    <label for="campaignType" class="required">Campaign Type</label>
+                    <select id="campaignType" onchange="updateFormFields()">
+                        <option value="customer">Customer Acquisition</option>
+                        <option value="partner">Partner Referral</option>
+                        <option value="digitalreadiness">Digital Readiness Assessment</option>
+                    </select>
+                </div>
+
                 <!-- Campaign Name -->
                 <div class="form-group">
                     <label for="campaignName" class="required">Campaign Name</label>
@@ -562,6 +572,132 @@
                     <label for="utmTerm">Keywords (for paid search)</label>
                     <input type="text" id="utmTerm" placeholder="e.g., online store">
                 </div>
+
+                <!-- Partner Specific Fields -->
+                <div id="partnerFields" style="display: none; grid-column: 1 / -1;">
+                    <div style="background: linear-gradient(135deg, #f0f4ff, #e8ecff); border: 2px solid #667eea; border-radius: 12px; padding: 1.5rem; margin: 1rem 0;">
+                        <h3 style="color: #5b21b6; margin-bottom: 1rem; font-size: 1.1rem;">🤝 Partner Campaign Parameters</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                            
+                            <div class="form-group">
+                                <label for="utmPartnerType">Partner Type</label>
+                                <select id="utmPartnerType">
+                                    <option value="">Select Partner Type</option>
+                                    <option value="reseller">Reseller</option>
+                                    <option value="affiliate">Affiliate</option>
+                                    <option value="referral">Referral Partner</option>
+                                    <option value="agency">Agency</option>
+                                    <option value="consultant">Consultant</option>
+                                    <option value="integrator">System Integrator</option>
+                                    <option value="distributor">Distributor</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="utmPartnerRegion">Target Region</label>
+                                <select id="utmPartnerRegion">
+                                    <option value="">Select Target Region</option>
+                                    <option value="north">North India</option>
+                                    <option value="south">South India</option>
+                                    <option value="east">East India</option>
+                                    <option value="west">West India</option>
+                                    <option value="central">Central India</option>
+                                    <option value="northeast">Northeast India</option>
+                                    <option value="international">International</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="utmReferralCode">Referral Code</label>
+                                <input type="text" id="utmReferralCode" placeholder="e.g., REF123, PARTNER50">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="utmTargetCity">Target City</label>
+                                <input type="text" id="utmTargetCity" placeholder="e.g., Mumbai, Bangalore, Delhi NCR">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Digital Readiness Specific Fields -->
+                <div id="digitalReadinessFields" style="display: none; grid-column: 1 / -1;">
+                    <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 2px solid #0ea5e9; border-radius: 12px; padding: 1.5rem; margin: 1rem 0;">
+                        <h3 style="color: #1e40af; margin-bottom: 1rem; font-size: 1.1rem;">📊 Digital Readiness Assessment Parameters</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                            
+                            <div class="form-group">
+                                <label for="utmBusinessType">Target Business Type</label>
+                                <select id="utmBusinessType">
+                                    <option value="">Select Business Type</option>
+                                    <option value="small_business">Small Business (1-50 employees)</option>
+                                    <option value="medium_enterprise">Medium Enterprise (51-200 employees)</option>
+                                    <option value="large_enterprise">Large Enterprise (200+ employees)</option>
+                                    <option value="startup">Startup</option>
+                                    <option value="solo_entrepreneur">Solo Entrepreneur</option>
+                                    <option value="freelancer">Freelancer</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="utmIndustry">Industry Sector</label>
+                                <select id="utmIndustry">
+                                    <option value="">Select Industry</option>
+                                    <option value="retail">Retail & E-commerce</option>
+                                    <option value="manufacturing">Manufacturing</option>
+                                    <option value="healthcare">Healthcare</option>
+                                    <option value="education">Education</option>
+                                    <option value="finance">Finance & Banking</option>
+                                    <option value="real_estate">Real Estate</option>
+                                    <option value="food_beverage">Food & Beverage</option>
+                                    <option value="professional_services">Professional Services</option>
+                                    <option value="technology">Technology</option>
+                                    <option value="automotive">Automotive</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="utmDigitalMaturity">Digital Maturity Level</label>
+                                <select id="utmDigitalMaturity">
+                                    <option value="">Select Maturity Level</option>
+                                    <option value="beginner">Beginner (Basic digital presence)</option>
+                                    <option value="intermediate">Intermediate (Some digital tools)</option>
+                                    <option value="advanced">Advanced (Integrated digital strategy)</option>
+                                    <option value="expert">Expert (Digital transformation leader)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="utmGrowthStage">Growth Stage</label>
+                                <select id="utmGrowthStage">
+                                    <option value="">Select Growth Stage</option>
+                                    <option value="startup">Startup Phase</option>
+                                    <option value="growth">Growth Phase</option>
+                                    <option value="mature">Mature Business</option>
+                                    <option value="transformation">Digital Transformation</option>
+                                    <option value="scaling">Scaling Phase</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="utmRegion">Target Region</label>
+                                <select id="utmRegion">
+                                    <option value="">Select Target Region</option>
+                                    <option value="north">North India</option>
+                                    <option value="south">South India</option>
+                                    <option value="east">East India</option>
+                                    <option value="west">West India</option>
+                                    <option value="central">Central India</option>
+                                    <option value="northeast">Northeast India</option>
+                                    <option value="international">International</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Custom Parameters Section -->
@@ -696,6 +832,36 @@
         const SUPABASE_URL = 'https://xssbtsfjtwjholygdbqo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhzc2J0c2ZqdHdqaG9seWdkYnFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxOTk5MjUsImV4cCI6MjA2ODc3NTkyNX0.eOSIHTpvllcH-fK6MARoe5HPiXlujsrzUWfAhmUh94k';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Campaign Type Management
+        function updateFormFields() {
+            const campaignType = document.getElementById('campaignType').value;
+            
+            // Hide all conditional field sections
+            document.getElementById('partnerFields').style.display = 'none';
+            document.getElementById('digitalReadinessFields').style.display = 'none';
+            
+            // Show relevant fields based on campaign type
+            if (campaignType === 'partner') {
+                document.getElementById('partnerFields').style.display = 'block';
+            } else if (campaignType === 'digitalreadiness') {
+                document.getElementById('digitalReadinessFields').style.display = 'block';
+            }
+            
+            // Update placeholder text for campaign name
+            const campaignNameInput = document.getElementById('campaignName');
+            switch (campaignType) {
+                case 'customer':
+                    campaignNameInput.placeholder = 'e.g., Diwali Sale 2024';
+                    break;
+                case 'partner':
+                    campaignNameInput.placeholder = 'e.g., Q1 2025 Partner Drive';
+                    break;
+                case 'digitalreadiness':
+                    campaignNameInput.placeholder = 'e.g., Q1 Digital Growth Assessment';
+                    break;
+            }
+        }
         
         // Password Protection
         function checkPageAccess() {
@@ -1002,6 +1168,7 @@
         }
 
         async function generateURL() {
+            const campaignType = document.getElementById('campaignType').value;
             const campaignName = document.getElementById('campaignName').value;
             const source = document.getElementById('utmSource').value;
             const medium = document.getElementById('utmMedium').value;
@@ -1046,6 +1213,46 @@
             if (category) params.append('utm_category', category);
             if (agent) params.append('utm_agent', agent);
             
+            // Determine base URL and collect campaign-specific parameters
+            let baseURL = 'https://topiko.app/lead-form.html';
+            let campaignSource = 'customer';
+            let shortCodePrefix = '';
+            
+            if (campaignType === 'partner') {
+                baseURL = 'https://topikopartner.com/lead-form.html';
+                campaignSource = 'partner';
+                shortCodePrefix = 'P';
+                
+                // Collect partner-specific parameters
+                const partnerType = document.getElementById('utmPartnerType').value;
+                const partnerRegion = document.getElementById('utmPartnerRegion').value;
+                const referralCode = document.getElementById('utmReferralCode').value;
+                const targetCity = document.getElementById('utmTargetCity').value;
+                
+                if (partnerType) params.append('utm_partner_type', partnerType);
+                if (partnerRegion) params.append('utm_partner_region', partnerRegion);
+                if (referralCode) params.append('utm_referral_code', referralCode);
+                if (targetCity) params.append('utm_target_city', targetCity);
+                
+            } else if (campaignType === 'digitalreadiness') {
+                baseURL = 'https://topiko.app/lead-form.html';
+                campaignSource = 'digitalreadiness';
+                shortCodePrefix = 'DR';
+                
+                // Collect Digital Readiness-specific parameters
+                const businessType = document.getElementById('utmBusinessType').value;
+                const industry = document.getElementById('utmIndustry').value;
+                const digitalMaturity = document.getElementById('utmDigitalMaturity').value;
+                const growthStage = document.getElementById('utmGrowthStage').value;
+                const region = document.getElementById('utmRegion').value;
+                
+                if (businessType) params.append('utm_business_type', businessType);
+                if (industry) params.append('utm_industry', industry);
+                if (digitalMaturity) params.append('utm_digital_maturity', digitalMaturity);
+                if (growthStage) params.append('utm_growth_stage', growthStage);
+                if (region) params.append('utm_region', region);
+            }
+            
             // Add custom parameters
             const customParamsObj = {};
             customParameters.forEach(param => {
@@ -1060,7 +1267,7 @@
             }
             
             // Generate full URL
-            const fullURL = `${BASE_URL}?${params.toString()}`;
+            const fullURL = `${baseURL}?${params.toString()}`;
             
             // Check for duplicate if enabled
             let shortCode = document.getElementById('customCode').value.trim();
@@ -1071,7 +1278,8 @@
                 const existing = campaigns.find(c => 
                     c.utm_source === source && 
                     c.utm_medium === medium && 
-                    c.utm_campaign === campaignName.toLowerCase().replace(/\s+/g, '_')
+                    c.utm_campaign === campaignName.toLowerCase().replace(/\s+/g, '_') &&
+                    c.source === campaignSource
                 );
                 
                 if (existing) {
@@ -1082,12 +1290,16 @@
             
             // Generate short code if not provided or found
             if (!shortCode) {
-                shortCode = generateShortCode();
+                shortCode = shortCodePrefix + generateShortCode();
             } else {
                 // Validate custom code
                 if (!/^[A-Za-z0-9\-_]+$/.test(shortCode)) {
                     alert('Short code can only contain letters, numbers, dash, and underscore');
                     return;
+                }
+                // Add prefix if not already present
+                if (shortCodePrefix && !shortCode.startsWith(shortCodePrefix)) {
+                    shortCode = shortCodePrefix + shortCode;
                 }
             }
             
@@ -1110,10 +1322,36 @@
                 utm_content: content || null,
                 utm_term: term || null,
                 custom_params: Object.keys(customParamsObj).length > 0 ? customParamsObj : null,
-                source: 'customer', // Mark as customer campaign for analytics
+                source: campaignSource, // Set based on campaign type
                 clicks: 0,
                 is_active: true
             };
+            
+            // Add campaign-specific fields to database record
+            if (campaignType === 'partner') {
+                const partnerType = document.getElementById('utmPartnerType').value;
+                const partnerRegion = document.getElementById('utmPartnerRegion').value;
+                const referralCode = document.getElementById('utmReferralCode').value;
+                const targetCity = document.getElementById('utmTargetCity').value;
+                
+                if (partnerType) campaignData.utm_partner_type = partnerType;
+                if (partnerRegion) campaignData.utm_partner_region = partnerRegion;
+                if (referralCode) campaignData.utm_referral_code = referralCode;
+                if (targetCity) campaignData.utm_target_city = targetCity;
+                
+            } else if (campaignType === 'digitalreadiness') {
+                const businessType = document.getElementById('utmBusinessType').value;
+                const industry = document.getElementById('utmIndustry').value;
+                const digitalMaturity = document.getElementById('utmDigitalMaturity').value;
+                const growthStage = document.getElementById('utmGrowthStage').value;
+                const region = document.getElementById('utmRegion').value;
+                
+                if (businessType) campaignData.utm_business_type = businessType;
+                if (industry) campaignData.utm_industry = industry;
+                if (digitalMaturity) campaignData.utm_digital_maturity = digitalMaturity;
+                if (growthStage) campaignData.utm_growth_stage = growthStage;
+                if (region) campaignData.utm_region = region;
+            }
             
             try {
                 const { data, error } = await supabase
@@ -1138,6 +1376,9 @@
                 console.log('Campaign URLs:', {
                     shortCode,
                     shortURL,
+                    baseURL,
+                    campaignType,
+                    campaignSource,
                     customParams: customParamsObj
                 });
                 
@@ -1182,6 +1423,10 @@
         }
 
         function resetForm() {
+            // Reset campaign type to default
+            document.getElementById('campaignType').value = 'customer';
+            updateFormFields();
+            
             document.getElementById('campaignName').value = '';
             document.getElementById('utmSource').value = '';
             document.getElementById('utmMedium').value = '';
@@ -1191,6 +1436,21 @@
             document.getElementById('utmAgent').value = '';
             document.getElementById('utmContent').value = '';
             document.getElementById('utmTerm').value = '';
+            document.getElementById('customCode').value = '';
+            
+            // Clear partner-specific fields
+            document.getElementById('utmPartnerType').value = '';
+            document.getElementById('utmPartnerRegion').value = '';
+            document.getElementById('utmReferralCode').value = '';
+            document.getElementById('utmTargetCity').value = '';
+            
+            // Clear Digital Readiness-specific fields
+            document.getElementById('utmBusinessType').value = '';
+            document.getElementById('utmIndustry').value = '';
+            document.getElementById('utmDigitalMaturity').value = '';
+            document.getElementById('utmGrowthStage').value = '';
+            document.getElementById('utmRegion').value = '';
+            
             document.getElementById('resultSection').classList.remove('show');
             
             // Clear custom parameters
